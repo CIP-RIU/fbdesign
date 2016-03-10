@@ -120,6 +120,14 @@ designDialog <- function(){
                                        shiny::tabPanel("Plants", value = "plants", icon = shiny::icon("star"),
                                                 shiny::uiOutput("designFieldbook_genotypes", inline = TRUE)
                                        ),
+
+                                       shiny::tabPanel("Fieldbook Traits", value = "traits", icon = shiny::icon("star"),
+                                                       #shiny::uiOutput("designFieldbook_traits", inline = TRUE)
+                                                       shinyTree("designFieldbook_traits",search = TRUE,checkbox = TRUE)
+                                       ),
+
+
+
                                        shiny::tabPanel("Statistical design", value = "design", icon = shiny::icon("pie-chart"),
                                                        shiny::selectInput("designFieldbook", "Design method:", design_choices, multiple = FALSE),
                                                        shiny::checkboxInput("designFieldbook_random", "Use randomization", TRUE),
@@ -149,23 +157,21 @@ designDialog <- function(){
                                                 # Planting month
                                                 shiny::selectInput("designFieldbook_month", "Month of sowing/planting", 1:12),
                                                 # Location
-                                                shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500),
-                                                shiny::radioButtons("fbDesign_environment_type", "Environment type",
-                                                                    list("Field" = "field"
-                                                                         #,
-                                                                         # "Farmers field" = "farmers_field"
-                                                                         # ,
-                                                                         # "Greenhouse" = "greenhouse",
-                                                                         # "Screenhouse" = "screenhouse"
-                                                                    ), inline = TRUE
-                                                ),
+                                                shiny::uiOutput("fbDesign_countryTrial", inline = TRUE, width = 500),#country
+                                                shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500),#locality
+                                                shiny::radioButtons("fbDesign_environment_type", "Environment type",choices = c(
+                                                                    "Field" = "Field",
+                                                                    #"Farmers field" = "farmers_field",
+                                                                    "Greenhouse" = "Greenhouse",
+                                                                    "Screenhouse" = "Screenhouse"),selected = "Field"
+                                                                    , inline = TRUE),
                                                 shiny::checkboxInput("fbDesign_weather_cb", "Register weather data"),
                                                 shiny::checkboxInput("fbDesign_soil_cb", "Register soil data")
                                        ),
-                                       shiny::tabPanel("Field", value = "fbDesign_field", icon = shiny::icon("male"),
-                                          shiny::numericInput("fbDesign_field_size (ha)",
-                                                              "Field size", 1, 1, 100)
-                                       ),
+#                                        shiny::tabPanel("Field", value = "fbDesign_field", icon = shiny::icon("male"),
+#                                           shiny::numericInput("fbDesign_field_size (ha)",
+#                                                               "Field size", 1, 1, 100)
+#                                        ),
                                        shiny::tabPanel("Farmers field", value = "fbDesign_farmers_field"
                                        ),
                                        # shiny::tabPanel("Greenhouse", value = "fbDesign_greenhouse"
