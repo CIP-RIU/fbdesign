@@ -10,6 +10,7 @@ Suggests: shiny,
   shinyjs,
   shinyFiles,
   rhandsontable,
+  shinyTree,
   shinyBS,
   agricolae,
   stringr,
@@ -19,7 +20,10 @@ Suggests: shiny,
   fbmodule,
   fbprogram,
   fbprstages,
-  fbsites
+  fbsites,
+  dplyr,
+  magrittr,
+  lazyeval
 License: GPL-3
 LazyData: true
 RoxygenNote: 5.0.1

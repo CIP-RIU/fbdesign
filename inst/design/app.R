@@ -1,3 +1,15 @@
+library(shinyTree)
+library(dplyr)
+library(magrittr)
+library(stringr)
+
+library(shiny)
+library(shinyjs)
+library(shinydashboard)
+library(shinyFiles)
+library(rhandsontable)
+library(shinyBS)
+
 
 tabNameS <- "resource_fieldbook_design"
 
@@ -6,7 +18,6 @@ server <- function(input, output, session) {
   values = shiny::reactiveValues()
   fbdesign::server_design(input, output, session, values = values)
 }
-
 
 ui <- shinydashboard::dashboardPage(skin = "yellow",
 
@@ -25,6 +36,7 @@ ui <- shinydashboard::dashboardPage(skin = "yellow",
        )
 
      ),
+
      shinydashboard::dashboardBody(
        shinydashboard::tabItems(
          fbdesign::ui_fieldbook()
