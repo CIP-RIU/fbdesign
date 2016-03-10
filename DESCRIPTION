@@ -23,7 +23,8 @@ Suggests: shiny,
   fbsites,
   dplyr,
   magrittr,
-  lazyeval
+  lazyeval,
+  openxlsx
 License: GPL-3
 LazyData: true
 RoxygenNote: 5.0.1

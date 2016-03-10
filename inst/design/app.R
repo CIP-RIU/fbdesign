@@ -9,6 +9,7 @@ library(shinydashboard)
 library(shinyFiles)
 library(rhandsontable)
 library(shinyBS)
+library(openxlsx)
 
 
 tabNameS <- "resource_fieldbook_design"
