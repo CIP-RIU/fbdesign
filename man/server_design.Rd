@@ -4,7 +4,7 @@
 \alias{server_design}
 \title{server_design}
 \usage{
-server_design(input, output, session, dom = "hot_fieldbook_design", values)
+server_design(input, output, session, values)
 }
 \arguments{
 \item{input}{shinyserver input}
@@ -13,14 +13,12 @@ server_design(input, output, session, dom = "hot_fieldbook_design", values)
 
 \item{session}{shinyserver session}
 
-\item{dom}{target dom element name}
-
 \item{values}{reactive values}
 }
 \description{
 Design a fieldbook
 }
 \author{
-Reinhard Simon
+Omar Benites
 }
 

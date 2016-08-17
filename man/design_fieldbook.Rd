@@ -5,9 +5,11 @@
 \title{Generic fieldbook design function}
 \usage{
 design_fieldbook(design = "(RCBD)", trt1 = letters[1:5], trt2 = NULL,
-  r = 2, k = 2, trt1_label = "trt1", trt2_label = "trt2", maxRep = 20,
-  series = 2, random = TRUE, first = FALSE, cont = FALSE,
-  zigzag = FALSE, variables = NULL)
+  r = 2, k = 2, trt1_label = "trt1", trt2_label = "trt2",
+  factor_name = "FACTOR", factor_lvl1 = "level1", factor_lvl2 = "level2",
+  factor_lvl3 = "level3", sub_design = "crd", maxRep = 20, series = 2,
+  random = TRUE, first = TRUE, cont = FALSE, zigzag = FALSE,
+  variables = NULL)
 }
 \arguments{
 \item{design}{a statistical design}
@@ -23,6 +25,16 @@ design_fieldbook(design = "(RCBD)", trt1 = letters[1:5], trt2 = NULL,
 \item{trt1_label}{string}
 
 \item{trt2_label}{string}
+
+\item{factor_name}{The name of the factor}
+
+\item{factor_lvl1}{The first level of the factor}
+
+\item{factor_lvl2}{The second level of the factor}
+
+\item{factor_lvl3}{The third level of the factor}
+
+\item{sub_design}{The sub design used by Split or Strip plot design.}
 
 \item{maxRep}{maximum number of repetitions}
 

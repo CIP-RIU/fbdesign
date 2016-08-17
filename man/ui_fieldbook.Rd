@@ -4,8 +4,8 @@
 \alias{ui_fieldbook}
 \title{shiny UI element}
 \usage{
-ui_fieldbook(type = "tab", title = "Design field book",
-  name = "phenotype_fieldbook_design", output = "hot_fieldbook_design")
+ui_fieldbook(type = "tab", title = "Design Fieldbook",
+  name = "phenotype_fieldbook_design")
 }
 \arguments{
 \item{type}{of ui Element; default is a tab in a shiny dashboard}
@@ -13,8 +13,6 @@ ui_fieldbook(type = "tab", title = "Design field book",
 \item{title}{display title}
 
 \item{name}{a reference name}
-
-\item{output}{name of output element}
 }
 \description{
 returns a re-usable user interface element

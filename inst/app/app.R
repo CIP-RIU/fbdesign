@@ -146,7 +146,10 @@ designDialog <- function(){
          shiny::dateRangeInput("fbDesign_project_time_line", "Date range")
 
                  ),
-        tabPanel("Plants", value = "plants", icon = shiny::icon("star"),
+#         tabPanel("Plants", value = "plants", icon = shiny::icon("star"),
+#                  shiny::uiOutput("designFieldbook_genotypes", inline = TRUE)
+#         ),
+        tabPanel("Germoplams List", value = "plants", icon = shiny::icon("star"),
            shiny::uiOutput("designFieldbook_genotypes", inline = TRUE)
         ),
         tabPanel("Statistical design", value = "design",
