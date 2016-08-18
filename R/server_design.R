@@ -43,7 +43,11 @@
     if(is.null(sel_list) || sel_list == ""){  return()  }
     if(length(sel_list)>0){
       #mtl_temp <- readrds ::read_excel(paste(mtl_temp$datapath, ".xlsx", sep=""), sheet = "Material_List")
-      mtl_temp <- readRDS(sel_list)
+
+      path <- fbglobal::get_base_dir()
+      path <- paste(path, sel_list, sep = "\\")
+      mtl_temp <- readRDS(path)
+      #mtl_temp <- readRDS(sel_list)
       print(mtl_temp)
       mtl_list <- as.list(mtl_temp) #mtl in list format
 
@@ -504,7 +508,12 @@
       #trt1 <- table_materials$institutional_number
 
       if(!file.exists(fp)) {
-        saveRDS(fb, fp)
+
+        path <- fbglobal::get_base_dir()
+        path <- paste(path, fp, sep="\\")
+        saveRDS(fb, path)
+
+        #saveRDS(fb, fp)
         values[["ph_fb_list"]] = NULL
         #shinyBS::createAlert(session, "alert_fb_done", "fbdoneAlert", title = "Success",
         #                     content = "Fieldbook created.", append = FALSE)
