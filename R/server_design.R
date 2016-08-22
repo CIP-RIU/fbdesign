@@ -494,8 +494,22 @@
       #passing parameters to vars
       fn = paste0(fbdesign_id(), ".rda")
       #fp = file.path(fbglobal::fname_fieldbooks(input$designFieldbook_crop), fn)
+
+
+      #before fbglobal
       print(getwd())
-      fp <- file.path(getwd(), fn)
+      path <- fbglobal::get_base_dir()
+
+      fp <- file.path(path, fn)
+      #end before
+
+
+      #before fbglobal
+      #print(getwd())
+      #fp <- file.path(getwd(), fn)
+      #end before
+
+
 
       mtl_table <- as.data.frame(material_table())
 
@@ -511,11 +525,11 @@
 
       if(!file.exists(fp)) {
 
-        path <- fbglobal::get_base_dir()
-        path <- paste(path, fp, sep="\\")
-        saveRDS(fb, path)
+        #path <- fbglobal::get_base_dir()
+        #path <- paste(path, fp, sep="\\")
+        #saveRDS(fb, path)
 
-        #saveRDS(fb, fp)
+        saveRDS(fb, fp)
         values[["ph_fb_list"]] = NULL
         #shinyBS::createAlert(session, "alert_fb_done", "fbdoneAlert", title = "Success",
         #                     content = "Fieldbook created.", append = FALSE)
