@@ -2,7 +2,7 @@
 #' @describeIn Read the table from M.List DB an write into the computer
 #'
 #'
-fbdesgin_mtl_files <- function(){
+fbdesign_mtl_files <- function(){
 
 #   #dbf_file_list <- list.files(getwd(), full.names = TRUE, pattern = ".dbf|.rds")
 #   dbf_file_list <- list.files(getwd(), full.names = TRUE, pattern = ".rds")
@@ -21,7 +21,13 @@ fbdesgin_mtl_files <- function(){
 #   mtl_files <- gmtfiles
 #   mtl_files
 
-  dbf_file_list <- list.files(getwd(), full.names = TRUE, pattern = ".rds")
+  #usando fbglobal
+  path <- fbglobal::get_base_dir()
+  dbf_file_list <- list.files(path, full.names = TRUE, pattern = ".rds")
+
+  #sin fbglobal
+  #dbf_file_list <- list.files(getwd(), full.names = TRUE, pattern = ".rds")
+
   lg_dbf <- length(dbf_file_list)
 
   if(lg_dbf == 0) { gmtfiles <- "" }

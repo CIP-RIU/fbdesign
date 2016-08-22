@@ -314,7 +314,7 @@
 
     input$fdesign_list_refresh
     #res <- sel_list()
-    res <- fbdesgin_mtl_files()
+    res <- fbdesign_mtl_files()
     #observe({
     #chois <- fbdesgin_mtl_files()$full_name
 #     shiny::selectInput(inputId = "designFieldbook_sel_mlist", label = "Select a Material List",

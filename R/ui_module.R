@@ -216,7 +216,7 @@ shinydashboard::tabItem(tabName = name,
                                                                  font-weight: 500; line-height: 1.1;
                                                                  color: #4d3a7d;"),
 
-                                          radioButtons("select_import", label = h4("Select Type of Import Material List"),
+                                          radioButtons("select_import", label = h4("Select Type of Import"),
                                                        choices = c("Local List", "Template"),
                                                        selected = "Local List"),
 
