@@ -48,7 +48,7 @@
       path <- paste(path, sel_list, sep = "\\")
       mtl_temp <- readRDS(path)
       #mtl_temp <- readRDS(sel_list)
-      print(mtl_temp)
+      #print(mtl_temp)
       mtl_list <- as.list(mtl_temp) #mtl in list format
 
     }
