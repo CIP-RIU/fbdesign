@@ -496,18 +496,17 @@
       #fp = file.path(fbglobal::fname_fieldbooks(input$designFieldbook_crop), fn)
 
 
-      #before fbglobal
+      #### before fbglobal
       print(getwd())
       path <- fbglobal::get_base_dir()
-
       fp <- file.path(path, fn)
-      #end before
+      #### end before
 
 
-      #before fbglobal
+      #### before fbglobal
       #print(getwd())
       #fp <- file.path(getwd(), fn)
-      #end before
+      #### end before
 
 
 
