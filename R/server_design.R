@@ -536,10 +536,20 @@
         shinysky::showshinyalert(session, "alert_fb_done", paste("GREAT: Fieldbook successfully created!", "success"),
                                  styleclass = "success")
 
+        ##after fbglobal
+        xlsx_path <- fbglobal::get_base_dir()
+        xlsx_path <- file.path(xlsx_path, fbdesign_id())
+        fn_xlsx <- paste(xlsx_path, ".xlsx",sep="")
+        ##
+
+        ## before fbglobal
+          #fn_xlsx <- paste(fbdesign_id(),".xlsx",sep="")
+
+      #
 
 
-        fn_xlsx <- paste(fbdesign_id(),".xlsx",sep="")
-#       openxlsx::write.xlsx(fb,fn_xlsx,sheet="Fieldbook",overwrite=TRUE)
+
+        openxlsx::write.xlsx(fb,fn_xlsx,sheet="Fieldbook",overwrite=TRUE)
         add_fieldbook_sheet(file = fn_xlsx, fieldbook = fb)
 
         #fn <- crop_template_xlsx
