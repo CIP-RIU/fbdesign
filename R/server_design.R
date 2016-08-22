@@ -44,9 +44,12 @@
     if(length(sel_list)>0){
       #mtl_temp <- readrds ::read_excel(paste(mtl_temp$datapath, ".xlsx", sep=""), sheet = "Material_List")
 
-      path <- fbglobal::get_base_dir()
-      mtl_temp <- readRDS(path)
-      #mtl_temp <- readRDS(sel_list)
+      #path <- fbglobal::get_base_dir()
+      #path <- paste(path, sel_list, sep = "\\")
+      #mtl_temp <- readRDS(path)
+
+      #Just use the original code
+      mtl_temp <- readRDS(sel_list)
       #print(mtl_temp)
       mtl_list <- as.list(mtl_temp) #mtl in list format
 
