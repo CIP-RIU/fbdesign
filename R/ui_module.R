@@ -163,7 +163,7 @@ shinydashboard::tabItem(tabName = name,
 
                          fluidRow(
                          box(
-                           title = "Fieldbook Design", status = "primary", solidHeader = TRUE,
+                           title = " ", status = "primary", solidHeader = TRUE,
                            collapsible = TRUE, width = 12,
 
                            #shiny::tabsetPanel(# id = "fbDesignNav",
@@ -376,7 +376,7 @@ shinydashboard::tabItem(tabName = name,
                   HTML('<div style="float: right; margin: 0 15px 18px 0px;">'),
                   #shiny::actionButton(inputId = "refresh", label = "Refresh", icon = icon("fa fa-refresh")),
                   #shinyBS::bsButton( "fbDesign_draft", "BookView" ),
-                  shiny::actionButton("fbDesign_draft", "Book preview", icon("table"), style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                  shiny::actionButton("fbDesign_draft", "Book Preview", icon("table"), style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
 
                   shinysky::actionButton2("fbDesign_create", label = "Download", icon ="file-excel-o", icon.library = "bootstrap", styleclass= "color: #fff; background-color: #51a351; border-color: #51a351"),
                   #shiny::actionButton("fbDesign_create", "Download", icon("file-excel-o"), style="color: #fff; background-color: #51a351; border-color: #51a351"),
@@ -388,7 +388,7 @@ shinydashboard::tabItem(tabName = name,
                   shiny::fluidRow(
                     #box(
                     #column(width = 12,height=6,
-                               shinydashboard::box(title = title,
+                               shinydashboard::box(title = "Fieldbook Preview",
                                                    status = "primary",
                                                    #height = 500,
                                                    #width = NULL,
