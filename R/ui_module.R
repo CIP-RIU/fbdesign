@@ -154,7 +154,7 @@ shinydashboard::tabItem(tabName = name,
                 shinyjs::useShinyjs(),
 
                 tabsetPanel( #Begin Master tabSetPanel
-                  tabPanel("Standart Modules",icon = icon("tag", lib = "glyphicon"),
+                  tabPanel("Standar Modules",icon = icon("tag", lib = "glyphicon"),
                            br(),
                            shiny::wellPanel(
                            shiny::HTML("<b>Fieldbook identifiers:</b>"),
