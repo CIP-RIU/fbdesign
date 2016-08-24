@@ -160,7 +160,7 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
 
                           fluidRow(
                                box(
-                                title = "Fieldbook Design", status = "success", solidHeader = TRUE,
+                                title = " ", status = "success", solidHeader = TRUE,
                                 collapsible = TRUE, width = 12,
                                        #shiny::tabsetPanel(# id = "fbDesignNav",
 
