@@ -149,7 +149,7 @@ ui_fieldbook <- function(type="tab",title="Design Fieldbook",name="phenotype_fie
 
 #############
 shinydashboard::tabItem(tabName = name,
-
+                h2("Design of Field Experiments"),
 
                 shinyjs::useShinyjs(),
 
