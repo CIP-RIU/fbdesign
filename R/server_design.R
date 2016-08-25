@@ -624,7 +624,7 @@
 
   output$fbDesign_mlistExport <- downloadHandler(
     filename = function() {
-      paste("Material_list", '.xlsx', sep='')
+      paste("Material_List", '.xlsx', sep='')
     },
     content = function(file) {
       mt_list<- crop_template_xlsx$Material_List

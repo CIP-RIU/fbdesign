@@ -1,6 +1,6 @@
 Package: fbdesign
 Title: Creates a fieldbook
-Version: 1.0
+Version: 2.0
 Authors@R: person("Omar Benites", "Omar", email = "o.benites@cgiar.org", role = c("aut", "cre"))
 Description: Creates a fieldbook.
 Depends:
