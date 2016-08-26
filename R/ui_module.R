@@ -216,7 +216,9 @@ shinydashboard::tabItem(tabName = name,
                                                                  font-weight: 500; line-height: 1.1;
                                                                  color: #4d3a7d;"),
 
-                                          radioButtons("select_import", label = h4("Select Type of Import"),
+                                          radioButtons("select_import", label = h4("Define Genotypes",style = "font-family: 'Arial', cursive;
+                                                                 font-weight: 500; line-height: 1.1;
+                                                                 color: #4d3a7d;"),
                                                        choices = c("Local List", "Template"),
                                                        selected = "Local List"),
 
@@ -234,8 +236,8 @@ shinydashboard::tabItem(tabName = name,
 
                                          conditionalPanel(
                                            condition = "input.select_import == 'Template'",
-                                           downloadButton(outputId = "fbDesign_mlistExport", label = "Material List Template"),
-                                          fileInput(inputId = 'file',label =  'Upload material list file',accept = ".xlsx")#,
+                                           downloadButton(outputId = "fbDesign_mlistExport", label = "Download Template"),
+                                          fileInput(inputId = 'file',label =  'Upload filled template',accept = ".xlsx")#,
                                           ),
 
 
@@ -283,7 +285,7 @@ shinydashboard::tabItem(tabName = name,
                            shiny::tabPanel("Statistical design", value = "design", icon = shiny::icon("pie-chart"),
 
                                            br(),
-                                           shiny::selectInput("designFieldbook", "Design method:", design_choices, multiple = FALSE),
+                                           shiny::selectInput("designFieldbook", "Design", design_choices, multiple = FALSE),
                                            #shiny::checkboxInput("designFieldbook_random", "Use randomization", TRUE),
                                            design_conditional_panels()
 
@@ -293,7 +295,7 @@ shinydashboard::tabItem(tabName = name,
                                           br(),
 
                                              shiny::checkboxInput("designFieldbook_zigzag", "Zigzag", TRUE),
-                                             shiny::radioButtons("designFieldbook_serie", "Label series:",
+                                             shiny::radioButtons("designFieldbook_serie", "Label series",
                                                                  #get_series_labels(), "101, 102, ...", #get_series_labels()[[2]],
                                                                  1:3, 2,
                                                                  inline = TRUE)
@@ -336,7 +338,7 @@ shinydashboard::tabItem(tabName = name,
                                          shiny::numericInput("fbDesign_nplantsrow",
                                                              "Number of plants per row", 10, 1, 100),
                                          shiny::numericInput("fbDesign_nrowplot",
-                                                             "Number of row per plot/pot", 1, 1, 100),
+                                                             "Number of rows per plot/pot", 1, 1, 100),
 
                                          #shiny::numericInput("fbDesign_psize","Plot size", 30, 1, 100),
 

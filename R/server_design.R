@@ -138,7 +138,7 @@
     #mdl1 <<- mdl
     #print(mdl)
     #shiny::selectInput("designFieldbook_module", label = "Assay (fieldbook module):",
-    shiny::selectInput("designFieldbook_module", label = "Types of Trial",
+    shiny::selectInput("designFieldbook_module", label = "Types of trial",
                        choices = mdl, selected = 1)
   })
 
@@ -250,7 +250,7 @@
      #sites_data <- fbsites::get_site_table() #before
      sites_data <- site_table #data from package
      cntry <- fbsites::get_country_list(sites_data = sites_data)
-     shiny::selectizeInput("fbDesign_countryTrial", label = "Field Country:",
+     shiny::selectizeInput("fbDesign_countryTrial", label = "Field country",
                             choices = cntry, selected = 1,  multiple = FALSE)
 
   })
@@ -268,7 +268,7 @@
     #print(locs)
     if (nrow(locs) > 0 ){
       #chc = locs$shortn
-      shiny::selectizeInput("designFieldbook_sites", label = "Field locations:",
+      shiny::selectizeInput("designFieldbook_sites", label = "Field locations",
                             choices = fbdesign_sites_selected, selected = 1,  multiple = FALSE)
    }
   })
@@ -322,7 +322,7 @@
 #     shiny::selectInput(inputId = "designFieldbook_sel_mlist", label = "Select a Material List",
 #                        choices =  res, width = "70%" )
 
-    selectizeInput(inputId = "designFieldbook_sel_mlist", label = "Select a Material List", width="100%",
+    selectizeInput(inputId = "designFieldbook_sel_mlist", label = "Select a material list", width="100%",
                    choices = res,
                    options = list(
                      placeholder = 'Please select a material list',
@@ -362,7 +362,7 @@
   output$fbPlanting_pdensity <- shiny::renderUI({
     plant_density <- react_pdensity()
     #if(length(plant_density)==0) plant_density <- 37037.037
-    shiny::numericInput(inputId = "fbDesign_pdensity", label = "Plant Density (plants/Ha)",
+    shiny::numericInput(inputId = "fbDesign_pdensity", label = "Plant density (plants/Ha)",
                         value = plant_density, min = plant_density, max = plant_density)
   })
 
