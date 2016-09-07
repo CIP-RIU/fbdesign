@@ -43,7 +43,7 @@ design_conditional_panels <- function(){
 
 
        # TODO: ab - factorial, split
-      shiny::selectInput("designFieldbook_r", "Replications (r):", 2:100, 2 )
+      shiny::selectInput("designFieldbook_r", "Replications (r)", 2:100, 2 )
 
     ),
 
@@ -74,11 +74,11 @@ design_conditional_panels <- function(){
 
     shiny::conditionalPanel(
       "input.designFieldbook == 'LD'", # TODO: ab - factorial, split
-      shiny::selectInput("designFieldbook_r", "Replications (r):", 2:100, 2 )
+      shiny::selectInput("designFieldbook_r", "Replications (r)", 2:100, 2 )
     ),
     shiny::conditionalPanel(
       "input.designFieldbook == 'BIBD'",
-      shiny::selectInput("designFieldbook_maxR", "Repetition maximum (k):", 3:100, 20 )
+      shiny::selectInput("designFieldbook_maxR", "Repetition maximum (k)", 3:100, 20 )
     ) ,
     shiny::conditionalPanel(
       "input.designFieldbook == 'AD' |
@@ -93,7 +93,7 @@ design_conditional_panels <- function(){
       # r = 3: s even; k <= (s - 1)
       # r = 4: s odd but not multiple of 3; k <= s
       #shiny::selectInput("designFieldbook_r", "Replications (r):", 2:6000, 2 ),
-      shiny::selectInput("designFieldbook_k", "Block size (k):", 2:100, 4 )
+      shiny::selectInput("designFieldbook_k", "Block size (k)", 2:100, 4 )
     ),
 
     shiny::conditionalPanel(
@@ -157,7 +157,7 @@ shinydashboard::tabItem(tabName = name,
                   tabPanel("Standard Modules",icon = icon("tag", lib = "glyphicon"),
                            br(),
                            shiny::wellPanel(
-                           shiny::HTML("<b>Fieldbook identifiers:</b>"),
+                           shiny::HTML("<b>Fieldbook ID </b>"),
                            shiny::textOutput("fbDesign_id")
                           ),
 
@@ -179,13 +179,13 @@ shinydashboard::tabItem(tabName = name,
                                   shiny::selectInput("designFieldbook_crop", "Crop", crops()),
                                   shiny::uiOutput("fbDesign_factor2", inline = TRUE),
                                                               shiny::uiOutput("fbDesign_variables", inline = TRUE),
-                                  shiny::dateRangeInput("fbDesign_project_time_line", "Date of Experiment", start = Sys.Date() - 2,
+                                  shiny::dateRangeInput("fbDesign_project_time_line", "Date of experiment", start = Sys.Date() - 2,
                                                                   end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
 
 
                                  #shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),#country
                                   #shiny::selectizeInput("fbDesign_country", inline = TRUE, width = 500),#country
-                                  shiny::selectizeInput("fbDesign_countryTrial", label = "Field Country:",
+                                  shiny::selectizeInput("fbDesign_countryTrial", label = "Field country",
                                                                   choices = country(), selected = 1,  multiple = FALSE),
                                   shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
                                   selectInput('fbDesign_nExp', 'Experiment number', c("-",paste("exp",1:100,sep="")), selectize=TRUE)
@@ -212,10 +212,10 @@ shinydashboard::tabItem(tabName = name,
                                           #        box(
                                           #       title = "Step: 2", status = "warning", solidHeader = TRUE, collapsible = TRUE, width = NULL,
                                           #shiny::uiOutput("designFieldbook_genotypes", inline = TRUE),
-                                          h4("Define Genotypes",style = "font-family: 'Arial', cursive;
-                                                                 font-weight: 500; line-height: 1.1;
-                                                                 color: #4d3a7d;"),
-
+#                                           h4("Define Genotypes",style = "font-family: 'Arial', cursive;
+#                                                                  font-weight: 500; line-height: 1.1;
+#                                                                  color: #4d3a7d;"),
+                                          br(),
                                           radioButtons("select_import", label = h4("Define Genotypes",style = "font-family: 'Arial', cursive;
                                                                  font-weight: 500; line-height: 1.1;
                                                                  color: #4d3a7d;"),
@@ -282,7 +282,7 @@ shinydashboard::tabItem(tabName = name,
                                           #  )
                                       ),
 
-                           shiny::tabPanel("Statistical design", value = "design", icon = shiny::icon("pie-chart"),
+                           shiny::tabPanel("Statistical Design", value = "design", icon = shiny::icon("pie-chart"),
 
                                            br(),
                                            shiny::selectInput("designFieldbook", "Design", design_choices, multiple = FALSE),
@@ -412,9 +412,9 @@ shinydashboard::tabItem(tabName = name,
                 br(),
                 br()
 
-          ),
+          )#,
 
-ui_design_big(type="tab",title="Special Modules",name="phenotype_fieldbook_design")
+#ui_design_big(type="tab",title="Special Modules",name="phenotype_fieldbook_design")
 
 ######
 ##################  End Simple Modules
