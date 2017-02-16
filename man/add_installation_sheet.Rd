@@ -6,11 +6,11 @@
 \usage{
 add_installation_sheet(file = NA, crop_template = NA, col_name = "Value",
   exp_design = NA, genetic_design = NA, rep = NA, block = NA,
-  exp_env = NA, plot_start_number = NA, n_plant_plot = NA,
-  n_plant_row = NA, plot_size = NA, plant_density = NA,
-  distance_plants = NA, distance_rows = NA, factor_name = NA,
-  factor_name_1 = NA, factor_name_2 = NA, factor_name_3 = NA,
-  factor_name_4 = NA, factor_name_5 = NA)
+  exp_env = NA, plot_start_number = NA, n_plot_row = NA,
+  n_plant_plot = NA, n_plant_row = NA, plot_size = NA,
+  plant_density = NA, distance_plants = NA, distance_rows = NA,
+  factor_name = NA, factor_name_1 = NA, factor_name_2 = NA,
+  factor_name_3 = NA, factor_name_4 = NA, factor_name_5 = NA)
 }
 \arguments{
 \item{file}{The file name of excel fieldbook}

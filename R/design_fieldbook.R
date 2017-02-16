@@ -31,7 +31,7 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
                              factor_lvl1="level1",factor_lvl2="level2",factor_lvl3="level3",
                              sub_design="crd",
                              maxRep = 20,
-                             series = 2 , random = TRUE, first = TRUE, cont = FALSE,
+                             series = 1 , random = TRUE, first = TRUE, cont = FALSE,
                              zigzag = FALSE,
                              variables = NULL){
 
@@ -89,12 +89,20 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
     names(fb$book)[3] = toupper(trt1_label)
   }
 
+  #This design is double block, the treatments are blocked by rows and columsn. See Montgomery Books for further review.
   if (design == "LSD") {
     if(zigzag)fb$book = agricolae::zigzag(fb)
-    names(fb$book)[2] = "REP"
-    fb$book = fb$book[, c(1, 2, 4)]
-    names(fb$book)[3] = toupper(trt1_label)
+    #names(fb$book)[2] = "REP"
+    #fb$book = fb$book[, c(1, 2, 4)]
+    # names(fb$book)[2] = "BLOCK_ROW"
+    # names(fb$book)[3] = "BLOCK_COL"
+    fb$book = fb$book[, c(1, 2, 3, 4)] #PLOT, BLOCK_ROW, BLOC_COL, TREATMENT
+    names(fb$book) <- c("PLOT","BLOCK_ROW","BLOCK_COL","INSTN")
+
+    #names(fb$book)[3] = toupper(trt1_label)
   }
+
+
 
   if (design == "CRD") {
     #if(zigzag)fb$book = agricolae::zigzag(fb)
@@ -199,14 +207,34 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
   #   }
 
 
-  out = fb$book
+  if(series == 1){
+    out  <-  fb$book
+    PLOT <- 1:nrow(out)
+    out$PLOT <- PLOT
+  }
+
+  if(series == 2){# This series start from 101
+    out  <-  fb$book
+    final_rows <- nrow(out) + 101 - 1
+    PLOT <- 101:final_rows
+    out$PLOT <- PLOT
+  }
+
+  if(series == 3){ # This serise start from 1001
+    out  <-  fb$book
+    final_rows <- nrow(out) + 1001 -1
+    PLOT <- 1001:final_rows
+    out$PLOT <- PLOT
+  }
+
+
   print(out)
   # Adding variables
   if(!is.null(variables)){
-    mm = matrix(nrow = nrow(out), ncol = length(variables) )
-    nm = c(names(out), variables)
-    out = cbind(out, mm)
-    names(out) = nm
+    mm  <-  matrix(nrow = nrow(out), ncol = length(variables) )
+    nm  <-  c(names(out), variables)
+    out  <-  cbind(out, mm)
+    names(out)  <-  nm
   }
 
   # Adding meta data

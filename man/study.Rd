@@ -2,11 +2,18 @@
 % Please edit documentation in R/design_xlsx_fieldbook.R
 \name{study}
 \alias{study}
-\title{Study List}
+\title{This funcions has been deprecated. The new selectInput depend directly from rds file}
 \usage{
 study()
 }
 \description{
 This function gives a study list
+}
+\details{
+Country List
+#@description This function gives a country list
+#@export
+
+Study List
 }
 

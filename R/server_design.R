@@ -21,7 +21,8 @@
 
     if(input$select_import=="Template") {
 
-        mtl_temp <- input$file
+        #mtl_temp <- input$file
+        mtl_temp <- input$file_mtlist
 
         if(is.null(mtl_temp)){return()}
         if(!is.null(mtl_temp)){
@@ -59,32 +60,6 @@
 
     mtl_list
   })
-
-#   output$fbDesign_crop <- shiny::renderUI({
-#     ct = fbcrops::get_crop_table()
-#     chc = as.list(ct$crop_name)
-#     nms = paste0(ct$crop_name, " (", ct$crop_id, ")")
-#     names(chc) = nms
-#     #temp <<- chc
-#     shiny::selectInput("designFieldbook_crop", "Crop", chc)
-#   })
-
-#   output$fbDesign_program <- shiny::renderUI({
-#     if (!is.null(input$designFieldbook_crop)) {
-#       tbl = fbcrops::get_crop_table()
-#       crp = tbl[tbl$crop_name == input$designFieldbook_crop, "crop_id"]
-#
-#       tbl = fbprogram::get_program_table()
-#       prg = tbl[tbl$crop_id == crp, ]
-#
-#       if (nrow(prg) > 0 ) {
-#         lbl = paste0(prg$program_name, " (", prg$program_id, ")" )
-#         chc = as.list(prg$program_id)
-#         names(chc) = lbl
-#         shiny::selectInput("designFieldbook_program", "Investigation", chc)
-#       }
-#     }
-#   })
 
   output$approvalBox <- renderInfoBox({
 
@@ -125,13 +100,14 @@
     if(crop == "sweetpotato"){tbl <- table_module_sweetpotato } #dataset from fbdesgin data folder
 
     #mdl <- tbl[tbl$crop == crop, c("module", "module_name")] #HiDAP v1.0 Built_1 (deprecated table form)
+    #Filter by crop and select trial abbreviation and trial.
     mdl <- tbl[tbl$CROP == crop, c("TRIAL_ABBR", "TRIAL")] #HiDAP v1.0 Built_2
 
     mdl <- paste0(mdl[,2], " (", mdl[, 1],")")
     mdl <- sort(unique(mdl))
 
     #ids <- unlist(stringr::str_extract_all(mdl, "([A-Z]{2})"))
-    ids <- str_trim(gsub("\\(.*","",mdl),side = "both")
+    ids <- str_trim(gsub("\\(.*","", mdl), side = "both")
     vls <- mdl
     mdl = as.list(ids)
     names(mdl) <- vls
@@ -141,11 +117,6 @@
     shiny::selectInput("designFieldbook_module", label = "Types of trial",
                        choices = mdl, selected = 1)
   })
-
-#   output$designFieldbook_genotypes <- shiny::renderUI({
-#     chc <- fbmaterials::list_material_lists(input$designFieldbook_crop, short = TRUE)
-#     shiny::selectInput("designFieldbook_trt1", "Genotype list", chc, width = 400)
-#   })
 
   fbdesign_id <- shiny::reactive({
     if (!is.null(input$designFieldbook_crop)) {
@@ -183,59 +154,6 @@
   })
 
   output$designFieldbook_traits <- shinyTree::renderTree({
-
-# potato<- readRDS("C:/OMAR-2015/GitHubProjects/shinyTree/trial_module_list.rda")
-
-    #crp <- input$designFieldbook_crop
-    #tbl <- fbmodule::get_module_table(input$designFieldbook_crop)
-#   if(crp=="potato"){tbl <- table_module_potato}
-#   if(crp=="sweetpotato"){tbl <- table_module_sweetpotato}
-#
-#   tbl <- dplyr::as_data_frame(tbl)
-#
-#   trait_check_box <- paste(tbl$variable,": ",tbl$variables_name,sep="")
-#   #agrego el nombre de los check boxes
-#   tbl$trait_check_box <- trait_check_box
-#
-#   crop_table <- tbl
-#
-#   trial_module <- crop_table %>% select(.,module_name) %>% unique(.)
-#   trial_module <- trial_module[[1]]
-#
-#   trial_abbr<- crop_table %>% select(.,module) %>% unique(.)
-#   trial_abbr <- trial_abbr[[1]]
-#
-#   trial_module_list <- list()
-#   trial_module_list_cb <- list()
-#   n <- length(trial_module)
-#
-#           #for(i in trial_module){
-#
-#           for(i in 1:n){
-#
-#             #crop_table %>% filter(., module_name == "yield")
-#             #trait_var <- crop_table %>% filter(., module_name == i) %>% select(., variable)
-#             trait_var <- crop_table %>% filter(., module_name == trial_module[i]) %>% select(., variable)
-#             trait_var <- trait_var[[1]]
-#             trait_var <- as.list(trait_var)
-#             #extract trait check box names
-#             trait_names <- crop_table %>% filter(., module_name == trial_module[i]) %>% select(., trait_check_box)
-#             trait_names <- trait_names[[1]]
-#
-#             names(trait_var) <- trait_names
-#             trait_list <- list(trait_var)
-#             names(trait_list) <- trial_module[i]
-#
-#             trial_module_list[[i]] <- trait_list
-#           }
-#
-#           trial_module_list
-#            a <- NULL
-#           a1 <- trial_module_list[[1]]
-#           for(i in 2:n){
-#             a <- c(a1,trial_module_list[[i]])
-#             a1 <- a
-#           }
      #if(crp=="potato"){tbl <- crop_list$crop_list$potato}
      #if(crp=="sweetpotato"){tbl <- crop_list$crop_list$sweetpotato}
 
@@ -246,24 +164,53 @@
       #a
   })
 
+
+  shiny::observe({
+    path <- fbglobal::get_base_dir()
+    #print(path)
+    geodb_file <- "table_sites.rds"
+    path <- paste(path, geodb_file, sep = "\\")
+    values$sites_data <-  readRDS(file = path)
+    #     values$geo_db <-  readRDS(file = "sites_table.rds")
+
+  })
+
+
+
   output$fbDesign_country <- shiny::renderUI({
      #sites_data <- fbsites::get_site_table() #before
-     sites_data <- site_table #data from package
-     cntry <- fbsites::get_country_list(sites_data = sites_data)
+
+      # sites_data <- site_table #data from package fbdesing as an internal data BEFORE
+
+     sites_data <- values$sites_data # read trial sites using reactive values from xdata folder (NEW CODE)
+
+
+     cntry <- fbsites::get_country_list(sites_data = sites_data) #new code: use file fbsites
+
+
      shiny::selectizeInput("fbDesign_countryTrial", label = "Field country",
                             choices = cntry, selected = 1,  multiple = FALSE)
 
   })
 
   fbdesign_sites <- reactive({
-    #sites_data <<-  fbsites::get_site_table() #before
-    sites_data <- site_table #using data from package
+
+    #sites_data <- site_table #using data from package #Former code before useing rective values
+
+    sites_data <- values$sites_data
+
+
+
     fbsites::get_filter_locality(sites_data = sites_data, country_input= input$fbDesign_countryTrial)
   })
 
   output$fbDesign_countrySite <- shiny::renderUI({
-    #locs = fbsites::get_site_table() #before
-    locs <- site_table #using data from package
+
+     req(input$fbDesign_countryTrial)
+
+    #locs <- site_table #using data from package fbsite (OLD CODE)
+    locs <- values$sites_data # read trial sites using reactive values from xdata folder (NEW CODE)
+
     fbdesign_sites_selected <- fbdesign_sites()
     #print(locs)
     if (nrow(locs) > 0 ){
@@ -316,7 +263,7 @@
 
     input$fdesign_list_refresh
     #res <- sel_list()
-    res <- fbdesign_mtl_files()
+    res <- fbdesign_mtl_files() #this come from util.R fbdesign package
     #observe({
     #chois <- fbdesgin_mtl_files()$full_name
 #     shiny::selectInput(inputId = "designFieldbook_sel_mlist", label = "Select a Material List",
@@ -488,7 +435,11 @@
     #print("Heyoo")
     withProgress(message = "Downloading Fieldbook..",value= 0,
                  {
+
+        incProgress(3/15)
         fb = fbdraft()
+        print("fb in exporting")
+        print(fb)
         try({
 
       #passing parameters to vars
@@ -496,19 +447,16 @@
       #fp = file.path(fbglobal::fname_fieldbooks(input$designFieldbook_crop), fn)
 
 
-      #### before fbglobal
+      #### after fbglobal
       print(getwd())
       path <- fbglobal::get_base_dir()
       fp <- file.path(path, fn)
       #### end before
 
-
       #### before fbglobal
       #print(getwd())
       #fp <- file.path(getwd(), fn)
       #### end before
-
-
 
       mtl_table <- as.data.frame(material_table())
 
@@ -521,6 +469,16 @@
       end_date1 <- paste(end_date[3],end_date[2],end_date[1],sep="/")
 
       #trt1 <- table_materials$institutional_number
+
+      if(file.exists(fp))  {
+        #shinyjs::reset("designFieldbook_sel_mlist")
+        #shinyBS::createAlert(session, "alert_fb_done", "fbdoneAlert", title = "Warning",style = "warning",
+        #                     content = "This fieldbook already exists in HiDAP. Please Select Experiment Number in Crop & Location", append = FALSE)
+        shinysky::showshinyalert(session, "alert_fb_done", paste("WARNING: This fieldbook already exists in HiDAP. Please Select Experiment Number in Crop & Location"),
+                                 styleclass = "warning")
+
+
+      }
 
       if(!file.exists(fp)) {
 
@@ -538,7 +496,7 @@
         ##after fbglobal
         xlsx_path <- fbglobal::get_base_dir()
         xlsx_path <- file.path(xlsx_path, fbdesign_id())
-        fn_xlsx <- paste(xlsx_path, ".xlsx",sep="")
+        fn_xlsx <- paste(xlsx_path, ".xlsx",sep= "")
         ##
 
         ## before fbglobal
@@ -546,19 +504,21 @@
 
       #
 
+        #print("1")
 
-
-        openxlsx::write.xlsx(fb,fn_xlsx,sheet="Fieldbook",overwrite=TRUE)
+        openxlsx::write.xlsx(fb, fn_xlsx,sheet="Fieldbook",overwrite=TRUE)
+        #print("1.1")
         add_fieldbook_sheet(file = fn_xlsx, fieldbook = fb)
-
+        #print("1.2")
         #fn <- crop_template_xlsx
         crop_template <- crop_template_xlsx #dataset loaded from fbdesign package
         #crop_template <- readRDS(fn)
-
+        #print("1.3")
+        varsitos <- input$designFieldbook_traits
         add_varlist_sheet(file=fn_xlsx, crop_template = crop_template,
                           crop=input$designFieldbook_crop,
                           trait_list = input$designFieldbook_traits)
-
+        #print("2")
         #add_minimal_sheet(file=fn_xlsx, crop_template=crop_template,col_name="Value",short_name= fbdesign_id(),
         add_minimal_sheet(file=fn_xlsx, crop_template=crop_template, col_name="Value", Trial_name= fbdesign_id(),
                           crop= input$designFieldbook_crop,
@@ -569,12 +529,13 @@
                           end_date = end_date1,
                           site_short_name = input$designFieldbook_sites,
                           country = input$fbDesign_countryTrial)
-
+        print("3")
         add_installation_sheet(file=fn_xlsx, crop_template = crop_template,col_name = "Value",
                                exp_design = input$designFieldbook,
                                genetic_design = NA,
                                rep = input$designFieldbook_r,block=NA,
                                exp_env = input$fbDesign_environment_type, plot_start_number = NA,
+                               n_plot_row = input$fbDesign_nrowplot,
                                n_plant_plot = input$fbDesign_nplants,
                                n_plant_row = input$fbDesign_nplantsrow,
                                plot_size = input$fbDesign_psize,
@@ -588,34 +549,24 @@
                                #factor_name_4 = input$factor_lvl4
                                #factor_name_5 = input$factor_lvl5
                                )
-
+        print("4")
         add_metadata_sheet(file=fn_xlsx, crop_template = crop_template, soil_input = input$fbDesign_soil_cb,
                            weather_input = input$fbDesign_weather_cb)
 ### !Hidden for a while
 #         add_material_sheet(file=fn_xlsx, crop_template=crop_template, crop= input$designFieldbook_crop,
 #                            material_list = input$designFieldbook_trt1)
-
+        print("5")
         add_material_sheet(file=fn_xlsx, crop_template=crop_template, crop= input$designFieldbook_crop,
                            material_list = mtl_table)
 
-
+        print("6")
         add_cmanagment_sheet(file=fn_xlsx,
                              crop_template = crop_template,
                              crop=input$designFieldbook_crop,
                              trait_list = input$designFieldbook_traits)
-
+        print("7")
 
         shell.exec(fn_xlsx)
-      }
-
-      if(file.exists(fp)){
-        #shinyjs::reset("designFieldbook_sel_mlist")
-        #shinyBS::createAlert(session, "alert_fb_done", "fbdoneAlert", title = "Warning",style = "warning",
-        #                     content = "This fieldbook already exists in HiDAP. Please Select Experiment Number in Crop & Location", append = FALSE)
-        shinysky::showshinyalert(session, "alert_fb_done", paste("WARNING: This fieldbook already exists in HiDAP. Please Select Experiment Number in Crop & Location"),
-                                 styleclass = "warning")
-
-
       }
 
                })
@@ -627,8 +578,9 @@
       paste("Material_List", '.xlsx', sep='')
     },
     content = function(file) {
+
       mt_list<- crop_template_xlsx$Material_List
-      #mt_list <- material_list ##internal dataset
+       #mt_list <- material_list ##internal dataset
 #       hs <- createStyle(fontColour = "#060505", fontSize=12,
 #                         fontName="Arial Narrow", fgFill = "#4F80BD")
             hs <- createStyle(fontColour = "#000000", fontSize=12,

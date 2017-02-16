@@ -1,21 +1,21 @@
 design_choices_big <- c(
-  "Unreplicated Design with No Randomization (UNDR)" = "UNDR",
-  "Randomized Complete Block Design (RCBD)" = "RCBD",
-  "Completely Randomized Design (CRD)" = "CRD",
-  "Augmented Block Design (ABD)" = "ABD",
-  "Latin Square Design (LSD)" = "LSD",
-  "Split Plot with Plots in CRD (SPCRD)" = "SPCRD",
-  "Split Plot with Plots in RCBD (SPRCBD)" = "SPRCBD",
-  "Split Plot with Plots in LSD (SPLSD)" = "SPLSD",
-  "Strip Plot Design (STRIP)" = "STRIP",
-  "Factorial Two-Way Design in CRD (F2CRD)" = "F2CRD",
-  "Factorial Two-Way Design in RCBD (F2RCBD)" = "F2RCBD",
+  #"Unreplicated Design with No Randomization (UNDR)" = "UNDR",
+  "Randomized Complete Block Design (RCBD)" = "RCBD"#,
+  #"Completely Randomized Design (CRD)" = "CRD",
+  #"Augmented Block Design (ABD)" = "ABD",
+  #"Latin Square Design (LSD)" = "LSD",
+  #"Split Plot with Plots in CRD (SPCRD)" = "SPCRD",
+  #"Split Plot with Plots in RCBD (SPRCBD)" = "SPRCBD",
+  #"Split Plot with Plots in LSD (SPLSD)" = "SPLSD",
+  #"Strip Plot Design (STRIP)" = "STRIP",
+  #"Factorial Two-Way Design in CRD (F2CRD)" = "F2CRD",
+  #"Factorial Two-Way Design in RCBD (F2RCBD)" = "F2RCBD",
   #  "Balanced Incomplete Block Design (BIBD)" = "BIBD",
   #  "Graeco-Latin Design (GLD)" = "GLD",
   #  "Youden Design (YD)" = "YD",
   #  "Cyclic Design (CD)" = "CD",
   #  "Lattice Design (LD)" = "LD",
-  "Alpha Design (AD)" = "AD" #,
+  #"Alpha Design (AD)" = "AD" #,
   # #"Augmented Partially Replicated Design (APRD)" = "APRD",
   # #"Factorial Design (F2SPPD)" = "F2SPPD",
   # #"North Carolina Design I" = "NCI",
@@ -178,14 +178,16 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                                    shiny::uiOutput("fbDesign_variables_big", inline = TRUE),
                                                                    shiny::dateRangeInput("fbDesign_project_time_line_big", "Date of Experiment", start = Sys.Date() - 2,
                                                                                        end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
-                                                                                       shiny::selectizeInput("fbDesign_countryTrial_big", label = "Field Country:",
-                                                                                                             choices = country(), selected = 1,  multiple = FALSE),
+                                                                                       # shiny::selectizeInput("fbDesign_countryTrial_big", label = "Field Country:",
+                                                                                       #                       choices = country(), selected = 1,  multiple = FALSE),
+                                                                                       shiny::uiOutput("fbDesign_country_big", inline = TRUE, width = 500),
                                                                                        shiny::uiOutput("fbDesign_countrySite_big", inline = TRUE, width = 500), #,#locality
                                                                                        selectInput('fbDesign_nExp_big', 'Experiment number', c("-",paste("exp",1:100,sep="")), selectize=TRUE)
 
                                                                                      )
                                                                               )
                                                               ),
+
                                                 shiny::tabPanel("Material List", value = "plants_big", icon = shiny::icon("list-alt"),
                                                                     br(),
                                                                     # fluidRow(
@@ -193,25 +195,45 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                                     #        box(
                                                                     #       title = "Step: 2", status = "warning", solidHeader = TRUE, collapsible = TRUE, width = NULL,
                                                                     #shiny::uiOutput("designFieldbook_genotypes", inline = TRUE),
-                                                                    h4("Define Genotypes",style = "font-family: 'Arial', cursive;
-                                                                       font-weight: 500; line-height: 1.1; color: #4d3a7d;"),
-                                                                    br(),
+                                                                    # h4("Define Genotypes",style = "font-family: 'Arial', cursive;
+                                                                    #    font-weight: 500; line-height: 1.1; color: #4d3a7d;"),
+                                                                    # br(),
 
-                                                                    fileInput(inputId = 'file_big',label =  'Upload material list file',accept = ".xlsx"),
 
+                                                                radioButtons("select_import_big", label = h4("Define Genotypes",style = "font-family: 'Arial', cursive;
+                                                                 font-weight: 500; line-height: 1.1;
+                                                                 color: #4d3a7d;"),
+                                                                             choices = c("Local List", "Template"),
+                                                                             selected = "Local List"),
+
+                                                                br(),
+
+                                                                 conditionalPanel(
+                                                                   condition = "input.select_import_big == 'Local List'",
+
+
+                                                                   shiny::uiOutput("fbDesign_selmlist_big"),
+                                                                   shiny::actionButton("fdesign_list_refresh_big","Refresh List"),
+
+                                                                   br()#,
+                                                                 ),
+
+                                                                conditionalPanel(
+                                                                  condition = "input.select_import_big == 'Template'",
+                                                                  fileInput(inputId = 'file_big',label =  'Upload material list file',accept = ".xlsx"),
+                                                                  downloadButton(outputId = "fbDesign_mlistExport_big", label = "Material List Template")
+
+                                                                ),
+                                                                    #fileInput(inputId = 'file_big',label =  'Upload material list file',accept = ".xlsx"),
                                                                     fluidRow(
-
                                                                             infoBoxOutput("approvalBox_big")#,
-
-                                                                    ),
-                                                                    downloadButton(outputId = "fbDesign_mlistExport_big", label = "Material List Template")#,
+                                                                    )#,
+                                                                    #downloadButton(outputId = "fbDesign_mlistExport_big", label = "Material List Template")#,
 
                                                               ),
 
                                                   shiny::tabPanel("Evaluation Forms", value = "traits_big", icon = shiny::icon("star"),
-
                                                                               br(),
-
                                                                               shinyTree::shinyTree("designFieldbook_traits_big",search = TRUE,checkbox = TRUE)
 
                                                               ),
@@ -219,7 +241,7 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                    shiny::tabPanel("Statistical design", value = "design_big", icon = shiny::icon("pie-chart"),
 
                                                                               br(),
-                                                                              shiny::selectInput("designFieldbook_big", "Design method:", choices = design_choices, selected = "RCBD", multiple = FALSE),
+                                                                              shiny::selectInput("designFieldbook_big", "Design method:", choices = design_choices_big, selected = "RCBD", multiple = FALSE),
                                                                               #shiny::checkboxInput("designFieldbook_random", "Use randomization", TRUE),
                                                                               design_conditional_panels_big(),
                                                                               #shiny::selectInput("designFieldbook_n_org_mother", "Number of panelist (Organoleptic Mother)",
@@ -237,10 +259,10 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                   shiny::tabPanel("Environment", value = 'environment_big', icon = shiny::icon("recycle"),
                                                                               br(),
 
-                                                                              shiny::checkboxInput("designFieldbook_zigzag_big", "Zigzag", TRUE),
+                                                                              shiny::checkboxInput("designFieldbook_zigzag_big", "Zigzag", FALSE),
                                                                               shiny::radioButtons("designFieldbook_serie_big", "Label series:",
                                                                                                   #get_series_labels(), "101, 102, ...", #get_series_labels()[[2]],
-                                                                                                  1:3, 2,
+                                                                                                  1:3, 1,
                                                                                                   inline = TRUE)
                                                                               ,
                                                                               shiny::radioButtons("fbDesign_environment_type_big", "Environment type",choices = list(
@@ -263,7 +285,7 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                                               shiny::numericInput("fbDesign_nplantsrow_big",
                                                                                                   "Number of plants per row", 10, 1, 100),
                                                                               shiny::numericInput("fbDesign_nrowplot_big",
-                                                                                                  "Number of row per plot/pot", 1, 1, 100),
+                                                                                                  "Number of rows per plot/pot", 1, 1, 100),
 
                                                                               shiny::numericInput("fbDesign_distPlants_big",
                                                                                                   "Distance between plants (m)", .3, .1, 1),

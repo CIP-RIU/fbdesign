@@ -20,17 +20,50 @@ server_design_big <- function(input, output, session, values){
 
   material_table_big <- reactive({
 
-    mtl_temp <- input$file_big
-    if(is.null(mtl_temp)){return()}
-    if(!is.null(mtl_temp)){
 
-      file.copy(mtl_temp$datapath,paste(mtl_temp$datapath, ".xlsx", sep=""))
-      mtl_temp <- readxl::read_excel(paste(mtl_temp$datapath, ".xlsx", sep=""), sheet = "Material_List")
+    if(input$select_import_big=="Template") {
 
-      mtl_list <- as.list(mtl_temp) #mtl in list format
-      print(mtl_list)
+        mtl_temp <- input$file_big
+        if(is.null(mtl_temp)){return()}
+        if(!is.null(mtl_temp)){
+
+          file.copy(mtl_temp$datapath,paste(mtl_temp$datapath, ".xlsx", sep=""))
+          mtl_temp <- readxl::read_excel(paste(mtl_temp$datapath, ".xlsx", sep=""), sheet = "Material_List")
+
+          mtl_list <- as.list(mtl_temp) #mtl in list format
+          print(mtl_list)
+        }
+
     }
+
+    if(input$select_import_big=="Local List"){
+
+      sel_list <- input$designFieldbook_sel_mlist_big
+      #print(sel_list)
+      if(is.null(sel_list) || sel_list == ""){  return() }
+      if(length(sel_list)>0){
+        #mtl_temp <- readrds ::read_excel(paste(mtl_temp$datapath, ".xlsx", sep=""), sheet = "Material_List")
+
+        #path <- fbglobal::get_base_dir()
+        #path <- paste(path, sel_list, sep = "\\")
+        #mtl_temp <- readRDS(path)
+
+        #Just use the original code
+        mtl_temp <- readRDS(sel_list)
+        #print(mtl_temp)
+        mtl_list <- as.list(mtl_temp) #mtl in list format
+
+      }
+
+    }
+
+    mtl_list
+
   })
+
+
+
+
 
   output$approvalBox_big <- renderInfoBox({
 
@@ -84,7 +117,6 @@ server_design_big <- function(input, output, session, values){
     shiny::selectInput("designFieldbook_module_big", label = "Types of Trial",
                        choices = mdl, selected = 2)
   })
-#
 
   fbdesign_id_big <- shiny::reactive({
     if (!is.null(input$designFieldbook_crop_big)) {
@@ -129,10 +161,27 @@ server_design_big <- function(input, output, session, values){
     a
   })
 #
+
+  shiny::observe({
+    path <- fbglobal::get_base_dir()
+    #print(path)
+    geodb_file <- "table_sites.rds"
+    path <- paste(path, geodb_file, sep = "\\")
+    values$sites_data_big <-  readRDS(file = path)
+    #     values$geo_db <-  readRDS(file = "sites_table.rds")
+
+  })
+
   output$fbDesign_country_big <- shiny::renderUI({
     #sites_data <- fbsites::get_site_table() #before
-    sites_data <- site_table #data from package
+
+    #sites_data <- site_table #data from package fbdesing (old code)
+
+    sites_data <- values$sites_data_big # new code:
+
+    #cntry <- fbsites::get_country_list(sites_data = sites_data)
     cntry <- fbsites::get_country_list(sites_data = sites_data)
+
     shiny::selectizeInput("fbDesign_countryTrial_big", label = "Field Country:",
                           choices = cntry, selected = 1,  multiple = FALSE)
 
@@ -140,14 +189,21 @@ server_design_big <- function(input, output, session, values){
 
   fbdesign_sites_big <- reactive({
     #sites_data <<-  fbsites::get_site_table() #before
-    sites_data <- site_table #using data from package
+    #sites_data <- site_table #using data from package
+    sites_data <- values$sites_data_big # new code:
+
     fbsites::get_filter_locality(sites_data = sites_data, country_input= input$fbDesign_countryTrial_big)
   })
 
   output$fbDesign_countrySite_big <- shiny::renderUI({
     #locs = fbsites::get_site_table() #before
-    locs <- site_table #using data from package
+
+    req(input$fbDesign_countryTrial_big)
+
+    locs <- values$sites_data #using data from package
     fbdesign_sites_selected <- fbdesign_sites_big()
+    locs <- values$sites_data # read trial sites using reactive values from xdata folder (NEW CODE)
+
     #print(locs)
     if (nrow(locs) > 0 ){
       #chc = locs$shortn
@@ -158,7 +214,7 @@ server_design_big <- function(input, output, session, values){
 #
   #Plot Size Values
   react_psize_big <- reactive({
-    plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot*input$fbDesign_distRows
+    plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot_big*input$fbDesign_distRows
     print(plot_size)
     if(length(plot_size)==0){plot_size <- 0}
     plot_size
@@ -166,7 +222,7 @@ server_design_big <- function(input, output, session, values){
 #
   #Plant Density Values
   output$fbPlanting_psize_big <- shiny::renderUI({
-    #plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot*input$fbDesign_distRows
+    #plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot_big*input$fbDesign_distRows
     plot_size <- react_psize_big()
     #if(length(plot_size)==0) plot_size <- 2.7
     shiny::numericInput(inputId = "fbDesign_psize_big", label = "Plot size (m2)",
@@ -328,13 +384,19 @@ server_design_big <- function(input, output, session, values){
     })
   })
 #
+
+
   shiny::observeEvent(input$fbDesign_draft_big, {
     fb = fbdraft_big()
     #save(fb,"fb.rda")
-    print(fb)
+    #print(fb)
+    #datos <<- fb
 
     #genotypes <- material_table_big()$Institutional_number
     genotypes <- material_table_big()$Accession_Number
+
+
+    # F1 Selection Criteria ---------------------------------------------------
 
     if(is.element(el = "F1_selection_criteria", set = names(fb))){
       output$fbDesign_table_big_f1 <- rhandsontable::renderRHandsontable({
@@ -348,6 +410,9 @@ server_design_big <- function(input, output, session, values){
       })
     }
 
+    # F2 Select Clones Flowering --------------------------------------------------
+
+
     if(is.element(el = "F2_select_clones_flowering", set = names(fb))){
     output$fbDesign_table_big_f2 <- rhandsontable::renderRHandsontable({
       rhandsontable::rhandsontable(fb[["F2_select_clones_flowering"]], readOnly = T)
@@ -360,6 +425,9 @@ server_design_big <- function(input, output, session, values){
       })
     }
 
+    # F3 Select Clones Harvest --------------------------------------------------
+
+
     if(is.element(el = "F3_select_clones_harvest", set = names(fb))){
       output$fbDesign_table_big_f3 <- rhandsontable::renderRHandsontable({
         rhandsontable::rhandsontable(fb[["F3_select_clones_harvest"]], readOnly = T)
@@ -371,6 +439,8 @@ server_design_big <- function(input, output, session, values){
         rhandsontable::rhandsontable(data.frame(), readOnly = T)
       })
     }
+
+    # F4 Harvest Mother Form --------------------------------------------------
 
     if(is.element(el = "F4_harvest_mother", set = names(fb))){
           output$fbDesign_table_big_f4 <- rhandsontable::renderRHandsontable({
@@ -385,6 +455,8 @@ server_design_big <- function(input, output, session, values){
     }
 
 
+    # F5 Fieldbook Form -------------------------------------------------------
+
     if(is.element(el = "F5_harvest_baby", set = names(fb))){
         output$fbDesign_table_big_f5 <- rhandsontable::renderRHandsontable({
           rhandsontable::rhandsontable(fb[["F5_harvest_baby"]], readOnly = T)
@@ -398,36 +470,50 @@ server_design_big <- function(input, output, session, values){
       })
     }
 
+    # print(fb[["F6_organoleptic_mother"]])
+    # print("f6")
+
+
+    # F6 Fieldbook Form -------------------------------------------------------
+
     if(is.element(el = "F6_organoleptic_mother", set = names(fb))){
 
       #$fieldbook_form_f7 <- organoleptic_form(fb[["F6_organoleptic_mother"]],)
       output$fbDesign_table_big_f6 <- rhandsontable::renderRHandsontable({
        # rhandsontable::rhandsontable(fieldbook_form_f7, readOnly = T)
-        rhandsontable::rhandsontable(fb[["F6_organoleptic_mother"]], readOnly = T, height = 300)
+        rhandsontable::rhandsontable(fb[["F6_organoleptic_mother"]])
       })
     }
+
+    # print("end f6")
 
     if(!is.element(el = "F6_organoleptic_mother", set = names(fb))){
       output$fbDesign_table_big_f6 <- rhandsontable::renderRHandsontable({
         rhandsontable::rhandsontable(data.frame(), readOnly = T)
       })
     }
+    # print("end f6")
+    # print("begin f7")
+    # print(fb[["F7_organoleptic_mother"]])
 
+
+     # F7 Organoleptic baby ----------------------------------------------------
 
     if(is.element(el = "F7_organoleptic_baby", set = names(fb))){
-
       #fieldbook_form_f7 <- organoleptic_form(big_crop_template_xlsx$F7_organoleptic_baby, genotypes = trt1)
       output$fbDesign_table_big_f7 <- rhandsontable::renderRHandsontable({
         #rhandsontable::rhandsontable(fieldbook_form_f7, readOnly = T)
-        rhandsontable::rhandsontable(fb[["F7_organoleptic_baby"]], readOnly = T, height = 300)
+        rhandsontable::rhandsontable(fb[["F7_organoleptic_baby"]])
       })
     }
-
+    # print("end f7")
     if(!is.element(el = "F7_organoleptic_baby", set = names(fb))){
       output$fbDesign_table_big_f7 <- rhandsontable::renderRHandsontable({
         rhandsontable::rhandsontable(data.frame(), readOnly = T)
       })
     }
+
+    # F8 Dormancy -------------------------------------------------
 
     if(is.element(el = "F8_postharvest_dormancy", set = names(fb))){
           output$fbDesign_table_big_f8 <- rhandsontable::renderRHandsontable({
@@ -440,6 +526,8 @@ server_design_big <- function(input, output, session, values){
         rhandsontable::rhandsontable(data.frame(), readOnly = T)
       })
     }
+
+    # F9 PostHarvest dormancy -------------------------------------------------
 
 
     if(is.element(el = "F9_postharvest_clones_storage", set = names(fb))){
@@ -454,64 +542,31 @@ server_design_big <- function(input, output, session, values){
       })
     }
 
-
 })
 
-# shiny::observeEvent(input$fbDesign_draft_big, {
-#     fb = fbdraft_big()
-#
-#     if(is.element(el = "F3_select_clones_harvest",names(fb))){
-#       output$fbDesign_table_big <- rhandsontable::renderRHandsontable({
-#         rhandsontable::rhandsontable(fb[["F3_select_clones_harvest"]], readOnly = T)
-#       })
-#     }
-# })
 
-# shiny::observeEvent(input$fbDesign_draft_big, {
-#   fb = fbdraft_big()
-#
-#   if(is.element(el = "F4_harvest_mother",names(fb))){
-#       output$fbDesign_table_big <- rhandsontable::renderRHandsontable({
-#         rhandsontable::rhandsontable(fb[["F4_harvest_mother"]], readOnly = T)
-#       })
-#    }
-# })
-#
-#
-# shiny::observeEvent(input$fbDesign_draft_big, {
-#   fb = fbdraft_big()
-#
-#     if(is.element(el = "F5_harvest_baby",names(fb))){
-#       output$fbDesign_table_big <- rhandsontable::renderRHandsontable({
-#         rhandsontable::rhandsontable(fb[["F5_harvest_baby"]], readOnly = T)
-#       })
-#     }
-# })
-#
-# shiny::observeEvent(input$fbDesign_draft_big, {
-#   fb = fbdraft_big()
-#
-#     if(is.element(el = "F8_postharvest_dormancy",names(fb))){
-#       output$fbDesign_table_big <- rhandsontable::renderRHandsontable({
-#         rhandsontable::rhandsontable(fb[["F8_postharvest_dormancy"]], readOnly = T)
-#       })
-#     }
-# })
-#
-#
-# shiny::observeEvent(input$fbDesign_draft_big, {
-#   fb = fbdraft_big()
-#
-#     if(is.element(el = "F9_select_clones_storage",names(fb))){
-#       output$fbDesign_table_big <- rhandsontable::renderRHandsontable({
-#         rhandsontable::rhandsontable(fb[["F9_select_clones_storage"]], readOnly = T)
-#       })
-#     }
-# })
-#
-#
+# Lista de materiales Local en BIG MODULES --------------------------------
 
-#
+  output$fbDesign_selmlist_big <- shiny::renderUI({
+
+    input$fdesign_list_refresh_big
+
+    res <- fbdesign_mtl_files()  #this come from util.R fbdesign package
+
+    #observe({
+    #chois <- fbdesgin_mtl_files()$full_name
+    #     shiny::selectInput(inputId = "designFieldbook_sel_mlist", label = "Select a Material List",
+    #                        choices =  res, width = "70%" )
+
+    selectizeInput(inputId = "designFieldbook_sel_mlist_big", label = "Select a material list", width="100%",
+                   choices = res,
+                   options = list(
+                     placeholder = 'Please select a material list',
+                     onInitialize = I('function() { this.setValue(""); }')
+                   ))
+    #shiny::updateSelectInput(session, inputId = "designFieldbook_sel_mlist", choices = chois)
+  })
+
   shiny::observeEvent(input$fbDesign_create_big, {
     #print("Heyoo")
     withProgress(message = "Downloading Fieldbook..",value= 0,
@@ -538,6 +593,13 @@ server_design_big <- function(input, output, session, values){
                      end_date1 <- paste(end_date[3],end_date[2],end_date[1],sep="/")
                      #print("paso2")
                      #print(end_date1)
+
+                     if(file.exists(fp)) {
+
+                       shinyBS::createAlert(session, "alert_fb_done_big", "fbdoneAlert", title = "Warning",style = "warning",
+                                            content = "This fieldbook exists in HiDAP. Please Select Experiment Number in Crop", append = FALSE)
+                     }
+
                      if(!file.exists(fp)) {
                        #saveRDS(fb, fp)
                        values[["ph_fb_list"]] = NULL
@@ -585,6 +647,7 @@ server_design_big <- function(input, output, session, values){
                                               genetic_design = NA,
                                               rep = input$designFieldbook_r_big,block=NA,
                                               exp_env = input$fbDesign_environment_type_big, plot_start_number = NA,
+                                              n_plot_row = input$fbDesign_nrowplot_big,
                                               n_plant_plot = input$fbDesign_nplants_big,
                                               n_plant_row = input$fbDesign_nplantsrow_big,
                                               plot_size = input$fbDesign_psize_big,
@@ -618,11 +681,7 @@ server_design_big <- function(input, output, session, values){
                        shell.exec(fn_xlsx)
                      }
 
-                     if(file.exists(fp)){
 
-                       shinyBS::createAlert(session, "alert_fb_done_big", "fbdoneAlert", title = "Warning",style = "warning",
-                                            content = "This fieldbook exists in HiDAP. Please Select Experiment Number in Crop", append = FALSE)
-                     }
 
                    })
                  })
@@ -635,6 +694,9 @@ server_design_big <- function(input, output, session, values){
     content = function(file) {
       #mt_list <- material_list #internal dataset
       mt_list<- crop_template_xlsx$Material_List
+      #In case of PVS, we do not need late blight variables into the germoplams/material list.
+      mt_list <- dplyr::select(mt_list, -Is_control, -Scale_audpc)
+
       #       hs <- createStyle(fontColour = "#060505", fontSize=12,
       #                         fontName="Arial Narrow", fgFill = "#4F80BD")
       hs <- createStyle(fontColour = "#000000", fontSize=12,

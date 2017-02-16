@@ -9,7 +9,7 @@ design_choices <- c(
   "Latin Square Design (LSD)" = "LSD",
   "Split Plot with Plots in CRD (SPCRD)" = "SPCRD",
   "Split Plot with Plots in RCBD (SPRCBD)" = "SPRCBD",
-  "Split Plot with Plots in LSD (SPLSD)" = "SPLSD",
+  #"Split Plot with Plots in LSD (SPLSD)" = "SPLSD",
   "Strip Plot Design (STRIP)" = "STRIP",
   "Factorial Two-Way Design in CRD (F2CRD)" = "F2CRD",
   "Factorial Two-Way Design in RCBD (F2RCBD)" = "F2RCBD",
@@ -52,7 +52,7 @@ design_conditional_panels <- function(){
        input.designFieldbook == 'SPRCBD'|
        input.designFieldbook == 'F2CRD' |
        input.designFieldbook == 'F2RCBD'|
-       input.designFieldbook == 'SPLSD'|
+       input.designFieldbook == 'SPLSD' |
        input.designFieldbook == 'STRIP'
       ",
 
@@ -67,8 +67,9 @@ design_conditional_panels <- function(){
 
     shiny::conditionalPanel(
       "input.designFieldbook == 'ABD'", # TODO: ab - factorial, split
-      infoBox(title = "IMPORTANT NOTE", subtitle = "Check if your material list have an 'x' mark in Is_control column.
+      infoBox(title = "IMPORTANT NOTE", subtitle = "Augmented design needs at least 2 checks. Verify if your material have these checks and put an 'x' mark in 'Is_control' column for each check.
               Otherwise, Augmented Design does not work.",
+
               icon = icon("bullhorn"), color = "blue", fill = TRUE, width = NULL)
     ),
 
@@ -151,15 +152,15 @@ ui_fieldbook <- function(type="tab",title="Design Fieldbook",name="phenotype_fie
 shinydashboard::tabItem(tabName = name,
                 h2("Design of Field Experiments"),
 
-                shinyjs::useShinyjs(),
+                shinyjs::useShinyjs(), #to reset panels and UI
 
                 tabsetPanel( #Begin Master tabSetPanel
                   tabPanel("Standard Modules",icon = icon("tag", lib = "glyphicon"),
                            br(),
-                           shiny::wellPanel(
-                           shiny::HTML("<b>Fieldbook ID </b>"),
-                           shiny::textOutput("fbDesign_id")
-                          ),
+                               shiny::wellPanel(
+                               shiny::HTML("<b>Fieldbook ID </b>"),
+                               shiny::textOutput("fbDesign_id")
+                               ),
 
                          fluidRow(
                          box(
@@ -170,38 +171,28 @@ shinydashboard::tabItem(tabName = name,
                            shinydashboard::tabBox(id = "fbDesignNav", height = NULL, width = 12,
 
                                   shiny::tabPanel("Crop & Location", value = "crop", icon = shiny::icon("leaf"),
-                                                  br(),
-                                                  fluidRow(
-                                                    column(width = 6,
+                                           br(),
+                                           fluidRow(
+                                             column(width = 6,
                                                    #        box(
                                                     #         title = "Step: 1", status = "warning", solidHeader = TRUE, collapsible = TRUE, width = NULL,height = NULL,
 
-                                  shiny::selectInput("designFieldbook_crop", "Crop", crops()),
-                                  shiny::uiOutput("fbDesign_factor2", inline = TRUE),
-                                                              shiny::uiOutput("fbDesign_variables", inline = TRUE),
-                                  shiny::dateRangeInput("fbDesign_project_time_line", "Date of experiment", start = Sys.Date() - 2,
-                                                                  end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
+                                             shiny::selectInput("designFieldbook_crop", "Crop", crops()),
+                                             shiny::uiOutput("fbDesign_factor2", inline = TRUE),
+                                                                        shiny::uiOutput("fbDesign_variables", inline = TRUE),
+                                             shiny::dateRangeInput("fbDesign_project_time_line", "Date of experiment", start = Sys.Date() - 2,
+                                                                            end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
 
 
                                  #shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),#country
                                   #shiny::selectizeInput("fbDesign_country", inline = TRUE, width = 500),#country
-                                  shiny::selectizeInput("fbDesign_countryTrial", label = "Field country",
-                                                                  choices = country(), selected = 1,  multiple = FALSE),
-                                  shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
-                                  selectInput('fbDesign_nExp', 'Experiment number', c("-",paste("exp",1:100,sep="")), selectize=TRUE)
+                                            # shiny::selectizeInput("fbDesign_countryTrial", label = "Field country",
+                                            #                                 choices = country(), selected = 1,  multiple = FALSE),
 
-                                   #    )
-                                              #  shiny::tabPanel("Project", value = "project", icon = shiny::icon("book"),
-                                              #  #shiny::uiOutput("fbDesign_project", inline = TRUE),
-                                              #  shiny::textInput("fbDesign_project_name", "Project name"),
-                                              #  shiny::textInput("fbDesign_project_objective", "Project objective"),
-                                              #  #shiny::textInput("fbDesign_comments", "Project comments"),
-                                              #  shiny::dateRangeInput("fbDesign_project_time_line", "Date range")
-                                              #
-                                              #   ),
-                                              #   shiny::tabPanel("Plants", value = "plants", icon = shiny::icon("star"),
-                                              #   shiny::uiOutput("designFieldbook_genotypes", inline = TRUE)
-                                              #   ),
+                                            shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),
+                                            shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
+                                            selectInput('fbDesign_nExp', 'Experiment number', c("-",paste("exp",1:100,sep="")), selectize=TRUE)
+
                                                   )
                                   )
                           ),
@@ -237,7 +228,7 @@ shinydashboard::tabItem(tabName = name,
                                          conditionalPanel(
                                            condition = "input.select_import == 'Template'",
                                            downloadButton(outputId = "fbDesign_mlistExport", label = "Download Template"),
-                                          fileInput(inputId = 'file',label =  'Upload filled template',accept = ".xlsx")#,
+                                          fileInput(inputId = 'file_mtlist',label =  'Upload filled template',accept = ".xlsx")#,
                                           ),
 
 
@@ -294,10 +285,10 @@ shinydashboard::tabItem(tabName = name,
                              shiny::tabPanel("Environment", value = 'environment', icon = shiny::icon("recycle"),
                                           br(),
 
-                                             shiny::checkboxInput("designFieldbook_zigzag", "Zigzag", TRUE),
+                                             shiny::checkboxInput("designFieldbook_zigzag", "Zigzag", FALSE),
                                              shiny::radioButtons("designFieldbook_serie", "Label series",
                                                                  #get_series_labels(), "101, 102, ...", #get_series_labels()[[2]],
-                                                                 1:3, 2,
+                                                                 1:3, 1,
                                                                  inline = TRUE)
                                              ,
                                              # shiny::conditionalPanel(
@@ -412,9 +403,9 @@ shinydashboard::tabItem(tabName = name,
                 br(),
                 br()
 
-          )#,
+          ), #end
 
-#ui_design_big(type="tab",title="Special Modules",name="phenotype_fieldbook_design")
+ ui_design_big(type="tab",title="Special Modules",name="phenotype_fieldbook_design")
 
 ######
 ##################  End Simple Modules
@@ -423,11 +414,4 @@ shinydashboard::tabItem(tabName = name,
  )
 }
 
-######
 
-
-
-# shiny::tabPanel("Weather", value = "fbDesign_weather"
-# ),
-# shiny::tabPanel("Soil", value = "fbDesign_soil"
-# ),

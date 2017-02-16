@@ -35,7 +35,15 @@
 
 
   #sites_data <- fbsites::get_site_table() #before
-  sites_data <- site_table #extract from package
+  #sites_data <- site_table #extract from package fbdesign # OLDER CODE
+
+  # New Code: Read all the sites from table_sites.rds
+  path <- fbglobal::get_base_dir()
+  #print(path)
+  geodb_file <- "table_sites.rds"
+  path <- paste(path, geodb_file, sep = "\\")
+  sites_data <-  readRDS(file = path)
+  #End new code
 
   Minimal[Minimal$Factor=="Begin_date",col_name] <- paste(as.character(begin_date))
   Minimal[Minimal$Factor=="End_date",col_name] <- paste(as.character(end_date))
@@ -111,6 +119,7 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value",e
                                    block=NA,
                                    exp_env=NA,
                                    plot_start_number=NA,
+                                   n_plot_row = NA,
                                    n_plant_plot=NA,
                                    n_plant_row=NA,
                                    plot_size=NA,
@@ -132,7 +141,7 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value",e
 
   #Installation[Installation$Factor=="Experimental_design",col_name] <- paste(exp_design)
   Installation[Installation$Factor=="Experimental_design_abbreviation",col_name] <- paste(exp_design)
-  Installation[Installation$Factor=="Experimental_design",col_name] <- experimental_design_label(exp_design)
+  Installation[Installation$Factor=="Experimental_design", col_name] <- experimental_design_label(exp_design)
   Installation[Installation$Factor=="Labels_for_factor_genotypes",col_name] <- paste("Institutional number")
   Installation[Installation$Factor=="Block_size_(applicable_for_BIBD_only)",col_name] <- paste("NA")
   Installation[Installation$Factor=="Number_of_repetitions_or_blocks",col_name] <- paste(rep)
@@ -141,7 +150,7 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value",e
   Installation[Installation$Factor=="Plot_start_number",col_name] <- paste("NA")
   Installation[Installation$Factor=="Number_of_plants_planted_per_plot",col_name] <- paste(n_plant_plot)
   Installation[Installation$Factor=="Number_of_plants_per_sub-plot",col_name] <- paste("NA")
-  Installation[Installation$Factor=="Number_of_rows_per_plot",col_name] <- paste("NA")
+  Installation[Installation$Factor=="Number_of_rows_per_plot",col_name] <- paste(n_plot_row) #####
   Installation[Installation$Factor=="Number_of_rows_per_sub-plot",col_name] <-paste("NA")
   Installation[Installation$Factor=="Number_of_plants_per_row",col_name] <- paste(n_plant_row)
   Installation[Installation$Factor=="Plot_size_(m2)",col_name] <- paste(plot_size)
@@ -229,7 +238,7 @@ add_metadata_sheet <- function(file=NA, crop_template=NA, soil_input, weather_in
   }
 
   if((weather_input)){
-     openxlsx::addWorksheet(wb, "Weather_data", gridLines = TRUE)
+    openxlsx::addWorksheet(wb, "Weather_data", gridLines = TRUE)
     #setColWidths(wb, sheet = "Weather_data", cols = 1:200, widths = "auto")
     headerStyle <- createStyle(fontSize = 13,halign = "center",valign = "center")
     openxlsx::writeDataTable(wb, "Weather_data",x = Weather_data, colNames = TRUE, withFilter = FALSE,headerStyle = headerStyle)
@@ -301,7 +310,7 @@ add_varlist_sheet <- function(file=NA, crop_template=NA, crop=NA, trait_list=NA)
     if(crop == "sweetpotato"){tbl <- table_module_sweetpotato }
 
     #var_list <- dplyr::filter(tbl,variable %in% vars) %>% select(.,variables_name,variable) HiDAP v1.0 built 2
-    var_list <- dplyr::filter(tbl,ABBR %in% vars) %>% select(.,VAR,ABBR)
+    var_list <- dplyr::filter(tbl,ABBR %in% vars) %>% select(.,VAR, ABBR)
     var_list <- as.data.frame(var_list)
     names(var_list) <- c("Factor_Variables","Abbreviations")
     crop_template$Var_List <- var_list
@@ -355,16 +364,22 @@ add_fieldbook_sheet <-function(file,fieldbook){
           chc <- list(`potato (PT)`="potato",`sweetpotato (SP)`="sweetpotato")
   }
 
+  #####
+  #' This funcions has been deprecated. The new selectInput depend directly from rds file
+  #'
   #' Country List
-  #' @description This function gives a country list
-  #' @export
+  #' #@description This function gives a country list
+  #' #@export
   #'
 
-  country <- function(){
-            #sites_data <- fbsites::get_site_table()
-            sites_data <- site_table
-            cntry <- fbsites::get_country_list(sites_data = sites_data)
-  }
+  # country <- function(){
+  #           #sites_data <- fbsites::get_site_table()
+  #           sites_data <- site_table #from fbdesing package
+  #           cntry <- fbsites::get_country_list(sites_data = sites_data)
+  # }
+  #####
+
+
 
   #' Study List
   #' @description This function gives a study list
@@ -401,20 +416,21 @@ add_fieldbook_sheet <-function(file,fieldbook){
  experimental_design_label <- function(abbr_design = "RCBD"){
 
    abbr_design <- stringr::str_trim(abbr_design,side="both")
-   if(abbr_design == "UNRD")   {out <- "Unreplicated Design with No Randomization (UNDR)"  }
+
+   if(abbr_design == "UNDR")   {out <- "Unreplicated Design with No Randomization (UNDR)"  }
    if(abbr_design == "RCBD")   {out <- "Randomized Complete Block Design (RCBD)"}
    if(abbr_design == "CRD")    {out <- "Completely Randomized Design (CRD)" }
-   if(abbr_design == "ABD")    {out <-  "Augmented Block Design (ABD)"}
+   if(abbr_design == "ABD")    {out <- "Augmented Block Design (ABD)"}
    if(abbr_design == "LSD")    {out <- "Latin Square Design (LSD)"}
    if(abbr_design == "SPCRD")  {out <- "Split Plot with Plots in CRD (SPCRD)"}
    if(abbr_design == "SPRCBD") {out <- "Split Plot with Plots in RCBD (SPRCBD)"}
    if(abbr_design == "SPLSD")  {out <- "Split Plot with Plots in LSD (SPLSD)"}
    if(abbr_design == "STRIP")  {out <- "Strip Plot Design (STRIP)"}
    if(abbr_design == "F2CRD")  {out <- "Factorial Two-Way Design in CRD (F2CRD)"}
-   if(abbr_design == "F2RCBD")  {out <- "Factorial Two-Way Design in RCBD (F2RCBD)"}
+   if(abbr_design == "F2RCBD") {out <- "Factorial Two-Way Design in RCBD (F2RCBD)"}
    if(abbr_design == "AD")     {out <- "Alpha Design(0,1) (AD)"}
-   out
 
+   out
 
    #ToDo: Si no hay ningun diseno, votar un error.
 
@@ -476,6 +492,7 @@ add_fieldbook_sheet <-function(file,fieldbook){
      openxlsx::writeDataTable(wb, big_sheet[i], x = fieldbook_data, colNames = TRUE, withFilter = FALSE,headerStyle =  headerStyle)
      saveWorkbook(wb, file = fn_xlsx , overwrite = TRUE)
    }
+
    if(big_sheet[i]=="F6_organoleptic_mother"){
          x <- 1
          y <- 1
@@ -506,6 +523,7 @@ add_fieldbook_sheet <-function(file,fieldbook){
          }
          saveWorkbook(wb, file = fn_xlsx , overwrite = TRUE)
    }
+
    if(big_sheet[i]=="F7_organoleptic_baby"){
 
      x <- 1

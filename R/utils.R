@@ -38,7 +38,9 @@ fbdesign_mtl_files <- function(){
     gmtfiles <- data.frame(short_name, dbf_file_list, stringsAsFactors = FALSE)
     names(gmtfiles) <- c("short_name","full_name")
 
-    out_list <- c("hot_fieldbook.rds","dspotatotrials_dpassport.rds", "dssweettrials_dpassport.rds", "potato_pedigree.rds", "sweetpotato_pedigree.rds")
+    out_list <- c("hot_fieldbook.rds","dspotatotrials_dpassport.rds", "dssweettrials_dpassport.rds", "potato_pedigree.rds",
+                  "sweetpotato_pedigree.rds", "table_sites.rds")
+
     gmtfiles <- dplyr::filter(.data = gmtfiles, !(short_name %in% out_list))
 
 
