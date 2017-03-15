@@ -157,7 +157,7 @@ server_design_big <- function(input, output, session, values){
 
   output$designFieldbook_traits_big <- shinyTree::renderTree({
 
-    a <- Evaluation_Forms
+    a <- Evaluation_Forms #dataset included in data folder
     a
   })
 #
@@ -214,7 +214,7 @@ server_design_big <- function(input, output, session, values){
 #
   #Plot Size Values
   react_psize_big <- reactive({
-    plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot_big*input$fbDesign_distRows
+    plot_size <- input$fbDesign_nplantsrow_big*input$fbDesign_distPlants_big*input$fbDesign_nrowplot_big*input$fbDesign_distRows_big
     print(plot_size)
     if(length(plot_size)==0){plot_size <- 0}
     plot_size
@@ -289,6 +289,8 @@ server_design_big <- function(input, output, session, values){
                      sub_design = as.character(input$sub_design_big)
 
                      sheet_list = big_get_tree_value(input$designFieldbook_traits_big, crop_selected = crp)
+
+                     #v <- sheet_list
                      #saveRDS(input$designFieldbook_traits_big,"big_list.rda")
 
                      n_org_mother <- input$designFieldbook_n_org_mother
@@ -315,7 +317,7 @@ server_design_big <- function(input, output, session, values){
 
                      incProgress(3/15)
                      sheet_names <- names(sheet_list)
-                     print(sheet_names)
+                     #print(sheet_names)
 
                     fb <- list()
                     for(i in 1:length(sheet_names)){
@@ -569,13 +571,13 @@ server_design_big <- function(input, output, session, values){
 
   shiny::observeEvent(input$fbDesign_create_big, {
     #print("Heyoo")
-    withProgress(message = "Downloading Fieldbook..",value= 0,
+    withProgress(message = "Downloading Fieldbook..",detail = 'This may take a while...', value= 0,
                  {
 
                     fb  <-  fbdraft_big()
                     #saveRDS(fb,file="fbglobal.rda")
                     try({
-
+                      incProgress(2/15)
                      #passing parameters to vars
                      fn = paste0(fbdesign_id_big(), ".rda")
                      #fp = file.path(fbglobal::fname_fieldbooks(input$designFieldbook_crop), fn)
@@ -593,7 +595,7 @@ server_design_big <- function(input, output, session, values){
                      end_date1 <- paste(end_date[3],end_date[2],end_date[1],sep="/")
                      #print("paso2")
                      #print(end_date1)
-
+                     incProgress(3/15)
                      if(file.exists(fp)) {
 
                        shinyBS::createAlert(session, "alert_fb_done_big", "fbdoneAlert", title = "Warning",style = "warning",
@@ -606,10 +608,13 @@ server_design_big <- function(input, output, session, values){
                        shinyBS::createAlert(session, "alert_fb_done", "fbdoneAlert", title = "Success",
                                             content = "Fieldbook created.", append = FALSE)
 
-                       fn_xlsx <- paste(fbdesign_id_big(),".xlsx",sep="")
-                       #       openxlsx::write.xlsx(fb,fn_xlsx,sheet="Fieldbook",overwrite=TRUE)
-                       #print(fn_xlsx)
-                       #print("paso3")
+                       fn_big <- paste(fbdesign_id_big(),".xlsx",sep="")
+
+                       print(getwd())
+                       path <- fbglobal::get_base_dir()
+                       fn_xlsx <- file.path(path, fn_big)
+
+
                        list_table_sheet <- names(fb)
                        print(fb)
 

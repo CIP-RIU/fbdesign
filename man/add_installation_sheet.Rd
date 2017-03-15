@@ -31,6 +31,8 @@ add_installation_sheet(file = NA, crop_template = NA, col_name = "Value",
 
 \item{plot_start_number}{The plot start number}
 
+\item{n_plot_row}{Number of plots per row}
+
 \item{n_plant_plot}{The number of plant per plot}
 
 \item{n_plant_row}{The number of plant per row}

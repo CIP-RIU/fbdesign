@@ -369,6 +369,7 @@
                      ### Cleaning Trait List  ----------------------------------------
                      ## Remove all the trial names from the Trait List
                      #Ex: remove yield, late blight, etc from Trait List when used pick ones
+                     b <<- input$designFieldbook_traits
                      vars = get_tree_value(input$designFieldbook_traits,crop_selected = crp)
                      if(crp == "potato"){tbl <- table_module_potato }
                      if(crp == "sweetpotato"){tbl <- table_module_sweetpotato }

@@ -97,6 +97,7 @@
 #' @param rep The number of repetition
 #' @param block The number of block
 #' @param exp_env The environment of the experiment
+#' @param n_plot_row Number of plots per row
 #' @param plot_start_number The plot start number
 #' @param n_plant_plot The number of plant per plot
 #' @param n_plant_row The number of plant per row
