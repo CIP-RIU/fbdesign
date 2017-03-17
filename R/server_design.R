@@ -169,7 +169,9 @@
     path <- fbglobal::get_base_dir()
     #print(path)
     geodb_file <- "table_sites.rds"
-    path <- paste(path, geodb_file, sep = "\\")
+    #path <- paste(path, geodb_file, sep = "\\")
+    path <- file.path(path, geodb_file)
+
     values$sites_data <-  readRDS(file = path)
     #     values$geo_db <-  readRDS(file = "sites_table.rds")
 
