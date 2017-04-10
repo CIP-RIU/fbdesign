@@ -266,7 +266,7 @@ server_design_big <- function(input, output, session, values){
       }
     }
     else{
-      paste("Please enter your genotypes in the Germoplams List.")
+      paste("Enter your genotypes in the Germoplams List.")
     }
   })
 #
@@ -564,7 +564,7 @@ server_design_big <- function(input, output, session, values){
     selectizeInput(inputId = "designFieldbook_sel_mlist_big", label = "Select a material list", width="100%",
                    choices = res,
                    options = list(
-                     placeholder = 'Please select a material list',
+                     placeholder = 'Select a material list',
                      onInitialize = I('function() { this.setValue(""); }')
                    ))
     #shiny::updateSelectInput(session, inputId = "designFieldbook_sel_mlist", choices = chois)
@@ -600,7 +600,7 @@ server_design_big <- function(input, output, session, values){
                      if(file.exists(fp)) {
 
                        shinyBS::createAlert(session, "alert_fb_done_big", "fbdoneAlert", title = "Warning",style = "warning",
-                                            content = "This fieldbook exists in HiDAP. Please Select Experiment Number in Crop", append = FALSE)
+                                            content = "This fieldbook exists in HiDAP. Select Experiment Number in Crop", append = FALSE)
                      }
 
                      if(!file.exists(fp)) {

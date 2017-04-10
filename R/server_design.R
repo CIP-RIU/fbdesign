@@ -274,7 +274,7 @@
     selectizeInput(inputId = "designFieldbook_sel_mlist", label = "Select a material list", width="100%",
                    choices = res,
                    options = list(
-                     placeholder = 'Please select a material list',
+                     placeholder = 'Select a material list',
                      onInitialize = I('function() { this.setValue(""); }')
                    ))
     #shiny::updateSelectInput(session, inputId = "designFieldbook_sel_mlist", choices = chois)
@@ -334,7 +334,7 @@
      }
     }
     else{
-      paste("Please enter your genotypes in the Germoplams List.")
+      paste("Enter your genotypes in the Germoplams List.")
     }
 })
 
@@ -371,7 +371,7 @@
                      ### Cleaning Trait List  ----------------------------------------
                      ## Remove all the trial names from the Trait List
                      #Ex: remove yield, late blight, etc from Trait List when used pick ones
-                     b <<- input$designFieldbook_traits
+                     #b <- input$designFieldbook_traits
                      vars = get_tree_value(input$designFieldbook_traits,crop_selected = crp)
                      if(crp == "potato"){tbl <- table_module_potato }
                      if(crp == "sweetpotato"){tbl <- table_module_sweetpotato }
@@ -659,7 +659,7 @@
 
   #   hot_path <- reactive ({
   #     validate(
-  #       need(input$file != "", label = "Please enter an XLSX file")
+  #       need(input$file != "", label = "Enter an XLSX file")
   #     )
   #     if(length(input$file)==0){return (NULL)}
   #     if(length(input$file)>0){
