@@ -5,12 +5,12 @@
 \title{Add values to Installation Sheet Data}
 \usage{
 add_installation_sheet(file = NA, crop_template = NA, col_name = "Value",
-  exp_design = NA, genetic_design = NA, rep = NA, block = NA,
-  exp_env = NA, plot_start_number = NA, n_plot_row = NA,
-  n_plant_plot = NA, n_plant_row = NA, plot_size = NA,
+  exp_design = NA, genetic_design = NA, gen_design_abbr = NA,
+  type_of_ploidy = NA, set = NA, rep = NA, block = NA, exp_env = NA,
+  plot_start_number = NA, n_plot_row = NA, n_plant_plot = NA,
+  n_pots = NA, n_plant_pot = NA, n_plant_row = NA, plot_size = NA,
   plant_density = NA, distance_plants = NA, distance_rows = NA,
-  factor_name = NA, factor_name_1 = NA, factor_name_2 = NA,
-  factor_name_3 = NA, factor_name_4 = NA, factor_name_5 = NA)
+  factor_name = NA, factor_lvl = NA)
 }
 \arguments{
 \item{file}{The file name of excel fieldbook}
@@ -23,6 +23,12 @@ add_installation_sheet(file = NA, crop_template = NA, col_name = "Value",
 
 \item{genetic_design}{The genetic design}
 
+\item{gen_design_abbr}{Genetic design abbreviation}
+
+\item{type_of_ploidy}{Type of ploidy}
+
+\item{set}{The number of sets}
+
 \item{rep}{The number of repetition}
 
 \item{block}{The number of block}
@@ -33,7 +39,11 @@ add_installation_sheet(file = NA, crop_template = NA, col_name = "Value",
 
 \item{n_plot_row}{Number of plots per row}
 
-\item{n_plant_plot}{The number of plant per plot}
+\item{n_plant_plot}{Number of plant per plot}
+
+\item{n_pots}{Number of pots}
+
+\item{n_plant_pot}{Number of plant per pot}
 
 \item{n_plant_row}{The number of plant per row}
 
@@ -45,17 +55,9 @@ add_installation_sheet(file = NA, crop_template = NA, col_name = "Value",
 
 \item{distance_rows}{The distance between rows}
 
-\item{factor_name}{The name of factor}
+\item{factor_name}{The name of the factor}
 
-\item{factor_name_1}{The first level of the factor}
-
-\item{factor_name_2}{The second level of the factor}
-
-\item{factor_name_3}{The third level of the factor}
-
-\item{factor_name_4}{The fourth level of the factor}
-
-\item{factor_name_5}{The fifth level of the factor}
+\item{factor_lvl}{the levels of the factor}
 }
 \description{
 This function allows to paste values in the Installation Excel (Fieldbook) Sheet

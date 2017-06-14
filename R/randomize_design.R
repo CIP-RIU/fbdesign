@@ -323,7 +323,7 @@ design.alpha.check <- function(trt, k, r){
     res=FALSE
   }
   if(length(res)==0){res=FALSE}
-  res=list(res=res,alfares=alfares)
+  res=list(res=res, alfares=alfares)
   return(res)
 }
 

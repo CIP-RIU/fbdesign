@@ -8,7 +8,7 @@ ui_fieldbook(type = "tab", title = "Design Fieldbook",
   name = "phenotype_fieldbook_design")
 }
 \arguments{
-\item{type}{of ui Element; default is a tab in a shiny dashboard}
+\item{type}{type of ui element; default is a tab in a shiny dashboard}
 
 \item{title}{display title}
 

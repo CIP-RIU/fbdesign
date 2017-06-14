@@ -4,23 +4,6 @@
 #'
 fbdesign_mtl_files <- function(){
 
-#   #dbf_file_list <- list.files(getwd(), full.names = TRUE, pattern = ".dbf|.rds")
-#   dbf_file_list <- list.files(getwd(), full.names = TRUE, pattern = ".rds")
-#   lg_dbf <- length(dbf_file_list)
-#
-#   if(lg_dbf == 0){ gmtfiles <- "" }
-#   if(lg_dbf>0)   {
-#     ignore_temps <- grepl(pattern = "~\\$",x =  dbf_file_list)
-#     dbf_file_list <-  dbf_file_list[!ignore_temps]
-#     short_name <- basename(dbf_file_list)
-#     gmtfiles <- data.frame(short_name, dbf_file_list, stringsAsFactors = FALSE)
-#     names(gmtfiles) <- c("short_name","full_name")
-#     gmtfiles
-#   }
-#
-#   mtl_files <- gmtfiles
-#   mtl_files
-
   #usando fbglobal
   path <- fbglobal::get_base_dir()
   dbf_file_list <- list.files(path, full.names = TRUE, pattern = ".rds")
@@ -43,7 +26,6 @@ fbdesign_mtl_files <- function(){
 
     gmtfiles <- dplyr::filter(.data = gmtfiles, !(short_name %in% out_list))
 
-
     gmtfiles
   }
 
@@ -51,3 +33,18 @@ fbdesign_mtl_files <- function(){
   mtl_files
 
 }
+
+
+
+#' Detection of parent list
+#' @describeIn Logical. Say TRUE if your material belongs to parental list.
+#' @param mlist_name SelectInput value (commonly),
+
+is_parentList <- function(mlist_name){
+  mlist <- mlist_name
+  cond <- stringr::str_detect(mlist,"_parent_")
+  return(cond)
+}
+
+
+

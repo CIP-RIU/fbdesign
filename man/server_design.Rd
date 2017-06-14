@@ -16,7 +16,7 @@ server_design(input, output, session, values)
 \item{values}{reactive values}
 }
 \description{
-Design a fieldbook
+Design field book
 }
 \author{
 Omar Benites

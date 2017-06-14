@@ -16,6 +16,8 @@
 #' @author Raul Eyzaguirre, Reinhard Simon
 #' @return data.frame
 #' @export
+#'
+#'
 randomize.design = function(design="(CRD)",
 		matl, # Vector of material list
 		reps, # number of repetitions

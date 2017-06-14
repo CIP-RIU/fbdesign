@@ -40,8 +40,8 @@ design_conditional_panels_big <- function(){
 
 
       # TODO: ab - factorial, split
-      shiny::selectInput("designFieldbook_r_big", "Replications of Mother (r):", 2:100, 2),
-      shiny::selectInput("designFieldbook_r_big_baby", "Number of Baby (n):", 3:100, 3)
+      shiny::selectInput("designFieldbook_r_big", "Number of replications in mother plot", 2:100, 2),
+      shiny::selectInput("designFieldbook_r_big_baby", "Number of baby plots", 3:100, 3)
     ),
 
     shiny::conditionalPanel(
@@ -53,12 +53,13 @@ design_conditional_panels_big <- function(){
       input.designFieldbook_big == 'STRIP'
       ",
 
-      #shiny::selectInput("designFieldbook_big_r", "Replications (r):", 1:5, 2 ),
+      #shiny::selectInput("designFieldbook_big_r", "Replications:", 1:5, 2 ),
       textInput(inputId = "factor_name_big", label = "Enter Additional Factor Name",""),
       br(),
-      textInput(inputId = "factor_lvl1_big", label = "First Level for Additional Factor",value = ""),
-      textInput(inputId = "factor_lvl2_big", label = "Second Level for Additional Factor",value = ""),
-      textInput(inputId = "factor_lvl3_big", label = "Third Level for Additional Factor",value = "")
+      textInput(inputId = "factor_lvl_big", label = "Type levels of factors (separated by commas ',')", value = "")#,
+      # textInput(inputId = "factor_lvl1_big", label = "First Level for Additional Factor",value = ""),
+      # textInput(inputId = "factor_lvl2_big", label = "Second Level for Additional Factor",value = ""),
+      # textInput(inputId = "factor_lvl3_big", label = "Third Level for Additional Factor",value = "")
 
     ),
 
@@ -71,7 +72,7 @@ design_conditional_panels_big <- function(){
 
     shiny::conditionalPanel(
       "input.designFieldbook_big == 'LD'", # TODO: ab - factorial, split
-      shiny::selectInput("designFieldbook_r_big", "Replications (r):", 2:100, 2 )
+      shiny::selectInput("designFieldbook_r_big", "Replications:", 2:100, 2 )
     ),
     shiny::conditionalPanel(
       "input.designFieldbook_big == 'BIBD'",
@@ -89,7 +90,7 @@ design_conditional_panels_big <- function(){
       # r = 3: s odd; k <= s
       # r = 3: s even; k <= (s - 1)
       # r = 4: s odd but not multiple of 3; k <= s
-      #shiny::selectInput("designFieldbook_big_r", "Replications (r):", 2:6000, 2 ),
+      #shiny::selectInput("designFieldbook_big_r", "Replications:", 2:6000, 2 ),
       shiny::selectInput("designFieldbook_k_big", "Block size (k):", 2:100, 4 )
     ),
 
@@ -108,7 +109,7 @@ design_conditional_panels_big <- function(){
     #       "input.designFieldbook == 'CD'",
     #       # TODO do server side checking of permitted combinations (based on number of treatments)
     #       # number of treatments 6:30
-    #       shiny::selectInput("designFieldbook_r", "Replications (r):", 2:10, 2 ),
+    #       shiny::selectInput("designFieldbook_r", "Replications:", 2:10, 2 ),
     #       shiny::selectInput("designFieldbook_k", "Block size (k):", 2:10,3 )
     #     ),
 
@@ -241,17 +242,17 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                    shiny::tabPanel("Statistical design", value = "design_big", icon = shiny::icon("pie-chart"),
 
                                                                               br(),
-                                                                              shiny::selectInput("designFieldbook_big", "Design method:", choices = design_choices_big, selected = "RCBD", multiple = FALSE),
+                                                                              shiny::selectInput("designFieldbook_big", "Design", choices = design_choices_big, selected = "RCBD", multiple = FALSE),
                                                                               #shiny::checkboxInput("designFieldbook_random", "Use randomization", TRUE),
                                                                               design_conditional_panels_big(),
                                                                               #shiny::selectInput("designFieldbook_n_org_mother", "Number of panelist (Organoleptic Mother)",
                                                                               #                   choices = list("1-10","1-20","1-30","1-40","1-50","1-60","1-70","1-80","1-90","1-100"),selected = 1),
-                                                                              shiny::numericInput("designFieldbook_n_org_mother", label = "Number of panelist (Organoleptic Mother)",
+                                                                              shiny::numericInput("designFieldbook_n_org_mother", label = "Number of panelists (Organoleptic Mother)",
                                                                                                     value = 10, min =10 , max =100),
 
                                                                               #shiny::selectInput("designFieldbook_n_org_baby"  , "Number of panelist (Organoleptic Baby))",
                                                                               #                   choices = list("1-10","1-20","1-30","1-40","1-50","1-60","1-70","1-80","1-90","1-100"),selected = 1)
-                                                                              shiny::numericInput("designFieldbook_n_org_baby", label = "Number of panelist (Organoleptic Baby)",
+                                                                              shiny::numericInput("designFieldbook_n_org_baby", label = "Number of panelists (Organoleptic Baby)",
                                                                                                     value = 10, min =10 , max =100)
 
                                                               ),
@@ -266,10 +267,11 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                                                                   inline = TRUE)
                                                                               ,
                                                                               shiny::radioButtons("fbDesign_environment_type_big", "Environment type",choices = list(
-                                                                                "Field" = "Field",
+                                                                                "Field" = "Field"),
                                                                                 #"Farmers field" = "farmers_field",
-                                                                                "Greenhouse" = "Greenhouse",
-                                                                                "Screenhouse" = "Screenhouse"),selected = "Field" , inline = TRUE),
+                                                                                #"Greenhouse" = "Greenhouse",
+                                                                                #"Screenhouse" = "Screenhouse"),
+                                                                                selected = "Field" , inline = TRUE),
                                                                               shiny::checkboxInput("fbDesign_weather_cb_big", label = "Register weather data"),
                                                                               shiny::checkboxInput("fbDesign_soil_cb_big", label = "Register soil data")
                                                                               # )
@@ -280,19 +282,28 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                    shiny::tabPanel("Plant Installation", value = "fbDesign_planting_big", icon = shiny::icon("th-large"),
                                                                               br(),
 
-                                                                              shiny::numericInput("fbDesign_nplants_big",
-                                                                                                  "Number of plants per plot/pot", 10 , 1, 100),
+                                                                              # shiny::numericInput("fbDesign_nplants_big",
+                                                                              #                     "Number of plants per plot/pot", 10 , 1, 100),
+
+
+
                                                                               shiny::numericInput("fbDesign_nplantsrow_big",
                                                                                                   "Number of plants per row", 10, 1, 100),
+
                                                                               shiny::numericInput("fbDesign_nrowplot_big",
-                                                                                                  "Number of rows per plot/pot", 1, 1, 100),
+                                                                                                  "Number of rows per plot", 1, 1, 100),
 
                                                                               shiny::numericInput("fbDesign_distPlants_big",
                                                                                                   "Distance between plants (m)", .3, .1, 1),
+
                                                                               shiny::numericInput("fbDesign_distRows_big",
                                                                                                   "Distance between rows (m)", .9, .1, 1),
+
                                                                               shiny::uiOutput("fbPlanting_psize_big", inline=TRUE),
+
                                                                               shiny::uiOutput("fbPlanting_pdensity_big", inline=TRUE),
+
+                                                                              shiny::uiOutput("fbPlant_plot_big", inline = TRUE),
 
                                                                               tags$head(tags$style("#fbDesign_pdensity_big{color:#191919;
                                                                                                    background-color:#ecc464;

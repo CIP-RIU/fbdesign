@@ -65,7 +65,7 @@ list(
      input.designFieldbook == 'DAU' |
      input.designFieldbook == 'STPD'
     ", # TODO: ab - factorial, split
-      selectInput("designFieldbook_r", "Replications (r):", 1:5, 2 )
+      selectInput("designFieldbook_r", "Replications:", 1:5, 2 )
   ),
   shiny::conditionalPanel(
     "input.designFieldbook == 'LD'", # TODO: ab - factorial, split
@@ -73,7 +73,7 @@ list(
   ),
   shiny::conditionalPanel(
     "input.designFieldbook == 'BIBD'",
-    selectInput("designFieldbook_r", "Replications (r):", c(3,6,9,12,15,18), 3 ),
+    selectInput("designFieldbook_r", "Replications:", c(3,6,9,12,15,18), 3 ),
     selectInput("designFieldbook_k", "Block size (k):", 3:300, 3 ),
     selectInput("designFieldbook_maxR", "Repetition maximum (k):", 3:30, 20 )
   ) ,
@@ -88,7 +88,7 @@ list(
     # r = 3: s odd; k <= s
     # r = 3: s even; k <= (s - 1)
     # r = 4: s odd but not multiple of 3; k <= s
-    selectInput("designFieldbook_r", "Replications (r):", 2:4, 2 ),
+    selectInput("designFieldbook_r", "Replications:", 2:4, 2 ),
     selectInput("designFieldbook_k", "Block size (k):", 3:300,3 )
   ),
   shiny::conditionalPanel(
@@ -349,7 +349,7 @@ server <- function(input, output, session){
     locs =fbsites::get_site_table()
     if(nrow(locs) > 0 ){
       chc = locs$shortn
-      shiny::selectizeInput("designFieldbook_sites", label = "Field locations:",
+      shiny::selectizeInput("designFieldbook_sites", label = "Field location:",
                             choices = chc, selected = 1,  multiple = TRUE)
     }
   })

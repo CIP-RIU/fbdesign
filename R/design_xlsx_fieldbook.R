@@ -95,62 +95,88 @@
 #' @param col_name The col name to paste values. By defaul is "Values"
 #' @param exp_design The name of the excel fieldbook
 #' @param genetic_design The genetic design
+#' @param gen_design_abbr Genetic design abbreviation
+#' @param type_of_ploidy Type of ploidy
+#' @param set The number of sets
 #' @param rep The number of repetition
 #' @param block The number of block
 #' @param exp_env The environment of the experiment
 #' @param n_plot_row Number of plots per row
 #' @param plot_start_number The plot start number
-#' @param n_plant_plot The number of plant per plot
+#' @param n_plant_plot Number of plant per plot
+#' @param n_pots Number of pots
+#' @param n_plant_pot Number of plant per pot
 #' @param n_plant_row The number of plant per row
 #' @param plot_size The number plant per row
 #' @param plant_density The plant density
 #' @param distance_plants The distance between plants
 #' @param distance_rows The distance between rows
-#' @param factor_name The name of factor
-#' @param factor_name_1 The first level of the factor
-#' @param factor_name_2 The second level of the factor
-#' @param factor_name_3 The third level of the factor
-#' @param factor_name_4 The fourth level of the factor
-#' @param factor_name_5 The fifth level of the factor
+#' @param factor_name The name of the factor
+#' @param factor_lvl the levels of the factor
+# @param factor_name_1 The first level of the factor
+# @param factor_name_2 The second level of the factor
+# @param factor_name_3 The third level of the factor
+# @param factor_name_4 The fourth level of the factor
+# @param factor_name_5 The fifth level of the factor
 #' @description This function allows to paste values in the Installation Excel (Fieldbook) Sheet
 #' @export
 
 
-add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value",exp_design=NA,genetic_design=NA,
+add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value", exp_design=NA,
+                                   genetic_design=NA, gen_design_abbr =NA, type_of_ploidy=NA,
+                                   set=NA,
                                    rep=NA,
                                    block=NA,
                                    exp_env=NA,
                                    plot_start_number=NA,
                                    n_plot_row = NA,
                                    n_plant_plot=NA,
+                                   n_pots = NA,
+                                   n_plant_pot = NA,
                                    n_plant_row=NA,
                                    plot_size=NA,
                                    plant_density=NA,
                                    distance_plants=NA,
                                    distance_rows=NA,
                                    factor_name=NA,
-                                   factor_name_1=NA,
-                                   factor_name_2=NA,
-                                   factor_name_3=NA,
-                                   factor_name_4=NA,
-                                   factor_name_5=NA
+                                   factor_lvl=NA
+                                   # factor_name_1=NA,
+                                   # factor_name_2=NA,
+                                   # factor_name_3=NA,
+                                   # factor_name_4=NA,
+                                   # factor_name_5=NA
                                    ){
 
   Installation <- crop_template$Installation
+
   #ToDo: Fix the plot and plant_density values when users do not intereract with Installation
   if(length(plot_size)==0) plot_size <- 2.7
-  if(length(plant_density)==0) plot_size <- 37037.04
+  if(length(plant_density)==0) plant_density <- 37037.04
 
-  #Installation[Installation$Factor=="Experimental_design",col_name] <- paste(exp_design)
-  Installation[Installation$Factor=="Experimental_design_abbreviation",col_name] <- paste(exp_design)
+  print("3.1")
+  factor_lvl <- strsplit(factor_lvl, ",")[[1]]
+  factor_lvl <- factor_lvl %>% str_trim(.,side = "both")
+  factor_lvl <- gsub("\\s+", replacement = "_" , factor_lvl)
+  print("3.2")
+  #print(n_plant_plot)
+  if(is.null(n_plant_plot)) n_plant_plot <- NA
+
+  # Replacing parameters ----------------------------------------------------
   Installation[Installation$Factor=="Experimental_design", col_name] <- experimental_design_label(exp_design)
+  Installation[Installation$Factor=="Experimental_design_abbreviation",col_name] <- paste(exp_design)
+  Installation[Installation$Factor=="Genetic_design", col_name] <- genetic_design_label(genetic_design)
+  Installation[Installation$Factor=="Experimental_genetic_design_abbreviation", col_name] <- paste(genetic_design)
+  Installation[Installation$Factor=="Type_of_ploidy", col_name] <- paste(type_of_ploidy)
+  Installation[Installation$Factor=="Number_of_sets", col_name] <- paste(set)
   Installation[Installation$Factor=="Labels_for_factor_genotypes",col_name] <- paste("Institutional number")
   Installation[Installation$Factor=="Block_size_(applicable_for_BIBD_only)",col_name] <- paste("NA")
-  Installation[Installation$Factor=="Number_of_repetitions_or_blocks",col_name] <- paste(rep)
+  Installation[Installation$Factor=="Number_of_replications_or_blocks",col_name] <- paste(rep)
   Installation[Installation$Factor=="Block_number",col_name] <- paste(rep)
   Installation[Installation$Factor=="Experimental_Environment",col_name] <- paste(exp_env)
   Installation[Installation$Factor=="Plot_start_number",col_name] <- paste("NA")
+  Installation[Installation$Factor=="Number_of_pots", col_name] <- paste(n_pots)
   Installation[Installation$Factor=="Number_of_plants_planted_per_plot",col_name] <- paste(n_plant_plot)
+  Installation[Installation$Factor=="Number_of_plants_planted_per_pot",col_name] <- paste(n_plant_pot)
   Installation[Installation$Factor=="Number_of_plants_per_sub-plot",col_name] <- paste("NA")
   Installation[Installation$Factor=="Number_of_rows_per_plot",col_name] <- paste(n_plot_row) #####
   Installation[Installation$Factor=="Number_of_rows_per_sub-plot",col_name] <-paste("NA")
@@ -160,12 +186,12 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value",e
   Installation[Installation$Factor=="Distance_between_rows_(m)",col_name] <- paste(distance_rows)
   Installation[Installation$Factor=="Planting_density_(plants/Ha)",col_name] <- paste(plant_density)
   Installation[Installation$Factor=="Factor_name",col_name] <- paste(factor_name)
-  Installation[Installation$Factor=="Factor_name_1",col_name] <- paste(factor_name_1)
-  Installation[Installation$Factor=="Factor_name_2",col_name] <- paste(factor_name_2)
-  Installation[Installation$Factor=="Factor_name_3",col_name] <- paste(factor_name_3)
-  Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_name_4)
-  Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_name_5)
-
+  Installation[Installation$Factor=="Factor_name_1",col_name] <- paste(factor_lvl[1])
+  Installation[Installation$Factor=="Factor_name_2",col_name] <- paste(factor_lvl[2])
+  Installation[Installation$Factor=="Factor_name_3",col_name] <- paste(factor_lvl[3])
+  Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_lvl[4])
+  Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_lvl[5])
+  print("3.3")
   crop_template$Installation <- Installation
 
   wb <- loadWorkbook(file)
@@ -231,6 +257,7 @@ add_metadata_sheet <- function(file=NA, crop_template=NA, soil_input, weather_in
 
   wb <- loadWorkbook(file)
 
+  #in case soil sheet is selected
   if((soil_input)){
      openxlsx::addWorksheet(wb, "Soil_analysis", gridLines = TRUE)
     #setColWidths(wb, sheet = "Soil_analysis", cols = 1:200, widths = "auto")
@@ -238,7 +265,7 @@ add_metadata_sheet <- function(file=NA, crop_template=NA, soil_input, weather_in
     openxlsx::writeDataTable(wb, "Soil_analysis",x = Soil_analysis, colNames = TRUE, withFilter = FALSE,headerStyle = headerStyle)
 
   }
-
+  #in case weather sheet is selected
   if((weather_input)){
     openxlsx::addWorksheet(wb, "Weather_data", gridLines = TRUE)
     #setColWidths(wb, sheet = "Weather_data", cols = 1:200, widths = "auto")
@@ -453,6 +480,23 @@ add_fieldbook_sheet <-function(file,fieldbook){
   #  "Cyclic Design (CD)" <- "CD",
   #  "Lattice Design (LD)" <- "LD" ,
 }
+
+ #' Genetic design Label
+ #' @param abbr_design The abbreviation of the experimental design
+ #' @description Indicates which label/full name correspond to every genetic design abbreviation
+
+ genetic_design_label <- function(abbr_design = "NCI"){
+
+   abbr_design <- stringr::str_trim(abbr_design,side="both")
+   if(abbr_design == "NCI")    {out <- "North Caroline Design I"  }
+   if(abbr_design == "NCII")   {out <- "North Caroline Design II"  }
+   if(abbr_design == "LxT")    {out <- "Line by Tester"}
+
+   out
+
+ }
+
+
 
 ##############################
 

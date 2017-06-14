@@ -1,8 +1,6 @@
-
+# choices for statistical design input
 design_choices <- c(
-
-
-  "Unreplicated Design with No Randomization (UNDR)" = "UNDR",
+  "Unreplicated Design (UNDR)" = "UNDR",
   "Randomized Complete Block Design (RCBD)" = "RCBD",
   "Completely Randomized Design (CRD)" = "CRD",
   "Augmented Block Design (ABD)" = "ABD",
@@ -18,14 +16,37 @@ design_choices <- c(
 #  "Youden Design (YD)" = "YD",
 #  "Cyclic Design (CD)" = "CD",
 #  "Lattice Design (LD)" = "LD" ,
-  "Alpha Design (AD)" = "AD" #,
+  "Alpha Design (AD)" = "AD"
   # #"Augmented Partially Replicated Design (APRD)" = "APRD",
   # #"Factorial Design (F2SPPD)" = "F2SPPD",
-  # #"North Carolina Design I" = "NCI",
+  #"North Carolina Design I" = "NCI"#,
   # #"North Carolina Design II" = "NCII",
   # #"North Carolina Design III" = "NCIII"
 )
 
+#choices for statistical design input
+genetic_design_choices <- c(
+  "North Carolina Design I under RCBD" = "NCI",
+  "North Carolina Design II under RCBD" = "NCII",
+  "Line by Tester" = "LxT"
+)
+
+# Conditional panels for genetic design
+genetic_design_conditional_panels <- function(){
+  list(
+    shiny::conditionalPanel(
+      "input.design_geneticFieldbook == 'NCI'|
+       input.design_geneticFieldbook == 'NCII'",
+
+       shiny::selectInput("design_genetic_nc_set", "Set", 2:100, 2),
+       shiny::selectInput("design_genetic_nc_r", "Replications", 2:100, 2),
+       shiny::selectInput("design_genetic_ploidy", "Type of ploidy", choices = c("Diploid","Tetraploid"))
+
+    )
+  )
+}
+
+# Conditional Panels or features according to each statistical design
 design_conditional_panels <- function(){
   list(
     shiny::conditionalPanel(
@@ -43,7 +64,7 @@ design_conditional_panels <- function(){
 
 
        # TODO: ab - factorial, split
-      shiny::selectInput("designFieldbook_r", "Replications (r)", 2:100, 2 )
+      shiny::selectInput("designFieldbook_r", "Replications", 2:100, 2 )
 
     ),
 
@@ -56,14 +77,27 @@ design_conditional_panels <- function(){
        input.designFieldbook == 'STRIP'
       ",
 
-      #shiny::selectInput("designFieldbook_r", "Replications (r):", 1:5, 2 ),
-      textInput(inputId = "factor_name", label = "Enter Additional Factor Name",""),
+      #shiny::selectInput("designFieldbook_r", "Replications:", 1:5, 2 ),
+      textInput(inputId = "factor_name", label = "Enter Additional Factor Name", ""),
       br(),
-      textInput(inputId = "factor_lvl1", label = "First Level for Additional Factor",value = ""),
-      textInput(inputId = "factor_lvl2", label = "Second Level for Additional Factor",value = ""),
-      textInput(inputId = "factor_lvl3", label = "Third Level for Additional Factor",value = "")
+      textInput(inputId = "factor_lvl", label = "Type levels of factors (separated by commas ',')", value = "")#,
+      # textInput(inputId = "factor_lvl1", label = "First Level for Additional Factor",value = ""),
+      # textInput(inputId = "factor_lvl2", label = "Second Level for Additional Factor",value = ""),
+      # textInput(inputId = "factor_lvl3", label = "Third Level for Additional Factor",value = "")
 
     ),
+
+    shiny::conditionalPanel(
+      "input.designFieldbook == 'SPCRD' |
+      input.designFieldbook == 'SPRCBD'",
+
+      shiny::uiOutput("fbdesign_split_cb")
+      #
+
+    ),
+
+
+
 
     shiny::conditionalPanel(
       "input.designFieldbook == 'ABD'", # TODO: ab - factorial, split
@@ -75,7 +109,7 @@ design_conditional_panels <- function(){
 
     shiny::conditionalPanel(
       "input.designFieldbook == 'LD'", # TODO: ab - factorial, split
-      shiny::selectInput("designFieldbook_r", "Replications (r)", 2:100, 2 )
+      shiny::selectInput("designFieldbook_r", "Replications", 2:100, 2 )
     ),
     shiny::conditionalPanel(
       "input.designFieldbook == 'BIBD'",
@@ -93,7 +127,7 @@ design_conditional_panels <- function(){
       # r = 3: s odd; k <= s
       # r = 3: s even; k <= (s - 1)
       # r = 4: s odd but not multiple of 3; k <= s
-      #shiny::selectInput("designFieldbook_r", "Replications (r):", 2:6000, 2 ),
+      #shiny::selectInput("designFieldbook_r", "Replications:", 2:6000, 2 ),
       shiny::selectInput("designFieldbook_k", "Block size (k)", 2:100, 4 )
     ),
 
@@ -112,7 +146,7 @@ design_conditional_panels <- function(){
 #       "input.designFieldbook == 'CD'",
 #       # TODO do server side checking of permitted combinations (based on number of treatments)
 #       # number of treatments 6:30
-#       shiny::selectInput("designFieldbook_r", "Replications (r):", 2:10, 2 ),
+#       shiny::selectInput("designFieldbook_r", "Replications:", 2:10, 2 ),
 #       shiny::selectInput("designFieldbook_k", "Block size (k):", 2:10,3 )
 #     ),
 
@@ -132,12 +166,15 @@ design_conditional_panels <- function(){
   )
 }
 
+
+
+
 #' shiny UI element
 #'
 #' returns a re-usable user interface element
 #'
 #' @author Reinhard Simon
-#' @param type of ui Element; default is a tab in a shiny dashboard
+#' @param type type of ui element; default is a tab in a shiny dashboard
 #' @param title display title
 #' @param name a reference name
 
@@ -184,6 +221,7 @@ shinydashboard::tabItem(tabName = name,
                                                                             end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
 
 
+
                                  #shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),#country
                                   #shiny::selectizeInput("fbDesign_country", inline = TRUE, width = 500),#country
                                             # shiny::selectizeInput("fbDesign_countryTrial", label = "Field country",
@@ -193,7 +231,7 @@ shinydashboard::tabItem(tabName = name,
                                             shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
                                             selectInput('fbDesign_nExp', 'Experiment number', c("-",paste("exp",1:100,sep="")), selectize=TRUE)
 
-                                                  )
+                                            )
                                   )
                           ),
                           shiny::tabPanel("Material List", value = "plants", icon = shiny::icon("list-alt"),
@@ -220,7 +258,7 @@ shinydashboard::tabItem(tabName = name,
 
 
                                           shiny::uiOutput("fbDesign_selmlist"),
-                                          shiny::actionButton("fdesign_list_refresh","Refresh List"),
+                                          shiny::actionButton("fdesign_list_refresh", "Refresh List"),
 
                                           br()#,
                                          ),
@@ -230,9 +268,6 @@ shinydashboard::tabItem(tabName = name,
                                            downloadButton(outputId = "fbDesign_mlistExport", label = "Download Template"),
                                           fileInput(inputId = 'file_mtlist',label =  'Upload filled template',accept = ".xlsx")#,
                                           ),
-
-
-
 
                                           #shinyFilesButton('file', 'File select', 'Upload material list', FALSE),
                                           #bsAlert("alert"),
@@ -275,10 +310,23 @@ shinydashboard::tabItem(tabName = name,
 
                            shiny::tabPanel("Statistical Design", value = "design", icon = shiny::icon("pie-chart"),
 
+
+                                      conditionalPanel( condition = "output.condition_selmlist!=0",
+
                                            br(),
-                                           shiny::selectInput("designFieldbook", "Design", design_choices, multiple = FALSE),
-                                           #shiny::checkboxInput("designFieldbook_random", "Use randomization", TRUE),
-                                           design_conditional_panels()
+                                           shiny::selectInput("design_geneticFieldbook", "Genetic design", genetic_design_choices ,multiple = FALSE),
+                                           genetic_design_conditional_panels()
+
+                                      ),
+
+                                      conditionalPanel( condition = "output.condition_selmlist==0",
+
+                                          br(),
+                                          shiny::selectInput("designFieldbook", "Design", design_choices, multiple = FALSE),
+                                          #shiny::checkboxInput("designFieldbook_random", "Use randomization", TRUE),
+                                          design_conditional_panels()
+
+                                      )
 
                            ),
 
@@ -324,41 +372,73 @@ shinydashboard::tabItem(tabName = name,
                                             #        box(
                                               #        title = "Step: 6", status = "warning", solidHeader = TRUE, collapsible = TRUE, width = NULL,
 
-                                         shiny::numericInput("fbDesign_nplants",
-                                                             "Number of plants per plot/pot", 10 , 1, 100),
-                                         shiny::numericInput("fbDesign_nplantsrow",
-                                                             "Number of plants per row", 10, 1, 100),
-                                         shiny::numericInput("fbDesign_nrowplot",
-                                                             "Number of rows per plot/pot", 1, 1, 100),
-
-                                         #shiny::numericInput("fbDesign_psize","Plot size", 30, 1, 100),
+                                             shiny::conditionalPanel(
+                                                 "input.fbDesign_environment_type == 'Field'",
 
 
-                                         shiny::numericInput("fbDesign_distPlants",
-                                                             "Distance between plants (m)", .3, .1, 1),
-                                         shiny::numericInput("fbDesign_distRows",
-                                                             "Distance between rows (m)", .9, .1, 1),
-                                         shiny::uiOutput("fbPlanting_psize", inline=TRUE),
-                                         shiny::uiOutput("fbPlanting_pdensity", inline=TRUE),
+                                             shiny::numericInput("fbDesign_nplantsrow",
+                                                                 "Number of plants per row", 10, 1, 100),
 
-                                         tags$head(tags$style("#fbDesign_pdensity{color:#191919;
-                                                                                   background-color:#ecc464;
-                                                                                   #font-size: 20px;
-                                                                                   #font-style: italic;
-                                                                                   }"
-                                         )
-                                         ),
-                                         tags$head(tags$style("#fbDesign_psize{color:#191919;
-                                                               background-color:#88e3a5;
-                                                               #font-size: 20px;
-                                                               #font-style: italic;
-                                                                }"
-                                         )
-                                         )
-                                                     #     )
-                                                    #  )
-                                                   # )
-                                            )#,
+                                             shiny::numericInput("fbDesign_nrowplot",
+                                                                 "Number of rows per plot", 1, 1, 100),
+
+                                             #shiny::numericInput("fbDesign_psize","Plot size", 30, 1, 100),
+
+                                             shiny::numericInput("fbDesign_distPlants",
+                                                                 "Distance between plants (m)", .3, .1, 1),
+
+                                             shiny::numericInput("fbDesign_distRows",
+                                                                 "Distance between rows (m)", .9, .1, 1),
+
+                                             shiny::uiOutput("fbPlanting_psize", inline=TRUE),
+
+                                             shiny::uiOutput("fbPlanting_pdensity", inline=TRUE),
+
+                                                 tags$head(tags$style("#fbDesign_pdensity{color:#191919;
+                                                                                           background-color:#ecc464;
+                                                                                           #font-size: 20px;
+                                                                                           #font-style: italic;
+                                                                                           }"
+                                                 )
+                                                 ),
+                                                 tags$head(tags$style("#fbDesign_psize{color:#191919;
+                                                                       background-color:#88e3a5;
+                                                                       #font-size: 20px;
+                                                                       #font-style: italic;
+                                                                        }"
+                                                 )
+                                                 )
+
+                                             #,
+
+                           ),
+
+                           shiny::conditionalPanel(
+
+                             "input.fbDesign_environment_type == 'Field'",
+
+                             # Deprecated code for number of plant per plot
+                             # shiny::numericInput("fbDesign_nplants",
+                             #                     "Number of plants per plot/pot", 10 , 1, 100)#,
+
+                             #It replace the code above.
+                             shiny::uiOutput("fbPlant_plot", inline = TRUE)
+                             #
+
+                           ),
+
+                           shiny::conditionalPanel(
+                                          "input.fbDesign_environment_type == 'Greenhouse'|
+                                           input.fbDesign_environment_type == 'Screenhouse'",
+
+                                          shiny::numericInput("fbDesign_nplantxpot",
+                                                              "Number of plants per pot", 10 , 1, 10000),
+
+                                          shiny::numericInput("fbDesign_npots",
+                                                              "Number of pots", 1, 1, 10000)#,
+                                        )
+
+                                  )#,
 
                           )#,
                           #shinyBS::bsAlert("alert_fb_done")

@@ -7,9 +7,9 @@
 design_fieldbook(design = "(RCBD)", trt1 = letters[1:5], trt2 = NULL,
   r = 2, k = 2, trt1_label = "trt1", trt2_label = "trt2",
   factor_name = "FACTOR", factor_lvl1 = "level1", factor_lvl2 = "level2",
-  factor_lvl3 = "level3", sub_design = "crd", maxRep = 20, series = 1,
-  random = TRUE, first = TRUE, cont = FALSE, zigzag = FALSE,
-  variables = NULL)
+  factor_lvl3 = "level3", sub_design = "crd", set = NULL, male = NULL,
+  female = NULL, maxRep = 20, series = 1, random = TRUE, first = TRUE,
+  cont = FALSE, zigzag = FALSE, variables = NULL)
 }
 \arguments{
 \item{design}{a statistical design}
@@ -35,6 +35,12 @@ design_fieldbook(design = "(RCBD)", trt1 = letters[1:5], trt2 = NULL,
 \item{factor_lvl3}{The third level of the factor}
 
 \item{sub_design}{The sub design used by Split or Strip plot design.}
+
+\item{set}{Number of sets (in case of genetic design)}
+
+\item{male}{Males}
+
+\item{female}{Females}
 
 \item{maxRep}{maximum number of repetitions}
 

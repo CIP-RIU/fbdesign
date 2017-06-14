@@ -61,10 +61,6 @@ server_design_big <- function(input, output, session, values){
 
   })
 
-
-
-
-
   output$approvalBox_big <- renderInfoBox({
 
     #germoplasm <-material_table_big()$Institutional_number
@@ -114,7 +110,7 @@ server_design_big <- function(input, output, session, values){
     vls <- mdl
     mdl = as.list(ids)
     names(mdl) <- vls
-    shiny::selectInput("designFieldbook_module_big", label = "Types of Trial",
+    shiny::selectInput("designFieldbook_module_big", label = "Type of Trial",
                        choices = mdl, selected = 2)
   })
 
@@ -183,7 +179,7 @@ server_design_big <- function(input, output, session, values){
     #cntry <- fbsites::get_country_list(sites_data = sites_data)
     cntry <- fbsites::get_country_list(sites_data = sites_data)
 
-    shiny::selectizeInput("fbDesign_countryTrial_big", label = "Field Country:",
+    shiny::selectizeInput("fbDesign_countryTrial_big", label = "Country",
                           choices = cntry, selected = 1,  multiple = FALSE)
 
   })
@@ -208,11 +204,15 @@ server_design_big <- function(input, output, session, values){
     #print(locs)
     if (nrow(locs) > 0 ){
       #chc = locs$shortn
-      shiny::selectizeInput("designFieldbook_sites_big", label = "Field locations:",
+      shiny::selectizeInput("designFieldbook_sites_big", label = "Location",
                             choices = fbdesign_sites_selected, selected = 2,  multiple = FALSE)
     }
   })
-#
+
+
+
+
+## Plot size in big trials #####
   #Plot Size Values
   react_psize_big <- reactive({
     plot_size <- input$fbDesign_nplantsrow_big*input$fbDesign_distPlants_big*input$fbDesign_nrowplot_big*input$fbDesign_distRows_big
@@ -220,7 +220,7 @@ server_design_big <- function(input, output, session, values){
     if(length(plot_size)==0){plot_size <- 0}
     plot_size
   })
-#
+
   #Plant Density Values
   output$fbPlanting_psize_big <- shiny::renderUI({
     #plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot_big*input$fbDesign_distRows
@@ -229,7 +229,11 @@ server_design_big <- function(input, output, session, values){
     shiny::numericInput(inputId = "fbDesign_psize_big", label = "Plot size (m2)",
                         value = plot_size, min = plot_size,max = plot_size)
   })
-#
+##
+
+# Plant density in big trials #####
+
+  #reactive expression for plant density in big trials
   react_pdensity_big <- reactive({
 
     plant_density <- (input$fbDesign_nplants_big/input$fbDesign_psize_big)*10000
@@ -237,14 +241,33 @@ server_design_big <- function(input, output, session, values){
     if(length(plant_density)==0){plant_density <- 0}
     plant_density
   })
-#
+
+  #renderUI for plant density in big trials
   output$fbPlanting_pdensity_big <- shiny::renderUI({
     plant_density <- react_pdensity_big()
     #if(length(plant_density)==0) plant_density <- 37037.037
     shiny::numericInput(inputId = "fbDesign_pdensity_big", label = "Plant Density (plants/Ha)",
                         value = plant_density, min = plant_density, max = plant_density)
   })
-#
+####
+
+
+  ## Number of plants per plot #####
+
+  react_plantxrow_big <- reactive({
+    plantxrow_big <- input$fbDesign_nplantsrow_big*input$fbDesign_nrowplot_big
+    plantxrow_big
+
+  })
+
+  output$fbPlant_plot_big <- shiny::renderUI({
+    rprow_big <- react_plantxrow_big()
+    shiny::numericInput("fbDesign_nplants_big",
+                        "Number of plants per plot", rprow_big , rprow_big, rprow_big)
+  })
+  ##
+
+
   output$alphaMessage_big <- shiny::renderText({
 
     #germoplasm <-material_table_big()$Institutional_number
@@ -301,13 +324,20 @@ server_design_big <- function(input, output, session, values){
                      #n_org_baby <- as.numeric(gsub(pattern = "*.-",replacement = "",x = n_org_baby))
                      #print(n_org_baby)
 
-                     if(is.null(sub_design)) sub_design <- NULL
-                     factor_lvl1 <- input$factor_lvl1_big %>% as.character() %>% str_trim(.,side = "both")
-                     factor_lvl2 <- input$factor_lvl2_big %>% as.character() %>% str_trim(.,side = "both")
-                     factor_lvl3 <- input$factor_lvl3_big %>% as.character() %>% str_trim(.,side = "both")
-                     trt2 <- c(factor_lvl1,factor_lvl2,factor_lvl3)
+                     # Deprecated code for factor level
+                     # if(is.null(sub_design)) sub_design <- NULL
+                     # factor_lvl1 <- input$factor_lvl1_big %>% as.character() %>% str_trim(.,side = "both")
+                     # factor_lvl2 <- input$factor_lvl2_big %>% as.character() %>% str_trim(.,side = "both")
+                     # factor_lvl3 <- input$factor_lvl3_big %>% as.character() %>% str_trim(.,side = "both")
+                     # trt2 <- c(factor_lvl1,factor_lvl2,factor_lvl3)
+                     #
 
+                     factor_lvl_big <- strsplit(input$factor_lvl_big, ",")[[1]]
+                     factor_lvl_big <- factor_lvl_big %>% str_trim(.,side = "both")
+                     factor_lvl_big <- gsub("\\s+", replacement = "_" , factor_lvl_big)
+                     trt2 <- factor_lvl_big
                      trt2 <- trt2[!is.na(trt2) & trt2!=""]
+
 
                      if(input$designFieldbook_big=="ABD"){
                        #NOTE: In ABD(Augmented Design)  design.dau(trt1 = checks, trt2= genotypes)
@@ -548,6 +578,7 @@ server_design_big <- function(input, output, session, values){
 })
 
 
+
 # Lista de materiales Local en BIG MODULES --------------------------------
 
   output$fbDesign_selmlist_big <- shiny::renderUI({
@@ -657,13 +688,14 @@ server_design_big <- function(input, output, session, values){
                                               n_plant_plot = input$fbDesign_nplants_big,
                                               n_plant_row = input$fbDesign_nplantsrow_big,
                                               plot_size = input$fbDesign_psize_big,
-                                              plant_density = react_pdensity_big(),
+                                              plant_density = input$fbDesign_pdensity_big,
                                               distance_plants = input$fbDesign_distPlants_big,
                                               distance_rows = input$fbDesign_distRows_big,
                                               factor_name = input$factor_name_big,
-                                              factor_name_1 = input$factor_lvl1_big,
-                                              factor_name_2 = input$factor_lvl2_big,
-                                              factor_name_3 = input$factor_lvl3_big
+                                              factor_lvl = input$factor_lvl_big
+                                              # factor_name_1 = input$factor_lvl1_big,
+                                              # factor_name_2 = input$factor_lvl2_big,
+                                              # factor_name_3 = input$factor_lvl3_big
                                               #factor_name_4 = input$factor_lvl4
                                               #factor_name_5 = input$factor_lvl5
                        )
