@@ -17,4 +17,3 @@ This dataset contains the master trial sites
 \references{
 This data is related to HiDAP trial sites
 }
-

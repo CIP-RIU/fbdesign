@@ -188,7 +188,7 @@ design.f2crd <- function(trt1, trt2, r, series=1, random=TRUE){
   est <- cbind(1:nt, rep(trt2, length(trt1)), rep(trt1, each=length(trt2)))
   diseno = as.data.frame(matrix(NA, nrow=r*nt, ncol=4), stringsAsFactors=F)
   #fdcrd <- design.crd(tr, r, number=startn,first = TRUE)
-  fdcrd <- agricolae::design.crd(tr, r, series, randomization = random)
+  fdcrd <- agricolae::design.crd(tr, r, series, randomization = random, seed = 1234)
   fdcrd <- fdcrd$book
   diseno[,1:2] <- fdcrd[,1:2]
   ord <- fdcrd[,3]
@@ -222,7 +222,7 @@ design.f2rcbd <- function(trt1, trt2, r, series=1, random=TRUE){
   est <- cbind(1:nt, rep(trt2, length(trt1)), rep(trt1, each=length(trt2)))
   diseno = as.data.frame(matrix(NA, nrow=r*nt, ncol=4), stringsAsFactors=F)
   #fdcrd <- design.crd(tr, r, number=startn,first = TRUE)
-  fdrcbd <- agricolae::design.rcbd(tr, r, series, randomization = random)
+  fdrcbd <- agricolae::design.rcbd(tr, r, series, randomization = random,seed = 1234)
   fdrcbd <- fdrcbd$book
   diseno[,1:2] <- fdrcbd[,1:2]
   ord <- fdrcbd[,3]

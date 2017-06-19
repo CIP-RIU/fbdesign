@@ -41,42 +41,44 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
                              zigzag = FALSE,
                              variables = NULL){
 
+  seed <- 1234
+
   design = stringr::str_extract(design, "([A-Z2]{2,10})")
   # if (design == "LD" && !(length(trt1) %% r == 0 ))
   #   stop("Incorrect paramter combinations for LD design.")
   fb <- switch(design,
 
      UNDR = fbdesign::design.undr(trt1,r=1),
-     RCBD = agricolae::design.rcbd(trt1, r, series, randomization = random, first = first), #ok
-     CRD = agricolae::design.crd(trt1, r, series, randomization = random), #ok
-     LSD = agricolae::design.lsd(trt1, series, randomization = random, first = first),
+     RCBD = agricolae::design.rcbd(trt1, r, series, randomization = random, first = first, seed = seed), #ok
+     CRD = agricolae::design.crd(trt1, r, series, randomization = random, seed = seed), #ok
+     LSD = agricolae::design.lsd(trt1, series, randomization = random, first = first, seed = seed),
 
      SPCRD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = "crd", series,
-                                    first, randomization = random, kinds = "Super-Duper"),
+                                    first, randomization = random, kinds = "Super-Duper", seed = seed),
 
      SPRCBD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = "rcbd", series,
-                                     first, randomization = random, kinds = "Super-Duper"),
+                                     first, randomization = random, kinds = "Super-Duper", seed = seed),
 
      SPLSD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = "lsd", series,
-                                      first, randomization = random, kinds = "Super-Duper"),
+                                      first, randomization = random, kinds = "Super-Duper", seed = seed),
 
      STRIP = agricolae::design.strip(trt1 = trt1, trt2 = trt2, r = r, series,
-                                    kinds ="Super-Duper" ,randomization =random),
+                                    kinds ="Super-Duper" ,randomization =random, seed = seed),
 
      F2CRD = fbdesign::design.f2crd(trt1, trt2, r = r, series=series, random=random),
      F2RCBD = fbdesign::design.f2rcbd(trt1, trt2, r = r, series=series, random=random),
 
      ##! ABD design tip: trt2::genotypes & trt:: genotypes
      ABD = agricolae::design.dau(trt1, trt2, r = r, serie=series,
-                                   kinds ="Super-Duper" ,randomization = random),
+                                   kinds ="Super-Duper" ,randomization = random, seed = seed),
 
-     GLD = agricolae::design.graeco(trt1, trt2, serie = series, randomization = random),
+     GLD = agricolae::design.graeco(trt1, trt2, serie = series, randomization = random, seed = seed),
      YD = agricolae::design.youden(trt1, r, serie = series, first = first, randomization = random),
-     LD = agricolae::design.lattice(trt1, r, serie = series, randomization = random),
+     LD = agricolae::design.lattice(trt1, r, serie = series, randomization = random, seed = seed),
      BIBD = agricolae::design.bib(trt1, k, r = NULL, serie = series, maxRep = maxRep, randomization = random,
-                                      seed = 0, kinds = "Super-Duper"),
-     AD = agricolae::design.alpha(trt1, k, r, serie = series, randomization = random),
-     CD = agricolae::design.cyclic(trt1, k, r, serie = series, randomization = random),
+                                      seed = 0, kinds = "Super-Duper",seed = seed),
+     AD = agricolae::design.alpha(trt1, k, r, serie = series, randomization = random, seed = seed),
+     CD = agricolae::design.cyclic(trt1, k, r, serie = series, randomization = random, seed = seed),
 
      NCI = geneticdsg::design_carolina(set = set , r = r, male = male, female = female, type = 1),
 
@@ -176,17 +178,17 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
     names(fb$book) <- c("PLOT","REP","BLOCK","INSTN")
   }
 
-  if (design == "NCI") {
-
-    fb$book <- fb$book
-
-  }
-
-  if (design == "NCII") {
-
-    fb$book <- fb$book
-
-  }
+  # if (design == "NCI") {
+  #
+  #   fb$book <- fb$book
+  #
+  # }
+  #
+  # if (design == "NCII") {
+  #
+  #   fb$book <- fb$book
+  #
+  # }
 
 #   if (design == "GLD") {
 #     if(zigzag)fb$book = agricolae::zigzag(fb)
@@ -246,9 +248,9 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
 
     out  <-  fb$book
 
-  } else if (design == "NCI") {
-
-    out  <-  fb$book
+  # } else if (design == "NCI") {
+  #
+  #   out  <-  fb$book
 
   } else {
 

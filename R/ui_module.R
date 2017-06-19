@@ -191,6 +191,18 @@ shinydashboard::tabItem(tabName = name,
 
                 shinyjs::useShinyjs(), #to reset panels and UI
 
+
+                tags$head(
+                  tags$style(HTML("
+                                .shiny-output-error-validation {
+                                  color: green;
+                                  font-size: 120%;
+                                  font-family: Arial, Helvetica, sans-serif;
+                                }
+                              "))
+                  ),
+
+
                 tabsetPanel( #Begin Master tabSetPanel
                   tabPanel("Standard Modules",icon = icon("tag", lib = "glyphicon"),
                            br(),
@@ -311,22 +323,23 @@ shinydashboard::tabItem(tabName = name,
                            shiny::tabPanel("Statistical Design", value = "design", icon = shiny::icon("pie-chart"),
 
 
-                                      conditionalPanel( condition = "output.condition_selmlist!=0",
+                                      # conditionalPanel( condition = "output.condition_selmlist!=0",
+                                      #
+                                      #      br(),
+                                      #      shiny::selectInput("design_geneticFieldbook", "Genetic design",  c("Choose one" = "", genetic_design_choices) ,multiple = FALSE),
+                                      #      genetic_design_conditional_panels()
+                                      #
+                                      # ),
 
-                                           br(),
-                                           shiny::selectInput("design_geneticFieldbook", "Genetic design", genetic_design_choices ,multiple = FALSE),
-                                           genetic_design_conditional_panels()
-
-                                      ),
-
-                                      conditionalPanel( condition = "output.condition_selmlist==0",
+                                     # conditionalPanel( condition = "output.condition_selmlist==0",
 
                                           br(),
-                                          shiny::selectInput("designFieldbook", "Design", design_choices, multiple = FALSE),
+                                          shiny::selectInput("designFieldbook", "Design",  c("Choose one" = "", design_choices), selected = 'RCBD',
+                                                             multiple = FALSE),
                                           #shiny::checkboxInput("designFieldbook_random", "Use randomization", TRUE),
                                           design_conditional_panels()
 
-                                      )
+                                      #)
 
                            ),
 
@@ -454,7 +467,7 @@ shinydashboard::tabItem(tabName = name,
                   shinysky::actionButton2("fbDesign_create", label = "Download", icon ="file-excel-o", icon.library = "bootstrap", styleclass= "color: #fff; background-color: #51a351; border-color: #51a351"),
                   #shiny::actionButton("fbDesign_create", "Download", icon("file-excel-o"), style="color: #fff; background-color: #51a351; border-color: #51a351"),
                   #shinyBS::bsAlert("alert_fb_done"),
-                  shinysky::shinyalert("alert_fb_done", FALSE, auto.close.after = 5),
+                  shinysky::shinyalert("alert_fb_done", FALSE, auto.close.after = 8),
                   HTML('</div>')
                 ),
 

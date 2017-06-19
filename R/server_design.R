@@ -57,133 +57,140 @@ server_design <- function(input, output, session, values){
 
     }
 
-
     mtl_list
   })
 
   # InfoBox to display messages of upload material list (genotype, family and parental list) ---------------------------------
-  output$approvalBox <- renderInfoBox({
 
-    req(input$designFieldbook_sel_mlist)
-    sel_list <- input$designFieldbook_sel_mlist
-    print(sel_list)
-
-    if(is.null(sel_list) || sel_list == ""){  return()  }
-    if(length(sel_list)>0){
-
-    is_parent_list <- is_parentList(sel_list)
-
-    #depreacted code: germoplasm <-material_table()$Accession_Number
-    germoplasm <-material_table()
-    print(germoplasm)
-
-    print("pass false")
-
-    if(is_parent_list==FALSE){
-
-      germoplasm <- germoplasm$Accession_Number
-
-
-      if(is.null(germoplasm)){
-        infoBox(title="Upload", subtitle=
-                  paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
-                color = "blue",fill = TRUE, width = NULL)
-      }
-
-      else if(all(is.na(germoplasm))) {
-        infoBox(title="ERROR", subtitle=
-                  paste("The material list", "is empty. Please check it"), icon = icon("warning-sign", lib = "glyphicon"),
-                color = "red",fill = TRUE, width = NULL)
-      }
-
-      else{
-
-        infoBox(title="GREAT!", subtitle =
-                  paste("Material list was successfully uploaded! gen"),  icon = icon("ok", lib = "glyphicon"),
-                color = "green",fill = TRUE, width = NULL)
-      }
+  #CODE FOR GENETIC DESIGNS, enable after Africa's installer
+#   output$approvalBox <- renderInfoBox({
+#
+#     # if(input$select_import=="Template") {
+#     #   req(input$file_mtlist)
+#     # }
+#     #
+#     # if(input$select_import=="Local List"){
+#     #   req(input$designFieldbook_sel_mlist)
+#     # }
+#
+#     #sel_list <- input$designFieldbook_sel_mlist
+#
+#     #print(sel_list)
+#
+#     if(is.null(sel_list) || sel_list == ""){  return()  }
+#     if(length(sel_list)>0){
+#
+#     is_parent_list <- is_parentList(sel_list)
+#
+#     #depreacted code: germoplasm <-material_table()$Accession_Number
+#     germoplasm <-material_table()
+#     print(germoplasm)
+#
+#     print("pass false")
+#
+#     if(is_parent_list==FALSE){
+#
+#       germoplasm <- germoplasm$Accession_Number
+#
 #
 #       if(is.null(germoplasm)){
-#
-#         title <- "Upload"
-#         subtitle <- paste("your material list file. Or, press the button below to download and fill the template.")
-#         icon <- "upload"
-#         color <- "blue"
-#
+#         infoBox(title="Upload", subtitle=
+#                   paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
+#                 color = "blue",fill = TRUE, width = NULL)
 #       }
 #
 #       else if(all(is.na(germoplasm))) {
-#
-#         title <- "ERROR"
-#         subtitle <-  paste("The material list", "is empty. Please check it", sep="")
-#         icon <- "warning-sign"
-#         color <- "red"
-#
+#         infoBox(title="ERROR", subtitle=
+#                   paste("The material list", "is empty. Please check it"), icon = icon("warning-sign", lib = "glyphicon"),
+#                 color = "red",fill = TRUE, width = NULL)
 #       }
 #
 #       else{
 #
-#         title <- "GREAT!"
-#         subtitle <-  paste("Material list was successfully uploaded! gen")
-#         icon <- "ok"
-#         color <-"green"
+#         infoBox(title="GREAT!", subtitle =
+#                   paste("Material list was successfully uploaded! gen"),  icon = icon("ok", lib = "glyphicon"),
+#                 color = "green",fill = TRUE, width = NULL)
+#       }
+#
+#     }
+#
+#
+#     else {
+#
+#       germoplasm_fem <- germoplasm$female$Accession_Number
+#       germoplasm_male <- germoplasm$male$Accession_Number
+#
+#       print(germoplasm_fem)
+#       print(germoplasm_male)
+#
+#       if(is.null(germoplasm_fem) && is.null(germoplasm_male)){
+#
+#         infoBox(title="Upload", subtitle=
+#                   paste("your parental list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
+#                   color = "blue",fill = TRUE, width = NULL)
 #
 #       }
 #
-#       infoBox(title=title, subtitle =subtitle,  icon = icon(icon, lib = "glyphicon"), color = color, fill = TRUE, width = NULL)
+#       else if(all(is.na(germoplasm_fem))) {
+#
+#         infoBox(title="ERROR", subtitle=
+#                   paste("The female's accession number are empty.", "Please check female's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
+#                   color = "red",fill = TRUE, width = NULL)
+#
+#       }
+#
+#       else if(all(is.na(germoplasm_male))) {
+#
+#         infoBox(title="ERROR", subtitle=
+#                   paste("The male's accession number are empty.", "Please check male's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
+#                   color = "red",fill = TRUE, width = NULL)
+#
+#
+#       }
+#
+#
+#       else{
+#
+#             infoBox(title="GREAT!", subtitle =
+#                       paste("Parental list was successfully uploaded! "),  icon = icon("ok", lib = "glyphicon"),
+#                     color = "green",fill = TRUE, width = NULL)
+#           }
+#
+#       }
+#
+#     }
+#
+#
+# })
+
+  output$approvalBox <- renderInfoBox({
+
+    #germoplasm <-material_table()$Institutional_number
+    germoplasm <-material_table()$Accession_Number
+    #germoplasm <-germoplasm_list()$institutional_number
+    print(germoplasm)
+
+    if(is.null(germoplasm)){
+      infoBox(title="Upload", subtitle=
+                paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
+              color = "blue",fill = TRUE, width = NULL)
 
     }
+    else if(all(is.na(germoplasm))) {
+      infoBox(title="ERROR", subtitle=
+                paste("Your material list", "is empty. Please check it"), icon = icon("warning-sign", lib = "glyphicon"),
+              color = "red",fill = TRUE, width = NULL)
+      #shell.exec(hot_path())
 
-    #print("pass true")
+    } else {
+      #       material <- paste(germoplasm, collapse = ",")
+      #       message <-  paste("Material list imported: ", material)
 
-    #if(is_parent_list==TRUE){
-    else {
-
-      germoplasm_fem <- germoplasm$female$Accession_Number
-      germoplasm_male <- germoplasm$male$Accession_Number
-
-      print(germoplasm_fem)
-      print(germoplasm_male)
-
-      if(is.null(germoplasm_fem) && is.null(germoplasm_male)){
-
-        infoBox(title="Upload", subtitle=
-                  paste("your parental list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
-                  color = "blue",fill = TRUE, width = NULL)
-
-      }
-
-      else if(all(is.na(germoplasm_fem))) {
-
-        infoBox(title="ERROR", subtitle=
-                  paste("The female's accession number are empty.", "Please check female's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
-                  color = "red",fill = TRUE, width = NULL)
-
-      }
-
-      else if(all(is.na(germoplasm_male))) {
-
-        infoBox(title="ERROR", subtitle=
-                  paste("The male's accession number are empty.", "Please check male's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
-                  color = "red",fill = TRUE, width = NULL)
-
-
-      }
-
-
-      else{
-
-            infoBox(title="GREAT!", subtitle =
-                      paste("Parental list was successfully uploaded! "),  icon = icon("ok", lib = "glyphicon"),
-                    color = "green",fill = TRUE, width = NULL)
-          }
-
-      }
-
+      infoBox(title="GREAT!", subtitle =
+                paste(" was successfully uploaded!"),  icon = icon("ok", lib = "glyphicon"),
+              color = "green",fill = TRUE, width = NULL)
     }
-
-
-})
+  })
 
   # Design of variables ---------------------------------------------------------------
   output$fbDesign_variables <- shiny::renderUI({
@@ -443,11 +450,21 @@ server_design <- function(input, output, session, values){
 
   # Reactive data.frame for designing fieldbook -----------------------------
   fbdraft <- shiny::reactive({
+
+        if(input$select_import=="Template") {
+          req(input$file_mtlist)
+        }
+
+        if(input$select_import=="Local List"){
+          req(input$designFieldbook_sel_mlist)
+        }
+
+
     try({
       withProgress(message = 'Fieldbook loading...',
                    detail = 'This may take a while...', value = 0, {
 
-                     incProgress(3/15)
+                    incProgress(3/15)
 
                      crp <- input$designFieldbook_crop # capture the type of crop
 
@@ -457,6 +474,7 @@ server_design <- function(input, output, session, values){
                      material_tbl = material_table()
 
                      #  #Passing function to detect parental lists (utils.R) -------------------
+                     #For parental list and genetic designs
                      is_parental <- is_parentList(input$designFieldbook_sel_mlist)
 
                      if(is_parental==TRUE){ #It's a parental list.
@@ -496,14 +514,21 @@ server_design <- function(input, output, session, values){
                            #Get replications
                            r <- input$designFieldbook_r
 
-                           #Augmented block design
-                           if(input$designFieldbook=="ABD"){
-                             #NOTE: In ABD(Augmented Design)  design.dau(trt1 = checks, trt2= genotypes)
-                             #For this reason : design.dau( trt1= checks =trt2 ; trt2 = genotypes=trt1)
-                             trt1 <- is_control(material_tbl)
-                             trt2 <-  material_tbl$Accession_Number
-                             trt2 <-  setdiff(trt2,trt1)
-                      }
+
+                           #Use sub_design in case of factorials and split plot design
+                           sub_design = as.character(input$sub_design)
+
+                           #In case users do not select sub_design
+                           if(is.null(sub_design)) sub_design <- NULL
+
+                           # Capture of second factor
+                           print(input$factor_lvl)
+                           factor_lvl <- strsplit(x = input$factor_lvl, ",")[[1]]
+                           factor_lvl <- factor_lvl %>% stringr::str_trim(.,side = "both")
+                           factor_lvl <- gsub("\\s+", replacement = "_" , factor_lvl)
+                           trt2 <- factor_lvl
+                           trt2 <- trt2[!is.na(trt2) & trt2!=""]
+
 
                            #Split plot design under CRD AND RCBD
                            if(input$designFieldbook=="SPCRD" || input$designFieldbook=="SPRCBD"){
@@ -523,20 +548,20 @@ server_design <- function(input, output, session, values){
                                trt2_label  <-  "INSTN" #label 2 for factors
 
                              }
-                     }
+                           }
 
-                           #Use sub_design in case of factorials and split plot design
-                           sub_design = as.character(input$sub_design)
 
-                           #In case users do not select sub_design
-                           if(is.null(sub_design)) sub_design <- NULL
 
-                           # Capture of second factor
-                           factor_lvl <- strsplit(x = input$factor_lvl, ",")[[1]]
-                           factor_lvl <- factor_lvl %>% stringr::str_trim(.,side = "both")
-                           factor_lvl <- gsub("\\s+", replacement = "_" , factor_lvl)
-                           trt2 <- factor_lvl
-                           trt2 <- trt2[!is.na(trt2) & trt2!=""]
+                           #Augmented block design
+                           if(input$designFieldbook=="ABD"){
+                             #NOTE: In ABD(Augmented Design)  design.dau(trt1 = checks, trt2= genotypes)
+                             #For this reason : design.dau( trt1= checks =trt2 ; trt2 = genotypes=trt1)
+                             trt1 <- is_control(material_tbl)
+                             print(trt1)
+                             trt2 <-  material_tbl$Accession_Number
+                             trt2 <-  setdiff(trt2,trt1)
+                             print(trt2)
+                           }
 
                            #Declaration of Genetic parameters equal to NULL
                            male <- NULL
@@ -595,22 +620,89 @@ server_design <- function(input, output, session, values){
 
                      #from character to numeric
                      fb[, 1] = as.integer(fb[, 1])
+
                      fb
-                     #print(fb)
+
                     } )
     })
   })
 
+
   # Visualization of the field book -----------------------------------------
   shiny::observeEvent(input$fbDesign_draft, {
+
+    # req(input$designFieldbook_sel_mlist)
+    # req(input$designFieldbook)
+    mtl_table <- as.data.frame(material_table())
+
+
+    if(input$designFieldbook=="ABD"){
+
+      #mtl_table <- as.data.frame(material_table())
+      mtl <- mtl_table
+      mtl_instn <- as.character(mtl$Is_control)
+
+      mtl_checks_count <- is_control(mtl_table)
+      #print(res)
+
+      if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1  ){
+        shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "info")
+        #break
+      }
+    } else {
+
+
     fb = fbdraft()
+    print(fb)
     output$fbDesign_table <- rhandsontable::renderRHandsontable({
       rhandsontable::rhandsontable(fb, readOnly = T)})
+
+
+    }
   })
 
 
   # Trigger for Downloading field book --------------------------------------
+
+  # observe({
+  #
+  #  # if(is.null(mlist) || mlist == ""){  return()  }
+  #
+  #   #toggleState("fbDesign_draft", !is.null(input$designFieldbook_sel_mlist) &&  length(input$tree_input_value)!=0  && !is.null(input$designFieldbook)
+  #   toggleState("fbDesign_draft",  !is.null(input$designFieldbook_sel_mlist) || str_trim(input$designFieldbook_sel_mlist, side = "both")!= "")
+  # })
+
+#
+#   observe({
+#
+#     #if(is.null(mlist) || mlist == ""){  return()  }
+#
+#       #toggleState("fbDesign_create", !is.null(input$designFieldbook_sel_mlist) &&  length(input$tree_input_value)!=0  && !is.null(input$designFieldbook)  )
+#
+#     toggleState("fbDesign_create",  !is.null(input$designFieldbook_sel_mlist) || str_trim(input$designFieldbook_sel_mlist, side = "both")!= "")
+#
+#
+#   })
+
+
   shiny::observeEvent(input$fbDesign_create, {
+
+    # validate(
+    #   need( input$designFieldbook_sel_mlist  , "Please select a material list your material list")
+    # )
+
+
+    # if(input$select_import=="Template") {
+    #   req(input$file_mtlist)
+    # }
+    #
+    # if(input$select_import=="Local List"){
+    #   req(input$designFieldbook_sel_mlist)
+    # }
+    #
+    # req(input$designFieldbook)
+    # req(input$tree_input_value)
+
 
     withProgress(message = "Downloading Fieldbook..",value= 0,
                  {
@@ -661,6 +753,22 @@ server_design <- function(input, output, session, values){
           #If field book does not exist then create it.
           if(!file.exists(fp)) {
 
+
+            if(input$designFieldbook=="ABD"){
+
+                  mtl <- mtl_table
+                  mtl_instn <- as.character(mtl$Is_control)
+
+                  mtl_checks_count <- is_control(mtl_table)
+                  #print(res)
+
+                  if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1  ){
+                          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "info")
+                    #break
+                  }
+          } else {
+
+
           saveRDS(fb, fp)
           values[["ph_fb_list"]] = NULL
           shinysky::showshinyalert(session, "alert_fb_done", paste("GREAT: Fieldbook successfully created!", "success"),
@@ -684,9 +792,9 @@ server_design <- function(input, output, session, values){
                             crop=input$designFieldbook_crop,
                             trait_list = input$designFieldbook_traits)
 
-          add_minimal_sheet(file=fn_xlsx, crop_template=crop_template, col_name="Value", Trial_name= fbdesign_id(),
-                            crop= input$designFieldbook_crop,
-                            type_trial= input$designFieldbook_module,
+          add_minimal_sheet(file = fn_xlsx, crop_template = crop_template, col_name = "Value", Trial_name = fbdesign_id(),
+                            crop = input$designFieldbook_crop,
+                            type_trial = input$designFieldbook_module,
                             begin_date = begin_date1,
                             end_date = end_date1,
                             site_short_name = input$designFieldbook_sites,
@@ -720,9 +828,9 @@ server_design <- function(input, output, session, values){
 
         add_installation_sheet(file=fn_xlsx, crop_template = crop_template, col_name = "Value",
                                exp_design = input$designFieldbook,
-                               genetic_design = input$design_geneticFieldbook,
-                               type_of_ploidy = input$design_genetic_ploidy,
-                               set = input$design_genetic_nc_set,
+                               #genetic_design = input$design_geneticFieldbook,
+                               #type_of_ploidy = input$design_genetic_ploidy,
+                               #set = input$design_genetic_nc_set,
                                rep = input$designFieldbook_r, block=NA,
                                exp_env = input$fbDesign_environment_type,
                                plot_start_number = NA,
@@ -763,9 +871,17 @@ server_design <- function(input, output, session, values){
         print("7")
 
         shell.exec(fn_xlsx)
+
+
+          }
       }
 
-               })
+
+
+          })
+
+
+
          })
     })
 
@@ -787,6 +903,12 @@ server_design <- function(input, output, session, values){
 
 
 }
+
+
+
+
+
+
 
 #end of SERVER.R
 

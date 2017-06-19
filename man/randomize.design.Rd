@@ -42,4 +42,3 @@ Design a fieldbook.
 \author{
 Raul Eyzaguirre, Reinhard Simon
 }
-
