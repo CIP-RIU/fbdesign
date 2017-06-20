@@ -634,6 +634,10 @@ server_design <- function(input, output, session, values){
     # req(input$designFieldbook_sel_mlist)
     # req(input$designFieldbook)
     mtl_table <- as.data.frame(material_table())
+    #Flag variable to check certain condition in fieldbooks. Initially declared TRUE
+    flag <- TRUE
+    #print(mtl_table)
+
 
 
     if(input$designFieldbook=="ABD"){
@@ -643,46 +647,34 @@ server_design <- function(input, output, session, values){
       mtl_instn <- as.character(mtl$Is_control)
 
       mtl_checks_count <- is_control(mtl_table)
-      #print(res)
+      # print("checks count")
+      # print(mtl_checks_count)
+      # print(length(mtl_checks_count))
+      # print(all(is.na(mtl_instn)))
 
-      if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1  ){
+      if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1) {
+
+        flag <- FALSE
         shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "info")
         #break
+      } else {
+
+        flag <- TRUE
       }
-    } else {
 
+    }
 
+    if(flag){
     fb = fbdraft()
-    print(fb)
+    #print(fb)
+
     output$fbDesign_table <- rhandsontable::renderRHandsontable({
       rhandsontable::rhandsontable(fb, readOnly = T)})
 
-
     }
+
   })
 
-
-  # Trigger for Downloading field book --------------------------------------
-
-  # observe({
-  #
-  #  # if(is.null(mlist) || mlist == ""){  return()  }
-  #
-  #   #toggleState("fbDesign_draft", !is.null(input$designFieldbook_sel_mlist) &&  length(input$tree_input_value)!=0  && !is.null(input$designFieldbook)
-  #   toggleState("fbDesign_draft",  !is.null(input$designFieldbook_sel_mlist) || str_trim(input$designFieldbook_sel_mlist, side = "both")!= "")
-  # })
-
-#
-#   observe({
-#
-#     #if(is.null(mlist) || mlist == ""){  return()  }
-#
-#       #toggleState("fbDesign_create", !is.null(input$designFieldbook_sel_mlist) &&  length(input$tree_input_value)!=0  && !is.null(input$designFieldbook)  )
-#
-#     toggleState("fbDesign_create",  !is.null(input$designFieldbook_sel_mlist) || str_trim(input$designFieldbook_sel_mlist, side = "both")!= "")
-#
-#
-#   })
 
 
   shiny::observeEvent(input$fbDesign_create, {
@@ -744,17 +736,11 @@ server_design <- function(input, output, session, values){
           end_date <- unlist(str_split(end_date,"-"))
           end_date1 <- paste(end_date[3],end_date[2],end_date[1],sep="/")
 
-          #If field book does exist then print warning message: It's already created it.
-          if(file.exists(fp))  {
-              shinysky::showshinyalert(session, "alert_fb_done", paste("WARNING: This fieldbook already exists in HiDAP. Please Select Experiment Number in Crop & Location"),
-                                     styleclass = "warning")
-          }
+          #This variable serves as a flag if our fieldbook is correct.
+          flag <- TRUE
 
-          #If field book does not exist then create it.
-          if(!file.exists(fp)) {
-
-
-            if(input$designFieldbook=="ABD"){
+          #In case of augmented block design, it must verify the checks in the stistical designs
+          if(input$designFieldbook=="ABD"){
 
                   mtl <- mtl_table
                   mtl_instn <- as.character(mtl$Is_control)
@@ -762,12 +748,29 @@ server_design <- function(input, output, session, values){
                   mtl_checks_count <- is_control(mtl_table)
                   #print(res)
 
-                  if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1  ){
+                if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1  ){
                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "info")
-                    #break
-                  }
-          } else {
 
+                  flag <- FALSE
+
+               } else {
+
+                   flag <- TRUE
+
+              }
+
+          }
+
+          #If field book does exist then print warning message: It's already created it.
+          if(file.exists(fp))  {
+            shinysky::showshinyalert(session, "alert_fb_done", paste("WARNING: This fieldbook already exists in HiDAP. Please Select Experiment Number in Crop & Location"),
+                                     styleclass = "warning")
+            flag <- FALSE
+          }
+
+
+
+          if(!file.exists(fp) && flag == TRUE) {
 
           saveRDS(fb, fp)
           values[["ph_fb_list"]] = NULL
@@ -873,7 +876,7 @@ server_design <- function(input, output, session, values){
         shell.exec(fn_xlsx)
 
 
-          }
+          #}
       }
 
 

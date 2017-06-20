@@ -78,11 +78,11 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
      BIBD = agricolae::design.bib(trt1, k, r = NULL, serie = series, maxRep = maxRep, randomization = random,
                                       seed = 0, kinds = "Super-Duper",seed = seed),
      AD = agricolae::design.alpha(trt1, k, r, serie = series, randomization = random, seed = seed),
-     CD = agricolae::design.cyclic(trt1, k, r, serie = series, randomization = random, seed = seed),
+     CD = agricolae::design.cyclic(trt1, k, r, serie = series, randomization = random, seed = seed)#,
 
-     NCI = geneticdsg::design_carolina(set = set , r = r, male = male, female = female, type = 1),
+     #NCI = geneticdsg::design_carolina(set = set , r = r, male = male, female = female, type = 1),
 
-     NCII = geneticdsg::design_carolina(set = set , r = r, male = male, female = female, type = 2)
+     #NCII = geneticdsg::design_carolina(set = set , r = r, male = male, female = female, type = 2)
 
 
      #SPPD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = sub_design, series,
