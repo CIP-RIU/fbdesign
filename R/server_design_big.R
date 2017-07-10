@@ -172,7 +172,7 @@ server_design_big <- function(input, output, session, values){
   output$fbDesign_country_big <- shiny::renderUI({
     #sites_data <- fbsites::get_site_table() #before
 
-    #sites_data <- site_table #data from package fbdesing (old code)
+    #sites_data <- site_table #data from package fbdesign (old code)
 
     sites_data <- values$sites_data_big # new code:
 

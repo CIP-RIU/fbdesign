@@ -98,7 +98,7 @@
 #' @param gen_design_abbr Genetic design abbreviation
 #' @param type_of_ploidy Type of ploidy
 #' @param set The number of sets
-#' @param rep The number of repetition
+#' @param r The number of repetition
 #' @param block The number of block
 #' @param exp_env The environment of the experiment
 #' @param n_plot_row Number of plots per row
@@ -125,7 +125,7 @@
 add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value", exp_design=NA,
                                    genetic_design=NA, gen_design_abbr =NA, type_of_ploidy=NA,
                                    set=NA,
-                                   rep=NA,
+                                   r=NA,
                                    block=NA,
                                    exp_env=NA,
                                    plot_start_number=NA,
@@ -164,14 +164,14 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value", 
   # Replacing parameters ----------------------------------------------------
   Installation[Installation$Factor=="Experimental_design", col_name] <- experimental_design_label(exp_design)
   Installation[Installation$Factor=="Experimental_design_abbreviation",col_name] <- paste(exp_design)
-  #Installation[Installation$Factor=="Genetic_design", col_name] <- genetic_design_label(genetic_design)
-  #Installation[Installation$Factor=="Experimental_genetic_design_abbreviation", col_name] <- paste(genetic_design)
-  #Installation[Installation$Factor=="Type_of_ploidy", col_name] <- paste(type_of_ploidy)
-  #Installation[Installation$Factor=="Number_of_sets", col_name] <- paste(set)
+  Installation[Installation$Factor=="Genetic_design", col_name] <- genetic_design_label(genetic_design)
+  Installation[Installation$Factor=="Experimental_genetic_design_abbreviation", col_name] <- paste(genetic_design)
+  Installation[Installation$Factor=="Type_of_ploidy", col_name] <- paste(type_of_ploidy)
+  Installation[Installation$Factor=="Number_of_sets", col_name] <- paste(set)
   Installation[Installation$Factor=="Labels_for_factor_genotypes",col_name] <- paste("Institutional number")
   Installation[Installation$Factor=="Block_size_(applicable_for_BIBD_only)",col_name] <- paste("NA")
-  Installation[Installation$Factor=="Number_of_replications_or_blocks",col_name] <- paste(rep)
-  Installation[Installation$Factor=="Block_number",col_name] <- paste(rep)
+  Installation[Installation$Factor=="Number_of_replications_or_blocks",col_name] <- paste(r)
+  Installation[Installation$Factor=="Block_number",col_name] <- paste(r)
   Installation[Installation$Factor=="Experimental_Environment",col_name] <- paste(exp_env)
   Installation[Installation$Factor=="Plot_start_number",col_name] <- paste("NA")
   Installation[Installation$Factor=="Number_of_pots", col_name] <- paste(n_pots)
@@ -458,6 +458,10 @@ add_fieldbook_sheet <-function(file,fieldbook){
    if(abbr_design == "F2CRD")  {out <- "Factorial Two-Way Design in CRD (F2CRD)"}
    if(abbr_design == "F2RCBD") {out <- "Factorial Two-Way Design in RCBD (F2RCBD)"}
    if(abbr_design == "AD")     {out <- "Alpha Design(0,1) (AD)"}
+   if(abbr_design == "WD")     {out <- "Westcott Design (AD)"}
+
+
+
 
    out
 
@@ -488,9 +492,10 @@ add_fieldbook_sheet <-function(file,fieldbook){
  genetic_design_label <- function(abbr_design = "NCI"){
 
    abbr_design <- stringr::str_trim(abbr_design,side="both")
+
    if(abbr_design == "NCI")    {out <- "North Caroline Design I"  }
    if(abbr_design == "NCII")   {out <- "North Caroline Design II"  }
-   if(abbr_design == "LxT")    {out <- "Line by Tester"}
+   if(abbr_design == "LXT")    {out <- "Line by Tester"}
 
    out
 
