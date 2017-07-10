@@ -358,25 +358,26 @@ shinydashboard::tabItem(tabName = name,
 
                            shiny::tabPanel("Statistical Design", value = "design", icon = shiny::icon("pie-chart"),
 
+                                  #  conditionalPanel( condition = "output.condition_selmlist==0",
 
-                                      conditionalPanel( condition = "output.condition_selmlist!=0",
+                                                             br(),
+                                                             shiny::selectInput("designFieldbook", "Design",  c("Choose one" = "", design_choices), selected = 'RCBD',
+                                                                                multiple = FALSE),
 
-                                           br(),
-                                           #shiny::selectInput("design_geneticFieldbook", "Genetic design",  c("Choose one" = "", genetic_design_choices) ,multiple = FALSE),
-                                           shiny::selectInput("design_geneticFieldbook", "Genetic design",  c(genetic_design_choices) ,multiple = FALSE),
-                                           genetic_design_conditional_panels()
+                                                             design_conditional_panels()
 
-                                      ),
+                                   #  )#,
 
-                                      conditionalPanel( condition = "output.condition_selmlist==0",
+                                      # conditionalPanel( condition = "output.condition_selmlist!=0",
+                                      #
+                                      #      br(),
+                                      #      #shiny::selectInput("design_geneticFieldbook", "Genetic design",  c("Choose one" = "", genetic_design_choices) ,multiple = FALSE),
+                                      #      shiny::selectInput("design_geneticFieldbook", "Genetic design",  c(genetic_design_choices) ,multiple = FALSE),
+                                      #      genetic_design_conditional_panels()
+                                      #
+                                      # )
 
-                                          br(),
-                                          shiny::selectInput("designFieldbook", "Design",  c("Choose one" = "", design_choices), selected = 'RCBD',
-                                                             multiple = FALSE),
 
-                                          design_conditional_panels()
-
-                                     )
 
                            ),
 

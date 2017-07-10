@@ -164,10 +164,10 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value", 
   # Replacing parameters ----------------------------------------------------
   Installation[Installation$Factor=="Experimental_design", col_name] <- experimental_design_label(exp_design)
   Installation[Installation$Factor=="Experimental_design_abbreviation",col_name] <- paste(exp_design)
-  Installation[Installation$Factor=="Genetic_design", col_name] <- genetic_design_label(genetic_design)
-  Installation[Installation$Factor=="Experimental_genetic_design_abbreviation", col_name] <- paste(genetic_design)
-  Installation[Installation$Factor=="Type_of_ploidy", col_name] <- paste(type_of_ploidy)
-  Installation[Installation$Factor=="Number_of_sets", col_name] <- paste(set)
+  #Installation[Installation$Factor=="Genetic_design", col_name] <- genetic_design_label(genetic_design)
+  #Installation[Installation$Factor=="Experimental_genetic_design_abbreviation", col_name] <- paste(genetic_design)
+  #Installation[Installation$Factor=="Type_of_ploidy", col_name] <- paste(type_of_ploidy)
+  #Installation[Installation$Factor=="Number_of_sets", col_name] <- paste(set)
   Installation[Installation$Factor=="Labels_for_factor_genotypes",col_name] <- paste("Institutional number")
   Installation[Installation$Factor=="Block_size_(applicable_for_BIBD_only)",col_name] <- paste("NA")
   Installation[Installation$Factor=="Number_of_replications_or_blocks",col_name] <- paste(r)
@@ -446,6 +446,7 @@ add_fieldbook_sheet <-function(file,fieldbook){
 
    abbr_design <- stringr::str_trim(abbr_design,side="both")
 
+   if(is.na(abbr_design))      {out <- "None"}
    if(abbr_design == "UNDR")   {out <- "Unreplicated Design with No Randomization (UNDR)"  }
    if(abbr_design == "RCBD")   {out <- "Randomized Complete Block Design (RCBD)"}
    if(abbr_design == "CRD")    {out <- "Completely Randomized Design (CRD)" }
@@ -493,6 +494,7 @@ add_fieldbook_sheet <-function(file,fieldbook){
 
    abbr_design <- stringr::str_trim(abbr_design,side="both")
 
+   if(is.na(abbr_design))      {out <- "None"  }
    if(abbr_design == "NCI")    {out <- "North Caroline Design I"  }
    if(abbr_design == "NCII")   {out <- "North Caroline Design II"  }
    if(abbr_design == "LXT")    {out <- "Line by Tester"}

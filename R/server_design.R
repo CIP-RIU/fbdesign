@@ -454,8 +454,6 @@ server_design <- function(input, output, session, values){
 
     sites_data <- values$sites_data
 
-
-
     fbsites::get_filter_locality(sites_data = sites_data, country_input= input$fbDesign_countryTrial)
   })
 
@@ -928,8 +926,6 @@ server_design <- function(input, output, session, values){
 
           tpds <- get_type_list_ds(material_table())
 
-          if(tpds=="parental")
-
 
           #if(is_parental==TRUE){
           if(tpds=="parental"){
@@ -970,10 +966,10 @@ server_design <- function(input, output, session, values){
                   mtl_instn <- as.character(mtl$Is_control)
 
                   mtl_checks_count <- is_control(mtl_table)
-                  #print(res)
+                  print(mtl_checks_count)
 
                 if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1  ){
-                          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "info")
+                          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks are needed in 'Is_Control' column. Verify Material List file"), styleclass = "danger")
 
                   flag <- FALSE
 
@@ -995,7 +991,7 @@ server_design <- function(input, output, session, values){
             if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1 || length(mtl_checks_count)>2  ){
 
               shinysky::showshinyalert(session, "alert_fb_done",
-                                       paste("ERROR in Westcott Design: Two checks are needed in 'Is_Control' column. Verify your Material List file"), styleclass = "info")
+                                       paste("ERROR in Westcott Design: Two checks are needed in 'Is_Control' column. Verify your Material List file"), styleclass = "danger")
               flag <- FALSE
             } else {
               flag <- TRUE
@@ -1011,12 +1007,14 @@ server_design <- function(input, output, session, values){
             flag <- FALSE
           }
 
+          print("flag")
+          print(flag)
+
           if(!file.exists(fp) && flag == TRUE) {
 
             saveRDS(fb, fp)
             values[["ph_fb_list"]] = NULL
-            shinysky::showshinyalert(session, "alert_fb_done", paste("GREAT: Fieldbook successfully created!", "success"),
-                                     styleclass = "success")
+            shinysky::showshinyalert(session, "alert_fb_done", paste("GREAT: Fieldbook successfully created!"), styleclass = "success")
 
             ##after fbglobal
             #Set up the file path
@@ -1072,9 +1070,9 @@ server_design <- function(input, output, session, values){
 
              add_installation_sheet(file=fn_xlsx, crop_template = crop_template, col_name = "Value",
                                  exp_design = input$designFieldbook,
-                                 genetic_design = input$design_geneticFieldbook,
-                                 type_of_ploidy = input$design_genetic_ploidy,
-                                 set = input$design_genetic_nc_set,
+                                 #genetic_design = input$design_geneticFieldbook,#hidden in 7/10/2017 11:20
+                                 #type_of_ploidy = input$design_genetic_ploidy, #hidden in 7/10/2017 11:20
+                                 #set = input$design_genetic_nc_set, #hidden in 7/10/2017 11:20
                                  #rep = input$designFieldbook_r,#deprecated. Just for statistical design but not for genetic studies.
                                  r = r,
                                  block=NA,
