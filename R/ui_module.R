@@ -1,27 +1,28 @@
 # choices for statistical design input
 design_choices <- c(
   "Unreplicated Design (UNDR)" = "UNDR",
-  "Randomized Complete Block Design (RCBD)" = "RCBD",
+  "Westcott Design (WD)" = "WD",
   "Completely Randomized Design (CRD)" = "CRD",
+  "Randomized Complete Block Design (RCBD)" = "RCBD",
   "Augmented Block Design (ABD)" = "ABD",
+  "Alpha Design (AD)" = "AD",
   "Latin Square Design (LSD)" = "LSD",
+  "Factorial Two-Way Design in CRD (F2CRD)" = "F2CRD",
+  "Factorial Two-Way Design in RCBD (F2RCBD)" = "F2RCBD",
   "Split Plot with Plots in CRD (SPCRD)" = "SPCRD",
   "Split Plot with Plots in RCBD (SPRCBD)" = "SPRCBD",
   #"Split Plot with Plots in LSD (SPLSD)" = "SPLSD",
-  "Strip Plot Design (STRIP)" = "STRIP",
-  "Factorial Two-Way Design in CRD (F2CRD)" = "F2CRD",
-  "Factorial Two-Way Design in RCBD (F2RCBD)" = "F2RCBD",
-#  "Balanced Incomplete Block Design (BIBD)" = "BIBD",
-#  "Graeco-Latin Design (GLD)" = "GLD",
-#  "Youden Design (YD)" = "YD",
-#  "Cyclic Design (CD)" = "CD",
-#  "Lattice Design (LD)" = "LD" ,
-  "Alpha Design (AD)" = "AD"
+  "Strip Plot Design (STRIP)" = "STRIP"
+# "Balanced Incomplete Block Design (BIBD)" = "BIBD",
+# "Graeco-Latin Design (GLD)" = "GLD",
+# "Youden Design (YD)" = "YD",
+# "Cyclic Design (CD)" = "CD",
+# "Lattice Design (LD)" = "LD" ,
   # #"Augmented Partially Replicated Design (APRD)" = "APRD",
   # #"Factorial Design (F2SPPD)" = "F2SPPD",
-  #"North Carolina Design I" = "NCI"#,
+  # "North Carolina Design I" = "NCI"#,
   # #"North Carolina Design II" = "NCII",
-  # #"North Carolina Design III" = "NCIII"
+  # #"North Carolina Design III" = "NCIII",
 )
 
 #choices for statistical design input
@@ -61,8 +62,6 @@ design_conditional_panels <- function(){
       input.designFieldbook == 'SPRCBD'|
       input.designFieldbook == 'SPLSD'|
       input.designFieldbook == 'STRIP'",
-
-
        # TODO: ab - factorial, split
       shiny::selectInput("designFieldbook_r", "Replications", 2:100, 2 )
 
@@ -96,7 +95,12 @@ design_conditional_panels <- function(){
 
     ),
 
+    shiny::conditionalPanel(
+      "input.designFieldbook == 'WD'",
+      shiny::selectInput("designFieldbook_wd_row", "Number of rows of the field", 2:5000, 2 ),
+      shiny::selectInput("designFieldbook_wd_col", "Number of columns between two check columns", 2:100, 10)
 
+    ),
 
 
     shiny::conditionalPanel(
@@ -106,6 +110,15 @@ design_conditional_panels <- function(){
 
               icon = icon("bullhorn"), color = "blue", fill = TRUE, width = NULL)
     ),
+
+    shiny::conditionalPanel(
+      "input.designFieldbook == 'WD'", # TODO: ab - factorial, split
+      infoBox(title = "IMPORTANT NOTE", subtitle = "Westcott design needs 2 checks. Verify if your material have these checks and put an 'x' mark in 'Is_control' column for each check.
+              Otherwise, Westcott Design does not work.",
+
+              icon = icon("bullhorn"), color = "blue", fill = TRUE, width = NULL)
+    ),
+
 
     shiny::conditionalPanel(
       "input.designFieldbook == 'LD'", # TODO: ab - factorial, split
@@ -323,23 +336,24 @@ shinydashboard::tabItem(tabName = name,
                            shiny::tabPanel("Statistical Design", value = "design", icon = shiny::icon("pie-chart"),
 
 
-                                      # conditionalPanel( condition = "output.condition_selmlist!=0",
-                                      #
-                                      #      br(),
-                                      #      shiny::selectInput("design_geneticFieldbook", "Genetic design",  c("Choose one" = "", genetic_design_choices) ,multiple = FALSE),
-                                      #      genetic_design_conditional_panels()
-                                      #
-                                      # ),
+                                      conditionalPanel( condition = "output.condition_selmlist!=0",
 
-                                     # conditionalPanel( condition = "output.condition_selmlist==0",
+                                           br(),
+                                           #shiny::selectInput("design_geneticFieldbook", "Genetic design",  c("Choose one" = "", genetic_design_choices) ,multiple = FALSE),
+                                           shiny::selectInput("design_geneticFieldbook", "Genetic design",  c(genetic_design_choices) ,multiple = FALSE),
+                                           genetic_design_conditional_panels()
+
+                                      ),
+
+                                      conditionalPanel( condition = "output.condition_selmlist==0",
 
                                           br(),
                                           shiny::selectInput("designFieldbook", "Design",  c("Choose one" = "", design_choices), selected = 'RCBD',
                                                              multiple = FALSE),
-                                          #shiny::checkboxInput("designFieldbook_random", "Use randomization", TRUE),
+
                                           design_conditional_panels()
 
-                                      #)
+                                     )
 
                            ),
 

@@ -458,6 +458,7 @@ add_fieldbook_sheet <-function(file,fieldbook){
    if(abbr_design == "F2CRD")  {out <- "Factorial Two-Way Design in CRD (F2CRD)"}
    if(abbr_design == "F2RCBD") {out <- "Factorial Two-Way Design in RCBD (F2RCBD)"}
    if(abbr_design == "AD")     {out <- "Alpha Design(0,1) (AD)"}
+   if(abbr_design == "WD")     {out <- "Westcott Design (AD)"}
 
    out
 

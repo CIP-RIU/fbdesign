@@ -39,12 +39,88 @@ fbdesign_mtl_files <- function(){
 #' Detection of parent list
 #' @describeIn Logical. Say TRUE if your material belongs to parental list.
 #' @param mlist_name SelectInput value (commonly),
+#' @author Omar Benites
+
 
 is_parentList <- function(mlist_name){
   mlist <- mlist_name
   cond <- stringr::str_detect(mlist,"_parent_")
   return(cond)
 }
+
+
+#' Get the type of list (clonal, family or parental list) according to the file name.
+#' @describeIn Character. Say \code{parent} wheter it is a parental list. Otherwise, \code{standard} whether it's a clonal or family list.
+#' @param mlist SelectInput value (commonly),
+#' @author Omar Benites
+#' @export
+
+
+get_type_list_fname <- function(mlist){
+
+  mlist <- mlist
+
+  cond <- stringr::str_detect(mlist,"_parent_")
+  if(cond==TRUE){
+    type <- "parental"
+
+  } else {
+    #clonal or family list.
+    type <- "clonal"
+  }
+  return(type)
+}
+
+
+#' Detection of parent list
+#' @describeIn Character. Say \code{parent} wheter it is a parental list. Otherwise, \code{standard} whether it's a clonal or family list.
+#' @param type_import shiny input value. SelectInput value for type of import
+#' @param ml_file_name shiny input value. SelecInput value for file names
+#' @author Omar Benites
+#' @export
+
+
+get_mlist_file_name <- function(type_import, ml_file_name){
+
+  if(type_import == "Template") {
+
+    mtlist_file_name <- ml_file_name
+    if(is.null(mtlist_file_name)){mtlist_file_name <- NULL}
+
+  }
+
+  if(type_import == "Local List"){
+
+    mtlist_file_name <- ml_file_name
+    if(is.null(mtlist_file_name) || mtlist_file_name == ""){  mtlist_file_name <- NULL  }
+
+  }
+
+  mlist_file_name
+}
+
+#' Type of material list (clonal, family or parental list) according to the data structure.
+#' @describeIn Logical. Say TRUE if your material belongs to parental list.
+#' @param mlist list. List of attributes based on breeding material tables.
+#' @author Omar Benites
+
+
+get_type_list_ds <- function(mlist){
+
+   list_names <- names(mlist)
+   #Parental tables are included in parental list files. For this reason, we search in the argument of the function.
+
+   if(is.element("parental_table", list_names)){
+      # parental list.
+      type <- "parental"
+   } else {
+      #clonal or family list.
+      type <- "clonal"
+   }
+  return(type)
+
+}
+
 
 
 

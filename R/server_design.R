@@ -30,6 +30,7 @@ server_design <- function(input, output, session, values){
           mtl_list <- as.list(mtl_temp) #mtl in list format
         }
 
+
    }
 
     if(input$select_import=="Local List"){
@@ -43,8 +44,8 @@ server_design <- function(input, output, session, values){
         mtl_temp <- readRDS(sel_list)
 
 
-        is_parent_list <- is_parentList(sel_list)
-        if(is_parent_list==TRUE){
+        #is_parent_list <- is_parentList(sel_list)
+        if(is_parentList(sel_list)==TRUE){
           #Case: parental list (female and male)
           mtl_list <- mtl_temp
         }
@@ -58,11 +59,19 @@ server_design <- function(input, output, session, values){
     }
 
     mtl_list
+
   })
+
+
+
+
+
+
+
 
   # InfoBox to display messages of upload material list (genotype, family and parental list) ---------------------------------
 
-  #CODE FOR GENETIC DESIGNS, enable after Africa's installer
+  #CODE FOR GENETIC DESIGNS, disable for Africa installer
 #   output$approvalBox <- renderInfoBox({
 #
 #     # if(input$select_import=="Template") {
@@ -134,7 +143,7 @@ server_design <- function(input, output, session, values){
 #       else if(all(is.na(germoplasm_fem))) {
 #
 #         infoBox(title="ERROR", subtitle=
-#                   paste("The female's accession number are empty.", "Please check female's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
+#                   paste("The female's accession numbers are empty.", "Please check female's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
 #                   color = "red",fill = TRUE, width = NULL)
 #
 #       }
@@ -142,7 +151,7 @@ server_design <- function(input, output, session, values){
 #       else if(all(is.na(germoplasm_male))) {
 #
 #         infoBox(title="ERROR", subtitle=
-#                   paste("The male's accession number are empty.", "Please check male's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
+#                   paste("The male's accession numbers are empty.", "Please check male's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
 #                   color = "red",fill = TRUE, width = NULL)
 #
 #
@@ -165,31 +174,165 @@ server_design <- function(input, output, session, values){
 
   output$approvalBox <- renderInfoBox({
 
-    #germoplasm <-material_table()$Institutional_number
-    germoplasm <-material_table()$Accession_Number
-    #germoplasm <-germoplasm_list()$institutional_number
-    print(germoplasm)
+    #data.frame is the data structue for the clonal and family list. In the parental and family module, we save lists in data.frame format
 
-    if(is.null(germoplasm)){
-      infoBox(title="Upload", subtitle=
-                paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
-              color = "blue",fill = TRUE, width = NULL)
+
+    # plos <<- material_table()
+    #
+    # lsus <<-  get_type_list_ds(material_table())
+
+
+    # if( is.null(material_table()) ){
+    #
+    #   title <- "Upload"
+    #   subtitle <-   paste("your material list file. Or, press the button below to download and fill the template.")
+    #   color <- "blue"
+    #   icon <- "upload"
+    #   lib <- "glyphicon"
+    #   fill <- TRUE
+    #   width <- NULL
+    #
+    #   # infoBox(title="Upload", subtitle=
+    #   #           paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
+    #   #         color = "blue",fill = TRUE, width = NULL)
+    #
+    # }
+
+    #parent list
+    if( get_type_list_ds(material_table()) == "clonal" ) {
+
+      #germoplasm <- germoplasm$Accesssion_Number
+
+      germoplasm <-material_table()$Accession_Number
+      #print(germoplasm)
+
+      if(is.null(germoplasm)){
+
+        title <- "Upload"
+        subtitle <-   paste("your material list file. Or, press the button below to download and fill the template.")
+        color <- "blue"
+        icon <- "upload"
+        lib <- "glyphicon"
+        fill <- TRUE
+        width <- NULL
+
+      # infoBox(title="Upload", subtitle=
+      #           paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
+      #         color = "blue",fill = TRUE, width = NULL)
 
     }
-    else if(all(is.na(germoplasm))) {
-      infoBox(title="ERROR", subtitle=
-                paste("Your material list", "is empty. Please check it"), icon = icon("warning-sign", lib = "glyphicon"),
-              color = "red",fill = TRUE, width = NULL)
-      #shell.exec(hot_path())
 
-    } else {
-      #       material <- paste(germoplasm, collapse = ",")
-      #       message <-  paste("Material list imported: ", material)
+     else if(all(is.na(germoplasm))) {
 
-      infoBox(title="GREAT!", subtitle =
-                paste(" was successfully uploaded!"),  icon = icon("ok", lib = "glyphicon"),
-              color = "green",fill = TRUE, width = NULL)
+     #if(all(is.na(germoplasm))) {
+
+          title <- "ERROR"
+          subtitle <- paste("Your material list", "is empty. Please check it")
+          color <- "red"
+          icon <- "warning-sign"
+          lib <- "glyphicon"
+          fill <- TRUE
+          width <- NULL
+
+          # infoBox(title="ERROR", subtitle=
+          #           paste("Your material list", "is empty. Please check it"), icon = icon("warning-sign", lib = "glyphicon"),
+          #         color = "red",fill = TRUE, width = NULL)
+
+      } else {
+
+          title <- "GREAT!"
+          subtitle <-  paste(" was successfully uploaded!")
+          color <- "green"
+          icon <- "ok"
+          lib <- "glyphicon"
+          fill <- TRUE
+          width <- NULL
+
+          # infoBox(title="GREAT!", subtitle =
+          #           paste(" was successfully uploaded!"),  icon = icon("ok", lib = "glyphicon"),
+          #         color = "green",fill = TRUE, width = NULL)
     }
+
+}
+
+    #list is the data structure for parental list. In the parental module, we save lists in list format
+    if( get_type_list_ds(material_table()) == "parental" ) {
+
+      germoplasm_fem <-  material_table()$female$Accession_Number
+      germoplasm_male <- material_table()$male$Accession_Number
+
+      if(is.null(germoplasm_fem) && is.null(germoplasm_male)){
+
+
+          title <- "Upload"
+          subtitle <-  paste(" your parental list file. Or, press the button below to download and fill the template.")
+          color <- "blue"
+          icon <- "upload"
+          lib <- "glyphicon"
+          fill <- TRUE
+          width <- NULL
+
+                # infoBox(title="Upload", subtitle=
+                #           paste("your parental list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
+                #           color = "blue",fill = TRUE, width = NULL)
+
+      }
+
+      else if(all(is.na(germoplasm_fem))) {
+
+      #if(all(is.na(germoplasm_fem))) {
+
+           title <- "ERROR"
+           subtitle <-  paste("The female's accession numbers are empty.", "Please check female's accesion number column")
+           color <- "red"
+           icon <- "warning-sign"
+           lib <- "glyphicon"
+           fill <- TRUE
+           width <- NULL
+
+                # infoBox(title="ERROR", subtitle=
+                #           paste("The female's accession numbers are empty.", "Please check female's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
+                #           color = "red",fill = TRUE, width = NULL)
+
+      }
+
+      else if(all(is.na(germoplasm_male))) {
+
+          title <- "ERROR"
+          subtitle <-  paste("The male's accession numbers are empty")
+          color <- "red"
+          icon <- "warning-sign"
+          lib <- "glyphicon"
+          fill <- TRUE
+          width <- NULL
+
+                # infoBox(title="ERROR", subtitle=
+                #           paste("The male's accession numbers are empty.", "Please check male's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
+                #           color = "red",fill = TRUE, width = NULL)
+
+      }
+
+      else {
+
+        title <- "GREAT!"
+        subtitle <-  paste(" your parental list file was successfully uploaded!")
+        color <- "green"
+        icon <- "ok"
+        lib <- "glyphicon"
+        fill <- TRUE
+        width <- NULL
+
+
+      }
+
+
+    }
+
+
+    shinydashboard::infoBox(title=title, subtitle =subtitle,  icon = icon(icon, lib = lib),
+            color = color, fill = TRUE, width = NULL)
+
+
   })
 
   # Design of variables ---------------------------------------------------------------
@@ -221,6 +364,7 @@ server_design <- function(input, output, session, values){
 
   # ID or name of the field book ---------------------------------------------------------------
   fbdesign_id <- shiny::reactive({
+
     if (!is.null(input$designFieldbook_crop)) {
       #tbl = fbcrops::get_crop_table()
 
@@ -353,11 +497,14 @@ server_design <- function(input, output, session, values){
   #Conditional reactive value for displaying Standard Statistical Design or Genetic Design
   output$condition_selmlist <-  shiny::reactive({
 
-    mlist <- input$designFieldbook_sel_mlist
+    mlist <- material_table()
+
+    #mlist <- input$designFieldbook_sel_mlist
     if(is.null(mlist) || mlist == ""){  return()  }
-    is_parent <- is_parentList(mlist)
-    if(is_parent==TRUE) {out <- 1}
-    if(is_parent==FALSE){out <- 0}
+    #is_parent <- is_parentList(mlist)
+    tp <- get_type_list_ds(mlist)
+    if(tp=="parental") {out <- 1}
+    if(tp=="clonal")   {out <- 0}
     return(out)
 
   })
@@ -385,7 +532,6 @@ server_design <- function(input, output, session, values){
                         "Number of plants per plot", rpplot , rpplot, rpplot)
 
   })
-
 
   # Plot Size Values #####
   react_psize <- reactive({
@@ -456,7 +602,7 @@ server_design <- function(input, output, session, values){
         }
 
         if(input$select_import=="Local List"){
-          req(input$designFieldbook_sel_mlist)
+          req( input$designFieldbook_sel_mlist)
         }
 
 
@@ -471,13 +617,17 @@ server_design <- function(input, output, session, values){
                      incProgress(3/15)
 
                      #table_materials <- germoplasm_list()
-                     material_tbl = material_table()
+                      material_tbl = material_table()
 
                      #  #Passing function to detect parental lists (utils.R) -------------------
                      #For parental list and genetic designs
-                     is_parental <- is_parentList(input$designFieldbook_sel_mlist)
 
-                     if(is_parental==TRUE){ #It's a parental list.
+                     is_parental <- is_parentList(input$designFieldbook_sel_mlist)
+                     #type of list base on data structure
+                     tpds <- get_type_list_ds(material_tbl)
+
+                     #if(is_parental==TRUE){ #It's a parental list.
+                     if(tpds=="parental"){
 
                        #Declaration of standard statistical designs parameters equal to NULL
                        trt1 <- NULL
@@ -497,8 +647,8 @@ server_design <- function(input, output, session, values){
                          }
                      }
 
-                     if(is_parental==FALSE){ #It's not a parental list
-
+                     #if(is_parental==FALSE){ #It's not a parental list
+                     if(tpds=="clonal"){
 
                            #Get material list for Treatment 1
                            trt1 = material_tbl$Accession_Number
@@ -551,7 +701,6 @@ server_design <- function(input, output, session, values){
                            }
 
 
-
                            #Augmented block design
                            if(input$designFieldbook=="ABD"){
                              #NOTE: In ABD(Augmented Design)  design.dau(trt1 = checks, trt2= genotypes)
@@ -563,12 +712,25 @@ server_design <- function(input, output, session, values){
                              print(trt2)
                            }
 
+
+                           if(input$designFieldbook=="WD"){
+                             #NOTE: In wd you need two checks
+                             #For this reason :
+
+                             trt2 <- is_control(material_tbl) #control material
+                             trt1 <- setdiff(trt1,trt2) #remove controls from material list
+
+                           }
+
                            #Declaration of Genetic parameters equal to NULL
                            male <- NULL
                            female <- NULL
                            set <- NULL
 
                      }
+
+
+
 
                      incProgress(3/15)
 
@@ -596,6 +758,11 @@ server_design <- function(input, output, session, values){
 
                      incProgress(3/15)
 
+                     print(as.integer(input$designFieldbook_r))
+                     print(as.integer(input$designFieldbook_k))
+                     print(trt1)
+                     print(trt2)
+
                      #Design of Fieldbook
                      fb = design_fieldbook(design = design,
                                            trt1 = trt1,
@@ -607,6 +774,8 @@ server_design <- function(input, output, session, values){
                                            r = as.integer(input$designFieldbook_r),
                                            k = as.integer(input$designFieldbook_k),
                                            # genetic design parameters
+                                           number_row = as.integer(input$designFieldbook_wd_row), #wescott design
+                                           number_col = as.integer(input$designFieldbook_wd_col), #wescott design
                                            set = set,
                                            male = male,
                                            female= female,
@@ -620,7 +789,7 @@ server_design <- function(input, output, session, values){
 
                      #from character to numeric
                      fb[, 1] = as.integer(fb[, 1])
-
+                     print(fb)
                      fb
 
                     } )
@@ -636,27 +805,28 @@ server_design <- function(input, output, session, values){
     mtl_table <- as.data.frame(material_table())
     #Flag variable to check certain condition in fieldbooks. Initially declared TRUE
     flag <- TRUE
-    #print(mtl_table)
 
 
+    if(length(material_table())==0 ) {
+      flag <- FALSE
+      shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have not selected a material list. Please select/upload one"), styleclass = "danger")
+    }
+
+    # if(nrow(material_table())>= ) {
+    #   flag <- FALSE
+    #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Please upload your material list. Select one"), styleclass = "danger")
+    # }
+    #
 
     if(input$designFieldbook=="ABD"){
 
-      #mtl_table <- as.data.frame(material_table())
       mtl <- mtl_table
       mtl_instn <- as.character(mtl$Is_control)
-
       mtl_checks_count <- is_control(mtl_table)
-      # print("checks count")
-      # print(mtl_checks_count)
-      # print(length(mtl_checks_count))
-      # print(all(is.na(mtl_instn)))
 
       if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1) {
-
         flag <- FALSE
-        shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "info")
-        #break
+        shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "danger")
       } else {
 
         flag <- TRUE
@@ -664,9 +834,27 @@ server_design <- function(input, output, session, values){
 
     }
 
+    if(input$designFieldbook=="WD"){
+
+      mtl <- mtl_table
+      mtl_instn <- as.character(mtl$Is_control)
+      mtl_checks_count <- is_control(mtl_table)
+      print(mtl_checks_count)
+
+      if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1 || length(mtl_checks_count)>2 ) {
+        flag <- FALSE
+        shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Just two checks are needed in Westcott Design. Verify 'Is_Control' column in your material list"), styleclass = "danger")
+      } else {
+
+        flag <- TRUE
+      }
+
+    }
+
+
     if(flag){
     fb = fbdraft()
-    #print(fb)
+    print(fb)
 
     output$fbDesign_table <- rhandsontable::renderRHandsontable({
       rhandsontable::rhandsontable(fb, readOnly = T)})
@@ -674,8 +862,6 @@ server_design <- function(input, output, session, values){
     }
 
   })
-
-
 
   shiny::observeEvent(input$fbDesign_create, {
 
@@ -739,6 +925,12 @@ server_design <- function(input, output, session, values){
           #This variable serves as a flag if our fieldbook is correct.
           flag <- TRUE
 
+          if(length(material_table)==0 ) {
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have not selected a material list. Please select/upload one"), styleclass = "danger")
+          }
+
+
           #In case of augmented block design, it must verify the checks in the stistical designs
           if(input$designFieldbook=="ABD"){
 
@@ -761,13 +953,31 @@ server_design <- function(input, output, session, values){
 
           }
 
+          if(input$designFieldbook=="WD"){
+
+            mtl <- mtl_table
+            mtl_instn <- as.character(mtl$Is_control)
+
+            mtl_checks_count <- is_control(mtl_table)
+
+            if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1 || length(mtl_checks_count)>2  ){
+
+              shinysky::showshinyalert(session, "alert_fb_done",
+                                       paste("ERROR in Westcott Design: Two checks are needed in 'Is_Control' column. Verify your Material List file"), styleclass = "info")
+              flag <- FALSE
+            } else {
+              flag <- TRUE
+            }
+
+          }
+
+
           #If field book does exist then print warning message: It's already created it.
           if(file.exists(fp))  {
             shinysky::showshinyalert(session, "alert_fb_done", paste("WARNING: This fieldbook already exists in HiDAP. Please Select Experiment Number in Crop & Location"),
                                      styleclass = "warning")
             flag <- FALSE
           }
-
 
 
           if(!file.exists(fp) && flag == TRUE) {
