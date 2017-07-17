@@ -24,7 +24,6 @@
 #' @param maxRep maximum number of repetitions
 #' @param cont continuouse labeling
 #' @param variables set of variables
-#'
 #' @return a dataframe
 #' @export
 #'
@@ -37,6 +36,7 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
                              sub_design  ="crd",
                              number_row  = NULL, #westcott
                              number_col  = NULL, #westcott
+                             type_lxt = 1, #type of line by tester.For further details, see geneticdsg package documentation.
                              set = NULL,
                              male = NULL,
                              female= NULL,
@@ -52,27 +52,35 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
   #   stop("Incorrect paramter combinations for LD design.")
   fb <- switch(design,
 
+     #unreplicated design
      UNDR = fbdesign::design.undr(trt1,r=1),
-     RCBD = agricolae::design.rcbd(trt1, r, series, randomization = random, first = first), #ok
-     CRD = agricolae::design.crd(trt1, r, series, randomization = random ), #ok
-     LSD = agricolae::design.lsd(trt1, series, randomization = random, first = first),
 
+     #randomized complete block design
+     RCBD = agricolae::design.rcbd(trt1, r, series, randomization = random, first = first), #ok
+     #complete randomzized design
+     CRD = agricolae::design.crd(trt1, r, series, randomization = random ), #ok
+     #latin square design
+     LSD = agricolae::design.lsd(trt1, series, randomization = random, first = first),
+     #split plot under crd
      SPCRD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = "crd", series,
                                     first, randomization = random, kinds = "Super-Duper"),
 
+     #split plot under rcbd
      SPRCBD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = "rcbd", series,
                                      first, randomization = random, kinds = "Super-Duper"),
-
+     #split plot under lsd
      SPLSD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = "lsd", series,
                                       first, randomization = random, kinds = "Super-Duper"),
-
+     #sptrip plot design
      STRIP = agricolae::design.strip(trt1 = trt1, trt2 = trt2, r = r, series,
                                     kinds ="Super-Duper" ,randomization =random),
-
+     #factorial two way under crd
      F2CRD = fbdesign::design.f2crd(trt1, trt2, r = r, series=series, random=random),
+
+     #factorial two way under rcbd
      F2RCBD = fbdesign::design.f2rcbd(trt1, trt2, r = r, series=series, random=random),
 
-     ##! ABD design tip: trt2::genotypes & trt:: genotypes
+     ##Augmented block design. Tip or Hint: trt2::genotypes & trt:: genotypes
      ABD = agricolae::design.dau(trt1, trt2, r = r, serie=series,
                                    kinds ="Super-Duper" ,randomization = random),
 
@@ -81,18 +89,20 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
      LD = agricolae::design.lattice(trt1, r, serie = series, randomization = random),
      BIBD = agricolae::design.bib(trt1, k, r = NULL, serie = series, maxRep = maxRep, randomization = random,
                                       seed = 0, kinds = "Super-Duper"),
+
      AD = agricolae::design.alpha(trt1, k, r, serie = series, randomization = random),
      CD = agricolae::design.cyclic(trt1, k, r, serie = series, randomization = random),
 
-
      #Westcott design need two checks. In st4gi this checks are two separeted parameters.
-     WD = st4gi::dw(geno = trt1, ch1 = trt2[1], ch2 = trt2[2], nr = number_row, nc =  number_col)
+     WD = st4gi::dw(geno = trt1, ch1 = trt2[1], ch2 = trt2[2], nr = number_row, nc =  number_col),
 
+     #north carolina I
+     NCI = geneticdsg::design_carolina(set = set, r = r, male = male, female = female, type = 1),
 
-     #NCI = geneticdsg::design_carolina(set = set , r = r, male = male, female = female, type = 1),
+     #north carolina II
+     NCII = geneticdsg::design_carolina(set = set, r = r, male = male, female = female, type = 2),
 
-     #NCII = geneticdsg::design_carolina(set = set , r = r, male = male, female = female, type = 2)
-
+     LXT <- geneticdsg::design_lxt(r =r, lines = female, testers = male, type = type_lxt)
 
      #SPPD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = sub_design, series,
      #                               first, randomization = random, kinds = "Super-Duper"),
@@ -194,18 +204,36 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
     names(fb$book) <- c("PLOT","ROW","COLUMN","INSTN")
   }
 
+  if (design == "NCI") {
+    fb$book <- fb$book
+    names(fb$book) <- c("PLOT","SET","REP","INSTN","MALE","FEMALE")
+  }
 
-  # if (design == "NCI") {
-  #
-  #   fb$book <- fb$book
-  #
-  # }
-  #
-  # if (design == "NCII") {
-  #
-  #   fb$book <- fb$book
-  #
-  # }
+  if (design == "NCII") {
+    fb$book <- fb$book
+    names(fb$book) <- c("PLOT","SET","REP","INSTN","FEMALE","MALE")
+  }
+
+  if(design == "LXT"){
+
+    if(type_lxt==1){
+
+      fb$book <-  fb$book
+      names(fb$book) <- c("PLOT","REP","LINE","TESTER","INSTN")
+    }
+
+
+
+    if(type_lxt==2){
+
+      fb$book <-  fb$book
+      names(fb$book) <- c("PLOT","REP","LINE","TESTER")
+    }
+
+
+
+  }
+
 
 #   if (design == "GLD") {
 #     if(zigzag)fb$book = agricolae::zigzag(fb)

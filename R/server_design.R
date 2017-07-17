@@ -63,12 +63,6 @@ server_design <- function(input, output, session, values){
   })
 
 
-
-
-
-
-
-
   # InfoBox to display messages of upload material list (genotype, family and parental list) ---------------------------------
 
   #CODE FOR GENETIC DESIGNS, disable for Africa installer
@@ -177,9 +171,19 @@ server_design <- function(input, output, session, values){
     #data.frame is the data structue for the clonal and family list. In the parental and family module, we save lists in data.frame format
 
 
+
     # plos <<- material_table()
     #
     # lsus <<-  get_type_list_ds(material_table())
+
+
+
+
+
+    # plos <<- material_table()
+    #
+    # lsus <<-  get_type_list_ds(material_table())
+
 
 
     # if( is.null(material_table()) ){
@@ -220,12 +224,12 @@ server_design <- function(input, output, session, values){
       #           paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
       #         color = "blue",fill = TRUE, width = NULL)
 
+
     }
 
-     else if(all(is.na(germoplasm))) {
+      else if(all(is.na(germoplasm))) {
 
      #if(all(is.na(germoplasm))) {
-
           title <- "ERROR"
           subtitle <- paste("Your material list", "is empty. Please check it")
           color <- "red"
@@ -237,6 +241,7 @@ server_design <- function(input, output, session, values){
           # infoBox(title="ERROR", subtitle=
           #           paste("Your material list", "is empty. Please check it"), icon = icon("warning-sign", lib = "glyphicon"),
           #         color = "red",fill = TRUE, width = NULL)
+
 
       } else {
 
@@ -252,6 +257,7 @@ server_design <- function(input, output, session, values){
           #           paste(" was successfully uploaded!"),  icon = icon("ok", lib = "glyphicon"),
           #         color = "green",fill = TRUE, width = NULL)
     }
+
 
 }
 
@@ -340,7 +346,7 @@ server_design <- function(input, output, session, values){
 
     crop <- input$designFieldbook_crop
 
-    if(crop == "potato"){tbl <- table_module_potato } #dataset from fbdesing data folder
+    if(crop == "potato"){tbl <- table_module_potato } #dataset from fbdesign data folder
     if(crop == "sweetpotato"){tbl <- table_module_sweetpotato } #dataset from fbdesgin data folder
 
     #mdl <- tbl[tbl$crop == crop, c("module", "module_name")] #HiDAP v1.0 Built_1 (deprecated table form)
@@ -434,7 +440,7 @@ server_design <- function(input, output, session, values){
   output$fbDesign_country <- shiny::renderUI({
      #sites_data <- fbsites::get_site_table() #before
 
-      # sites_data <- site_table #data from package fbdesing as an internal data BEFORE
+      # sites_data <- site_table #data from package fbdesign as an internal data BEFORE
 
      sites_data <- values$sites_data # read trial sites using reactive values from xdata folder (NEW CODE)
 
@@ -454,8 +460,6 @@ server_design <- function(input, output, session, values){
 
     sites_data <- values$sites_data
 
-
-
     fbsites::get_filter_locality(sites_data = sites_data, country_input= input$fbDesign_countryTrial)
   })
 
@@ -467,7 +471,7 @@ server_design <- function(input, output, session, values){
     #locs <- site_table #using data from package fbsite (OLD CODE)
     locs <- values$sites_data # read trial sites using reactive values from xdata folder (NEW CODE)
 
-    fbdesign_sites_selected <<- fbdesign_sites()
+    fbdesign_sites_selected <- fbdesign_sites()
     #print(locs)
     if (nrow(locs) > 0 ){
       #chc = locs$shortn
@@ -637,14 +641,34 @@ server_design <- function(input, output, session, values){
                        design <-  input$design_geneticFieldbook
 
                        # N.Caroline parameter
-                       if(input$design_geneticFieldbook=="NCI" || input$design_geneticFieldbook=="NCII"){
+                       if(design=="NCI" || design=="NCII"){
 
                            male <- material_tbl$male$Accession_Number
                            female <- material_tbl$female$Accession_Number
                            set <- input$design_genetic_nc_set
-                           r <- input$design_genetic_nc_r
+                           r <- input$design_genetic_r
+                           #r <- input$design_genetic_nc_r #deprecated code. Now works for lxt and NC
+                               if(design == "NCI"){
+                                 trt1_label  = "MALE"
+                                 trt2_label  = "FEMALE"
+                               }
 
-                         }
+                               if(design == "NCII"){
+                                 trt1_label  = "FEMALE"
+                                 trt2_label  = "MALE"
+                               }
+                       }
+
+                       if(design=="LXT"){
+
+                         male <- material_tbl$male$Accession_Number
+                         female <- material_tbl$female$Accession_Number
+                         trt1_label  <-  "LINE"
+                         trt2_label  <-  "TESTER"
+                         type_lxt_scheme <- input$design_genetic_lxt_type
+                         r <- input$design_genetic_r
+                       }
+
                      }
 
                      #if(is_parental==FALSE){ #It's not a parental list
@@ -699,8 +723,6 @@ server_design <- function(input, output, session, values){
 
                              }
                            }
-
-
                            #Augmented block design
                            if(input$designFieldbook=="ABD"){
                              #NOTE: In ABD(Augmented Design)  design.dau(trt1 = checks, trt2= genotypes)
@@ -720,7 +742,7 @@ server_design <- function(input, output, session, values){
                              trt2 <- is_control(material_tbl) #control material
                              trt1 <- setdiff(trt1,trt2) #remove controls from material list
 
-                           }
+
 
                            #Declaration of Genetic parameters equal to NULL
                            male <- NULL
@@ -728,9 +750,7 @@ server_design <- function(input, output, session, values){
                            set <- NULL
 
                      }
-
-
-
+                     }
 
                      incProgress(3/15)
 
@@ -758,10 +778,10 @@ server_design <- function(input, output, session, values){
 
                      incProgress(3/15)
 
-                     print(as.integer(input$designFieldbook_r))
-                     print(as.integer(input$designFieldbook_k))
-                     print(trt1)
-                     print(trt2)
+
+                     # print(as.integer(input$designFieldbook_r))
+                     # print(as.integer(input$designFieldbook_k))
+                     # print(trt1)
 
                      #Design of Fieldbook
                      fb = design_fieldbook(design = design,
@@ -771,7 +791,9 @@ server_design <- function(input, output, session, values){
                                            #trt1_label = "INSTN",
                                            trt1_label = trt1_label,
                                            trt2_label = trt2_label,
-                                           r = as.integer(input$designFieldbook_r),
+                                           #r = as.integer(input$designFieldbook_r),
+                                           r = as.integer(r),
+                                           type_lxt = as.integer(type_lxt_scheme),
                                            k = as.integer(input$designFieldbook_k),
                                            # genetic design parameters
                                            number_row = as.integer(input$designFieldbook_wd_row), #wescott design
@@ -792,17 +814,20 @@ server_design <- function(input, output, session, values){
                      print(fb)
                      fb
 
-                    } )
+
     })
   })
 
+})
 
   # Visualization of the field book -----------------------------------------
   shiny::observeEvent(input$fbDesign_draft, {
 
     # req(input$designFieldbook_sel_mlist)
     # req(input$designFieldbook)
-    mtl_table <- as.data.frame(material_table())
+    #print(material_table())
+    print(fbdraft())
+    mtl_table <- material_table()
     #Flag variable to check certain condition in fieldbooks. Initially declared TRUE
     flag <- TRUE
 
@@ -820,23 +845,28 @@ server_design <- function(input, output, session, values){
 
     if(input$designFieldbook=="ABD"){
 
-      mtl <- mtl_table
+      mtl <- as.data.frame(mtl_table)
+      #mtl <- material_table()
       mtl_instn <- as.character(mtl$Is_control)
       mtl_checks_count <- is_control(mtl_table)
 
       if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1) {
         flag <- FALSE
         shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "danger")
+
       } else {
 
         flag <- TRUE
-      }
+       }
 
+     #  flag <- TRUE
     }
+
 
     if(input$designFieldbook=="WD"){
 
-      mtl <- mtl_table
+      #mtl <- mtl_table
+      mtl <- as.data.frame(mtl_table)
       mtl_instn <- as.character(mtl$Is_control)
       mtl_checks_count <- is_control(mtl_table)
       print(mtl_checks_count)
@@ -850,6 +880,26 @@ server_design <- function(input, output, session, values){
       }
 
     }
+
+
+    if(input$designFieldbook=="AD"){
+
+      germoplasm <-material_table()$Accession_Number
+
+
+        print(germoplasm)
+        n <- length(germoplasm)
+        r <- as.numeric(input$designFieldbook_r)
+        k <- as.numeric(input$designFieldbook_k)
+
+        dach <- design.alpha.check(trt= germoplasm,k=k,r=r)
+        if(!dach$alfares){
+          flag <- FALSE
+          ms <- paste(dach$res,". The combination of ",r," and", k, " is wrong using ",n ," genotypes.")
+          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: ", ms), styleclass = "danger")
+        }
+    }
+
 
 
     if(flag){
@@ -882,9 +932,9 @@ server_design <- function(input, output, session, values){
     # req(input$tree_input_value)
 
 
-    withProgress(message = "Downloading Fieldbook..",value= 0,
+  withProgress(message = "Downloading Fieldbook..",value= 0,
                  {
-        incProgress(3/15)
+        incProgress(1/15)
         fb = fbdraft()
         print("fb in exporting")
 
@@ -903,12 +953,20 @@ server_design <- function(input, output, session, values){
           is_parental <- is_parentList(input$designFieldbook_sel_mlist)
 
           #In case of parental list
-          if(is_parental==TRUE){
-            mtl_table <- material_table()$parental_table
+
+          tpds <- get_type_list_ds(material_table())
+
+
+          #if(is_parental==TRUE){
+          if(tpds=="parental"){
+            r <- input$design_genetic_r
+           mtl_table <- material_table()$parental_table
           }
 
           #In case of other list (genotype and family)
-          if(is_parental==FALSE){
+          #if(is_parental==FALSE){
+          if(tpds=="clonal"){
+            r <- input$designFieldbook_r
             mtl_table <- as.data.frame(material_table())
           }
 
@@ -925,7 +983,8 @@ server_design <- function(input, output, session, values){
           #This variable serves as a flag if our fieldbook is correct.
           flag <- TRUE
 
-          if(length(material_table)==0 ) {
+          #Check if material list is empty
+          if(length(mtl_table)==0 ) {
             flag <- FALSE
             shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have not selected a material list. Please select/upload one"), styleclass = "danger")
           }
@@ -938,10 +997,10 @@ server_design <- function(input, output, session, values){
                   mtl_instn <- as.character(mtl$Is_control)
 
                   mtl_checks_count <- is_control(mtl_table)
-                  #print(res)
+                  print(mtl_checks_count)
 
                 if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1  ){
-                          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "info")
+                          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks are needed in 'Is_Control' column. Verify Material List file"), styleclass = "danger")
 
                   flag <- FALSE
 
@@ -953,6 +1012,7 @@ server_design <- function(input, output, session, values){
 
           }
 
+
           if(input$designFieldbook=="WD"){
 
             mtl <- mtl_table
@@ -963,12 +1023,32 @@ server_design <- function(input, output, session, values){
             if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1 || length(mtl_checks_count)>2  ){
 
               shinysky::showshinyalert(session, "alert_fb_done",
-                                       paste("ERROR in Westcott Design: Two checks are needed in 'Is_Control' column. Verify your Material List file"), styleclass = "info")
-              flag <- FALSE
+                 paste("ERROR in Westcott Design: Two checks are needed in 'Is_Control' column. Verify your Material List file"), styleclass = "danger")
+                 flag <- FALSE
             } else {
               flag <- TRUE
             }
 
+          }
+
+
+          if(input$designFieldbook=="AD"){
+
+            germoplasm <-material_table()$Accession_Number
+
+
+            print(germoplasm)
+            n <- length(germoplasm)
+            r <- as.numeric(input$designFieldbook_r)
+            k <- as.numeric(input$designFieldbook_k)
+
+            dach <- fbdesign::design.alpha.check(trt= germoplasm,k=k,r=r)
+
+            if(!dach$alfares){
+              ms <- paste(dach$res,". The combination of ",r," and", k, " is wrong using ",n ," genotypes.")
+              shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: ", ms), styleclass = "danger")
+              flag <- FALSE
+            }
           }
 
 
@@ -982,121 +1062,131 @@ server_design <- function(input, output, session, values){
 
           if(!file.exists(fp) && flag == TRUE) {
 
-          saveRDS(fb, fp)
-          values[["ph_fb_list"]] = NULL
-          shinysky::showshinyalert(session, "alert_fb_done", paste("GREAT: Fieldbook successfully created!", "success"),
-                                   styleclass = "success")
+            saveRDS(fb, fp)
+            values[["ph_fb_list"]] = NULL
+            shinysky::showshinyalert(session, "alert_fb_done", paste("GREAT: Fieldbook successfully created!"), styleclass = "success")
 
-          ##after fbglobal
-          #Set up the file path
-          xlsx_path <- fbglobal::get_base_dir()
-          xlsx_path <- file.path(xlsx_path, fbdesign_id())
-          fn_xlsx <- paste(xlsx_path, ".xlsx",sep= "")
-          ##
+            ##after fbglobal
+            #Set up the file path
+            xlsx_path <- fbglobal::get_base_dir()
+            xlsx_path <- file.path(xlsx_path, fbdesign_id())
+            fn_xlsx <- paste(xlsx_path, ".xlsx",sep= "")
+            ##
 
-          openxlsx::write.xlsx(fb, fn_xlsx,sheet="Fieldbook",overwrite=TRUE)
+            openxlsx::write.xlsx(fb, fn_xlsx,sheet="Fieldbook",overwrite=TRUE)
 
-          add_fieldbook_sheet(file = fn_xlsx, fieldbook = fb)
+            add_fieldbook_sheet(file = fn_xlsx, fieldbook = fb)
 
-          crop_template <- crop_template_xlsx #dataset loaded from fbdesign package
+            crop_template <- crop_template_xlsx #dataset loaded from fbdesign package
 
-          varsitos <- input$designFieldbook_traits
-          add_varlist_sheet(file=fn_xlsx, crop_template = crop_template,
-                            crop=input$designFieldbook_crop,
-                            trait_list = input$designFieldbook_traits)
-
-          add_minimal_sheet(file = fn_xlsx, crop_template = crop_template, col_name = "Value", Trial_name = fbdesign_id(),
-                            crop = input$designFieldbook_crop,
-                            type_trial = input$designFieldbook_module,
-                            begin_date = begin_date1,
-                            end_date = end_date1,
-                            site_short_name = input$designFieldbook_sites,
-                            country = input$fbDesign_countryTrial)
+            print("2")
+            incProgress(2/15)
 
 
-        if(input$fbDesign_environment_type!="Field"){
-            #In case of screenhouse and greenhouse
-            n_plant_pot <- input$fbDesign_nplantxpot
-            n_pots <- input$fbDesign_npots
-            n_plot_row <- NA
-            n_plant_plot  <-  NA
-            n_plant_row  <-  NA
-            plot_size <- NA
-            plant_density <- NA
-            distance_plants <- NA
-            distance_rows <- NA
-        } else {
-            ### Greenhouse and screenhouse
-            n_plant_pot <- NA
-            n_pots <- NA
-            ### Field
-            n_plot_row <- input$fbDesign_nrowplot
-            n_plant_plot <- input$fbDesign_nplants
-            n_plant_row <- input$fbDesign_nplantsrow
-            plot_size <- input$fbDesign_psize
-            plant_density <- input$fbDesign_pdensity
-            distance_plants <- input$fbDesign_distPlants
-            distance_rows <- input$fbDesign_distRows
-        }
+            #varsitos <- input$designFieldbook_traits
+            add_varlist_sheet(file=fn_xlsx, crop_template = crop_template,
+                              crop=input$designFieldbook_crop,
+                              trait_list = input$designFieldbook_traits)
 
-        add_installation_sheet(file=fn_xlsx, crop_template = crop_template, col_name = "Value",
-                               exp_design = input$designFieldbook,
-                               #genetic_design = input$design_geneticFieldbook,
-                               #type_of_ploidy = input$design_genetic_ploidy,
-                               #set = input$design_genetic_nc_set,
-                               rep = input$designFieldbook_r, block=NA,
-                               exp_env = input$fbDesign_environment_type,
-                               plot_start_number = NA,
-                               #n_plant_pot = input$fbDesign_nplantxpot, #(Deprecated)If screenhouse and greenhouse is selected
-                               #n_pots = input$fbDesign_npots, #(Deprecated) if screenhouse and greenhouse is selected
-                               ##### Greenhouse and Screenhouse
-                               n_plant_pot = n_plant_pot,
-                               n_pots = n_pots,
-                               n_plot_row = n_plot_row,
-                               n_plant_plot = n_plant_plot,
-                               n_plant_row = n_plant_row,
-                               plot_size = plot_size,
-                               plant_density = plant_density,
-                               distance_plants = distance_plants,
-                               distance_rows = distance_rows,
-                               factor_name = input$factor_name,
-                               factor_lvl = input$factor_lvl
-                               )
-                               # factor_name_1 = input$factor_lvl1,
-                               # factor_name_2 = input$factor_lvl2,
-                               # factor_name_3 = input$factor_lvl3
-                               #factor_name_4 = input$factor_lvl4
-                               #factor_name_5 = input$factor_lvl5
-                               #)
-        print("4")
-        add_metadata_sheet(file=fn_xlsx, crop_template = crop_template, soil_input = input$fbDesign_soil_cb,
-                           weather_input = input$fbDesign_weather_cb)
+            incProgress(4/15)
 
-        print("5")
-        add_material_sheet(file=fn_xlsx, crop_template=crop_template, crop= input$designFieldbook_crop,
-                           material_list = mtl_table)
-
-        print("6")
-        add_cmanagment_sheet(file=fn_xlsx,
-                             crop_template = crop_template,
-                             crop=input$designFieldbook_crop,
-                             trait_list = input$designFieldbook_traits)
-        print("7")
-
-        shell.exec(fn_xlsx)
+            add_minimal_sheet(file = fn_xlsx, crop_template = crop_template, col_name = "Value", Trial_name = fbdesign_id(),
+                              crop = input$designFieldbook_crop,
+                              type_trial = input$designFieldbook_module,
+                              begin_date = begin_date1,
+                              end_date = end_date1,
+                              site_short_name = input$designFieldbook_sites,
+                              country = input$fbDesign_countryTrial)
 
 
-          #}
-      }
 
+              if(input$fbDesign_environment_type!="Field"){
+                  #In case of screenhouse and greenhouse
+                  n_plant_pot <- input$fbDesign_nplantxpot
+                  n_pots <- input$fbDesign_npots
+                  n_plot_row <- NA
+                  n_plant_plot  <-  NA
+                  n_plant_row  <-  NA
+                  plot_size <- NA
+                  plant_density <- NA
+                  distance_plants <- NA
+                  distance_rows <- NA
+              } else {
+                  ### Greenhouse and screenhouse
+                  n_plant_pot <- NA
+                  n_pots <- NA
+                  ### Field
+                  n_plot_row <- input$fbDesign_nrowplot
+                  n_plant_plot <- input$fbDesign_nplants
+                  n_plant_row <- input$fbDesign_nplantsrow
+                  plot_size <- input$fbDesign_psize
+                  plant_density <- input$fbDesign_pdensity
+                  distance_plants <- input$fbDesign_distPlants
+                  distance_rows <- input$fbDesign_distRows
+              }
 
+            print("3")
+            incProgress(3/15)
+             add_installation_sheet(file=fn_xlsx, crop_template = crop_template, col_name = "Value",
+                                 exp_design = input$designFieldbook,
+                                 genetic_design = input$design_geneticFieldbook,#hidden in 7/10/2017 11:20
+                                 type_of_ploidy = input$design_genetic_ploidy, #hidden in 7/10/2017 11:20
+                                 set = input$design_genetic_nc_set, #hidden in 7/10/2017 11:20
+                                 #rep = input$designFieldbook_r,#deprecated. Just for statistical design but not for genetic studies.
+                                 r = r,
+                                 block=NA,
+                                 exp_env = input$fbDesign_environment_type,
+                                 plot_start_number = NA,
+                                 #n_plant_pot = input$fbDesign_nplantxpot, #(Deprecated)If screenhouse and greenhouse is selected
+                                 #n_pots = input$fbDesign_npots, #(Deprecated) if screenhouse and greenhouse is selected
+                                 ##### Greenhouse and Screenhouse
+                                 n_plant_pot = n_plant_pot,
+                                 n_pots = n_pots,
+                                 n_plot_row = n_plot_row,
+                                 n_plant_plot = n_plant_plot,
+                                 n_plant_row = n_plant_row,
+                                 plot_size = plot_size,
+                                 plant_density = plant_density,
+                                 distance_plants = distance_plants,
+                                 distance_rows = distance_rows,
+                                 factor_name = input$factor_name,
+                                 factor_lvl = input$factor_lvl
+                                 )
+                                 # factor_name_1 = input$factor_lvl1,
+                                 # factor_name_2 = input$factor_lvl2,
+                                 # factor_name_3 = input$factor_lvl3
+                                 #factor_name_4 = input$factor_lvl4
+                                 #factor_name_5 = input$factor_lvl5
+                                 #)
+                print("4")
+                incProgress(4/15)
+                add_metadata_sheet(file=fn_xlsx, crop_template = crop_template, soil_input = input$fbDesign_soil_cb,
+                                   weather_input = input$fbDesign_weather_cb)
+
+                print("5")
+                incProgress(5/15)
+                add_material_sheet(file=fn_xlsx, crop_template=crop_template, crop= input$designFieldbook_crop,
+                                   material_list = mtl_table)
+
+                print("6")
+                incProgress(6/15)
+                add_cmanagment_sheet(file=fn_xlsx,
+                                     crop_template = crop_template,
+                                     crop=input$designFieldbook_crop,
+                                     trait_list = input$designFieldbook_traits)
+
+                print("11")
+                shell.exec(fn_xlsx)
+
+                incProgress(15/15)
+              }
 
           })
 
+     })
+})
 
 
-         })
-    })
 
   output$fbDesign_mlistExport <- downloadHandler(
     filename = function() {
@@ -1113,7 +1203,6 @@ server_design <- function(input, output, session, values){
       openxlsx::write.xlsx(mt_list, file, headerStyle = hs, sheetName="Material_List", colWidths="auto")
     }
   )
-
 
 }
 

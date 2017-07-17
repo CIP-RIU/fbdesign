@@ -27,23 +27,46 @@ design_choices <- c(
 
 #choices for statistical design input
 genetic_design_choices <- c(
-  "North Carolina Design I under RCBD" = "NCI",
-  "North Carolina Design II under RCBD" = "NCII",
-  "Line by Tester" = "LxT"
+  "North Carolina Design I" = "NCI",
+  "North Carolina Design II" = "NCII",
+  "Line by Tester" = "LXT"
 )
 
 # Conditional panels for genetic design
 genetic_design_conditional_panels <- function(){
   list(
+
     shiny::conditionalPanel(
       "input.design_geneticFieldbook == 'NCI'|
        input.design_geneticFieldbook == 'NCII'",
 
        shiny::selectInput("design_genetic_nc_set", "Set", 2:100, 2),
-       shiny::selectInput("design_genetic_nc_r", "Replications", 2:100, 2),
+       #shiny::selectInput("design_genetic_nc_r", "Replications", 2:100, 2),
        shiny::selectInput("design_genetic_ploidy", "Type of ploidy", choices = c("Diploid","Tetraploid"))
 
+    ) ,
+
+    shiny::conditionalPanel(
+      "input.design_geneticFieldbook == 'LXT'|
+       input.design_geneticFieldbook == 'NCI'|
+       input.design_geneticFieldbook == 'NCII'",
+
+      #shiny::selectInput("design_genetic_nc_set", "Set", 2:100, 2),
+      shiny::selectInput("design_genetic_r", "Replications", 2:100, 2)#,
+      #shiny::selectInput("design_genetic_ploidy", "Type of ploidy", choices = c("Diploid","Tetraploid"))
+
+    ) ,
+
+    shiny::conditionalPanel(
+      "input.design_geneticFieldbook == 'LXT'",
+
+      #shiny::selectInput("design_genetic_nc_set", "Set", 2:100, 2),
+      shiny::selectInput("design_genetic_lxt_type", "Type of scheme", 1:2)#
+      #shiny::selectInput("design_genetic_ploidy", "Type of ploidy", choices = c("Diploid","Tetraploid"))
+
     )
+
+
   )
 }
 
@@ -335,25 +358,22 @@ shinydashboard::tabItem(tabName = name,
 
                            shiny::tabPanel("Statistical Design", value = "design", icon = shiny::icon("pie-chart"),
 
+                                   #conditionalPanel( condition = "output.condition_selmlist==0",
 
-                                      conditionalPanel( condition = "output.condition_selmlist!=0",
+                                                             br(),
+                                                             shiny::selectInput("designFieldbook", "Design",  c("Choose one" = "", design_choices), selected = 'RCBD',
+                                                                                multiple = FALSE),
+                                                             design_conditional_panels()
+                                   # ),
 
-                                           br(),
-                                           #shiny::selectInput("design_geneticFieldbook", "Genetic design",  c("Choose one" = "", genetic_design_choices) ,multiple = FALSE),
-                                           shiny::selectInput("design_geneticFieldbook", "Genetic design",  c(genetic_design_choices) ,multiple = FALSE),
-                                           genetic_design_conditional_panels()
 
-                                      ),
-
-                                      conditionalPanel( condition = "output.condition_selmlist==0",
-
-                                          br(),
-                                          shiny::selectInput("designFieldbook", "Design",  c("Choose one" = "", design_choices), selected = 'RCBD',
-                                                             multiple = FALSE),
-
-                                          design_conditional_panels()
-
-                                     )
+                                      # conditionalPanel( condition = "output.condition_selmlist!=0",
+                                      #      br(),
+                                      #      #shiny::selectInput("design_geneticFieldbook", "Genetic design",  c("Choose one" = "", genetic_design_choices) ,multiple = FALSE),
+                                      #      shiny::selectInput("design_geneticFieldbook", "Genetic design",  c(genetic_design_choices) ,multiple = FALSE),
+                                      #      genetic_design_conditional_panels()
+                                      #
+                                      # )
 
                            ),
 
