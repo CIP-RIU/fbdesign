@@ -196,6 +196,7 @@ design.f2crd <- function(trt1, trt2, r, series=1, random=TRUE){
     diseno[i,3] <- est[est[,1]==ord[i],2]
     diseno[i,4] <- est[est[,1]==ord[i],3]
   }
+ #diseno[,1] <- 1:nrow(diseno)
  #colnames(diseno) <- c("PLOT", "REP", trt2, lbls)
  outdesign <- list(treatment=trt1, repetition=r, factor=trt2, book=diseno)
  return(outdesign)
@@ -230,6 +231,7 @@ design.f2rcbd <- function(trt1, trt2, r, series=1, random=TRUE){
     diseno[i,3] <- est[est[,1]==ord[i],2]
     diseno[i,4] <- est[est[,1]==ord[i],3]
   }
+  #diseno[,1] <- 1:nrow(diseno)
   #colnames(diseno) <- c("PLOT", "REP", trt2, lbls)
   outdesign <- list(treatment=trt1, repetition=r, factor=trt2, book=diseno)
   return(outdesign)

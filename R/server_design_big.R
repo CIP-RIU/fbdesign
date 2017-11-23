@@ -374,7 +374,8 @@ server_design_big <- function(input, output, session, values){
                                                     #first = as.logical(input$designFieldbook_first),
                                                     cont = as.logical(input$designFieldbook_cont_big),
                                                     series = as.integer(input$designFieldbook_serie_big),
-                                                    zigzag = as.logical(input$designFieldbook_zigzag_big),
+                                                    #zigzag = as.logical(input$designFieldbook_zigzag_big),
+                                                    zigzag = FALSE,
                                                     variables = vars)
                       #saveRDS(object = fb[[i]],file = "fb.rda")
                       fb[[i]][, 1] = as.integer(fb[[i]][, 1])
@@ -404,7 +405,8 @@ server_design_big <- function(input, output, session, values){
                                            #first = as.logical(input$designFieldbook_first),
                                            cont = as.logical(input$designFieldbook_cont_big),
                                            series = as.integer(input$designFieldbook_serie_big),
-                                           zigzag = as.logical(input$designFieldbook_zigzag_big),
+                                           #zigzag = as.logical(input$designFieldbook_zigzag_big),
+                                           zigzag = FALSE,
                                            variables = vars)
                     #saveRDS(object = fb[[i]],file = "fb.rda")
                     fb[[i]][, 1] = as.integer(fb[[i]][, 1])
@@ -682,7 +684,8 @@ server_design_big <- function(input, output, session, values){
                        add_installation_sheet(file=fn_xlsx, crop_template = crop_template,col_name = "Value",
                                               exp_design = input$designFieldbook_big,
                                               genetic_design = NA,
-                                              rep = input$designFieldbook_r_big,block=NA,
+                                              r = input$designFieldbook_r_big,
+                                              block=NA,
                                               exp_env = input$fbDesign_environment_type_big, plot_start_number = NA,
                                               n_plot_row = input$fbDesign_nrowplot_big,
                                               n_plant_plot = input$fbDesign_nplants_big,

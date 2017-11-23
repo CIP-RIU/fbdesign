@@ -175,7 +175,7 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                                    #title = "Step: 1", status = "warning", solidHeader = TRUE, collapsible = TRUE, width = NULL,height = NULL,
 
                                                                    shiny::selectInput("designFieldbook_crop_big", "Crop", crops()),
-                                                                   shiny::uiOutput("fbDesign_factor2_big", inline = TRUE),
+                                                                   #shiny::uiOutput("fbDesign_factor2_big", inline = TRUE),
                                                                    shiny::uiOutput("fbDesign_variables_big", inline = TRUE),
                                                                    shiny::dateRangeInput("fbDesign_project_time_line_big", "Date of Experiment", start = Sys.Date() - 2,
                                                                                        end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
@@ -260,7 +260,7 @@ ui_design_big <- function(type="tab",title="Special Modules",name="phenotype_fie
                                                   shiny::tabPanel("Environment", value = 'environment_big', icon = shiny::icon("recycle"),
                                                                               br(),
 
-                                                                              shiny::checkboxInput("designFieldbook_zigzag_big", "Zigzag", FALSE),
+                                                                              #shiny::checkboxInput("designFieldbook_zigzag_big", "Zigzag", FALSE),
                                                                               shiny::radioButtons("designFieldbook_serie_big", "Label series:",
                                                                                                   #get_series_labels(), "101, 102, ...", #get_series_labels()[[2]],
                                                                                                   1:3, 1,

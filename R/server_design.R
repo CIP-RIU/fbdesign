@@ -388,12 +388,14 @@ server_design <- function(input, output, session, values){
       date_book <- paste(date_book[2],date_book[1],sep="")
 
       #sites = input$designFieldbook_sites
-      sites <- stringr::str_trim(input$designFieldbook_sites,side="both")
+      sites <- stringr::str_trim(input$designFieldbook_sites, side="both")
 
       if(nExp_id=="-"){
-        out = paste0(crop_id, program_id, phase_id, module_id, date_book,"_", sites)
+        out <- paste0(crop_id, program_id, phase_id, module_id, date_book,"_", sites)
+
+
       } else {
-        out = paste0(crop_id, program_id, phase_id, module_id, date_book,"_", sites, "_",nExp_id)
+        out <-  paste0(crop_id, program_id, phase_id, module_id, date_book,"_", sites, "_", nExp_id)
       }
 
       paste(out, collapse = ", ")
@@ -504,7 +506,7 @@ server_design <- function(input, output, session, values){
     mlist <- material_table()
 
     #mlist <- input$designFieldbook_sel_mlist
-    if(is.null(mlist) || mlist == ""){  return()  }
+    if(is.null(mlist) || mlist == ""){  out <- 0  }
     #is_parent <- is_parentList(mlist)
     tp <- get_type_list_ds(mlist)
     if(tp=="parental") {out <- 1}
@@ -618,11 +620,13 @@ server_design <- function(input, output, session, values){
 
                      crp <- input$designFieldbook_crop # capture the type of crop
 
-                     incProgress(3/15)
+
 
                      #table_materials <- germoplasm_list()
                       material_tbl = material_table()
 
+
+                      incProgress(4/15)
                      #  #Passing function to detect parental lists (utils.R) -------------------
                      #For parental list and genetic designs
 
@@ -752,7 +756,7 @@ server_design <- function(input, output, session, values){
                      }
                      }
 
-                     incProgress(3/15)
+                     incProgress(6/15)
 
                      #Get selected module
                      mdl = input$designFieldbook_module
@@ -776,7 +780,7 @@ server_design <- function(input, output, session, values){
                      vars <- vars[!(vars %in% ids)]
                       ### End of cleaning the Trait List abbreviations ----------------------------------------
 
-                     incProgress(3/15)
+                     incProgress(8/15)
 
 
                      # print(as.integer(input$designFieldbook_r))
@@ -806,12 +810,14 @@ server_design <- function(input, output, session, values){
                                            #first = as.logical(input$designFieldbook_first),
                                            cont = as.logical(input$designFieldbook_cont),
                                            series = as.integer(input$designFieldbook_serie),
-                                           zigzag = as.logical(input$designFieldbook_zigzag),
+                                           #zigzag = as.logical(input$designFieldbook_zigzag),
+                                           zigzag = FALSE,
                                            variables = vars)
-
+                     incProgress(12/15)
                      #from character to numeric
                      fb[, 1] = as.integer(fb[, 1])
                      print(fb)
+                     incProgress(15/15)
                      fb
 
 
@@ -826,8 +832,9 @@ server_design <- function(input, output, session, values){
     # req(input$designFieldbook_sel_mlist)
     # req(input$designFieldbook)
     #print(material_table())
-    print(fbdraft())
+    #print(fbdraft())
     mtl_table <- material_table()
+    tpds <- get_type_list_ds(material_table())
     #Flag variable to check certain condition in fieldbooks. Initially declared TRUE
     flag <- TRUE
 
@@ -901,10 +908,104 @@ server_design <- function(input, output, session, values){
     }
 
 
+    if(tpds=="parental"){
+
+        if(input$design_geneticFieldbook=="NCI"){
+
+
+          #et_type_list_ds(mtl_table)
+
+          male <-  mtl_table$male$Accession_Number
+          female <-  mtl_table$female$Accession_Number
+          set <- as.numeric(input$design_genetic_nc_set)
+          r <-  as.numeric(input$design_genetic_r)
+          print(male)
+          print(female)
+          print(length(male)!=length(female))
+          print("pass")
+
+          if(length(male)!=length(female)){
+
+            print("1")
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
+
+          } else if (r==1 || is.na(r)) {
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
+
+          } else if (is.null(male) || is.na(male)) {
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 males"), styleclass = "danger")
+
+          } else if(length(female)==1 || is.null(female) || is.na(female)) {
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 females"), styleclass = "danger")
+
+          } else if (length(female) %% set !=0) {
+           print("6")
+           flag <- FALSE
+           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
+
+          } else {
+
+            flag <- TRUE
+          }
+
+
+
+        }
+
+        if(input$design_geneticFieldbook=="NCII"){
+
+
+          #get_type_list_ds(mtl_table)
+
+          male <-  mtl_table$male$Accession_Number
+          female <-  mtl_table$female$Accession_Number
+          set <- as.numeric(input$design_genetic_nc_set)
+          r <-  as.numeric(input$design_genetic_r)
+
+
+          if(length(male)!=length(female)){
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
+
+          } else if (r==1 || is.na(r)){
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
+
+          } else if (is.null(male) || is.na(male)){
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 males"), styleclass = "danger")
+
+          } else if(length(female)==1 || is.null(female) || is.na(female)){
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 females"), styleclass = "danger")
+
+          } else if (length(female) %% set !=0){
+
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
+
+          } else {
+
+            flag <- TRUE
+          }
+
+
+        }
+
+
+      flag <- flag
+
+    }
+
+
 
     if(flag){
     fb = fbdraft()
-    print(fb)
+
 
     output$fbDesign_table <- rhandsontable::renderRHandsontable({
       rhandsontable::rhandsontable(fb, readOnly = T)})
@@ -970,6 +1071,7 @@ server_design <- function(input, output, session, values){
             mtl_table <- as.data.frame(material_table())
           }
 
+          mtl_table <-  mtl_table
           #Get begin date
           begin_date <- input$fbDesign_project_time_line[1]
           begin_date <- unlist(str_split(begin_date,"-"))
@@ -979,6 +1081,12 @@ server_design <- function(input, output, session, values){
           end_date <- input$fbDesign_project_time_line[2]
           end_date <- unlist(str_split(end_date,"-"))
           end_date1 <- paste(end_date[3],end_date[2],end_date[1],sep="/")
+
+          #Setting genetic parameters NA
+          genetic_design <- NA#hidden in 7/10/2017 11:20
+          type_of_ploidy <- NA #hidden in 7/10/2017 11:20
+          set <- NA
+
 
           #This variable serves as a flag if our fieldbook is correct.
           flag <- TRUE
@@ -1012,7 +1120,6 @@ server_design <- function(input, output, session, values){
 
           }
 
-
           if(input$designFieldbook=="WD"){
 
             mtl <- mtl_table
@@ -1030,7 +1137,6 @@ server_design <- function(input, output, session, values){
             }
 
           }
-
 
           if(input$designFieldbook=="AD"){
 
@@ -1052,13 +1158,100 @@ server_design <- function(input, output, session, values){
           }
 
 
+          if(tpds=="parental"){
+
+
+            genetic_design  <-  input$design_geneticFieldbook#hidden in 7/10/2017 11:20
+            type_of_ploidy  <-  input$design_genetic_ploidy #hidden in 7/10/2017 11:20
+            set  <-  input$design_genetic_nc_set
+
+
+
+            if(input$design_geneticFieldbook=="NCI"){
+
+              male <-  mtl_table$Male_AcceNumb
+              female <-  mtl_table$Female_AcceNumb
+              set <- as.numeric(input$design_genetic_nc_set)
+              r <- as.numeric(input$design_genetic_r)
+
+              print(male)
+              print(female)
+
+              if(length(male)!=length(female)){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
+
+              } else if (r==1 || is.na(r)){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
+
+              } else if (is.null(male) || is.na(male)){
+                flag <- FALSE
+
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 male"), styleclass = "danger")
+
+              } else if(length(female)==1 || is.null(female) || is.na(female)){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 female"), styleclass = "danger")
+
+              } else if (length(female) %% set !=0){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
+
+              } else {
+
+                flag <- TRUE
+              }
+
+            }
+
+            if(input$design_geneticFieldbook=="NCII"){
+
+              male <-  mtl_table$Male_AcceNumb
+              female <-  mtl_table$Female_AcceNumb
+              set <- as.numeric(input$design_genetic_nc_set)
+              r <- as.numeric(input$design_genetic_r)
+              print(male)
+              print(female)
+
+
+              if(length(male)!=length(female)){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
+
+              } else if (r==1 || is.na(r)){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
+
+              } else if (is.null(male) || is.na(male)){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 males"), styleclass = "danger")
+
+              } else if(length(female)==1 || is.null(female) || is.na(female)){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 females"), styleclass = "danger")
+
+              } else if (length(female) %% set !=0){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
+
+              } else {
+
+                flag <- TRUE
+              }
+
+            }
+
+
+          }
+
+
           #If field book does exist then print warning message: It's already created it.
           if(file.exists(fp))  {
             shinysky::showshinyalert(session, "alert_fb_done", paste("WARNING: This fieldbook already exists in HiDAP. Please Select Experiment Number in Crop & Location"),
                                      styleclass = "warning")
             flag <- FALSE
           }
-
 
           if(!file.exists(fp) && flag == TRUE) {
 
@@ -1129,9 +1322,15 @@ server_design <- function(input, output, session, values){
             incProgress(3/15)
              add_installation_sheet(file=fn_xlsx, crop_template = crop_template, col_name = "Value",
                                  exp_design = input$designFieldbook,
-                                 genetic_design = input$design_geneticFieldbook,#hidden in 7/10/2017 11:20
-                                 type_of_ploidy = input$design_genetic_ploidy, #hidden in 7/10/2017 11:20
-                                 set = input$design_genetic_nc_set, #hidden in 7/10/2017 11:20
+                                 #genetic_design = input$design_geneticFieldbook,#hidden in 7/10/2017 11:20
+                                 #type_of_ploidy = input$design_genetic_ploidy, #hidden in 7/10/2017 11:20
+                                 #set = input$design_genetic_nc_set, #hidden in 7/10/2017 11:20
+
+                                 genetic_design = genetic_design, #hidden in 7/10/2017 11:20
+                                 type_of_ploidy = type_of_ploidy, #hidden in 7/10/2017 11:20
+                                 set = set, #hidden in 7/10/2017 11:20
+
+
                                  #rep = input$designFieldbook_r,#deprecated. Just for statistical design but not for genetic studies.
                                  r = r,
                                  block=NA,
@@ -1185,8 +1384,6 @@ server_design <- function(input, output, session, values){
 
      })
 })
-
-
 
   output$fbDesign_mlistExport <- downloadHandler(
     filename = function() {

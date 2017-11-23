@@ -164,10 +164,10 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value", 
   # Replacing parameters ----------------------------------------------------
   Installation[Installation$Factor=="Experimental_design", col_name] <- experimental_design_label(exp_design)
   Installation[Installation$Factor=="Experimental_design_abbreviation",col_name] <- paste(exp_design)
-  #Installation[Installation$Factor=="Genetic_design", col_name] <- genetic_design_label(genetic_design)
-  #Installation[Installation$Factor=="Experimental_genetic_design_abbreviation", col_name] <- paste(genetic_design)
-  #Installation[Installation$Factor=="Type_of_ploidy", col_name] <- paste(type_of_ploidy)
-  #Installation[Installation$Factor=="Number_of_sets", col_name] <- paste(set)
+  Installation[Installation$Factor=="Genetic_design", col_name] <- genetic_design_label(genetic_design)
+  Installation[Installation$Factor=="Experimental_genetic_design_abbreviation", col_name] <- paste(genetic_design)
+  Installation[Installation$Factor=="Type_of_ploidy", col_name] <- paste(type_of_ploidy)
+  Installation[Installation$Factor=="Number_of_sets", col_name] <- paste(set)
   Installation[Installation$Factor=="Labels_for_factor_genotypes",col_name] <- paste("Institutional number")
   Installation[Installation$Factor=="Block_size_(applicable_for_BIBD_only)",col_name] <- paste("NA")
   Installation[Installation$Factor=="Number_of_replications_or_blocks",col_name] <- paste(r)
@@ -185,12 +185,33 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value", 
   Installation[Installation$Factor=="Distance_between_plants_(m)",col_name] <- paste(distance_plants)
   Installation[Installation$Factor=="Distance_between_rows_(m)",col_name] <- paste(distance_rows)
   Installation[Installation$Factor=="Planting_density_(plants/Ha)",col_name] <- paste(plant_density)
-  Installation[Installation$Factor=="Factor_name",col_name] <- paste(factor_name)
-  Installation[Installation$Factor=="Factor_name_1",col_name] <- paste(factor_lvl[1])
-  Installation[Installation$Factor=="Factor_name_2",col_name] <- paste(factor_lvl[2])
-  Installation[Installation$Factor=="Factor_name_3",col_name] <- paste(factor_lvl[3])
-  Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_lvl[4])
-  Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_lvl[5])
+
+  if(exp_design=="UNDR" || exp_design== "WD" || exp_design== "CRD" || exp_design== "RCBD" || exp_design== "ABD" ||
+      exp_design== "AD" || exp_design== "LSD" ){
+
+    Installation[Installation$Factor=="Factor_name",col_name]   <- ""
+    Installation[Installation$Factor=="Factor_name_1",col_name] <- ""
+    Installation[Installation$Factor=="Factor_name_2",col_name] <- ""
+    Installation[Installation$Factor=="Factor_name_3",col_name] <- ""
+    Installation[Installation$Factor=="Factor_name_4",col_name] <- ""
+    Installation[Installation$Factor=="Factor_name_4",col_name] <- ""
+
+
+  }
+  if( exp_design==  "F2CRD" || exp_design== "F2RCBD" || exp_design== "SPRCBD" || exp_design== "STRIP")
+  {
+
+    Installation[Installation$Factor=="Factor_name",col_name] <- paste(factor_name)
+    Installation[Installation$Factor=="Factor_name_1",col_name] <- paste(factor_lvl[1])
+    Installation[Installation$Factor=="Factor_name_2",col_name] <- paste(factor_lvl[2])
+    Installation[Installation$Factor=="Factor_name_3",col_name] <- paste(factor_lvl[3])
+    Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_lvl[4])
+    Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_lvl[5])
+
+  }
+
+
+
   print("3.3")
   crop_template$Installation <- Installation
 
@@ -417,7 +438,10 @@ add_fieldbook_sheet <-function(file,fieldbook){
   #'
   study <- function(){
    chc <- list(`Bulking (BM)`=  "Bulking", `Dormancy (DS)` = "Dormancy",
-        `Late blight (LB)` = "Late blight", `Yield (YL)` =   "Yield", `Drought (DT)`= "Drought")
+               `Late blight (LB)` = "Late blight", `Yield (YL)` =   "Yield", `Abiotic Stress (AS)`= "Abiotic stress",
+               `Minerals (TMIN)` = "Minerals", `Vitamin C (TVIT)` = "Vitamin C", `Phenolics (TPHE)` = "Phenolics",
+               `Carotenoids (TCAR)`= "Carotenoids"
+        )
   }
 
 
@@ -446,14 +470,15 @@ add_fieldbook_sheet <-function(file,fieldbook){
 
    abbr_design <- stringr::str_trim(abbr_design,side="both")
 
-   if(is.na(abbr_design))      {out <- "None"}
+   if(is.na(abbr_design))      {abbr_design <- ""; out <- ""}
    if(abbr_design == "UNDR")   {out <- "Unreplicated Design with No Randomization (UNDR)"  }
    if(abbr_design == "RCBD")   {out <- "Randomized Complete Block Design (RCBD)"}
    if(abbr_design == "CRD")    {out <- "Completely Randomized Design (CRD)" }
    if(abbr_design == "ABD")    {out <- "Augmented Block Design (ABD)"}
    if(abbr_design == "LSD")    {out <- "Latin Square Design (LSD)"}
-   if(abbr_design == "SPCRD")  {out <- "Split Plot with Plots in CRD (SPCRD)"}
-   if(abbr_design == "SPRCBD") {out <- "Split Plot with Plots in RCBD (SPRCBD)"}
+   #if(abbr_design == "SPCRD")  {out <- "Split Plot with Plots in CRD (SPCRD)"} #R.Eyzaguirre recommend to hide this line
+   #if(abbr_design == "SPRCBD") {out <- "Split Plot with Plots in RCBD (SPRCBD)"}  #R.Eyzaguirre recommend to hide this line
+   if(abbr_design == "SPRCBD") {out <- "Split Plot with Plots Design"} # #R.Eyzaguirre recommend to use just one split design under rcbd
    if(abbr_design == "SPLSD")  {out <- "Split Plot with Plots in LSD (SPLSD)"}
    if(abbr_design == "STRIP")  {out <- "Strip Plot Design (STRIP)"}
    if(abbr_design == "F2CRD")  {out <- "Factorial Two-Way Design in CRD (F2CRD)"}
@@ -491,7 +516,7 @@ add_fieldbook_sheet <-function(file,fieldbook){
 
    abbr_design <- stringr::str_trim(abbr_design,side="both")
 
-   if(is.na(abbr_design))      {out <- "None"  }
+   if(is.na(abbr_design))      {abbr_design <- "";  out <- ""  }
    if(abbr_design == "NCI")    {out <- "North Caroline Design I"  }
    if(abbr_design == "NCII")   {out <- "North Caroline Design II"  }
    if(abbr_design == "LXT")    {out <- "Line by Tester"}

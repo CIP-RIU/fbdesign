@@ -22,7 +22,7 @@ fbdesign_mtl_files <- function(){
     names(gmtfiles) <- c("short_name","full_name")
 
     out_list <- c("hot_fieldbook.rds","dspotatotrials_dpassport.rds", "dssweettrials_dpassport.rds", "potato_pedigree.rds",
-                  "sweetpotato_pedigree.rds", "table_sites.rds")
+                  "sweetpotato_pedigree.rds", "table_sites.rds", "potato_db_distribution.rds")
 
     gmtfiles <- dplyr::filter(.data = gmtfiles, !(short_name %in% out_list))
 

@@ -85,8 +85,8 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
                                    kinds ="Super-Duper" ,randomization = random),
 
      GLD = agricolae::design.graeco(trt1, trt2, serie = series, randomization = random),
-     YD = agricolae::design.youden(trt1, r, serie = series, first = first, randomization = random),
-     LD = agricolae::design.lattice(trt1, r, serie = series, randomization = random),
+     YD  = agricolae::design.youden(trt1, r, serie = series, first = first, randomization = random),
+     LD  = agricolae::design.lattice(trt1, r, serie = series, randomization = random),
      BIBD = agricolae::design.bib(trt1, k, r = NULL, serie = series, maxRep = maxRep, randomization = random,
                                       seed = 0, kinds = "Super-Duper"),
 
@@ -113,6 +113,8 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
   names(fb$book)[1] = "PLOT"
   #}
   #names(fb$book)[nc] = toupper(trt1_label)
+  res <<- fb$book
+  print(fb$book)
 
   if(design == "UNDR"){
     fb$book <-  fb$book[,c(1,2,3)]
@@ -164,7 +166,6 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
     }
 
   if (design == "SPLSD"){
-
     fb$book <-  fb$book[,c(1,3,4,6,5)]
     names(fb$book) <- c("PLOT","REP","CBLOCK","FACTOR","INSTN") #column block
 
@@ -206,12 +207,12 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
 
   if (design == "NCI") {
     fb$book <- fb$book
-    names(fb$book) <- c("PLOT","SET","REP","INSTN","MALE","FEMALE")
+    names(fb$book) <- c("PLOT","SET","REP","MALE","FEMALE","INSTN")
   }
 
   if (design == "NCII") {
     fb$book <- fb$book
-    names(fb$book) <- c("PLOT","SET","REP","INSTN","FEMALE","MALE")
+    names(fb$book) <- c("PLOT","SET","REP","FEMALE","MALE", "INSTN")
   }
 
   if(design == "LXT"){
@@ -219,15 +220,14 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
     if(type_lxt==1){
 
       fb$book <-  fb$book
-      names(fb$book) <- c("PLOT","REP","LINE","TESTER","INSTN")
+      #names(fb$book) <- c("PLOT","REP","LINE","TESTER","INSTN")
+      names(fb$book) <- c("PLOT","REP","LINE","TESTER", "INSTN")
     }
-
-
 
     if(type_lxt==2){
 
       fb$book <-  fb$book
-      names(fb$book) <- c("PLOT","REP","LINE","TESTER")
+      names(fb$book) <- c("PLOT","REP","LINE","TESTER", "INSTN")
     }
 
 
@@ -303,13 +303,53 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
     out  <-  fb$book
   }
 
-  else {
+  # else if (design == "CRD"){
+  #   out  <-  fb$book
+  #   #PLOT <- 1:nrow(out)
+  #   PLOT <- 1:nrow(out)
+  #   out$PLOT <- PLOT
+  #
+  # }
+  #
+  # else if(design == "RCBD"){
+  #   out  <-  fb$book
+  #   #PLOT <- 1:nrow(out)
+  #   PLOT <- 1:nrow(out)
+  #   out$PLOT <- PLOT
+  #
+  # }
+  #
+  # else if(design == "LSD"){
+  #   out  <-  fb$book
+  #   #PLOT <- 1:nrow(out)
+  #   PLOT <- 1:nrow(out)
+  #   out$PLOT <- PLOT
+  #
+  # }
+  #
+  # else if(design == "F2CRD"){
+  #   out  <-  fb$book
+  #   #PLOT <- 1:nrow(out)
+  #   PLOT <- 1:nrow(out)
+  #   out$PLOT <- PLOT
+  #
+  # }
+  #
+  # else if(design == "F2RCBD"){
+  #   out  <-  fb$book
+  #   #PLOT <- 1:nrow(out)
+  #   PLOT <- 1:nrow(out)
+  #   out$PLOT <- PLOT
+  #
+  # }
 
+  else {
 
       if(series == 1){
         out  <-  fb$book
         #PLOT <- 1:nrow(out)
-        PLOT <- out$PLOT-10
+        #PLOT <- out$PLOT-10
+        PLOT <- 1:nrow(out)
         out$PLOT <- PLOT
       }
 

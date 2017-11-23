@@ -9,8 +9,10 @@ design_choices <- c(
   "Latin Square Design (LSD)" = "LSD",
   "Factorial Two-Way Design in CRD (F2CRD)" = "F2CRD",
   "Factorial Two-Way Design in RCBD (F2RCBD)" = "F2RCBD",
-  "Split Plot with Plots in CRD (SPCRD)" = "SPCRD",
-  "Split Plot with Plots in RCBD (SPRCBD)" = "SPRCBD",
+  #"Split Plot with Plots in CRD (SPCRD)" = "SPCRD",
+  #"Split Plot with Plots in RCBD (SPRCBD)" = "SPRCBD", #R.Eyzaguirre recommends just one Split Design
+  "Split Plot with Plots Design" = "SPRCBD", #
+
   #"Split Plot with Plots in LSD (SPLSD)" = "SPLSD",
   "Strip Plot Design (STRIP)" = "STRIP"
 # "Balanced Incomplete Block Design (BIBD)" = "BIBD",
@@ -61,7 +63,7 @@ genetic_design_conditional_panels <- function(){
       "input.design_geneticFieldbook == 'LXT'",
 
       #shiny::selectInput("design_genetic_nc_set", "Set", 2:100, 2),
-      shiny::selectInput("design_genetic_lxt_type", "Type of scheme", 1:2)#
+      shiny::selectInput("design_genetic_lxt_type", "Type of scheme", list("progenitors and progenie"= 1, "progenie" =2))#
       #shiny::selectInput("design_genetic_ploidy", "Type of ploidy", choices = c("Diploid","Tetraploid"))
 
     )
@@ -120,7 +122,7 @@ design_conditional_panels <- function(){
 
     shiny::conditionalPanel(
       "input.designFieldbook == 'WD'",
-      shiny::selectInput("designFieldbook_wd_row", "Number of rows of the field", 2:5000, 2 ),
+      shiny::selectInput("designFieldbook_wd_row", "Number of rows in the field", 2:5000, 2 ),
       shiny::selectInput("designFieldbook_wd_col", "Number of columns between two check columns", 2:100, 10)
 
     ),
@@ -136,7 +138,7 @@ design_conditional_panels <- function(){
 
     shiny::conditionalPanel(
       "input.designFieldbook == 'WD'", # TODO: ab - factorial, split
-      infoBox(title = "IMPORTANT NOTE", subtitle = "Westcott design needs 2 checks. Verify if your material have these checks and put an 'x' mark in 'Is_control' column for each check.
+      infoBox(title = "IMPORTANT NOTE", subtitle = "Westcott design needs 2 checks. Verify if your material list has these checks and put an 'x' mark in 'Is_control' column for each check.
               Otherwise, Westcott Design does not work.",
 
               icon = icon("bullhorn"), color = "blue", fill = TRUE, width = NULL)
@@ -263,7 +265,7 @@ shinydashboard::tabItem(tabName = name,
                                                     #         title = "Step: 1", status = "warning", solidHeader = TRUE, collapsible = TRUE, width = NULL,height = NULL,
 
                                              shiny::selectInput("designFieldbook_crop", "Crop", crops()),
-                                             shiny::uiOutput("fbDesign_factor2", inline = TRUE),
+                                             #shiny::uiOutput("fbDesign_factor2", inline = TRUE),
                                                                         shiny::uiOutput("fbDesign_variables", inline = TRUE),
                                              shiny::dateRangeInput("fbDesign_project_time_line", "Date of experiment", start = Sys.Date() - 2,
                                                                             end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
@@ -313,22 +315,21 @@ shinydashboard::tabItem(tabName = name,
 
                                          conditionalPanel(
                                            condition = "input.select_import == 'Template'",
+
+                                          # shiny::selectInput(inputId = "fbdesign_type_mlistexport", label = "Type of template",
+                                          #                    choices = list("Material list"= "mlist", "Parental list"= "plist"),selected = 1,multiple = FALSE
+                                          #                    ),
+
                                            downloadButton(outputId = "fbDesign_mlistExport", label = "Download Template"),
                                           fileInput(inputId = 'file_mtlist',label =  'Upload filled template',accept = ".xlsx")#,
                                           ),
 
-                                          #shinyFilesButton('file', 'File select', 'Upload material list', FALSE),
-                                          #bsAlert("alert"),
-                                          #shiny::actionLink('fbDesign_mlistExport', 'Material List Template'),
-                                          #textOutput("germplasm_alert")
+
                                           fluidRow(
                                             #br(),
                                             #shiny::actionLink('exportButton', 'Material List Template'),
                                             infoBoxOutput("approvalBox")#,
-                                            #HTML('<div style="float: left; margin: 0px 15px 5px 5px;">'),
-                                            #HTML('</div>'),
-                                            #tags$style(type='text/css', "#fbDesign_mlistExport { width:300px; margin-top: 25px;}"),
-                                            #tags$style(type='text/css', "#approvalBox { width:300px; margin-top: 25px;}")
+
                                           )#,
                                        #,
 
@@ -358,29 +359,29 @@ shinydashboard::tabItem(tabName = name,
 
                            shiny::tabPanel("Statistical Design", value = "design", icon = shiny::icon("pie-chart"),
 
-                                   #conditionalPanel( condition = "output.condition_selmlist==0",
+                                            conditionalPanel( condition = "output.condition_selmlist==0",
 
                                                              br(),
                                                              shiny::selectInput("designFieldbook", "Design",  c("Choose one" = "", design_choices), selected = 'RCBD',
                                                                                 multiple = FALSE),
                                                              design_conditional_panels()
-                                   # ),
+                                                      ),
 
 
-                                      # conditionalPanel( condition = "output.condition_selmlist!=0",
-                                      #      br(),
-                                      #      #shiny::selectInput("design_geneticFieldbook", "Genetic design",  c("Choose one" = "", genetic_design_choices) ,multiple = FALSE),
-                                      #      shiny::selectInput("design_geneticFieldbook", "Genetic design",  c(genetic_design_choices) ,multiple = FALSE),
-                                      #      genetic_design_conditional_panels()
-                                      #
-                                      # )
+                                      conditionalPanel( condition = "output.condition_selmlist!=0",
+                                           br(),
+                                           #shiny::selectInput("design_geneticFieldbook", "Genetic design",  c("Choose one" = "", genetic_design_choices) ,multiple = FALSE),
+                                           shiny::selectInput("design_geneticFieldbook", "Genetic design",  c(genetic_design_choices) ,multiple = FALSE),
+                                           genetic_design_conditional_panels()
+
+                                      )
 
                            ),
 
                              shiny::tabPanel("Environment", value = 'environment', icon = shiny::icon("recycle"),
                                           br(),
 
-                                             shiny::checkboxInput("designFieldbook_zigzag", "Zigzag", FALSE),
+                                             #shiny::checkboxInput("designFieldbook_zigzag", "Zigzag", FALSE),
                                              shiny::radioButtons("designFieldbook_serie", "Label series",
                                                                  #get_series_labels(), "101, 102, ...", #get_series_labels()[[2]],
                                                                  1:3, 1,
@@ -501,7 +502,7 @@ shinydashboard::tabItem(tabName = name,
                   shinysky::actionButton2("fbDesign_create", label = "Download", icon ="file-excel-o", icon.library = "bootstrap", styleclass= "color: #fff; background-color: #51a351; border-color: #51a351"),
                   #shiny::actionButton("fbDesign_create", "Download", icon("file-excel-o"), style="color: #fff; background-color: #51a351; border-color: #51a351"),
                   #shinyBS::bsAlert("alert_fb_done"),
-                  shinysky::shinyalert("alert_fb_done", FALSE, auto.close.after = 8),
+                  shinysky::shinyalert("alert_fb_done", FALSE, auto.close.after = 4),
                   HTML('</div>')
                 ),
 

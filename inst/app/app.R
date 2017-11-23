@@ -162,7 +162,7 @@ designDialog <- function(){
                  # check parameter combinations
         ),
         tabPanel("Labeling", value = "labeling",
-                 checkboxInput("designFieldbook_zigzag", "Zigzag", TRUE),
+                 #checkboxInput("designFieldbook_zigzag", "Zigzag", TRUE),
                  radioButtons("designFieldbook_serie", "Label series:",
                               #get_series_labels(), "101, 102, ...", #get_series_labels()[[2]],
                               1:3, 2,
