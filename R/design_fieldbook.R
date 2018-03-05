@@ -3,6 +3,7 @@
 #' @param design a statistical design
 #' @param trt1 vector treatment one
 #' @param trt2 vector second treatment; a controlled factor
+#' @param is_rwcol wheters
 #' @param trt1_label string
 #' @param trt2_label string
 #' @param factor_name The name of the factor
@@ -10,8 +11,9 @@
 #' @param factor_lvl2 The second level of the factor
 #' @param factor_lvl3 The third level of the factor
 #' @param sub_design The sub design used by Split or Strip plot design.
-#' @param number_row Wescott Design input. The number of rows.
-#' @param number_col Wescott Design input. The number of columns.
+#' @param number_col Wescott Design input. Number of columns.
+#' @param number_colb Wescott Design input. Number of columns between two check columns (default is 10).
+#' @param type_lxt Type of line by tester evaluation.
 #' @param set Number of sets (in case of genetic design)
 #' @param male Males
 #' @param female Females
@@ -31,11 +33,12 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
                              r = 2, k = 2,
                              trt1_label  = "trt1",
                              trt2_label  = "trt2",
+                             #is_rwcol = FALSE,
                              factor_name ="FACTOR",
                              factor_lvl1 ="level1", factor_lvl2="level2", factor_lvl3="level3",
                              sub_design  ="crd",
-                             number_row  = NULL, #westcott
-                             number_col  = NULL, #westcott
+                             number_col  = 3, #westcott
+                             number_colb  = NULL, #westcott
                              type_lxt = 1, #type of line by tester.For further details, see geneticdsg package documentation.
                              set = NULL,
                              male = NULL,
@@ -43,6 +46,7 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
                              maxRep = 20,
                              series = 1 , random = TRUE, first = TRUE, cont = FALSE,
                              zigzag = FALSE,
+                             #is_ssample = FALSE,
                              variables = NULL){
 
   #seed <- 1234
@@ -53,48 +57,63 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
   fb <- switch(design,
 
      #unreplicated design
-     UNDR = fbdesign::design.undr(trt1,r=1),
+     UNDR = fbdesign::design.undr(trt1,r=1), ##fbdesign
+     #UNDR = st4gi::cd.ur(geno = trt1, nc = number_col),#st4gi
+
 
      #randomized complete block design
-     RCBD = agricolae::design.rcbd(trt1, r, series, randomization = random, first = first), #ok
+     RCBD = design.rcbd(trt1, r, series, randomization = random, first = first), #ok #agricolae
+     #RCBD = st4gi::cd.rcb(geno = trt1, nb = r, nc = number_col), #st4gi
+
+
      #complete randomzized design
-     CRD = agricolae::design.crd(trt1, r, series, randomization = random ), #ok
+     CRD = design.crd(trt1, r, series, randomization = random ), #ok #AGRICOLAE
+     #CRD = st4gi::cd.cr(geno = trt1, nrep = r, nc =  number_col), #ST4GI
+
      #latin square design
-     LSD = agricolae::design.lsd(trt1, series, randomization = random, first = first),
+     LSD = design.lsd(trt1, series, randomization = random, first = first),
+
+
      #split plot under crd
-     SPCRD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = "crd", series,
-                                    first, randomization = random, kinds = "Super-Duper"),
+     SPCRD = design.split(trt1 = trt1, trt2 = trt2, r = r, design = "crd", series,
+                             first, randomization = random, kinds = "Super-Duper"),#AGRICOLAE
 
      #split plot under rcbd
-     SPRCBD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = "rcbd", series,
-                                     first, randomization = random, kinds = "Super-Duper"),
+     SPRCBD = design.split(trt1 = trt1, trt2 = trt2, r = r, design = "rcbd", series,
+                                      first, randomization = random, kinds = "Super-Duper"), #AGRICOLAE
+     #SPRCBD = st4gi::cd.spl(A = trt1,B = trt2,nrep = r,nc = number_col),
+
      #split plot under lsd
-     SPLSD = agricolae::design.split(trt1 = trt1, trt2 = trt2, r = r, design = "lsd", series,
+     SPLSD = design.split(trt1 = trt1, trt2 = trt2, r = r, design = "lsd", series,
                                       first, randomization = random, kinds = "Super-Duper"),
      #sptrip plot design
-     STRIP = agricolae::design.strip(trt1 = trt1, trt2 = trt2, r = r, series,
+     STRIP = design.strip(trt1 = trt1, trt2 = trt2, r = r, series,
                                     kinds ="Super-Duper" ,randomization =random),
      #factorial two way under crd
-     F2CRD = fbdesign::design.f2crd(trt1, trt2, r = r, series=series, random=random),
+     F2CRD = design.f2crd(trt1, trt2, r = r, series=series, random=random), #AGRICOLAE
+     #F2CRD = st4gi::cd.2fcr(A = trt1, B = trt2, nrep = r, nc = number_col), #st4gi
+
 
      #factorial two way under rcbd
-     F2RCBD = fbdesign::design.f2rcbd(trt1, trt2, r = r, series=series, random=random),
+     F2RCBD = fbdesign::design.f2rcbd(trt1, trt2, r = r, series=series, random=random), #agricolae
+     #F2RCBD = st4gi::cd.2frcb(A = trt1,B = trt2, nb = r, nc = number_col), #st4gi
 
      ##Augmented block design. Tip or Hint: trt2::genotypes & trt:: genotypes
-     ABD = agricolae::design.dau(trt1, trt2, r = r, serie=series,
+     ABD = design.dau(trt1, trt2, r = r, serie=series,
                                    kinds ="Super-Duper" ,randomization = random),
 
-     GLD = agricolae::design.graeco(trt1, trt2, serie = series, randomization = random),
-     YD  = agricolae::design.youden(trt1, r, serie = series, first = first, randomization = random),
-     LD  = agricolae::design.lattice(trt1, r, serie = series, randomization = random),
-     BIBD = agricolae::design.bib(trt1, k, r = NULL, serie = series, maxRep = maxRep, randomization = random,
+     GLD = design.graeco(trt1, trt2, serie = series, randomization = random),
+     YD  = design.youden(trt1, r, serie = series, first = first, randomization = random),
+     LD  = design.lattice(trt1, r, serie = series, randomization = random),
+     BIBD = design.bib(trt1, k, r = NULL, serie = series, maxRep = maxRep, randomization = random,
                                       seed = 0, kinds = "Super-Duper"),
 
-     AD = agricolae::design.alpha(trt1, k, r, serie = series, randomization = random),
-     CD = agricolae::design.cyclic(trt1, k, r, serie = series, randomization = random),
+     AD = design.alpha(trt1, k, r, serie = series, randomization = random),
+
+     CD = design.cyclic(trt1, k, r, serie = series, randomization = random),
 
      #Westcott design need two checks. In st4gi this checks are two separeted parameters.
-     WD = st4gi::dw(geno = trt1, ch1 = trt2[1], ch2 = trt2[2], nr = number_row, nc =  number_col),
+     WD = st4gi::cd.w(geno = trt1, ch1 = trt2[1], ch2 = trt2[2], nc = number_col, ncb =  number_colb),
 
      #north carolina I
      NCI = geneticdsg::design_carolina(set = set, r = r, male = male, female = female, type = 1),
@@ -108,18 +127,28 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
      #                               first, randomization = random, kinds = "Super-Duper"),
 
      )
-  #nc = ncol(fb$book)
-  #if (design != "WD"){
+
+
   names(fb$book)[1] = "PLOT"
   #}
   #names(fb$book)[nc] = toupper(trt1_label)
-  res <<- fb$book
-  print(fb$book)
+  res <- fb$book
+  #print(fb$book)
 
   if(design == "UNDR"){
     fb$book <-  fb$book[,c(1,2,3)]
     print(fb$book)
     names(fb$book) <- c("PLOT","REP","INSTN")
+    ### new code ####
+    # if(is_rwcol == FALSE){
+    #   fb$book <-  fb$book[,c(1,2,4)]
+    #   names(fb$book) <- c("PLOT","REP","INSTN")
+    #
+    # } else {
+    #   fb$book <-  fb$book[,c(1,2,4)]
+    #   names(fb$book) <- c("PLOT","REP","",INSTN")
+    # }
+
   }
 
   if (design == "RCBD") {
@@ -388,4 +417,76 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
 
   out
 }
+
+
+#' Creation of field design using factor or treatments
+#' @description User may create field designs using different levels of a factor or treatment. For example if the factor has two levels;
+#' lets say, irrigation and non-irrigation, two field books will be created one with irrigation and the another one with non-irrigations.
+#' Only available for unreplicated designs, complete randomized designs `(CRD)`, completely block desing `(RCBD)`,
+#' latin square designs `(LSD)`, Alpha design `(AD)`, Wescott design `(WD)` and Augmented Block Designs `(ABD)`
+#' All those levels will be attached in a column named FACTOR.
+#' @param fb field book design
+#' @param design_abr design abbreviation
+#' @param factor_lvl vector of factors or treatments.
+#' @author Omar Benites
+#' @importFrom dplyr mutate
+#' @export
+
+add_cl <- function(fb, design_abr= "CRD", factor_lvl){
+
+  #FACTOR <- NULL
+  #fb <- mutate(fb, FACTOR = factor_lvl)
+  #n <- ncol(fb)
+  # if(is.element("INSTN",names(fb))){
+  #       inst_pos <- which(names(fb) == "INSTN")
+  # }
+
+  if(design_abr == "CRD" || design_abr == "RCBD" || design_abr=="ABD"){
+    #complete randomized design , completely randomized block design and augmented block design
+    if(is.element("INSTN",names(fb))){
+      inst_pos <- which(names(fb) == "INSTN")
+    }else{
+      inst_pos <- 2
+    }
+
+    fb <- append_col(fb, list(FACTOR=factor_lvl), after=inst_pos)
+  }
+
+  if(design_abr == "LSD" ||  design_abr == "WD"){
+
+    if(is.element("INSTN",names(fb))){
+      inst_pos <- which(names(fb) == "INSTN")
+    }else{
+      inst_pos <- 3
+    }
+
+
+    fb <- append_col(fb, list(FACTOR=factor_lvl), after=inst_pos)
+  }
+
+
+  if(design_abr == "AD"){ #alpha design
+
+    if(is.element("INSTN",names(fb))){
+      inst_pos <- which(names(fb) == "INSTN")
+    }else{
+      inst_pos <- 3
+    }
+
+    fb <- append_col(fb, list(FACTOR=factor_lvl), after=inst_pos)
+  }
+
+  fb <- fb
+}
+
+
+
+
+
+
+
+
+
+
+
 

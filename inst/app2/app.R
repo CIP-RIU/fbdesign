@@ -12,7 +12,7 @@ library(shinyBS)
 library(openxlsx)
 library(data.table)
 library(fbsites)
-#library(shinysky)
+library(shinysky)
 
 #new library 6/3/2016
 

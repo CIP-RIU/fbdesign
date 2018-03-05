@@ -1,7 +1,7 @@
 #'Organoleptic forms to collect sensorial data in participatory varietal selection of potato and sweetpotato trials.
 #'
 #' @param form_template Data frame containing the form template to collect sensorial data.
-#' @param geno The genotypes.
+#' @param genotypes The genotypes.
 #' @param geno_alias The alias of genotypes.
 #' @param n_forms Number of forms. By default is 1.
 #'

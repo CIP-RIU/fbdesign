@@ -9,11 +9,11 @@ organoleptic_form(form_template, genotypes, geno_alias, n_forms = 1)
 \arguments{
 \item{form_template}{Data frame containing the form template to collect sensorial data.}
 
+\item{genotypes}{The genotypes.}
+
 \item{geno_alias}{The alias of genotypes.}
 
 \item{n_forms}{Number of forms. By default is 1.}
-
-\item{geno}{The genotypes.}
 }
 \value{
 A data frame with the organoleptic form

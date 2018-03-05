@@ -1,7 +1,7 @@
 # choices for statistical design input
 design_choices <- c(
   "Unreplicated Design (UNDR)" = "UNDR",
-  "Westcott Design (WD)" = "WD",
+  "Westcott Design (WD)" = "WD",#
   "Completely Randomized Design (CRD)" = "CRD",
   "Randomized Complete Block Design (RCBD)" = "RCBD",
   "Augmented Block Design (ABD)" = "ABD",
@@ -92,7 +92,25 @@ design_conditional_panels <- function(){
 
     ),
 
-    shiny::conditionalPanel(
+    # shiny::conditionalPanel(
+    #      "input.designFieldbook == 'UNDR'  |
+    #       input.designFieldbook == 'CRD'   |
+    #       input.designFieldbook == 'RCBD'  |
+    #       input.designFieldbook == 'F2CRD' |
+    #       input.designFieldbook == 'F2RCBD'|
+    #       input.designFieldbook == 'SPRCBD'",
+    #
+    #   shiny::checkboxInput("designFieldbook_cbrwcol", "Add row and column", value = FALSE)#,
+
+      # shiny::conditionalPanel(
+      #   "input.designFieldbook_cbrwcol == true",
+      #   shiny::selectInput("designFieldbook_expdis_colb", "Number of columns", 2:100, 10)
+      # )
+    # ),
+
+
+
+   shiny::conditionalPanel(
       "input.designFieldbook == 'SPCRD' |
        input.designFieldbook == 'SPRCBD'|
        input.designFieldbook == 'F2CRD' |
@@ -116,14 +134,12 @@ design_conditional_panels <- function(){
       input.designFieldbook == 'SPRCBD'",
 
       shiny::uiOutput("fbdesign_split_cb")
-      #
-
     ),
 
     shiny::conditionalPanel(
       "input.designFieldbook == 'WD'",
-      shiny::selectInput("designFieldbook_wd_row", "Number of rows in the field", 2:5000, 2 ),
-      shiny::selectInput("designFieldbook_wd_col", "Number of columns between two check columns", 2:100, 10)
+      shiny::selectInput("designFieldbook_wd_col",  "Number of columns", 50:5000, 100 ),
+      shiny::selectInput("designFieldbook_wd_colb", "Number of columns between two check columns", 2:100, 10)
 
     ),
 
@@ -138,7 +154,7 @@ design_conditional_panels <- function(){
 
     shiny::conditionalPanel(
       "input.designFieldbook == 'WD'", # TODO: ab - factorial, split
-      infoBox(title = "IMPORTANT NOTE", subtitle = "Westcott design needs 2 checks. Verify if your material list has these checks and put an 'x' mark in 'Is_control' column for each check.
+      infoBox(title = "IMPORTANT NOTE", subtitle = "Westcott design needs 2 checks and at least 10 genotypes. Verify if your material list has these checks and put an 'x' mark in 'Is_control' column for each check.
               Otherwise, Westcott Design does not work.",
 
               icon = icon("bullhorn"), color = "blue", fill = TRUE, width = NULL)
@@ -178,7 +194,7 @@ design_conditional_panels <- function(){
         textOutput("alphaMessage")
           )
         )
- ),
+    ),
 
 #     shiny::conditionalPanel(
 #       "input.designFieldbook == 'CD'",
@@ -188,19 +204,50 @@ design_conditional_panels <- function(){
 #       shiny::selectInput("designFieldbook_k", "Block size (k):", 2:10,3 )
 #     ),
 
-#     shiny::conditionalPanel(
-#       "input.designFieldbook == 'LSD' |
-#       input.designFieldbook == 'RCBD' |
-#       input.designFieldbook == 'SPPD' |
-#       input.designFieldbook == 'BIBD'
-#       "#,
-#       #shiny::checkboxInput("designFieldbook_first", "Randomize first repetition", TRUE )
-#     )
-#     ,
+### Combine factors in statistical designs ########################
     shiny::conditionalPanel(
-      "input.designFieldbook == 'RCBD'"
-     # shiny::checkboxInput("designFieldbook_cont", "Continuous numbering of plots", FALSE)
-    )
+      "input.designFieldbook == 'UNDR' |
+      input.designFieldbook == 'CRD'   |
+      input.designFieldbook == 'RCBD'  |
+      input.designFieldbook == 'WD'    |
+      input.designFieldbook == 'AD'    |
+      input.designFieldbook == 'LSD'   |
+      input.designFieldbook == 'ABD'",
+      shiny::checkboxInput("designFieldbook_combfactor", "Add Factor",value = FALSE  ),
+
+      shiny::conditionalPanel(
+        "input.designFieldbook_combfactor == true",
+
+        textInput(inputId = "combfactor_name", label = "Combine Factor Name", ""),
+        br(),
+        textInput(inputId = "combfactor_lvl", label = "Type levels of factors (separated by commas ',')", value = "")#,
+
+      )
+
+    ),
+#########################################
+
+###############
+
+    shiny::conditionalPanel(
+         "input.designFieldbook == 'UNDR'  |
+          input.designFieldbook == 'CRD'   |
+          input.designFieldbook == 'RCBD'  |
+          input.designFieldbook == 'WD'    |
+          input.designFieldbook == 'AD'    |
+          input.designFieldbook == 'LSD'   |
+          input.designFieldbook == 'ABD'",
+      shiny::checkboxInput("designFieldbook_cbssample", "Add sub samples", value = FALSE  ),
+
+      shiny::conditionalPanel(
+        "input.designFieldbook_cbssample == true",
+        shiny::numericInput(inputId = "designFieldbook_nsample", label = "Enter samples", value = 10, min = 1, max = 1000)
+      )
+
+    )#,
+
+
+
   )
 }
 
@@ -215,7 +262,6 @@ design_conditional_panels <- function(){
 #' @param type type of ui element; default is a tab in a shiny dashboard
 #' @param title display title
 #' @param name a reference name
-
 #' @export
 
 

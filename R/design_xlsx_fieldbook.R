@@ -113,6 +113,7 @@
 #' @param distance_rows The distance between rows
 #' @param factor_name The name of the factor
 #' @param factor_lvl the levels of the factor
+#' @param combine logical. Add factor column in case of RCBD, CRD, LSD, among others.
 # @param factor_name_1 The first level of the factor
 # @param factor_name_2 The second level of the factor
 # @param factor_name_3 The third level of the factor
@@ -139,7 +140,8 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value", 
                                    distance_plants=NA,
                                    distance_rows=NA,
                                    factor_name=NA,
-                                   factor_lvl=NA
+                                   factor_lvl=NA,
+                                   combine = FALSE
                                    # factor_name_1=NA,
                                    # factor_name_2=NA,
                                    # factor_name_3=NA,
@@ -189,15 +191,35 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value", 
   if(exp_design=="UNDR" || exp_design== "WD" || exp_design== "CRD" || exp_design== "RCBD" || exp_design== "ABD" ||
       exp_design== "AD" || exp_design== "LSD" ){
 
-    Installation[Installation$Factor=="Factor_name",col_name]   <- ""
-    Installation[Installation$Factor=="Factor_name_1",col_name] <- ""
-    Installation[Installation$Factor=="Factor_name_2",col_name] <- ""
-    Installation[Installation$Factor=="Factor_name_3",col_name] <- ""
-    Installation[Installation$Factor=="Factor_name_4",col_name] <- ""
-    Installation[Installation$Factor=="Factor_name_4",col_name] <- ""
+    #if(factor_name == ""){
 
+    if(combine == FALSE){
+
+          #in case of use user does NOT select the checkbox #AddFactor
+          Installation[Installation$Factor=="Factor_name",col_name]   <- ""
+          Installation[Installation$Factor=="Factor_name_1",col_name] <- ""
+          Installation[Installation$Factor=="Factor_name_2",col_name] <- ""
+          Installation[Installation$Factor=="Factor_name_3",col_name] <- ""
+          Installation[Installation$Factor=="Factor_name_4",col_name] <- ""
+          Installation[Installation$Factor=="Factor_name_4",col_name] <- ""
+
+        } else { #in case users select the checkbox #AddFactor
+          #Only for
+
+          Installation[Installation$Factor=="Factor_name",col_name] <- paste(factor_name)
+          Installation[Installation$Factor=="Factor_name_1",col_name] <- paste(factor_lvl[1])
+          Installation[Installation$Factor=="Factor_name_2",col_name] <- paste(factor_lvl[2])
+          Installation[Installation$Factor=="Factor_name_3",col_name] <- paste(factor_lvl[3])
+          Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_lvl[4])
+          Installation[Installation$Factor=="Factor_name_4",col_name] <- paste(factor_lvl[5])
+
+        }
 
   }
+
+
+
+
   if( exp_design==  "F2CRD" || exp_design== "F2RCBD" || exp_design== "SPRCBD" || exp_design== "STRIP")
   {
 
@@ -360,9 +382,9 @@ add_varlist_sheet <- function(file=NA, crop_template=NA, crop=NA, trait_list=NA)
     if(crop == "sweetpotato"){tbl <- table_module_sweetpotato }
 
     #var_list <- dplyr::filter(tbl,variable %in% vars) %>% select(.,variables_name,variable) HiDAP v1.0 built 2
-    var_list <- dplyr::filter(tbl,ABBR %in% vars) %>% select(.,VAR, ABBR)
-    var_list <- as.data.frame(var_list)
-    names(var_list) <- c("Factor_Variables","Abbreviations")
+    var_list <- dplyr::filter(tbl,ABBR %in% vars) %>% select(.,VAR, ABBR, CO_VAR)
+    var_list <- as.data.frame(var_list, stringsAsFactors=FALSE)
+    names(var_list) <- c("Factor_Variables","Abbreviations", "Crop_Ontology")
     crop_template$Var_List <- var_list
 
     wb <- loadWorkbook(file)

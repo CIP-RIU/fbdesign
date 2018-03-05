@@ -1,6 +1,6 @@
 Package: fbdesign
 Title: Creates a fieldbook
-Version: 2.0.4
+Version: 2.0.5
 Authors@R: person("Omar Benites", "Omar", email = "o.benites@cgiar.org", role = c("aut", "cre"))
 Description: Creates a fieldbook.
 Depends:
@@ -25,7 +25,13 @@ Suggests: shiny,
   magrittr,
   lazyeval,
   data.table,
-  openxlsx
+  openxlsx,
+  testthat,
+  st4gi,
+  tidyr,
+  shinyjs,
+  shinysky,
+  tidyr
 License: GPL-3
 LazyData: true
 RoxygenNote: 6.0.1

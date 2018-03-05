@@ -7,8 +7,8 @@
 design_fieldbook(design = "(RCBD)", trt1 = letters[1:5], trt2 = NULL,
   r = 2, k = 2, trt1_label = "trt1", trt2_label = "trt2",
   factor_name = "FACTOR", factor_lvl1 = "level1", factor_lvl2 = "level2",
-  factor_lvl3 = "level3", sub_design = "crd", number_row = NULL,
-  number_col = NULL, type_lxt = 1, set = NULL, male = NULL,
+  factor_lvl3 = "level3", sub_design = "crd", number_col = 3,
+  number_colb = NULL, type_lxt = 1, set = NULL, male = NULL,
   female = NULL, maxRep = 20, series = 1, random = TRUE, first = TRUE,
   cont = FALSE, zigzag = FALSE, variables = NULL)
 }
@@ -37,9 +37,11 @@ design_fieldbook(design = "(RCBD)", trt1 = letters[1:5], trt2 = NULL,
 
 \item{sub_design}{The sub design used by Split or Strip plot design.}
 
-\item{number_row}{Wescott Design input. The number of rows.}
+\item{number_col}{Wescott Design input. Number of columns.}
 
-\item{number_col}{Wescott Design input. The number of columns.}
+\item{number_colb}{Wescott Design input. Number of columns between two check columns (default is 10).}
+
+\item{type_lxt}{Type of line by tester evaluation.}
 
 \item{set}{Number of sets (in case of genetic design)}
 
@@ -60,6 +62,8 @@ design_fieldbook(design = "(RCBD)", trt1 = letters[1:5], trt2 = NULL,
 \item{zigzag}{order plot in serpentine}
 
 \item{variables}{set of variables}
+
+\item{is_rwcol}{wheters}
 }
 \value{
 a dataframe

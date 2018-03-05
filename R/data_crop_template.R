@@ -147,3 +147,15 @@ NULL
 #' @format A list used in potato and sweetpotato traits
 #' @source International Potato Center, potato andsweetpotato experimental data.
 NULL
+
+
+#' @name Selection_Criteria
+#' @title Selection_Criteria
+#' @docType data
+#' @aliases Selection_Criteria
+#' @description This list contains a selection criterias list for Participatory Varietal Selection. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP crop template
+#' @usage Selection_Criteria
+#' @format A list used selection criteria
+#' @source International Potato Center, potato and sweetpotato experimental data.
+NULL

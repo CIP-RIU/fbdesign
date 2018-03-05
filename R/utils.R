@@ -100,7 +100,7 @@ get_mlist_file_name <- function(type_import, ml_file_name){
 }
 
 #' Type of material list (clonal, family or parental list) according to the data structure.
-#' @describeIn Logical. Say TRUE if your material belongs to parental list.
+#' @description Logical. Say TRUE if your material belongs to parental list.
 #' @param mlist list. List of attributes based on breeding material tables.
 #' @author Omar Benites
 
@@ -122,5 +122,28 @@ get_type_list_ds <- function(mlist){
 }
 
 
+
+# The original version of this function is
+# https://stackoverflow.com/questions/15956931/how-to-add-a-new-column-between-other-dataframe-columns
+# We make some modification to use in the context of fbdesign/hidap
+#'Append column using position.
+#'@description Insert column between columns based on positions.
+#'@param x data frame.
+#'@param cols column to insert into data frame.
+#'@param after the inserted column would be located after `(i)` position. `If \code{after=1}, the column will be located in the 2nd position.
+#'@export
+#'
+
+append_col <- function(x, cols, after=length(x)) {
+  x <- as.data.frame(x)
+  if (is.character(after)) {
+    ind <- which(colnames(x) == after)
+    if (any(is.null(ind))) stop(after, "not found in colnames(x)\n")
+  } else if (is.numeric(after)) {
+    ind <- after
+  }
+  stopifnot(all(ind <= ncol(x)))
+  cbind(x, cols)[, append(1:ncol(x), ncol(x) + 1:length(cols), after=ind)]
+}
 
 

@@ -2,32 +2,21 @@
 % Please edit documentation in R/utils.R
 \name{is_parentList}
 \alias{is_parentList}
-\alias{get_type_list_ds}
 \title{Detection of parent list}
 \usage{
 is_parentList(mlist_name)
-
-get_type_list_ds(mlist)
 }
 \arguments{
 \item{mlist_name}{SelectInput value (commonly),}
-
-\item{mlist}{list. List of attributes based on breeding material tables.}
 }
 \description{
 Detection of parent list
-
-Type of material list (clonal, family or parental list) according to the data structure.
 }
 \section{Functions}{
 \itemize{
 \item \code{is_parentList}: Say TRUE if your material belongs to parental list.
-
-\item \code{get_type_list_ds}: Say TRUE if your material belongs to parental list.
 }}
 
 \author{
-Omar Benites
-
 Omar Benites
 }
