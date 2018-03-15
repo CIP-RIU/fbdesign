@@ -304,7 +304,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                          #shiny::tabsetPanel(# id = "fbDesignNav",
                                          shinydashboard::tabBox(id = "fbDesignNav", height = NULL, width = 12,
 
-                                                                shiny::tabPanel("Crop & Location", value = "crop", icon = shiny::icon("leaf"),
+                                                                shiny::tabPanel("Crop & Locationbghy", value = "crop", icon = shiny::icon("leaf"),
                                                                                 br(),
                                                                                 fluidRow(
                                                                                   column(width = 6,
