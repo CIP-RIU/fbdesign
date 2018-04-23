@@ -16,3 +16,4 @@ design.alpha.check(trt, k, r)
 \description{
 Function to check the necessary conditions
 }
+

@@ -16,7 +16,7 @@ Detection of parent list
 \itemize{
 \item \code{is_parentList}: Say TRUE if your material belongs to parental list.
 }}
-
 \author{
 Omar Benites
 }
+

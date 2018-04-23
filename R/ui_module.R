@@ -312,7 +312,7 @@ shinydashboard::tabItem(tabName = name,
 
                                              shiny::selectInput("designFieldbook_crop", "Crop", crops()),
                                              #shiny::uiOutput("fbDesign_factor2", inline = TRUE),
-                                                                        shiny::uiOutput("fbDesign_variables", inline = TRUE),
+                                                                        #shiny::uiOutput("fbDesign_variables", inline = TRUE),
                                              shiny::dateRangeInput("fbDesign_project_time_line", "Date of experiment", start = Sys.Date() - 2,
                                                                             end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
 

@@ -23,3 +23,4 @@ Creates an Factorial Two-Way Design under Complete Randomization
 \author{
 Omar Benites
 }
+

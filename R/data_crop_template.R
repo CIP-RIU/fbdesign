@@ -159,3 +159,74 @@ NULL
 #' @format A list used selection criteria
 #' @source International Potato Center, potato and sweetpotato experimental data.
 NULL
+
+
+#' @name Agronomic_features
+#' @title Agronomic_features
+#' @docType data
+#' @aliases Agronomic_features
+#' @description This list contains the list of Agronomic Features. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP crop template
+#' @usage Agronomic_features
+#' @format A list of Agronomic Features
+#' @source CGIAR Big Data Platform, Bioversity, International Potato Center, CIAT,  CGIAR
+NULL
+
+#' @name agronomic_trait_list
+#' @title agronomic_trait_list
+#' @docType data
+#' @aliases agronomic_trait_list
+#' @description This list contains the list of Agronomic Traits. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP crop template
+#' @usage agronomic_trait_list
+#' @format A list of Agronomic Traits
+#' @source CGIAR Big Data Platform, Bioversity, International Potato Center, CIAT,  CGIAR
+NULL
+
+#' @name soil_list
+#' @title soil_list
+#' @docType data
+#' @aliases soil_list
+#' @description This list contains the list of Soil variables. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP crop template
+#' @usage soil_list
+#' @format A list of Soil variables
+#' @source CGIAR Big Data Platform, Bioversity, International Potato Center, CIAT,  CGIAR
+NULL
+
+#' @name weather_list
+#' @title weather_list
+#' @docType data
+#' @aliases weather_list
+#' @description This list contains the list of Weather variables. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP crop template
+#' @usage weather_list
+#' @format A list of Weather variables
+#' @source CGIAR Big Data Platform, Bioversity, International Potato Center, CIAT,  CGIAR
+NULL
+
+
+
+#' @name metadata_template_list
+#' @title metadata_template_list
+#' @docType data
+#' @aliases metadata_template_list
+#' @description This list contains the list of metadata sheet data. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP-Agromfims crop template
+#' @usage metadata_template_list
+#' @format A list of metadata sheet data in HiDAP-AGROFIMS
+#' @source CGIAR Big Data Platform, Bioversity, International Potato Center CIP, CIAT,  CGIAR
+NULL
+
+
+#' @name installation_template_list
+#' @title installation_template_list
+#' @docType data
+#' @aliases installation_template_list
+#' @description This list contains the list of installation sheet data. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP-Agromfims crop template
+#' @usage installation_template_list
+#' @format A list of installation sheet data in HiDAP-AGROFIMS
+#' @source CGIAR Big Data Platform, Bioversity, International Potato Center CIP, CIAT,  CGIAR
+NULL
+

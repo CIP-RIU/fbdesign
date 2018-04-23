@@ -480,8 +480,31 @@ add_cl <- function(fb, design_abr= "CRD", factor_lvl){
 }
 
 
+#' Add fieldbook sheet for HIDAP-AGROFIMS.
+#'
+#' @description add a fieldbook sheet into a fieldbook file
+#' @param file name of the file
+#' @param fieldbook fieldbook data. A data frame.
+#' @return
 
 
+add_fieldbook_sheet_hdfims <-function(file, fieldbook){
+
+  wb <- createWorkbook()
+  openxlsx::addWorksheet(wb, "Fieldbook",gridLines = TRUE)
+  fn_xlsx <- file
+  fieldbook_data <- fieldbook
+  #fn_xlsx <- paste(fbdesign_id(),".xlsx",sep="")
+  #headerStyle <- createStyle(fontSize = 14, wrapText = TRUE, fontColour = "#FFFFFF", halign = "center",
+  #                          fgFill = "#4F81BD", border="TopBottom", borderColour = "#4F81BD")
+
+  openxlsx::setColWidths(wb, sheet = "Fieldbook", cols = 1:200, widths = "auto")
+  headerStyle <- createStyle(fontSize = 13,halign = "center",valign = "center")
+  freezePane(wb, "Fieldbook" , firstActiveRow = 2, firstActiveCol = 4)
+  openxlsx::writeDataTable(wb, "Fieldbook", x = fieldbook_data, colNames = TRUE, withFilter = FALSE,headerStyle =  headerStyle)
+  saveWorkbook(wb, file = fn_xlsx , overwrite = TRUE)
+
+}
 
 
 

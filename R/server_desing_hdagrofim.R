@@ -12,8 +12,110 @@
 #'
 
 server_design_agrofims <- function(input, output, session, values){
+  # mLand_levelling =list(
+  #   Land_levelling_start_date = ' ' ,Land_levelling_end_date= '',Land_levelling_number_of_passes= '',Land_levelling_operations_order= '', Land_levelling_implement_picture= '', Land_levelling_implement_type = '', Land_leveling_implement_make= '', Land_leveling_implement_model= '', Land_leveling_implement_traction= ''
+  # )
+  # mPuddling= list(Penetrometer_in_field = ' ' ,Puddling_start_date= '',Puddling_end_date= '',Puddling_depth= '',Puddling_implement_picture= '',Puddling_implement_name= '',Puddling_implement_make= '',Puddling_implement_model= '',Puddling_implement_traction= ''
+  # )
+  # mTillage = list(Conventional_tillage = ' ' ,Mulch_till= '',No_till= '',Other_specify= '',Puddling= '',Reduced_tillage= '',Strip_till= '',Tillage_implement_picture= '',Tillage_implement= '',Implement_make= '',Implement_model= '',Implement_traction= ''
+  # )
+  # mLiming= ''
+  # mMulching_and_residue_management=' '
+  # mRhizobium_inoculation =' '
+  # mPlanting_and_Seeding=' '
+  # mNutrient_management_event=' '
+  # mIrrigation_event=' '
+  # mDisease_observation=' '
+  # mPest_observation_and_control=' '
+  # mHarvest=' '
+  # mWeather_information=' '
+  # mWater_table_and_quality=' '
+  # mSoil_Measurement=' '
+  # mCrop_measurement=' '
+  #
+  # featList <- list(Land_preparation = list(Land_levelling = mLand_levelling,
+  #               Puddling=mPuddling, Tillage=mTillage,
+  #               Liming = mLiming) ,
+  #               Mulching_and_residue_management=mMulching_and_residue_management)
 
-  # Reactive table. Get material list table ----------------------
+  featNames <- names(Agronomic_features$`Agronomic features`)
+
+  #events for buttons next in tabs for fieldbook creation
+  # TO BE OPTIMIZED
+  observeEvent(input$btnNextPersonnelInfo, {
+      updateTabsetPanel(session, "inExpInfo", selected = "tabPersonnel")
+  })
+  observeEvent(input$btnNextCropInfo, {
+    updateTabsetPanel(session, "inExpInfo", selected = "tabCropInfo")
+  })
+  observeEvent(input$btnDesign, {
+    updateTabsetPanel(session, "inExpInfo", selected = "tabDesign")
+  })
+  observeEvent(input$btnNextPlotInfo, {
+    updateTabsetPanel(session, "inExpInfo", selected = "tabPlotInfo")
+  })
+  observeEvent(input$btnNextAgro, {
+    updateTabsetPanel(session, "inExpInfo", selected = "tabAgroFeat")
+  })
+  observeEvent(input$btnNextTraits, {
+    updateTabsetPanel(session, "inExpInfo", selected = "tabTraits")
+  })
+  observeEvent(input$btnNextEnv, {
+    updateTabsetPanel(session, "inExpInfo", selected = "tabEnvironment")
+  })
+
+  ## Agronomic Features Shiny Tree ###############################################
+
+  # observeEvent( input$selectFeatures, {
+  #   flist <- input$selectFeatures
+  #   i <- 1
+  #   n <- length(flist)
+  #   mfeatList <- vector("list", n)
+  #   names(mfeatList) <- flist
+  #   tree <- Agronomic_features[["Agronomic features"]]
+  #   total<- list()
+  #
+  #   for (feat in flist) {
+  #     total<- c(total, tree[feat])
+  #     #names(mfeatList[[feat]]) <- feat
+  #     # i <- i+1
+  #   }
+  #   total<- total
+  #    #saveRDS(total, "total.rds")
+
+    output$treeFeatures <- shinyTree::renderTree({
+
+      #total <- readRDS("total.rds")
+      total <- Agronomic_features
+
+    })
+    # output$treeFeatures <- shinyTree::renderTree({
+    #
+    #   Agronomic_features
+    #
+    #   })
+
+  # }) End agronomic trait shinyTree  ####################################
+
+  #observe for selectize of crops for intercropping ####################################
+  observe({
+    if(!is.null(input$cropsSelected)){
+      l <- input$cropsSelected
+      n <- length(input$cropsSelected)
+      if(n>0){
+        updateTextInput(session, "cropCommonName1",  value = l[[1]])
+      }
+      if(n>1){
+        updateTextInput(session, "cropCommonName2",  value = l[[2]])
+      }
+      if(n>2){
+        updateTextInput(session, "cropCommonName3",  value = l[[3]])
+      }
+    }
+  })
+
+
+  # Reactive table. Get material list table #################################################################
   material_table <-  shiny::reactive({
 
     if(input$select_import=="Template") {
@@ -62,7 +164,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-
+  # Approval Box ######################################################################################################
   output$approvalBox <- renderInfoBox({
 
     #data.frame is the data structue for the clonal and family list. In the parental and family module, we save lists in data.frame format
@@ -240,9 +342,9 @@ server_design_agrofims <- function(input, output, session, values){
                             color = color, fill = TRUE, width = NULL)
 
 
-  })
+  }) #################################################################
 
-  # Design of variables ---------------------------------------------------------------
+  # Design of variables #################################################################
   output$fbDesign_variables <- shiny::renderUI({
 
     crop <- input$designFieldbook_crop
@@ -269,7 +371,7 @@ server_design_agrofims <- function(input, output, session, values){
                        choices = mdl, selected = 1)
   })
 
-  # ID or name of the field book ---------------------------------------------------------------
+  # ID or name of the field book #################################################################
   fbdesign_id <- shiny::reactive({
 
     if (!is.null(input$designFieldbook_crop)) {
@@ -302,25 +404,143 @@ server_design_agrofims <- function(input, output, session, values){
     }
   })
 
-  # RenderText for displaying the book's name ---------------------------------------------------------------
+  # RenderText for displaying the book's name #################################################################
   output$fbDesign_id <- shiny::renderText({
     fbdesign_id()
   })
 
 
-  # Get Trait ---------------------------------------------------------------
-  output$designFieldbook_traits <- shinyTree::renderTree({
-    #if(crp=="potato"){tbl <- crop_list$crop_list$potato}
-    #if(crp=="sweetpotato"){tbl <- crop_list$crop_list$sweetpotato}
+  # Get Trait #################################################################
+  output$designFieldbook_traits_agrofims <- shinyTree::renderTree({
 
-    #Trait_List is a fbdesign dataset. This data contains all the traits hierachy divided by crops.
-    a <- Trait_List
-    #saveRDS(object = a,file = "pina.rds")
-    #a <- crop_list
-    #a
+    a<- agronomic_trait_list #data from fbdesign for hidap-agrofims
+
   })
 
-  # SelectInput for split plot designs ---------------------------------------------------------------
+  output$designFieldbook_traits_hdagrofims <- shinyTree::renderTree({
+    list(
+      # root1 = "",
+      Agronomic_features = list(
+        Groups = list(
+          Land_preparation= list(
+            Land_levelling =list(
+              Land_levelling_start_date = ' ' ,Land_levelling_end_date= '',Land_levelling_number_of_passes= '',Land_levelling_operations_order= '', Land_levelling_implement_picture= '', Land_levelling_implement_type = '', Land_leveling_implement_make= '', Land_leveling_implement_model= '', Land_leveling_implement_traction= ''
+            ),
+            Puddling= list(Penetrometer_in_field = ' ' ,Puddling_start_date= '',Puddling_end_date= '',Puddling_depth= '',Puddling_implement_picture= '',Puddling_implement_name= '',Puddling_implement_make= '',Puddling_implement_model= '',Puddling_implement_traction= ''
+),
+            Tillage = list(Conventional_tillage = ' ' ,Mulch_till= '',No_till= '',Other_specify= '',Puddling= '',Reduced_tillage= '',Strip_till= '',Tillage_implement_picture= '',Tillage_implement= '',Implement_make= '',Implement_model= '',Implement_traction= ''
+),
+            Liming= ''),
+          Mulching_and_residue_management=' ' , Rhizobium_inoculation=' ' , Planting_and_Seeding=' ' , Nutrient_management_event=' ' , Irrigation_event=' ' , Disease_observation=' ' , Pest_observation_and_control=' ' , Harvest=' ' , Weather_information=' ' , Water_table_and_quality=' ' , Soil_Measurement=' ' , Crop_measurement=' '
+)
+        # SubListB = list(leafA = "", leafB = "")
+      )
+    )
+  })
+
+
+  # Desing of Experiment deprecated
+
+  # shiny::observeEvent(input$btnExport_fbdesign_agrofims, {
+  #
+  #   factor_name1 <- gsub("\\s+", replacement = "-" , input$factor_hdafims1) %>% stringr::str_trim(.,side = "both")
+  #   factor_lvl1 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims1) %>% stringr::str_trim(.,side = "both")
+  #
+  #   factor_name2 <- gsub("\\s+", replacement = "-" , input$factor_hdafims2) %>% stringr::str_trim(.,side = "both")
+  #   factor_lvl2 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims2) %>% stringr::str_trim(.,side = "both")
+  #
+  #   factor_name3 <- gsub("\\s+", replacement = "-" , input$factor_hdafims3) %>% stringr::str_trim(.,side = "both")
+  #   factor_lvl3 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims3) %>% stringr::str_trim(.,side = "both")
+  #
+  #   factor_name4 <- gsub("\\s+", replacement = "-" , input$factor_hdafims4) %>% stringr::str_trim(.,side = "both")
+  #   factor_lvl4 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims4) %>% stringr::str_trim(.,side = "both")
+  #
+  #   factor_name5 <- gsub("\\s+", replacement = "-" , input$factor_hdafims5) %>% stringr::str_trim(.,side = "both")
+  #   factor_lvl5 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims5) %>% stringr::str_trim(.,side = "both")
+  #
+  #   nfactors <- as.numeric(input$nfactors_hdafims)
+  #
+  #   # print(factor_lvl1)
+  #   # print(factor_lvl2)
+  #   # print(factor_lvl3)
+  #   # print(factor_lvl4)
+  #   # print(factor_lvl5)
+  #
+  #   if(nfactors == 1){ #1 factor
+  #     fb <- st4gi::cd.cr(geno = FA, nrep = 3, nc = 3)
+  #
+  #   } else if(nfactors == 2){ #2 factores
+  #
+  #     FA <-  factor_lvl1
+  #     FB <-  factor_lvl2
+  #     fb <- cd.factorial(A = FA, B = FB, design = "crd", nrep = 3,  nc = 3)
+  #
+  #   } else if(nfactors == 3){  #3 factores
+  #     #
+  #     FA <-  factor_lvl1
+  #     FB <- factor_lvl2
+  #     FC <- factor_lvl3
+  #
+  #     fb <- cd.factorial(A = FA, B = FB, C = FC, design = "crd", nrep = 3, nc = 3)
+  #
+  #   } else if(nfactors == 4){  #4 factores
+  #
+  #     FA <-  factor_lvl1
+  #     FB <- factor_lvl2
+  #     FC <- factor_lvl3
+  #     FD <- factor_lvl4
+  #
+  #     fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD, design = "crd", nrep = 3, nc = 3)
+  #
+  #   } else {  #5 factores
+  #
+  #     FA <- factor_lvl1
+  #     FB <- factor_lvl2
+  #     FC <- factor_lvl3
+  #     FD <- factor_lvl4
+  #     FE <- factor_lvl5
+  #
+  #     fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD , E = FE, design = design, nrep = 3, nc = 3)
+  #
+  #   }
+  #   fb <- fb$book
+  #
+  #   trait_agrofims <- unlist(shinyTree::get_selected(input$designFieldbook_traits_agrofims))
+  #
+  #   if(!is.null(trait_agrofims)){
+  #     mm  <-  matrix(nrow = nrow(fb), ncol = length(trait_agrofims) )
+  #     nm  <-  c(names(fb), trait_agrofims)
+  #     fb  <-  cbind(fb, mm)
+  #     names(fb)  <-  nm
+  #   }
+  #
+  #   fb
+  #   #add_fieldbook_sheet_hdfims(file = "omar.xlsx", fieldbook =fb)
+  #   #shell.exec("C://Users//obenites//Documents//omar.xlsx")
+  #
+  # } )
+
+
+
+  ## Weather ShinyTree  #################################################################
+
+  output$designFieldbook_weatherVar_agrofims <- shinyTree::renderTree({
+
+    a<- weather_list #data from fbdesign for hidap-agrofims
+    a
+  })
+
+  ## Weather ShinyTree #################################################################
+
+  output$designFieldbook_soilVar_agrofims <- shinyTree::renderTree({
+
+    a<- soil_list #data from fbdesign for hidap-agrofims
+    a
+  })
+
+
+
+  # SelectInput for split plot designs #################################################################
   output$fbdesign_split_cb <- shiny::renderUI({
 
     choices <- c(input$factor_name, "INSTN")
@@ -329,7 +549,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  # Observed value for geographical information -----------------------------
+  # Observed value for geographical information #################################################################
   shiny::observe({
     path <- fbglobal::get_base_dir()
     geodb_file <- "table_sites.rds"
@@ -338,7 +558,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-
+  # Country ###################################################################################
   output$fbDesign_country <- shiny::renderUI({
     #sites_data <- fbsites::get_site_table() #before
 
@@ -350,12 +570,12 @@ server_design_agrofims <- function(input, output, session, values){
     cntry <- fbsites::get_country_list(sites_data = sites_data) #new code: use file fbsites
 
 
-    shiny::selectizeInput("fbDesign_countryTrial", label = "Country",
+    shiny::selectizeInput("fbDesign_countryTrial", label = "Country name",
                           choices = cntry, selected = 1,  multiple = FALSE)
 
   })
 
-
+  # Sites ##################################################################################################
   fbdesign_sites <- reactive({
 
     #sites_data <- site_table #using data from package #Former code before useing rective values
@@ -365,7 +585,7 @@ server_design_agrofims <- function(input, output, session, values){
     fbsites::get_filter_locality(sites_data = sites_data, country_input= input$fbDesign_countryTrial)
   })
 
-
+  # Country_site_select #####################################################################################
   output$fbDesign_countrySite <- shiny::renderUI({
 
     req(input$fbDesign_countryTrial)
@@ -377,13 +597,13 @@ server_design_agrofims <- function(input, output, session, values){
     #print(locs)
     if (nrow(locs) > 0 ){
       #chc = locs$shortn
-      shiny::selectizeInput("designFieldbook_sites", label = "Location",
+      shiny::selectizeInput("designFieldbook_sites", label = "Village name",
                             choices = fbdesign_sites_selected, selected = 1,  multiple = FALSE)
     }
   })
 
 
-  # Create an object with the list of file ----------------------------------
+  # Create an object with the list of file #####################################################################
   #Button for selecting material list
   output$fbDesign_selmlist <- shiny::renderUI({
 
@@ -391,7 +611,7 @@ server_design_agrofims <- function(input, output, session, values){
     #res <- sel_list()
     res <- fbdesign_mtl_files() #this come from util.R fbdesign package
 
-    selectizeInput(inputId = "designFieldbook_sel_mlist", label = "Select a material list", width="100%",
+    selectizeInput(inputId = "designFieldbook_sel_mlist", label = "Select a factorial list", width="100%",
                    choices = res,
                    options = list(
                      placeholder = 'Select a material list',
@@ -400,7 +620,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  #Conditional reactive value for displaying Standard Statistical Design or Genetic Design
+  #Conditional reactive value for displaying Standard Statistical Design or Genetic Design ########################
   output$condition_selmlist <-  shiny::reactive({
 
     mlist <- material_table()
@@ -415,12 +635,12 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  #The output object will be suspended (not execute) when it is hidden on the web page
+  #The output object will be suspended (not execute) when it is hidden on the web page ############################
   outputOptions(output, 'condition_selmlist', suspendWhenHidden=FALSE)
   ### End of Create an object with the list of file
 
 
-  # Number of plant per row (calculated variable) ####
+  # Number of plant per row (calculated variable) #################################################################
   react_plantxplot <-  shiny::reactive({
 
     plantxplot <- input$fbDesign_nplantsrow*input$fbDesign_nrowplot
@@ -430,7 +650,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  #Shiny UI for number of plants per plot
+  #Shiny UI for number of plants per plot #################################################################
   output$fbPlant_plot <- shiny::renderUI({
 
     rpplot <- react_plantxplot()
@@ -439,7 +659,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  # Plot Size Values #####
+  # Plot Size Values ########################################################################################
   react_psize <- reactive({
     plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot*input$fbDesign_distRows
     print(plot_size)
@@ -447,7 +667,7 @@ server_design_agrofims <- function(input, output, session, values){
     plot_size
   })
 
-  # Plot Size
+  # Plot Size ###################################################################################
   output$fbPlanting_psize <- shiny::renderUI({
     #plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot*input$fbDesign_distRows
     plot_size <- react_psize()
@@ -457,7 +677,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  # Plant densisty ####
+  # Reactive Plant densisty #####################################################################
   react_pdensity <-  shiny::reactive({
 
     #plant_density <- (input$fbDesign_nplants/input$fbDesign_psize)*10000
@@ -470,6 +690,7 @@ server_design_agrofims <- function(input, output, session, values){
     plant_density
   })
 
+  #Select Plant density #########################################################################
   output$fbPlanting_pdensity <- shiny::renderUI({
     plant_density <- react_pdensity()
     #if(length(plant_density)==0) plant_density <- 37037.037
@@ -477,7 +698,8 @@ server_design_agrofims <- function(input, output, session, values){
                         value = plant_density, min = plant_density, max = plant_density)
   })
 
-  # Message for Alpha Design ------------------------------------------------
+
+  # Message for Alpha Design ####################################################################
   output$alphaMessage <- shiny::renderText({
 
     germoplasm <-material_table()$Accession_Number
@@ -500,7 +722,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
   })
 
-  # Reactive data.frame for designing fieldbook -----------------------------
+  # Reactive data.frame for designing fieldbook #################################################
   fbdraft <- shiny::reactive({
 
     if(input$select_import=="Template") {
@@ -760,201 +982,36 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  # Visualization of the field book -----------------------------------------
-  shiny::observeEvent(input$fbDesign_draft, {
+  # Visualization of the field book #############################################################
+  shiny::observeEvent(input$fbDesign_draft_agrofims, {
 
-    # req(input$designFieldbook_sel_mlist)
-    # req(input$designFieldbook)
-    #print(material_table())
-    #print(fbdraft())
-    mtl_table <- material_table()
-    tpds <- get_type_list_ds(material_table())
-    #Flag variable to check certain condition in fieldbooks. Initially declared TRUE
-    flag <- TRUE
+    withProgress(message = 'Fieldbook Preview', value = 0, {
 
-    if(length(material_table())==0 ) {
-      flag <- FALSE
-      shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have not selected a material list. Please select/upload one"), styleclass = "danger")
-    }
+      incProgress(1/10,message = "...")
 
 
-    if(input$designFieldbook=="ABD"){ #for augmented design
-
-      mtl <- as.data.frame(mtl_table)
-      #mtl <- material_table()
-      mtl_instn <- as.character(mtl$Is_control)
-      mtl_checks_count <- is_control(mtl_table)
-
-      if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1) {
-        flag <- FALSE
-        shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks is needed in 'Is_Control' column. Verify Material List file"), styleclass = "danger")
-
-      } else {
-
-        flag <- TRUE
-      }
-
-      #  flag <- TRUE
-    }
-
-
-    if(input$designFieldbook=="WD"){ #for wescott design
-
-      #mtl <- mtl_table
-      mtl <- as.data.frame(mtl_table, stringsAsFactors=FALSE)
-
-      trt1 <-  mtl_table$Accession_Number
-      trt1 <-  gsub("[[:space:]]","", trt1)
-      trt1 <-  setdiff(trt1,"")
-
-      mtl_instn <- as.character(mtl$Is_control)
-      mtl_checks_count <- is_control(mtl_table) #number of checks
-
-      trt2 <- is_control(mtl_table) #get checks from material list
-      germoplasm <- setdiff(trt1,trt2) #remove controls from material list
-      germoplasm <- trt1
-
-
-
-      if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1 || length(mtl_checks_count)>2 ) {
-        flag <- FALSE
-        shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Just two checks are needed in Westcott Design. Verify 'Is_Control' column in your material list"), styleclass = "danger")
-      } else if(length(germoplasm)<10){
-        shinysky::showshinyalert(session, "alert_fb_done", paste("You need at least 10 genotypes to perform Westcott Design." ), styleclass = "danger")
-
-      } else {
-
-        flag <- TRUE
-      }
-
-    }
-
-
-    if(input$designFieldbook=="AD"){ # for alpha design
-
-      germoplasm <-material_table()$Accession_Number
-
-      print(germoplasm)
-      n <- length(germoplasm)
-      r <- as.numeric(input$designFieldbook_r)
-      k <- as.numeric(input$designFieldbook_k)
-
-      dach <- design.alpha.check(trt= germoplasm,k=k,r=r)
-
-      if(!dach$alfares){
-        flag <- FALSE
-        ms <- paste(dach$res,". The combination of ",r," and", k, " is wrong using ",n ," genotypes.")
-        shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: ", ms), styleclass = "danger")
-      } else{
-        flag <- TRUE
-      }
-    }
-
-    #for genetic studies which requieres parental information
-    if(tpds=="parental"){
-
-      if(input$design_geneticFieldbook=="NCI"){
-        #et_type_list_ds(mtl_table)
-        male <-  mtl_table$male$Accession_Number
-        female <-  mtl_table$female$Accession_Number
-        set <- as.numeric(input$design_genetic_nc_set)
-        r <-  as.numeric(input$design_genetic_r)
-        # print(male)
-        # print(female)
-        # print(length(male)!=length(female))
-        print("pass")
-
-        if(length(male)!=length(female)){
-
-          print("1")
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
-
-        } else if (r==1 || is.na(r)) {
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
-
-        } else if (is.null(male) || is.na(male)) {
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 males"), styleclass = "danger")
-
-        } else if(length(female)==1 || is.null(female) || is.na(female)) {
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 females"), styleclass = "danger")
-
-        } else if (length(female) %% set !=0) {
-          print("6")
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
-
-        } else {
-
-          flag <- TRUE
-        }
-
-
-
-      }
-
-      if(input$design_geneticFieldbook=="NCII"){
-
-
-        #get_type_list_ds(mtl_table)
-
-        male <-  mtl_table$male$Accession_Number
-        female <-  mtl_table$female$Accession_Number
-        set <- as.numeric(input$design_genetic_nc_set)
-        r <-  as.numeric(input$design_genetic_r)
-
-
-        if(length(male)!=length(female)){
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
-
-        } else if (r==1 || is.na(r)){
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
-
-        } else if (is.null(male) || is.na(male)){
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 males"), styleclass = "danger")
-
-        } else if(length(female)==1 || is.null(female) || is.na(female)){
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 females"), styleclass = "danger")
-
-        } else if (length(female) %% set !=0){
-
-          flag <- FALSE
-          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
-
-        } else {
-
-          flag <- TRUE
-        }
-
-
-      }
-
-
-      flag <- flag
-
-    }
-
+    flag <- TRUE #temporary
 
     if(flag){
 
-      fb <-  fbdraft()
+      #print(agro_var_dt())
+      fb <- fb_agrofims()
 
       #fb <- fb[,1:129]
-      output$fbDesign_table <- rhandsontable::renderRHandsontable({
+      output$fbDesign_table_agrofims <- rhandsontable::renderRHandsontable({
 
-        rhandsontable::rhandsontable(fb, readOnly = T)})
+        rhandsontable::rhandsontable(fb , readOnly = T)})
 
     }
 
+      incProgress(9/10,message = "...")
+      incProgress(10/10,message = "...")
+
+    })
+
   })
 
+  # Download or Create Fieldboon in Excel Format ################################################
   shiny::observeEvent(input$fbDesign_create, {
 
 
@@ -1333,6 +1390,7 @@ server_design_agrofims <- function(input, output, session, values){
                  })
   })
 
+  # Material List Export, #######################################################################
   output$fbDesign_mlistExport <- downloadHandler(
     filename = function() {
       paste("Material_List", '.xlsx', sep='')
@@ -1349,6 +1407,468 @@ server_design_agrofims <- function(input, output, session, values){
     }
   )
 
+  ###reactive data frame for design fieldbook  ################################################
+  fb_agrofims <- shiny::reactive({
+
+    nrep <- as.numeric(input$designFieldbook_agrofims_r)
+    design <- input$designFieldbook_agrofims
+
+
+    factor_name1 <- gsub("\\s+", replacement = "-" , input$factor_hdafims1) %>% stringr::str_trim(.,side = "both")
+    factor_lvl1 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims1) %>% stringr::str_trim(.,side = "both")
+
+    factor_name2 <- gsub("\\s+", replacement = "-" , input$factor_hdafims2) %>% stringr::str_trim(.,side = "both")
+    factor_lvl2 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims2) %>% stringr::str_trim(.,side = "both")
+
+    factor_name3 <- gsub("\\s+", replacement = "-" , input$factor_hdafims3) %>% stringr::str_trim(.,side = "both")
+    factor_lvl3 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims3) %>% stringr::str_trim(.,side = "both")
+
+    factor_name4 <- gsub("\\s+", replacement = "-" , input$factor_hdafims4) %>% stringr::str_trim(.,side = "both")
+    factor_lvl4 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims4) %>% stringr::str_trim(.,side = "both")
+
+    factor_name5 <- gsub("\\s+", replacement = "-" , input$factor_hdafims5) %>% stringr::str_trim(.,side = "both")
+    factor_lvl5 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims5) %>% stringr::str_trim(.,side = "both")
+
+    nfactors <- as.numeric(input$nfactors_hdafims)
+
+    if(design == "CRD") { design<- "crd"}
+    if(design == "RCBD") { design<- "rcbd"}
+    design <- design
+
+    #checkbox to set CropVariety as a Factor
+    isCropFactor <- input$setCropFactor
+    crop_varietiesname <- input$cropVarietyNameMono
+
+    if(is.null(crop_varietiesname)) crop_varietiesname <- ""
+
+    # print(factor_lvl1)
+    # print(factor_lvl2)
+    # print(factor_lvl3)
+    # print(factor_lvl4)
+    # print(factor_lvl5)
+
+    if(nfactors == 1){
+      fb <- st4gi::cd.cr(geno = FA, nrep = nrep,  nc = 3)
+
+    } else if(nfactors == 2){
+
+      FA <-  factor_lvl1
+      FB <-  factor_lvl2
+      #print(FA)
+      #print(FB)
+      #print(design)
+      #print(nrep)
+
+      if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
+
+        fb <- cd.factorial(A = FA, B = FB, C= crop_varietiesname, design = design, nrep = nrep,  nc = 3)
+
+        if(design == "crd"){
+          names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, "CROP_VARIETY")
+        } else{
+          names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, "CROP_VARIETY")
+        }
+
+
+      } else {
+
+        fb <- cd.factorial(A = FA, B = FB, design = design, nrep = nrep,  nc = 3)
+
+        if(design == "crd"){
+          names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
+        } else{
+          names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
+        }
+
+
+      }
+
+#
+#       if(design == "crd"){
+#         names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
+#       } else{
+#         names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
+#       }
+      fb <- fb
+
+    } else if(nfactors == 3){
+      #
+      FA <-  factor_lvl1
+      FB <- factor_lvl2
+      FC <- factor_lvl3
+
+      if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
+
+        fb <- cd.factorial(A = FA, B = FB, C = FC,  design = design, nrep = nrep,  nc = 3)
+
+        if(design == "crd"){
+          names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, "CROP_VARIETY")
+        } else{
+          names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, "CROP_VARIETY")
+        }
+
+
+
+      } else {
+
+      fb <- cd.factorial(A = FA, B = FB, C = FC, design = design, nrep = nrep, nc = 3)
+
+      if(design == "crd"){
+        names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3)
+      } else {
+        names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2,factor_name3)
+      }
+      fb <- fb
+
+
+      }
+
+      fb <- fb
+
+    } else if(nfactors == 4){
+
+      FA <-  factor_lvl1
+      FB <- factor_lvl2
+      FC <- factor_lvl3
+      FD <- factor_lvl4
+
+      fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD, design = design, nrep = nrep, nc = 3)
+
+      if(design == "crd"){
+        names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4)
+      } else{
+        names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4)
+      }
+      fb <- fb
+
+    } else {
+
+      FA <- factor_lvl1
+      FB <- factor_lvl2
+      FC <- factor_lvl3
+      FD <- factor_lvl4
+      FE <- factor_lvl5
+
+      fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD , E = FE, design = design, nrep = nrep, nc = 3)
+
+      if(design == "crd"){
+        names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4, factor_name5)
+      } else{
+        names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4, factor_name5)
+      }
+      fb <- fb
+
+    }
+    fb <- fb$book
+
+    trait_agrofims <- unlist(shinyTree::get_selected(input$designFieldbook_traits_agrofims))
+
+    if(!is.null(trait_agrofims)){
+      mm  <-  matrix(nrow = nrow(fb), ncol = length(trait_agrofims) )
+      nm  <-  c(names(fb), trait_agrofims)
+      fb  <-  cbind(fb, mm)
+      names(fb)  <-  nm
+    }
+
+    fb
+
+
+    #add_fieldbook_sheet_hdfims(file = "omar.xlsx", fieldbook =fb)
+    #shell.exec("C://Users//obenites//Documents//omar.xlsx")
+
+  })
+
+  ##reactive table from agro features   ########################################################
+  dt_agrofeatures <- reactive({
+
+    tree <- input$treeFeatures
+    p <- get_selected(tree)
+    print(p)
+    n <- length(p)
+    print(p)
+    #list_sel_values <- NULL
+    print(n)
+    #Generation of list of selected values from tree: list_sel_values
+    #as <- readRDS("inst/examples/04-selected/selagro.rds")
+    # for(i in 1:n){
+    #   list_sel_values[[i]] <- p[i][[1]]
+    # }
+    list_sel_values <- p
+    print(list_sel_values)
+
+    total_dt <- data.frame() #acumulator of tables of agronomic variables and values
+
+    list_sel_values <- list_sel_values
+    saveRDS(list_sel_values ,"list_sel_va.rds")
+    #value <- list_sel_values[[i]][1] #extrac values of each item
+
+
+    for(i in 1:n){
+
+      var_slevel <- attr(list_sel_values[i][[1]], "ancestry", TRUE)
+      nmax <- length(var_slevel)
+
+      if( nmax ==1){
+        value <- NA #""
+        lvl <-  NA #list_sel_values[[i]][1]
+        subgroup <- NA #attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax] #max  =3
+        group <- NA #attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-1] #max =2
+
+      } else if(nmax == 2){ #
+        value <- NA #""
+        lvl <-  NA #list_sel_values[[i]][1]
+        subgroup <- NA #attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax] #max  =3
+        group <- NA #attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-1] #max =2
+        #value <- list_sel_values[[i]][1] #extrac values of each item
+      } else  if(nmax == 3){
+        value <- ""
+        lvl <-  list_sel_values[[i]][1]
+        subgroup <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax] #max  =3
+        group <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-1] #max =2
+        #value <- list_sel_values[[i]][1] #extrac values of each item
+      }else {
+        #if(n_max == 4){
+        value <- list_sel_values[[i]][1]
+        lvl <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax] #max =4
+        subgroup <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-1] #max -1 = 3
+        group <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-2] #max -2 =2
+      }
+
+      dt <- data.frame(Group  = group, Subgroup = subgroup, Level = lvl, Value = value)
+      total_dt <- rbind(total_dt, dt)
+    }
+    #end bucle
+    print(total_dt)
+    #remove na
+    total_dt <- total_dt[apply(total_dt,1,function(x)any(!is.na(x))),]
+    total_dt
+
+  })
+
+  ##reactive table from metadata info   ########################################################
+  dt_metadata_agrofims <- reactive({
+
+    startDate_val <- input$fbDesign_project_time_line[1]
+    print(startDate_val)
+    endDate_val <- input$fbDesign_project_time_line[2]
+    #print(endDate_val)
+    x <- interval(ymd(startDate_val),ymd(endDate_val))
+    x <- x %/% months(1)
+    Duration_val <- x
+
+
+    metadata<- fbdesign::add_metadata_agrofims( agronomic_crop_template = metadata_template_list, col_name= "Value",
+                                     experimentId =  input$experimentId, experimentName = input$experimentName,
+                                     experimentProjectName = input$experimentProjectName,
+                                     startDate = startDate_val,
+                                     endDate =  endDate_val,
+                                     Duration = Duration_val, #input$fbDesign_project_time_line[2] - fbDesign_project_time_line[1],
+                                     designFieldbook_typeExperiment = input$designFieldbook_typeExperiment,
+                                     experimentObj = input$experimentObj, fundName = input$fundName, personnel1Type = input$personnel1Type,
+
+                                     person1FirstName = input$person1FirstName, designFieldbook_fundLeadAgency = input$designFieldbook_fundLeadAgency,
+                                     leadName = input$leadName, person1LastName = input$person1LastName, person1Email = input$person1Email,
+                                     person1Afiliation =   input$person1Afiliation, person1ORCID = input$person1ORCID,
+                                     instAbreviation = "", #input$instAbreviation,
+                                     contCenter = input$contCenter, contCRP = input$contCRP,
+                                     contResearcher =  input$contResearcher, sytpetype = input$sytpetype, syteName = input$syteName,
+                                     siteID = input$siteID ,
+                                     countryName= input$fbDesign_countryTrial,
+                                     #admin1=  "", #input$admin1,
+                                     #admin2="", #input$admin2,
+                                     villageName= input$designFieldbook_sites,
+                                     #elevation ="", #input$elevation,
+                                     #latitude="", #input$latitude,
+                                     #longitude= "", #input$longitude,
+                                     descNotes= "", #input$descNotes,
+                                     croppingType= input$croppingType,
+                                     cropLatinNameMono=input$cropLatinNameMono,
+                                     cropCommonNameMono= input$cropCommonNameMono, cultivarNameMono=input$cultivarNameMono,
+                                     cropVarietyNameMono= input$cropVarietyNameMono,
+                                     subject= "", #input$subject,
+                                     keywords="", #input$keywords,
+                                     Embargo_date=input$Embargo_date)
+
+    metadata
+
+  })
+
+  ##reactive table for installation info ########################################################
+  dt_installation_agrofims <- reactive({
+
+    add_installation_agrofims(agronomic_crop_template= installation_template_list, col_name = "Value",
+    designFieldbook_agrofims	=	input$designFieldbook_agrofims,
+    designFieldbook_agrofims_r	=	input$designFieldbook_agrofims_r,
+    numPlantsPerPlot	=	input$numPlantsPerPlot,
+    numRowsPerPlot	=	input$numRowsPerPlot,
+    numPlantsPerRow	=	input$numPlantsPerRow,
+    plotSize	=	input$plotSize,
+    spaceBwPlants	=	input$spaceBwPlants,
+    spaceBwRows	=	input$spaceBwRows,
+    planDensity	=	input$planDensity,
+    plotSpacing	=	input$plotSpacing,
+    rowOrientation	=	input$rowOrientation,
+    hillSpacing	=	input$hillSpacing,
+
+    factor_hdafims1	=	input$factor_hdafims1,
+    lvl_hdafims1	=	input$lvl_hdafims1,
+
+    factor_hdafims2	=	input$factor_hdafims2,
+    lvl_hdafims2	=	input$lvl_hdafims2,
+
+    factor_hdafims3	=	input$factor_hdafims3,
+    lvl_hdafims3	=	input$lvl_hdafims3,
+
+    factor_hdafims4	=	input$factor_hdafims4,
+    lvl_hdafims4	=	input$lvl_hdafims4,
+
+    factor_hdafims5	=	input$factor_hdafims5,
+    lvl_hdafims5	=	input$lvl_hdafims5
+    )
+
+  })
+
+  ##reactive weather
+  dt_weather_agrofims <- shiny::reactive({
+
+    weather_vars <- unlist(shinyTree::get_selected(input$designFieldbook_weatherVar_agrofims))
+    weather_vars <- gsub(pattern = ":.*",replacement = "",x = weather_vars)
+    weather_vars <- stringr::str_trim(weather_vars,side = "both")
+
+    if(!is.null( weather_vars)){
+      dt  <-  matrix(nrow = 50, ncol = length(weather_vars) )
+      dt  <- data.frame(dt)
+      names(dt)  <-  weather_vars
+    } else{
+      dt <- data.frame()
+    }
+
+    dt
+  })
+
+
+  ##reactive soil
+  dt_soil_agrofims <- shiny::reactive({
+
+    soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
+
+    if(!is.null(soil_vars)){
+      dt  <-  matrix(nrow = 50, ncol = length(soil_vars))
+      dt  <- data.frame(dt)
+      names(dt)  <-  soil_vars
+    } else{
+      dt <- data.frame()
+    }
+    dt
+  })
+
+
+  ### donwload fieldbook ########################################################################
+  output$downloadData <- downloadHandler(
+    filename = "fileNameBook.xlsx",
+    content = function(file) {
+
+      withProgress(message = 'Downloading fieldbook', value = 0, {
+
+        incProgress(1/10,message = "...")
+
+
+      design <- input$designFieldbook_agrofims
+      nrep <- input$designFieldbook_agrofims_r
+
+      print("common variety name")
+      #print(input$cropVarietyNameMono)
+      print("end common var name")
+
+      weather_vars <- unlist(shinyTree::get_selected(input$designFieldbook_weatherVar_agrofims))
+      soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
+      print(weather_vars)
+      # print(input$fbDesign_countryTrial)
+      # print(input$designFieldbook_sites)
+
+      fb <- fb_agrofims()
+
+      agrofeatures <- dt_agrofeatures()
+      metadata <- dt_metadata_agrofims()
+      installation <-dt_installation_agrofims()
+      weather <- dt_weather_agrofims()
+      soil <- dt_soil_agrofims()
+
+
+      fname <- paste(file,"xlsx",sep=".")
+      #wb <- openxlsx::loadWorkbook(file = fname, create = TRUE)
+
+      wb <- createWorkbook()
+
+        incProgress(2/10,message = "Adding fieldbook data...")
+
+      openxlsx::addWorksheet(wb, "Fieldbook", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Fieldbook", x = fb,
+                               colNames = TRUE, withFilter = FALSE)
+
+
+        incProgress(3/10,message = "Adding agronomic features...")
+
+
+
+      openxlsx::addWorksheet(wb, "Agronomic_Features", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Agronomic_Features", x = agrofeatures,
+                               colNames = TRUE, withFilter = FALSE)
+
+
+      incProgress(6/10,message = "Metadata metadata sheet...")
+
+      openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Metadata", x = metadata,
+                               colNames = TRUE, withFilter = FALSE)
+
+
+      incProgress(7/10,message = "Adding installation sheet...")
+
+      openxlsx::addWorksheet(wb, "Installation", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Installation", x = installation,
+                               colNames = TRUE, withFilter = FALSE)
+
+
+
+      #if(nrow(weather)==0){
+      if(is.null(weather_vars)){
+        print("there is no weather data")
+
+      } else{
+
+        incProgress(8/10,message = "Adding weather variables sheet...")
+
+        openxlsx::addWorksheet(wb, "Weather", gridLines = TRUE)
+        openxlsx::writeDataTable(wb, "Weather", x = weather,
+                                 colNames = TRUE, withFilter = FALSE)
+      }
+
+      if(is.null(soil_vars)){
+        print("there is no soil data")
+
+      } else {
+
+        incProgress(9/10,message = "Adding soil variables sheet...")
+        openxlsx::addWorksheet(wb, "Soil", gridLines = TRUE)
+        openxlsx::writeDataTable(wb, "Soil", x = soil,
+                                 colNames = TRUE, withFilter = FALSE)
+      }
+
+      incProgress(10/10,message = "Downloading file...")
+
+      saveWorkbook(wb, file = fname , overwrite = TRUE)
+
+      file.rename(fname, file)
+
+
+    })
+
+    },
+    contentType="application/xlsx"
+  )
+
+
 }
 
 
@@ -1357,75 +1877,6 @@ server_design_agrofims <- function(input, output, session, values){
 
 
 
-#end of SERVER.R
 
-# Deprecated code ---------------------------------------------------------
 
-#   shiny::observeEvent(input$fbDesign_mlistExport,{
-#     #print("Heyoo")
-#     withProgress(message = "Downloading Material List Template..",value= 0,
-#       {
-#       mt_list <- material_list
-#       try({
-#            openxlsx::write.xlsx(x = mt_list,file = "material_list.xlsx")
-#          })
-#     })
-#    })
 
-#   shiny::observe({
-#     shinyjs::toggle(condition = input$fbDesign_environment_type == "field",
-#                     selector = "#fbDesignNav li a[data-value=fbDesign_field]")
-#     shinyjs::toggle(condition = input$fbDesign_environment_type == "farmers_field",
-#                     selector = "#fbDesignNav li a[data-value=fbDesign_farmers_field]")
-#     shinyjs::toggle(condition = input$fbDesign_environment_type == "greenhouse",
-#                     selector = "#fbDesignNav li a[data-value=fbDesign_greenhouse]")
-#     shinyjs::toggle(condition = input$fbDesign_environment_type == "screenhouse",
-#                     selector = "#fbDesignNav li a[data-value=fbDesign_screenhouse]")
-#     shinyjs::toggle(condition = input$fbDesign_weather_cb,
-#                     selector = "#fbDesignNav li a[data-value=fbDesign_weather]")
-#     shinyjs::toggle(condition = input$fbDesign_soil_cb,
-#                     selector = "#fbDesignNav li a[data-value=fbDesign_soil]")
-#   })
-
-#   output$fbDesign_phase <- shiny::renderUI({
-#     if (!is.null(input$designFieldbook_crop)) {
-#       tbl = fbcrops::get_crop_table()
-#       crp = tbl[tbl$crop_name == input$designFieldbook_crop, "crop_id"]
-#
-#       tbl = fbprstages::get_program_stage_table()
-#       prg = tbl[tbl$crop_id == crp, ]
-#
-#       if (nrow(prg) > 0 ) {
-#         lbl = paste0(prg$program_stage_name, " (", prg$program_stage_id, ")" )
-#         chc = as.list(prg$program_stage_id)
-#         names(chc) = lbl
-#         shiny::selectInput("designFieldbook_phase", "Study", chc)
-#       }
-#     }
-#   })
-
-#   material_table <- reactive({
-#       hot_file <- hot_path()
-#       if(length(hot_file)==0){return (NULL)}
-#       if(length(hot_file)>0){
-#
-#         mtl_list <- readxl::read_excel(path=hot_file , sheet = "material")
-#         #mtl_df <- as.data.frame(mtl_list) #mtl in data frame format
-#         mtl_list <- as.list(mtl_list) #mtl in list format
-#         #material_table <- list(material_list = mtl_list)
-#       }
-#     })
-
-#   volumes <- shinyFiles::getVolumes()
-#   shinyFileChoose(input, 'file', roots=volumes, session=session,
-#                   restrictions=system.file(package='base'),filetypes=c('xlsx'))
-
-#   hot_path <- reactive ({
-#     validate(
-#       need(input$file != "", label = "Enter an XLSX file")
-#     )
-#     if(length(input$file)==0){return (NULL)}
-#     if(length(input$file)>0){
-#       hot_file <- as.character(parseFilePaths(volumes, input$file)$datapath)
-#     }
-#   })

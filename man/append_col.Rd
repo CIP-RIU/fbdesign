@@ -16,3 +16,4 @@ append_col(x, cols, after = length(x))
 \description{
 Insert column between columns based on positions.
 }
+
