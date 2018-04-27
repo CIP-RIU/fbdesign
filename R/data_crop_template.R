@@ -230,3 +230,25 @@ NULL
 #' @source CGIAR Big Data Platform, Bioversity, International Potato Center CIP, CIAT,  CGIAR
 NULL
 
+#' @name installation1_template_list
+#' @title installation1_template_list
+#' @docType data
+#' @aliases installation1_template_list
+#' @description This list contains the list of installation sheet data. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP-Agromfims crop template
+#' @usage installation1_template_list
+#' @format A list of installation sheet data in HiDAP-AGROFIMS
+#' @source CGIAR Big Data Platform, Bioversity, International Potato Center CIP, CIAT,  CGIAR
+NULL
+
+
+#' @name installation2_template_list
+#' @title installation2_template_list
+#' @docType data
+#' @aliases installation2_template_list
+#' @description This list contains the list of installation sheet data. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP-Agromfims crop template
+#' @usage installation2_template_list
+#' @format A list of installation sheet data in HiDAP-AGROFIMS
+#' @source CGIAR Big Data Platform, Bioversity, International Potato Center CIP, CIAT,  CGIAR
+NULL

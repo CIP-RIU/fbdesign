@@ -268,7 +268,7 @@ design_conditional_panels_agrofims <- function(){
 
 ################## Begin Simple Modules
 
-ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phenotype_fieldbook_design"){
+ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phenotype_fieldbook_design" ){
 
   #############
   shinydashboard::tabItem(tabName = name,
@@ -294,6 +294,26 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                               border-left-color:#f5f5f5;
                               border-right-color:#f5f5f5;
                               border-top-color:#f5f5f5;
+                              }
+
+
+
+                              .box.box-solid.box-info>.box-header {
+                                color:#000;
+                                background:#f2dede;
+                                /*padding-top:0px*/
+                              }
+
+                              .box.box-solid.box-info>.box-body {
+                                color:#000;
+                              background:#f2dede
+                              }
+
+                              .box.box-solid.box-info{
+                              border-bottom-color:#f2dede;
+                              border-left-color:#f2dede;
+                              border-right-color:#f2dede;
+                              border-top-color:#f2dede;
                               }
 
 
@@ -327,6 +347,15 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                             )
                           )),
 
+                          tags$style(HTML("
+                            .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+                            color: #fff;
+                            cursor: default;
+                            background-color: #0081c2;
+                            border: 1px solid #ddd;
+                            border-bottom-color: transparent;}
+                          ")),
+
                           # fluidRow(
                           #   box()
                           # ),
@@ -348,13 +377,14 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                          collapsible = TRUE, width = 12,
 
                                          #shiny::tabsetPanel(# id = "fbDesignNav",
-                                         fluidRow(
-                                         shinydashboard::tabBox(id = "fbDesignNav", height = NULL, width = 12,
+                                         #fluidRow(
+                                         tabsetPanel(id= "fbDesignNav",
+                                         #shinydashboard::tabBox(id = "fbDesignNav", height = NULL, width = 12,
                                          # box(title = "", solidHeader = TRUE, status = "primary", width=12,
                                             #tabsetPanel(id = "inExpInfo", #Begin Master tabSetPanel
 
                                               shiny::tabPanel("Experiment", value = "experiment", icon = shiny::icon("info"),
-                                                  fluidRow(
+                                                  #fluidRow(
                                                     column(width = 6,
                                                            h2("Experiment details"),
                                                            disabled(textInput(inputId = "experimentId", label = "Experiment ID", value = "")),
@@ -363,49 +393,69 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                            shiny::dateRangeInput("fbDesign_project_time_line", "Experiment date", start = Sys.Date() - 2,
                                                                                  end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
-                                                           dateInput("Embargo_date", label ="Embargo end date", format = "dd/mm/yyyy"),
+                                                           # dateInput("Embargo_date", label ="Embargo end date", format = "dd/mm/yyyy"),
                                                            # shiny::selectInput("designFieldbook_expSeason", "Experiment season", choices = c("Summer","Spring","Winter", "Autumn")),
-                                                           shiny::selectInput("designFieldbook_typeExperiment", "Type of experiment", choices = c("Select one...","Controlled treatment trial","Observation trial","Varietal trial", "Demonstration trial", "Germplasm screening trial")),
+                                                           # shiny::selectInput("designFieldbook_typeExperiment", "Type of experiment", choices = c("Select one...","Controlled treatment trial","Observation trial","Varietal trial", "Demonstration trial", "Germplasm screening trial")),
+                                                           selectizeInput("designFieldbook_typeExperiment", "Type of experiment", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Controlled treatment trial","Observation trial","Varietal trial", "Demonstration trial", "Germplasm screening trial")),
 
 
-                                                           textAreaInput(inputId = "experimentObj", label = "Experiment objective", value = ""),
+
+
+
+                                                            textAreaInput(inputId = "experimentObj", label = "Experiment objective", value = ""),
+
+
+
+
 
                                                            # hr(),
                                                            br(),
                                                            h2("Funding agency associated with experiment"),
 
-                                                           # shiny::selectInput("designFieldbook_fundAgency", "Funding agency type", choices = c("Government","National Agricultural Extension","Advisory Services", "International NGO", "Farmers Organization")),
-
-
+                                                           selectizeInput("designFieldbook_fundAgencyType", "Funding agency type",multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Government	National", "Agricultural Extension", "Advisory Services", "International NGO", 	"National NGO",	"Farmers Organization",	"Regional Organization",	"International Organization",	"Financing Institution",	"Foundation",	"Private Company",	"Academic Institution",	"National Research Institution",	"International Research Center")),
                                                            textInput(inputId = "fundName", label = "Funding agency name", value = ""),
-                                                           textInput(inputId = "contCenter", label = "Contribuitor Center", value = ""),
-                                                           textInput(inputId = "contCRP", label = "Contribuitor CRP", value = ""),
+                                                           selectizeInput("contCenter", "Contribuitor Center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
+                                                             "Africa Rice Center",	"Biodiversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish",	"Other"
+
+                                                           )),
+                                                           selectizeInput("contCRP", "Contribuitor CRP", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
+                                                                         "CGIAR Research Program on Fish",
+                                                                         "CGIAR Research Program on Forests, Trees and Agroforestry",
+                                                                          "CGIAR Research Program on Grain Legumes and Dryland Cereals",
+                                                                          "CGIAR Research Program on Wheat",
+                                                                          "CGIAR Research Program on Livestock",
+                                                                          "CGIAR Research Program on Maize",
+                                                                          "CGIAR Research Program on Rice",
+                                                                          "CGIAR Research Program on Roots, Tubers and Bananas",
+                                                                          "CGIAR Research Program on Agriculture for Nutrition and Health",
+                                                                          "CGIAR Research Program on Climate Change, Agriculture and Food Security",
+                                                                          "CGIAR Research Program on Policies, Institutions, and Markets",
+                                                                          "CGIAR Research Program on Water, Land and Ecosystems")
+                                                            ),
+
+
                                                            textInput(inputId = "contResearcher", label = "Contribuitor researcher", value = ""),
 
                                                            br(),
                                                            h2("Institution/Entity associated with experiment"),
 
-                                                           shiny::selectInput("designFieldbook_fundLeadAgency", "Experiment, lead organization type", choices = c("Select one...","University","University, main campus","Agricultural experimental extension", "Government research institution (NARS)","Government research institution, designated laboratory or center", "PRivate company", "Farm", "Farmer association or cooperative", "Non-governmental organization", "Extension organization", "CGIAR center" )),
+                                                           selectizeInput("designFieldbook_fundLeadAgency", "Experiment, lead organization type",multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),  choices = c("University","University, main campus","Agricultural experimental extension", "Government research institution (NARS)","Government research institution, designated laboratory or center", "Private company", "Farm", "Farmer association or cooperative", "Non-governmental organization", "Extension organization", "CGIAR center", "Other" )),
                                                            # shiny::selectInput("designFieldbook_fundHostAgency", "Experiment, host organization type", choices = c("University","University, main campus","Agricultural experimental extension", "Government research institution (NARS)")),
-                                                           textInput(inputId = "leadName", label = "Experiment, lead organization name", value = ""),
+                                                           textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
 
-                                                           br(),
-                                                           h2("Site information"),
 
-                                                           shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),
-                                                           shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500) #,#locality
-                                                    )
-                                                  ),
-                                                  fluidRow(
+                                                    ),
+                                                  #),
+                                                  #fluidRow(
                                                     sidebarPanel(id="sidebar", width = 12,
                                                                  actionButton("btnNextPersonnelInfo", "Next", class = "btn-primary",style="color: #fff;")
                                                     )
-                                                  )
+                                                  #)
                                               ),
 
                                               tabPanel("Personnel", value = "tabPersonnel", icon = shiny::icon("user"),
                                                 # column( width = 12,
-                                                  fluidRow(
+                                                  #fluidRow(
                                                     # fluidRow(
                                                       column( width = 6,
                                                       h2("Personnel associated with the experiment"),
@@ -418,20 +468,20 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                              title = tagList(shiny::icon("user"), "Personnel #1"), solidHeader = TRUE, status = "warning", width=12,
 
                                                               fluidRow(
-                                                                column(width = 6, shiny::selectInput("personnel1Type", "Personnel type", choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
+                                                                column(width = 6, selectizeInput("personnel1Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
                                                                 column(width = 6, textInput(inputId = "person1Email", label = "Person email", value = ""))
                                                               ),
                                                              fluidRow(
                                                                column(width=6,
 
-                                                                      textInput(inputId = "person1FirstName", label = "Person first name", value = ""),
-                                                                      textInput(inputId = "person1LastName", label = "Person last name", value = "")
+                                                                      textInput(inputId = "person1FirstName", label = "Person, first name", value = ""),
+                                                                      textInput(inputId = "person1LastName", label = "Person, last name", value = "")
                                                                       # actionButton(inputId = "addAnotherPerson",label="Add another")
                                                                ),
                                                                column(width=6,
 
-                                                                      textInput(inputId = "person1Afiliation", label = "Person afiliation", value = ""),
-                                                                      textInput(inputId = "person1ORCID", label = "Person ORCID", value = "")
+                                                                      textInput(inputId = "person1Afiliation", label = "Person, affiliation", value = ""),
+                                                                      textInput(inputId = "person1ORCID", label = "Person, ORCID", value = "")
                                                                )
                                                               )
                                                          ),
@@ -447,20 +497,20 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                           title = tagList(shiny::icon("user"), "Personnel #2"), solidHeader = TRUE, status = "warning", width=12,
 
                                                                 fluidRow(
-                                                                  column(width = 6, shiny::selectInput("personnel2Type", "Personnel type", choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
+                                                                  column(width = 6, selectizeInput("personnel2Type", "Person type",multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
                                                                   column(width = 6, textInput(inputId = "person2Email", label = "Person email", value = ""))
                                                                 ),
 
                                                           fluidRow(
                                                               column(width=6,
 
-                                                                     textInput(inputId = "person2FirstName", label = "Person first name", value = ""),
-                                                                     textInput(inputId = "person2LastName", label = "Person last name", value = "")
+                                                                     textInput(inputId = "person2FirstName", label = "Person, first name", value = ""),
+                                                                     textInput(inputId = "person2LastName", label = "Person, last name", value = "")
                                                                      # actionButton(inputId = "addAnotherPerson",label="Add another")
                                                               ),
                                                               column(width=6,
-                                                                     textInput(inputId = "person2Afiliation", label = "Person afiliation", value = ""),
-                                                                     textInput(inputId = "person2ORCID", label = "Person ORCID", value = "")
+                                                                     textInput(inputId = "person2Afiliation", label = "Person, affiliation", value = ""),
+                                                                     textInput(inputId = "person2ORCID", label = "Person, ORCID", value = "")
                                                               )
                                                           )
                                                       )#)
@@ -475,18 +525,18 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                        box(
                                                                          title = tagList(shiny::icon("user"), "Personnel #3"), solidHeader = TRUE, status = "warning", width=12,
                                                                              fluidRow(
-                                                                               column(width = 6, shiny::selectInput("personnel3Type", "Personnel type", choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
+                                                                               column(width = 6, selectizeInput("personnel3Type", "Person type",multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
                                                                                column(width = 6, textInput(inputId = "person3Email", label = "Person email", value = ""))
                                                                              ),
                                                                          fluidRow(
                                                                             column(width=6,
-                                                                                   textInput(inputId = "person3FirstName", label = "Person first name", value = ""),
-                                                                                   textInput(inputId = "person3LastName", label = "Person last name", value = "")
+                                                                                   textInput(inputId = "person3FirstName", label = "Person, first name", value = ""),
+                                                                                   textInput(inputId = "person3LastName", label = "Person, last name", value = "")
                                                                                    # actionButton(inputId = "addAnotherPerson",label="Add another")
                                                                             ),
                                                                             column(width=6,
-                                                                                   textInput(inputId = "person3Afiliation", label = "Person afiliation", value = ""),
-                                                                                   textInput(inputId = "person3ORCID", label = "Person ORCID", value = "")
+                                                                                   textInput(inputId = "person3Afiliation", label = "Person, affiliation", value = ""),
+                                                                                   textInput(inputId = "person3ORCID", label = "Person, ORCID", value = "")
                                                                             )
                                                                          )
                                                                       )
@@ -502,18 +552,18 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                        box(
                                                                          title = tagList(shiny::icon("user"), "Personnel #4"), solidHeader = TRUE, status = "warning", width=12,
                                                                            fluidRow(
-                                                                             column(width = 6, shiny::selectInput("personnel4Type", "Personnel type", choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
+                                                                             column(width = 6, selectizeInput("personnel4Type", "Person type",multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
                                                                              column(width = 6, textInput(inputId = "person4Email", label = "Person email", value = ""))
                                                                            ),
                                                                             fluidRow(
                                                                               column(width=6,
-                                                                                     textInput(inputId = "person4FirstName", label = "Person first name", value = ""),
-                                                                                     textInput(inputId = "person4LastName", label = "Person last name", value = "")
+                                                                                     textInput(inputId = "person4FirstName", label = "Person, first name", value = ""),
+                                                                                     textInput(inputId = "person4LastName", label = "Person, last name", value = "")
                                                                                      # actionButton(inputId = "addAnotherPerson",label="Add another")
                                                                               ),
                                                                               column(width=6,
-                                                                                     textInput(inputId = "person4Afiliation", label = "Person afiliation", value = ""),
-                                                                                     textInput(inputId = "person4ORCID", label = "Person ORCID", value = "")
+                                                                                     textInput(inputId = "person4Afiliation", label = "Person, affiliation", value = ""),
+                                                                                     textInput(inputId = "person4ORCID", label = "Person, ORCID", value = "")
                                                                               )
                                                                             )
                                                                      )#)
@@ -526,44 +576,69 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                          title = tagList(shiny::icon("user"), "Personnel #5"), solidHeader = TRUE, status = "warning", width=12,
 
                                                                          fluidRow(
-                                                                           column(width = 6, shiny::selectInput("personnel5Type", "Personnel type", choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
+                                                                           column(width = 6, selectizeInput("personnel5Type", "Person type",multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
                                                                            column(width = 6, textInput(inputId = "person5Email", label = "Person email", value = ""))
                                                                          ),
 
                                                                          fluidRow(
                                                                            column(width=6,
 
-                                                                                  textInput(inputId = "person5FirstName", label = "Person first name", value = ""),
-                                                                                  textInput(inputId = "person5LastName", label = "Person last name", value = "")
+                                                                                  textInput(inputId = "person5FirstName", label = "Person, first name", value = ""),
+                                                                                  textInput(inputId = "person5LastName", label = "Person, last name", value = "")
                                                                                   # actionButton(inputId = "addAnotherPerson",label="Add another")
                                                                            ),
                                                                            column(width=6,
-                                                                                  textInput(inputId = "person5Afiliation", label = "Person afiliation", value = ""),
-                                                                                  textInput(inputId = "person5ORCID", label = "Person ORCID", value = "")
+                                                                                  textInput(inputId = "person5Afiliation", label = "Person, affiliation", value = ""),
+                                                                                  textInput(inputId = "person5ORCID", label = "Person, ORCID", value = "")
                                                                            )
                                                                          )
                                                                        )
                                                                      #)
 
-                                                    )
+                                                    ),
 
 
-                                                  ),
+                                                  #),
                                                 # fluidRow(
                                                 #   column(width = 6, align = "left",
                                                 #          br(),
                                                 #          actionButton(inputId = "btnNextCropInfo", label = "Next", style="color: #fff; background-color: #35b872;"))
                                                 # )
-                                                fluidRow(
+                                                #fluidRow(
                                                   sidebarPanel(id="sidebar", width = 12,
-                                                               actionButton("btnNextCropInfo", "Next", class = "btn-primary",style="color: #fff;")
+                                                               actionButton("btnNextSite", "Next", class = "btn-primary",style="color: #fff;")
                                                   )
-                                                )
+                                                #)
                                                 # )
+                                              ),
+#
+                                              tabPanel("Site", value="tabSite",  icon = shiny::icon("location-arrow"),
+                                                       #fluidRow(
+                                                         column(width = 6,
+                                                                h2("Site information"),
+
+                                                                shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),
+                                                                shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
+                                                                br(),
+                                                                h2("Site surrounding description"),
+                                                                selectizeInput("fbDesign_inHighLevel", label="Higher-level landform", multiple = TRUE,
+                                                                               choices = c("Plain",	"Basin",	"Valley",	"Plateau","Upland",	"Hill",	"Mountain"),
+                                                                               options = list(maxItems = 1, placeholder = 'Select  one...')),
+                                                                selectizeInput("fbDesign_inSiteVegetation", label="Vegetation surrounding the experiment site", multiple = TRUE,
+                                                                               choices = c("Grasslan", "Crops", "Forest", "Woodland", "Shrub land", "Savanna", "Other"),
+                                                                               options = list(maxItems = 5, placeholder = 'Select one... ')),
+
+                                                                textAreaInput("inSiteDescNotes", label="Site description notes", value="")),
+                                                       sidebarPanel(id="sidebar", width = 12,
+                                                                    actionButton("btnNextCropInfo", "Next", class = "btn-primary",style="color: #fff;")
+                                                       )
+                                                       #)
+
+
                                               ),
 
                                               shiny::tabPanel("Crop", value = "tabCropInfo", icon = shiny::icon("pagelines"),
-                                                  fluidRow(
+                                                  #fluidRow(
                                                     column( width = 6,
                                                             h2("Description of crops sown"),
 
@@ -582,32 +657,29 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                                       column(width = 6,
                                                                                              # textInput(inputId = "cropCommonNameMono", label = "Crop common name", value = "")
-                                                                                             selectInput("cropCommonNameMono", "Crop common name", choices = c("Maize", "Bean", "Potato", "Cassava", "Sweetpotato"))
+                                                                                             selectizeInput("cropCommonNameMono", "Crop common name", multiple = TRUE, options = list(maxItems =1, placeholder="Select one..."), choices = c("Potato", "Cassava", "Wheat", "Maize","Sweetpotato", "Soybean")),
+                                                                                             textInput(inputId = "cropLatinNameMono", label = "Crop latin name", value = ""),
+                                                                                             fluidRow(
+                                                                                               column(width = 10,
+                                                                                                      #textInput(inputId = "cropVarietyNameMono", label = "Crop variety name", value = "")
+                                                                                                      selectizeInput("cropVarietyNameMono", "Crop variety name", c(), multiple = TRUE, options = list(
+                                                                                                        placeholder = "ex.  variety1   variety2    ",
+                                                                                                        'create' = TRUE,
+                                                                                                        'persist' = FALSE)
+                                                                                                      )#,
 
-                                                                                      ),
-                                                                                      column(width = 6,
-                                                                                             column(width = 10,
-                                                                                                    #textInput(inputId = "cropVarietyNameMono", label = "Crop variety name", value = "")
-                                                                                                    selectizeInput("cropVarietyNameMono", "Crop variety name", c(), multiple = TRUE, options = list(
-                                                                                                      placeholder = "ex.  variety1   variety2    ",
-                                                                                                      'create' = TRUE,
-                                                                                                      'persist' = FALSE)
-                                                                                                    )#,
 
+                                                                                               ),
 
-                                                                                             ),
-
-                                                                                             column(width = 2, br(),
-                                                                                                    checkboxInput("setCropFactor", "Set as factor", FALSE)
+                                                                                               column(width = 2, br(),
+                                                                                                      checkboxInput("setCropFactor", "Factor", FALSE)
+                                                                                               )
                                                                                              )
-                                                                                      )
-                                                                                    ),
-                                                                                    fluidRow(
-                                                                                      column(width = 6,
-                                                                                             textInput(inputId = "cropLatinNameMono", label = "Crop latin name", value = "")
+
                                                                                       ),
                                                                                       column(width = 6,
-                                                                                             textInput(inputId = "cultivarNameMono", label = "Cultivar Name", value = "")
+                                                                                             textInput(inputId = "cultivarNameMono", label = "Cultivar name", value = ""),
+                                                                                             textInput(inputId = "monoCropLocalName", label = "Crop local name", value = "")
                                                                                       )
                                                                                     )
                                                                                 )
@@ -645,7 +717,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                         ),
                                                                                         column(width = 6,
                                                                                                textInput(inputId = "cropVarietyName", label = "Crop variety name", value = ""),
-                                                                                               textInput(inputId = "cultivarName", label = "Cultivar Name", value = "")
+                                                                                               textInput(inputId = "cultivarName", label = "Cultivar name", value = "")
                                                                                         )
                                                                                       )
                                                                                   )
@@ -660,7 +732,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                       ),
                                                                                       column(width = 6,
                                                                                              textInput(inputId = "cropVarietyName2", label = "Crop variety name", value = ""),
-                                                                                             textInput(inputId = "cultivarName2", label = "Cultivar Name", value = "")
+                                                                                             textInput(inputId = "cultivarName2", label = "Cultivar name", value = "")
                                                                                       )
                                                                                   )
                                                                  ),
@@ -674,11 +746,11 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                       ),
                                                                                       column(width = 6,
                                                                                              textInput(inputId = "cropVarietyName3", label = "Crop variety name", value = ""),
-                                                                                             textInput(inputId = "cultivarName3", label = "Cultivar Name", value = "")
+                                                                                             textInput(inputId = "cultivarName3", label = "Cultivar name", value = "")
                                                                                       )
                                                                                   )
                                                                  )
-                                                          ),
+                                                          )
 
 
 
@@ -687,20 +759,23 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                           #          br(),
                                                           #          actionButton(inputId = "btnDesign", label = "Next", style="color: #fff; background-color: #35b872;"))
                                                           # )
-                                                          fluidRow(
-                                                            sidebarPanel(id="sidebar", width = 12,
-                                                                         actionButton("btnDesign", "Next", class = "btn-primary",style="color: #fff;")
-                                                            )
-                                                          )
+                                                          #fluidRow(
+                                                            # sidebarPanel(id="sidebar", width = 12,
+                                                            #              actionButton("btnDesign", "Next", class = "btn-primary",style="color: #fff;")
+                                                            # )
+                                                          #)
+                                                    ),
+                                                    sidebarPanel(id="sidebar", width = 12,
+                                                                   actionButton("btnDesign", "Next", class = "btn-primary",style="color: #fff;")
                                                     )
-                                                  )
+                                                  #)
                                               ),
 
                                               #BEGIN (STATISTICAL DESGIGN)
                                               shiny::tabPanel("Design", value = "tabDesign", icon = shiny::icon("th-list"),
                                                     # br(),
                                                     # br(),
-                                                    h2("Design information"),
+                                                    #h2("Design information"),
 
                                                     tags$style(HTML("
 
@@ -751,10 +826,12 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                     )),
 
-                                                    fluidRow(
+                                                    #fluidRow(
+
                                                       column(width = 6,
+                                                             h2("Design information"),
                                                              #Select statistical design
-                                                             shiny::selectInput("designFieldbook_agrofims", "Select Design/Arragement",  c("Choose one" = "", design_choices_agrofims), selected = 'CRD',
+                                                             shiny::selectInput("designFieldbook_agrofims", "Select design/arrangement",  c("Choose one" = "", design_choices_agrofims), selected = 'CRD',
                                                                                 multiple = FALSE),
 
                                                              shiny::selectInput("designFieldbook_agrofims_r", "Replications", 2:100, 2 ),
@@ -763,9 +840,11 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                              #select number of factors
                                                              selectInput(inputId = "nfactors_hdafims", label = "Number of factor", choices = 2:5)
-                                                      )
-                                                    ),
+                                                      ),
+                                                    #),
 
+                                                    column(width = 12,
+                                                           fluidRow(
                                                     # desing of experiment with 1 factors
                                                     conditionalPanel("input.nfactors_hdafims == 1  |
                                                                      input.nfactors_hdafims == 2  |
@@ -774,7 +853,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      input.nfactors_hdafims == 5",
 
 
-                                                                     fluidRow(
+                                                                     #fluidRow(
                                                                        column(6, #begin column
 
                                                                               # div(style="display:inline-block",
@@ -798,7 +877,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                 'persist' = FALSE)
                                                                               )#,
                                                                        ) #end column
-                                                                     ) #end fluidrow
+                                                                     #) #end fluidrow
                                                                      #)
                                                     ),
                                                     # desing of experiment with 2 factors
@@ -808,7 +887,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      input.nfactors_hdafims == 5 ",
 
                                                                      #div(style="display:inline-block",
-                                                                     fluidRow(
+                                                                     #fluidRow(
                                                                        column(6, #begin column
 
                                                                               textInput(inputId = "factor_hdafims2", label = "#2 Factor name", placeholder = "ex.  Irrigation")
@@ -830,7 +909,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                 'persist' = FALSE)
                                                                               )#,
                                                                        ) #end column
-                                                                     ) #end fluidrow
+                                                                     #) #end fluidrow
                                                                      #)
                                                     ),
 
@@ -840,7 +919,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      input.nfactors_hdafims == 5 ",
 
                                                                      #div(style="display:inline-block",
-                                                                     fluidRow(
+                                                                     #fluidRow(
                                                                        column(6, #begin column
 
                                                                               textInput(inputId = "factor_hdafims3", label = "#3 Factor name", placeholder = "ex.  Time growing")
@@ -860,7 +939,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                 'persist' = FALSE)
                                                                               )#,
                                                                        ) #end column
-                                                                     ) #end fluidrow
+                                                                     #) #end fluidrow
 
                                                     ),
                                                      # desing of experiment with 4 factors
@@ -868,7 +947,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      input.nfactors_hdafims == 5 ",
 
                                                                      #div(style="display:inline-block",
-                                                                     fluidRow(
+                                                                     #fluidRow(
                                                                        column(6, #begin column
 
                                                                               textInput(inputId = "factor_hdafims4", label = "#4 Factor name", placeholder = "ex.  Green Tree retention")
@@ -888,12 +967,12 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                 'persist' = FALSE)
                                                                               )#,
                                                                        ) #end column
-                                                                     ) #end fluidrow
+                                                                     #) #end fluidrow
                                                     ),
                                                     # desing of experiment with 5 factors
                                                     conditionalPanel("input.nfactors_hdafims == 5",
 
-                                                                     fluidRow(
+                                                                     #fluidRow(
                                                                        column(6, #begin column
 
                                                                               #div(style="display:inline-block",
@@ -914,21 +993,21 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                 'persist' = FALSE)
                                                                               )#,
                                                                        ) #end column
-                                                                     ) #end fluidrow
+                                                                     #) #end fluidrow
 
 
-                                                    )#,
+                                                    )))#,
                                                     ,
                                                     # fluidRow(
                                                     #   column(width = 6, align = "left",
                                                     #          br(),
                                                     #          actionButton(inputId = "btnNextPlotInfo", label = "Next", style="color: #fff; background-color: #35b872;"))
                                                     # )
-                                                    fluidRow(
+                                                    #fluidRow(
                                                       sidebarPanel(id="sidebar", width = 12,
                                                                    actionButton("btnNextPlotInfo", "Next", class = "btn-primary",style="color: #fff;")
                                                       )
-                                                    )
+                                                    #)
 
 
 
@@ -940,38 +1019,78 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                              ), #END DESIGN (STATISTICAL DESIGN)
 
                                              shiny::tabPanel("Plot", value = "tabPlotInfo", icon = shiny::icon("th"),
+                                                conditionalPanel("input.cropCommonNameMono == null",
+                                                                 column(width = 6,
+                                                                 h2("Select a crop to show form")
+                                                                 )),
+                                                conditionalPanel("input.cropCommonNameMono != null && (
+                                                                input.cropCommonNameMono == 'Potato' |
+                                                                 input.cropCommonNameMono == 'Sweetpotato' |
+                                                                 input.cropCommonNameMono == 'Cassava')",
+                                                      #fluidRow(
+                                                      column(width = 6,
+                                                        h2("Plot information"),
+                                                        textInput(inputId = "numPlantsPerPlot", label = "Number of plants planted per plot", value = ""),
+                                                        textInput(inputId = "numRowsPerPlot", label = "Number of rows per plot", value = ""),
+                                                        textInput(inputId = "numPlantsPerRow", label = "Number of plants per row", value = ""),
+                                                        textInput(inputId = "plotSize", label = "Plot size (m2)", value = ""),
+                                                        textInput(inputId = "distancebwPlants", label = "Distance between plants (m)", value = ""),
+                                                        textInput(inputId = "distanceBwRows", label = "Distance between rows", value = ""),
+                                                        textInput(inputId = "planDensity", label = "Planting density (plants/Ha)", value = "")
+                                                      )#)
+                                                ),
+                                                conditionalPanel("input.cropCommonNameMono != null && (
+                                                                input.cropCommonNameMono == 'Wheat' |
+                                                                 input.cropCommonNameMono == 'Maize' |
+                                                                 input.cropCommonNameMono == 'Soybean')",
+                                                                 #fluidRow(
+                                                                 column(width = 6,
+                                                                        h2("Plot information"),
+                                                                        textInput(inputId = "plotSpacing", label = "Plot spacing", value = ""),
+                                                                        textInput(inputId = "rowSpacing", label = "Row spacing", value = ""),
+                                                                        textInput(inputId = "rowOrientation", label = "Row orientation", value = ""),
+                                                                        textInput(inputId = "spaceBwPlantsRow", label = "Space between plants in row", value = ""),
+                                                                        textInput(inputId = "hillSpacing", label = "Hill spacing", value = ""),
+                                                                        textInput(inputId = "numsMsPlantPerPlot", label = "Number of measured plants per plot", value = ""),
+                                                                        br(),
+                                                                        h2("Field information"),
+                                                                        textInput("fieldArea", "Field area", value =""),
+                                                                        textInput("expFieldMaxWidth", "Experimental field maximum width", value=""),
+                                                                        textInput("expFieldMaxLength", "Experimental field maximum length", value="")
 
-                                                 h2("Plot information"),
-                                                 fluidRow(
-                                                   column(width = 6,
-                                                          textInput(inputId = "plotSpacing", label = "Plot spacing", value = ""),
-
-                                                          textInput(inputId = "numPlantsPerPlot", label = "Number of plants planted per plot", value = ""),
-                                                          textInput(inputId = "numRowsPerPlot", label = "Number of rows per plot", value = ""),
-                                                          textInput(inputId = "numPlantsPerRow", label = "Number of plants per row", value = ""),
-                                                          textInput(inputId = "plotSize", label = "Plot size (m2)", value = ""),
-
-                                                          textInput(inputId = "rowSpacing", label = "Row spacing", value = ""),
-                                                          textInput(inputId = "rowOrientation", label = "Row orientation", value = ""),
-
-                                                          textInput(inputId = "spaceBwPlants", label = "Space between plants", value = ""),
-                                                          textInput(inputId = "spaceBwRows", label = "Space between rows", value = ""),
-                                                          textInput(inputId = "planDensity", label = "Plant density (plant/Ha)", value = ""),
-
-                                                          textInput(inputId = "hillSpacing", label = "Hill spacing", value = ""),
-                                                          textInput(inputId = "numPlantsPerPlot", label = "Number of measured plants per plot", value = "")
-                                                   )
-                                                 ),
+                                                                 )#)
+                                                ),
+                                                 # h2("Plot information"),
+                                                 # fluidRow(
+                                                 #   column(width = 6,
+                                                 #          textInput(inputId = "plotSpacing", label = "Plot spacing", value = ""),
+                                                 #
+                                                 #          textInput(inputId = "numPlantsPerPlot", label = "Number of plants planted per plot", value = ""),
+                                                 #          textInput(inputId = "numRowsPerPlot", label = "Number of rows per plot", value = ""),
+                                                 #          textInput(inputId = "numPlantsPerRow", label = "Number of plants per row", value = ""),
+                                                 #          textInput(inputId = "plotSize", label = "Plot size (m2)", value = ""),
+                                                 #
+                                                 #          textInput(inputId = "rowSpacing", label = "Row spacing", value = ""),
+                                                 #          textInput(inputId = "rowOrientation", label = "Row orientation", value = ""),
+                                                 #
+                                                 #          textInput(inputId = "spaceBwPlants", label = "Space between plants", value = ""),
+                                                 #          textInput(inputId = "spaceBwRows", label = "Space between rows", value = ""),
+                                                 #          textInput(inputId = "planDensity", label = "Plant density (plant/Ha)", value = ""),
+                                                 #
+                                                 #          textInput(inputId = "hillSpacing", label = "Hill spacing", value = ""),
+                                                 #          textInput(inputId = "numPlantsPerPlot", label = "Number of measured plants per plot", value = "")
+                                                 #   )
+                                                 # ),
                                                  # fluidRow(
                                                  #   column(width = 6, align = "left",
                                                  #          br(),
                                                  #          actionButton(inputId = "btnNextAgro", label = "Next", style="color: #fff; background-color: #35b872;"))
                                                  # )
-                                                 fluidRow(
+                                                 #fluidRow(
                                                    sidebarPanel(id="sidebar", width = 12,
                                                                 actionButton("btnNextAgro", "Next", class = "btn-primary",style="color: #fff;")
                                                    )
-                                                 )
+                                                 #)
 
                                              ),
 
@@ -989,14 +1108,15 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                              #
                                              #  ),
 
-                                             shiny::tabPanel("Agro-features", value = "tabAgroFeat2", icon = shiny::icon("truck"),
-                                                    h2("Agronomic features"),
-                                                    fluidRow(
+                                             shiny::tabPanel("Agro-features", value = "tabAgroFeat", icon = shiny::icon("truck"),
+                                                    #h2("Agronomic features"),
+                                                    #fluidRow(
                                                       # fluidRow(
                                                       #br(),
 
                                                         column(width = 6,
-                                                               selectizeInput("selectAgroFeature", "Agronomic feature", c(), multiple = TRUE, choices=c("Land preparation", "Mulching"),options = list(maxItems = 8, placeholder = "Select some...")
+                                                               h2("Agronomic features"),
+                                                               selectizeInput("selectAgroFeature", "Agronomic feature", c(), multiple = TRUE, choices=c("Land preparation", "Mulching", "Planting","Irrigation event", "Biofertilizer", "Pest & disease", "Nutrient management event","Harvest" ), options = list(maxItems = 8, placeholder = "Select some...")
                                                                 )
                                                         ),
                                                       # ),
@@ -1006,18 +1126,19 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                       br(),
                                                       # tabsetPanel(
-                                                      fluidRow(
-                                                      tabBox(height = NULL, width = 12,
-                                                        tabPanel("Land Preparation", value="tabLandPr",
-                                                                 fluidRow(
+                                                      #fluidRow(
+                                                      # tabBox(height = NULL, width = 12,
+                                                        tabsetPanel(id= "nutrienTabPanels",
+                                                        tabPanel("Land preparation", value="tabLandPr",
+                                                                 #fluidRow(
                                                                    column(width = 12,
                                                                  #br(),
-                                                                 h2("Land Preparation"),
+                                                                 h2("Land preparation"),
                                                                  fluidRow(
                                                                  box(title = "Land Levelling",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE,  collapsed = TRUE,
 
 
                                                                     fluidRow(
@@ -1038,7 +1159,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                         fluidRow(
                                                                          box(
                                                                            title = "Implement", solidHeader = TRUE, status = "warning", width=12,
-                                                                             selectInput("impl_type", label = "Type", choices = c("Drag bucket",
+                                                                             selectizeInput("impl_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Drag bucket",
                                                                                                                                   "Harrow",
                                                                                                                                   "Laser-controlled",
                                                                                                                                   "Leveling board",
@@ -1046,20 +1167,22 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                                                   "Tractor blade",
                                                                                                                                   "Disk harrow")
                                                                              ),
-                                                                             selectInput("animal_traction", label = "Animal Traction", choices =
+                                                                             selectizeInput("animal_traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), label = "Animal Traction", choices =
                                                                                                                                 c("Buffalo",
                                                                                                                                   "Camel",
                                                                                                                                   "Donkey",
                                                                                                                                   "Elephant",
                                                                                                                                   "Horse",
                                                                                                                                   "Mule",
-                                                                                                                                  "Ox / Bullock / Steer"
+                                                                                                                                  "Ox / Bullock / Steer",
+                                                                                                                                  "Other"
                                                                                                                                 )
                                                                              ),
                                                                              textInput("humanPowered", value="", label = "Human powered"),
-                                                                             selectInput("animal_traction", label = "Motorized Traction", choices =
+                                                                             selectizeInput("motorized_traction", label = "Motorized Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                                                  c("2 wheel tractor",
-                                                                                                                                    "4 wheel tractor"
+                                                                                                                                    "4 wheel tractor",
+                                                                                                                                   "Other"
                                                                                                                                  )
                                                                              )
                                                                         ))
@@ -1069,7 +1192,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Puddling",
                                                                      solidHeader = TRUE,
                                                                      status = "primary",
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE,  collapsed = TRUE,
                                                                      fluidRow(
                                                                         column(width = 6,
                                                                                fluidRow(
@@ -1092,8 +1215,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                         column(width = 6,
                                                                                                textInput("puddling_depth_val", label="Puddling depth", value="")
                                                                                         ),
-                                                                                        column(width = 6,
-                                                                                              selectInput("puddling_depth_unit", label="Unit", choices = c("cm", "m"))
+                                                                                        column(width = 6,##IMPLEMENTAR EN EL EXCEL
+                                                                                              selectizeInput("puddling_depth_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("cm", "mm"))
                                                                                         )
                                                                                       )
                                                                              ))
@@ -1102,20 +1225,22 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             fluidRow(
                                                                              box(
                                                                                title = "Implement", solidHeader = TRUE, status = "warning", width=12,
-                                                                                 selectInput("pud_animal_traction", label = "Animal traction", choices =
+                                                                                 selectizeInput("pud_animal_traction", label = "Animal traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                                                              c("Buffalo",
                                                                                                                                                "Camel",
                                                                                                                                                "Donkey",
                                                                                                                                                "Elephant",
                                                                                                                                                "Horse",
                                                                                                                                                "Mule",
-                                                                                                                                               "Ox / Bullock / Steer"
+                                                                                                                                               "Ox / Bullock / Steer",
+                                                                                                                                               "Other"
                                                                                                                                              )
                                                                                  ),
                                                                                  textInput("pud_humanPowered", value="", label = "Human powered"),
-                                                                                 selectInput("pud_animal_traction", label = "Motorized traction", choices =
+                                                                                 selectizeInput("pud_motorized_traction", label = "Motorized traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                                                          c("2 wheel tractor",
-                                                                                                                                           "4 wheel tractor"
+                                                                                                                                           "4 wheel tractor",
+                                                                                                                                           "Other"
                                                                                                                                          )
                                                                                  )
                                                                              )
@@ -1128,7 +1253,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Tillage",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE,  collapsed = TRUE,
                                                                      fluidRow(
                                                                      column(width = 6,
                                                                             fluidRow(
@@ -1139,7 +1264,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                      dateInput("tillage_end_date", label ="End date", format = "dd/mm/yyyy")
                                                                               )
                                                                             ),
-                                                                            selectInput("till_technique",  label = "Technique", choices =
+                                                                            selectizeInput("till_technique",  label = "Technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                                         c("Conventional tillage",
                                                                                                                           "Mulch-till",
                                                                                                                           "No-till",
@@ -1159,7 +1284,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             fluidRow(
                                                                          box(
                                                                            title = "Implement", solidHeader = TRUE, status = "warning", width=12,
-                                                                               selectInput("till_impl_type", label = "Type", choices = c("Chisel plough",
+                                                                               selectizeInput("till_impl_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Chisel plough",
                                                                                                                                          "Clod crusher",
                                                                                                                                          "Cultivator",
                                                                                                                                          "Disc plough",
@@ -1170,21 +1295,23 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                                                          "Spade plough",
                                                                                                                                          "Subsoiler")
                                                                                ),
-                                                                               selectInput("till_animal_traction", label = "Animal traction", choices =
+                                                                               selectizeInput("till_animal_traction", label = "Animal traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                              c("Buffalo",
                                                                                                "Camel",
                                                                                                "Donkey",
                                                                                                "Elephant",
                                                                                                "Horse",
                                                                                                "Mule",
-                                                                                               "Ox / Bullock / Steer"
+                                                                                               "Ox / Bullock / Steer",
+                                                                                               "Other"
                                                                                              )
                                                                                ),
 
                                                                                textInput("till_humanPowered", value="", label = "Human powered"),
-                                                                               selectInput("till_animal_traction", label = "Motorized traction", choices =
+                                                                               selectizeInput("till_motorized_traction", label = "Motorized traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                              c("2 wheel tractor",
-                                                                                               "4 wheel tractor"
+                                                                                               "4 wheel tractor",
+                                                                                               "Other"
                                                                                              )
                                                                                )
                                                                          ))
@@ -1196,7 +1323,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Liming",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(
                                                                      column(width = 6,
                                                                             fluidRow(
@@ -1213,7 +1340,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                      textInput("lim_quantity", value = "", label="Quantity")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     selectInput("lim_quantity_unit", label="Unit", choices=c("kg/m2", "kg/ha", "t/ha"))
+                                                                                     selectizeInput("lim_quantity_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices=c("kg/m2", "kg/ha", "t/ha"))
                                                                               )
 
                                                                             ),
@@ -1237,9 +1364,9 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  ))
 
 
-                                                          ))),
+                                                          )),#),
                                                         tabPanel("Mulching", value="tabMulching",
-                                                                 fluidRow(
+                                                                 #fluidRow(
                                                                    column(width = 12,
                                                                           #br(),
                                                                           h2("Mulching"),
@@ -1248,18 +1375,18 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Mulch",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(
                                                                      column(width = 6,
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     dateInput("landLeveling_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                     dateInput("mulch_start_date", label ="Start date", format = "dd/mm/yyyy")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                     dateInput("mulch_end_date", label ="End date", format = "dd/mm/yyyy")
                                                                               )
                                                                             ),
-                                                                            selectInput("mulch_type", label = "Type", choices = c("Bark chips",
+                                                                            selectizeInput("mulch_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Bark chips",
                                                                                                                                   "Compost",
                                                                                                                                   "Foil (Landscape fabric)",
                                                                                                                                   "Grass clippings",
@@ -1275,7 +1402,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             ),
                                                                             textInput("mulch_thickness", value="", label = "Mulch thickness"),
                                                                             textInput("mulch_amountPerSq", value="", label = "Amount per sq. m"),
-                                                                            selectInput("mulch_color", label = "Mulch color", choices = c("Black",
+                                                                            selectizeInput("mulch_color", label = "Mulch color", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Black",
                                                                                                                                           "Brown",
                                                                                                                                           "Gray",
                                                                                                                                           "Transparent",
@@ -1298,22 +1425,24 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                       fluidRow(
                                                                        box(
                                                                          title = "Implement", solidHeader = TRUE, status = "warning", width=12,
-                                                                         textInput("mulch_make", value="", label = "Make"),
-                                                                         textInput("mulch_model", value="", label = "Model"),
-                                                                                selectInput("mulch_animal_traction", label = "Animal traction", choices =
+                                                                         textInput("mulch_make", value="", label = "Implement make"),
+                                                                         textInput("mulch_model", value="", label = "Implement model"),
+                                                                                selectizeInput("mulch_animal_traction", label = "Animal traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                               c("Buffalo",
                                                                                                 "Camel",
                                                                                                 "Donkey",
                                                                                                 "Elephant",
                                                                                                 "Horse",
                                                                                                 "Mule",
-                                                                                                "Ox / Bullock / Steer"
+                                                                                                "Ox / Bullock / Steer",
+                                                                                                "Other"
                                                                                               )
                                                                                 ),
                                                                                 textInput("mulch_humanPowered", value="", label = "Human powered"),
-                                                                                selectInput("mulch_animal_traction", label = "Motorized traction", choices =
+                                                                                selectizeInput("mulch_motorized_traction", label = "Motorized traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                               c("2 wheel tractor",
-                                                                                                "4 wheel tractor"
+                                                                                                "4 wheel tractor",
+                                                                                                "Other"
                                                                                               )
                                                                                 )
                                                                        ))
@@ -1325,14 +1454,14 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Residue management",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE,  collapsed = TRUE,
                                                                      fluidRow(
                                                                      column(width = 6,
-                                                                            fluidRow(
+                                                                            fluidRow( ##IMPLEMENTAR EN EL EXCEL
                                                                               column(width = 6,
                                                                                      dateInput("residue_start_date", label ="Start date", format = "dd/mm/yyyy")
                                                                               ),
-                                                                              column(width = 6,
+                                                                              column(width = 6,##IMPLEMENTAR EN EL EXCEL
                                                                                      dateInput("residure_end_date", label ="End date", format = "dd/mm/yyyy")
                                                                               )
                                                                             )
@@ -1343,14 +1472,14 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                        box(
                                                                          title = "Residue management", solidHeader = TRUE, status = "warning", width=12,
                                                                          #column(width = 6,
-                                                                                selectInput("residue_cropType", label = "Crop type", choices =
+                                                                                selectizeInput("residue_cropType", label = "Crop type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                               c("Stubble",
                                                                                                 "Stem/Leaf",
                                                                                                 "Seed Pod - Cob - Fruit",
                                                                                                 "Husk",
                                                                                                 "Roots")
                                                                                 ),
-                                                                                selectInput("residue_technique", label = "Technique", choices =
+                                                                                selectizeInput("residue_technique", label = "Technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                               c("Burning",
                                                                                                 "No-tillage",
                                                                                                 "Spreading",
@@ -1358,7 +1487,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                               )
                                                                                 ),
                                                                                 textInput("residue_incorp_depth", value="", label="Residue incorporation depth"),
-                                                                                selectInput("residue_aboveGroundMoisture", label = "Above ground residue moisture", choices =
+                                                                                selectizeInput("residue_aboveGroundMoisture", label = "Above ground residue moisture", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                               c("Dry",
                                                                                                 "Moist",
                                                                                                 "Wet")
@@ -1367,8 +1496,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                     column(width = 6,
                                                                                       textInput("residue_aboveGroundAmount",  label = "Above ground residue amount", value="")
                                                                                     ),
-                                                                                    column(width = 6,
-                                                                                      selectInput("residue_aboveGroundAmount_unit", label = "Unit", choices =
+                                                                                    column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
+                                                                                      selectizeInput("residue_aboveGroundAmount_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                     c("kg/m2",
                                                                                                       "kg/ha",
                                                                                                       "t/ha")
@@ -1382,10 +1511,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                        ))
                                                                      ))
                                                                  )) #end box residue
-                                                        ))),#end tab mulching
+                                                        )),#),#end tab mulching
                                                         tabPanel("Planting", value="tabPlanting",
                                                                  #br(),
-                                                                 fluidRow(
+                                                                 #fluidRow(
                                                                    column(width = 12,
                                                                           #br(),
                                                                           h2("Planting"),
@@ -1393,7 +1522,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Planting method",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE,  collapsed = TRUE,
                                                                      fluidRow(
                                                                        column(width = 6,
                                                                               fluidRow(
@@ -1413,7 +1542,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                   title = "Planting method", solidHeader = TRUE, status = "warning", width=12,
 
                                                                                       textInput("planting_directSeeding", value="", label = "Direct seeding"),
-                                                                                      selectInput("planting_seedingTech", label = "Seeding technique", choices =
+                                                                                      selectizeInput("planting_seedingTech", label = "Seeding technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                                                           c("Flat seed bed",
                                                                                                                                             "On hill",
                                                                                                                                             "On ridge")
@@ -1425,7 +1554,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                 fluidRow(
                                                                                 box(
                                                                                   title = "Transplanting techniques", solidHeader = TRUE, status = "warning", width=12,
-                                                                                  selectInput("planting_manual", label = "Manual", choices =
+                                                                                  selectizeInput("planting_manual", label = "Manual", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                 c("Hand broadcasting",
                                                                                                   "Mechanical broadcasting",
                                                                                                   "Line planting by hand",
@@ -1433,19 +1562,21 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                   "Dibbling stick",
                                                                                                   "Drum seeding")
                                                                                   ),
-                                                                                  selectInput("planting_animal_traction", label = "Animal traction", choices =
+                                                                                  selectizeInput("planting_animal_traction", label = "Animal traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                 c("Buffalo",
                                                                                                   "Camel",
                                                                                                   "Donkey",
                                                                                                   "Elephant",
                                                                                                   "Horse",
                                                                                                   "Mule",
-                                                                                                  "Ox / Bullock / Steer"
+                                                                                                  "Ox / Bullock / Steer",
+                                                                                                  "Other"
                                                                                                 )
                                                                                   ),
-                                                                                  selectInput("mulch_animal_traction", label = "Motorized traction", choices =
+                                                                                  selectizeInput("planting_motorized_traction", label = "Motorized traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                 c("2 wheel tractor",
-                                                                                                  "4 wheel tractor"
+                                                                                                  "4 wheel tractor",
+                                                                                                  "Other"
                                                                                                 )
                                                                                   )
                                                                                 ))
@@ -1458,14 +1589,14 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Planting arrangement (sowing)",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(
                                                                         column(width = 6,
                                                                                fluidRow(
-                                                                                column(width = 6,
+                                                                                column(width = 6, #IMPLEMENTAR EN EXCEL
                                                                                        dateInput("sowing_start_date", label ="Start date", format = "dd/mm/yyyy")
                                                                                 ),
-                                                                                column(width = 6,
+                                                                                column(width = 6, #IMPLEMENTAR EN EXCEL
                                                                                        dateInput("sowing_end_date", label ="End date", format = "dd/mm/yyyy")
                                                                                 ))
                                                                         )
@@ -1478,7 +1609,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                  textInput("planting_rowDistance", value="", label="Row distance"),
                                                                                  textInput("planting_seedingRate", value="", label="Seeding rate (plant density)"),
                                                                                  textInput("planting_seedPerhill", value="", label="Seed/seeding per hill"),
-                                                                                 textInput("planting_distance", value="", label="Plantong distance")
+                                                                                 textInput("planting_distance", value="", label="Planting distance")
 
                                                                                ))
                                                                          ),
@@ -1486,7 +1617,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             fluidRow(
                                                                                 box(
                                                                                   title = "Planting distribution", solidHeader = TRUE, status = "warning", width=12,
-                                                                                  selectInput("planting_animal_traction", label = "Type", choices =
+                                                                                  selectizeInput("planting_distribution", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                 c("Broadcast",
                                                                                                   "Row planting")
                                                                                   )
@@ -1496,91 +1627,19 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                          )
                                                                      )
                                                                  )) #end box sowing
-                                                        ))),#end tab planting
-                                                        tabPanel("Harvest", value="tabHarvest",
-                                                                 #br(),
-                                                                 fluidRow(
-                                                                   column(width = 12,
-                                                                          #br(),
-                                                                          h2("Harvest"),
-                                                                  fluidRow(
-                                                                 box(title = "Description Harvest",
-                                                                     status = "primary",
-                                                                     solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
-                                                                     fluidRow(
-                                                                     column(width = 6,
-                                                                            fluidRow(
-                                                                              column(width = 6,
-                                                                                     dateInput("landLeveling_start_date", label ="Start date", format = "dd/mm/yyyy")
-                                                                              ),
-                                                                              column(width = 6,
-                                                                                     dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
-                                                                              )
-                                                                            ),
-                                                                            selectInput("crop_component_harvested", label = "Crop component harvested", choices =
-                                                                                          c("Select one...",
-                                                                                            "Canopy",
-                                                                                            "Fruit",
-                                                                                            "Leaves",
-                                                                                            "Seed",
-                                                                                            "Tuber")
-                                                                            )
-                                                                     ),
-                                                                     column(width = 6,
-                                                                            br(),
-                                                                            fluidRow(
-                                                                            box(
-                                                                              title = "Implement", solidHeader = TRUE, status = "warning", width=12,
-                                                                              selectInput("harvest_implement", label = "Harvest implement", choices =
-                                                                                                                                 c("Select one...",
-                                                                                                                                   "Baler",
-                                                                                                                                   "Chopper",
-                                                                                                                                   "Cotton stalk puller",
-                                                                                                                                   "Grass slasher",
-                                                                                                                                   "Manual fruit harvester",
-                                                                                                                                   "Mower",
-                                                                                                                                   "Sickle",
-                                                                                                                                   "Simple treadle thresher",
-                                                                                                                                   "Threshing rack",
-                                                                                                                                   "Digger",
-                                                                                                                                   "Reaper")
-                                                                              ),
-                                                                              textInput("implement_make", value="", label = "Implement make"),
-                                                                              textInput("implement_model", value="", label = "Implement model"),
-                                                                              selectInput("animal_traction", label = "Animal Traction", choices =
-                                                                                            c("Select one...",
-                                                                                              "Buffalo",
-                                                                                              "Camel",
-                                                                                              "Donkey",
-                                                                                              "Elephant",
-                                                                                              "Horse",
-                                                                                              "Mule",
-                                                                                              "Ox / Bullock / Steer"
-                                                                                            )
-                                                                              ),
-                                                                              textInput("humanPowered", value="", label = "Human powered"),
-                                                                              selectInput("motorized_traction", label = "Motorized Traction", choices =
-                                                                                            c("Select one...",
-                                                                                              "2 wheel tractor",
-                                                                                              "4 wheel tractor"
-                                                                                            )
-                                                                              )
-                                                                            ))
-                                                                     ))
-                                                                 ))#end box description harvest
-                                                        ))),#end tab harvest
+                                                        )),#),#end tab planting
+
                                                         tabPanel("Irrigation event", value="tabIrrigation",
                                                                  #br(),
-                                                                 fluidRow(
+                                                                 #fluidRow(
                                                                    column(width = 12,
                                                                           #br(),
                                                                           h2("Irrigation event"),
                                                                  fluidRow(
-                                                                 box(title = "Description Irrigation",
+                                                                 box(title = "Irrigation description",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(
                                                                      column(width = 6,
                                                                             fluidRow(
@@ -1591,55 +1650,51 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                      dateInput("irrigationevent_end_date", label ="End date", format = "dd/mm/yyyy")
                                                                               )
                                                                             ),
-                                                                            selectInput("irrigation_system_type", label = "Irrigation system type", choices =
-                                                                                          c("Select one...",
-                                                                                            "Automatic irrigation",
+                                                                            selectizeInput("irrigation_system_type", label = "Irrigation system type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Automatic irrigation",
                                                                                             "Manual irrigation")
                                                                             ),
-                                                                            selectInput("irrigation_technique", label = "Irrigation technique", choices =
-                                                                                          c("Select one...",
-                                                                                            "Surface irrigation technique",
+                                                                            selectizeInput("irrigation_technique", label = "Irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Surface irrigation technique",
                                                                                             "Localized irrigation technique",
                                                                                             "Irrigation using sprinkler systems",
                                                                                             "Sub-irrigation")
                                                                             ),
-                                                                            selectInput("surface_irrigation_technique", label = "Surface irrigation technique", choices =
-                                                                                          c("Select one...",
-                                                                                            "Furrow irrigation",
+                                                                            selectizeInput("surface_irrigation_technique", label = "Surface irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Furrow irrigation",
                                                                                             "Uncontrolled flooding",
                                                                                             "Basin irrigation",
                                                                                             "Border irrigation",
                                                                                             "Continuous flood")
                                                                             ),
-                                                                            selectInput("localized_irrigation_technique", label = "Localized irrigation technique", choices =
-                                                                                          c("Select one...",
-                                                                                            "Drip irrigation",
+                                                                            selectizeInput("localized_irrigation_technique", label = "Localized irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Drip irrigation",
                                                                                             "Subsurface textile irrigation",
                                                                                             "Mist irrigation",
                                                                                             "Subsurface drip irrigation",
                                                                                             "Bubbler irrigation",
                                                                                             "Pitcher irrigation")
                                                                             ),
-                                                                            selectInput("irrigation_using_sprinkler_systems", label = "Irrigation using sprinkler systems", choices =
-                                                                                          c("Select one...",
-                                                                                            "Center pivot irrigation",
+                                                                            selectizeInput("irrigation_using_sprinkler_systems", label = "Irrigation using sprinkler systems", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Center pivot irrigation",
                                                                                             "Irrigation by lateral move",
                                                                                             "Irrigation by side move")
                                                                             ),
+                                                                            #Sacar myFile upload
                                                                             fileInput("myFile", "Irrigation system picture", accept = c('image/png', 'image/jpeg')),
-                                                                            textInput("water_source", value="", label = "Water source"),
-                                                                            textInput("water_source_distance", value="", label = "Water source distance"),
-                                                                            textInput("bund_height", value="", label = "Bund height"),
-                                                                            textInput("percolation_rate", value="", label = "Percolation rate"),
-                                                                            textInput("irrigation_equipment_depth  ", value="", label = "Irrigation equipment depth"),
-                                                                            textInput("well_depth", value="", label = "Well depth"),
-                                                                            textInput("area_covered_irrigation_system", value="", label = "Area covered by the irrigation system")
+                                                                            textInput("irrigation_water_source", value="", label = "Water source"),
+                                                                            textInput("irrigation_water_source_distance", value="", label = "Water source distance"),
+                                                                            textInput("irrigation_bund_height", value="", label = "Bund height"),
+                                                                            textInput("irrigation_percolation_rate", value="", label = "Percolation rate"),
+                                                                            textInput("irrigation_equipment_depth", value="", label = "Irrigation equipment depth"),
+                                                                            textInput("irrigation_well_depth", value="", label = "Well depth"),
+                                                                            textInput("irrigation_area_covered_irrigation_system", value="", label = "Area covered by the irrigation system")
                                                                      ))
                                                                  ))#end box description irrigation
-                                                        ))),#end tab irrigation
+                                                        )),#),#end tab irrigation
                                                         tabPanel("Biofertilizer", value="tabBiofertilizer",
                                                                  #br(),
-                                                                 fluidRow(
+                                                                 #fluidRow(
                                                                    column(width = 12,
                                                                           #br(),
                                                                           h2("Biofertilizer"),
@@ -1647,20 +1702,19 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Description Biofertilizer",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(
                                                                      column(width = 6,
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     dateInput("landLeveling_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                     dateInput("biofertilizer_landLeveling_start_date", label ="Start date", format = "dd/mm/yyyy")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                     dateInput("biofertilizer_landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
                                                                               )
                                                                             ),
-                                                                            selectInput("rhizobium_inoculum_strain", label = "Rhizobium inoculum strain", choices =
-                                                                                          c("Select one...",
-                                                                                            "Rhizobium japonicum",
+                                                                            selectizeInput("biofertilizer_rhizobium_inoculum_strain", label = "Rhizobium inoculum strain", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Rhizobium japonicum",
                                                                                             "Rhizobium leguminosarum",
                                                                                             "Rhizobium loti",
                                                                                             "Rhizobium meliloti",
@@ -1670,39 +1724,37 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             ),
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     textInput("quantity_inoculated", value = "", label="Quantity inoculated")
+                                                                                     textInput("biofertilizer_quantity_inoculated", value = "", label="Quantity inoculated")
                                                                               ),
-                                                                              column(width = 6,
-                                                                                     selectInput("quantity_inoculated_unit", label="Unit", choices=c("kg/m2", "kg/ha", "t/ha"))
+                                                                              column(width = 6, #IMPLEMENTAR EN EXCEl
+                                                                                     selectizeInput("biofertilizer_quantity_inoculated_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices=c("kg/m2", "kg/ha", "t/ha"))
                                                                               )
 
                                                                             ),
-                                                                            selectInput("inoculation_method", label = "Inoculation method", choices =
-                                                                                          c("Select one...",
-                                                                                            "Seed coating (Seed application of inoculum)",
+                                                                            selectizeInput("biofertilizer_inoculation_method", label = "Inoculation method", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Seed coating (Seed application of inoculum)",
                                                                                             "Directly to the soil",
                                                                                             "Other")
                                                                             ),
-                                                                            selectInput("product_formulation", label = "Product formulation", choices =
-                                                                                          c("Select one...",
-                                                                                            "Soil application with granules/pellets",
+                                                                            selectizeInput("biofertilizer_product_formulation", label = "Product formulation", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Soil application with granules/pellets",
                                                                                             "Soil application with slurry of liquid culture")
                                                                             ),
-                                                                            textInput("days_sowing_after_rhizobium_inocculation", value="", label = "Days to sowing after Rhizobium inocculation")
+                                                                            textInput("biofertilizer_days_sowing_after_rhizobium_inocculation", value="", label = "Days to sowing after Rhizobium inocculation")
                                                                      ))
                                                                  ))#end box description biofertilizer
-                                                        ))),#end tab biofertilizer
-                                                        tabPanel("Pest & Disease", value="tabPest&Disease",
+                                                        )),#),#end tab biofertilizer
+                                                        tabPanel("Pest & disease", value="tabPestNDisease",
                                                                  #br(),
-                                                                 fluidRow(
+                                                                 #fluidRow(
                                                                    column(width = 12,
                                                                           #br(),
-                                                                          h2("Pest & Disease"),
+                                                                          h2("Pest & disease"),
                                                                           fluidRow(
                                                                  box(title = "Disease observation",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(
                                                                      column(width = 6,
                                                                             # fluidRow(
@@ -1713,10 +1765,11 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             #          dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
                                                                             #   )
                                                                             # ),
-                                                                            textInput("disease_observation_date", value="", label = "Disease observation date"),
+
+                                                                            dateInput("disease_observation_date", label ="Disease observation date", format = "dd/mm/yyyy"),
                                                                             textInput("disease_name", value="", label = "Disease name"),
-                                                                            textInput("plant_parts_affected", value="", label = "Plant parts affected"),
-                                                                            textInput("percentage_experiement_affected", value="", label = "Percentage of the experiement affected"),
+                                                                            textInput("disease_plant_parts_affected", value="", label = "Plant parts affected"),
+                                                                            textInput("disease_percentage_experiement_affected", value="", label = "Percentage of the experiment affected"),
                                                                             textInput("disease_damages_notes", value="", label = "Disease damages, notes"),
                                                                             textInput("disease_notes", value="", label = "Disease, notes")
                                                                      ))
@@ -1725,7 +1778,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Pest observation",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(
                                                                      column(width = 6,
                                                                             # fluidRow(
@@ -1736,9 +1789,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             #          dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
                                                                             #   )
                                                                             # ),
-                                                                            selectInput("pest_type", label = "Pest type", choices =
-                                                                                          c("Select one...",
-                                                                                            "Bacteria",
+                                                                            selectizeInput("pest_type", label = "Pest type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Bacteria",
                                                                                             "Bird",
                                                                                             "Fungi",
                                                                                             "Gastropod",
@@ -1758,20 +1810,19 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  box(title = "Pest control",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
-                                                                     width = 12, collapsible = TRUE,
+                                                                     width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(
                                                                      column(width = 6,
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     dateInput("landLeveling_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                     dateInput("pestcontrol_start_date", label ="Start date", format = "dd/mm/yyyy")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                     dateInput("pestcontrol_end_date", label ="End date", format = "dd/mm/yyyy")
                                                                               )
                                                                             ),
-                                                                            selectInput("pest_control_technique", label = "Pest control technique", choices =
-                                                                                          c("Select one...",
-                                                                                            "Biological pest control",
+                                                                            selectizeInput("pest_control_technique", label = "Pest control technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Biological pest control",
                                                                                             "Chemical pest control",
                                                                                             "Mechanical pest control")
                                                                             ),
@@ -1780,16 +1831,15 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                               column(width = 6,
                                                                                      textInput("pesticide_amount", value = "", label="Pesticide amount")
                                                                               ),
-                                                                              column(width = 6,
-                                                                                     selectInput("pesticide_amount_unit", label="Unit", choices=c("kg/m2", "kg/ha", "t/ha"))
+                                                                              column(width = 6,#IMPLEMENTAR EN EXCEL
+                                                                                     selectizeInput("pesticide_amount_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices=c("kg/m2", "kg/ha", "t/ha"))
                                                                               )
                                                                             ),
                                                                             fileInput("myFile", "Pesticide box or bottle picture", accept = c('image/png', 'image/jpeg')),
-                                                                            textInput("pest_control_applications_", value="", label = "Pest control applications total number"),
+                                                                            textInput("pest_control_applications_totnumber", value="", label = "Pest control applications total number"),
                                                                             textInput("pest_control_details", value="", label = "Pest control details (e.g. name of parasitoid etc), treatment evaluation"),
-                                                                            selectInput("chemical_pest_control_equipment", label = "Chemical pest control equipment", choices =
-                                                                                          c("Select one...",
-                                                                                            "Aerial applicator",
+                                                                            selectizeInput("chemical_pest_control_equipment", label = "Chemical pest control equipment", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                          c("Aerial applicator",
                                                                                             "Airblast sprayer",
                                                                                             "Backpack sprayer",
                                                                                             "Boom sprayer",
@@ -1809,198 +1859,1561 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             br(),
                                                                             fluidRow(
                                                                             box(
-                                                                              title = "Implement", solidHeader = TRUE, status = "warning", width=12,
-                                                                              textInput("implement_make", value="", label = "Implement make"),
-                                                                              textInput("implement_model", value="", label = "Implement model"),
-                                                                              selectInput("animal_traction", label = "Animal Traction", choices =
-                                                                                            c("Select one...",
-                                                                                              "Buffalo",
+                                                                              title = "Pesticide Implement", solidHeader = TRUE, status = "warning", width=12,
+                                                                              textInput("pesticide_implement_make", value="", label = "Implement make"),
+                                                                              textInput("pesticide_implement_model", value="", label = "Implement model"),
+                                                                              selectizeInput("pesticide_animal_traction", label = "Animal Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                            c("Buffalo",
                                                                                               "Camel",
                                                                                               "Donkey",
                                                                                               "Elephant",
                                                                                               "Horse",
                                                                                               "Mule",
-                                                                                              "Ox / Bullock / Steer"
+                                                                                              "Ox / Bullock / Steer",
+                                                                                              "Other"
                                                                                             )
                                                                               ),
-                                                                              textInput("humanPowered", value="", label = "Human powered"),
-                                                                              selectInput("motorized_traction", label = "Motorized Traction", choices =
-                                                                                            c("Select one...",
-                                                                                              "2 wheel tractor",
-                                                                                              "4 wheel tractor"
+                                                                              textInput("pesticide_humanPowered", value="", label = "Human powered"),
+                                                                              selectizeInput("pesticide_motorized_traction", label = "Motorized Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                            c("2 wheel tractor",
+                                                                                              "4 wheel tractor",
+                                                                                              "Other"
                                                                                             )
                                                                               )
                                                                             ))
                                                                      ))
                                                                  ))#end box pest control
                                                         )#end tab pest&disease
-                                                      )),
+                                                      ),#),
                                                       tabPanel("Nutrient management event", value="tabNutrient",
-                                                               fluidRow(
+                                                               #fluidRow(
                                                                  column(width = 12,
                                                                         #br(),
                                                                         h2("Nutrient management event"),
+                                                                        #fluidRow(
+                                                                          ## here goes the nutrients prototype panel
+
                                                                         fluidRow(
-                                                                          tabBox(height = NULL, width = 12,
-                                                                                 tabPanel("Fertilization details", value="tab111",
-                                                                                          fluidRow(
-                                                                                            column(width = 12,
-                                                                                                   #br(),
-                                                                                                   fluidRow(
-                                                                                                     box(title = "Fertilization details",
-                                                                                                         status = "primary",
-                                                                                                         solidHeader = TRUE,
-                                                                                                         width = 12, collapsible = TRUE,
-                                                                                                         column(width = 6,
-                                                                                                            selectInput(inputId = "napplications", label = "Number of applications", choices = 1:5)
-                                                                                                         ),
-
-                                                                                                         box(
-                                                                                                           title = tagList(shiny::icon("edit"), "Application #1"), solidHeader = TRUE, status = "warning", width=12,
-
-                                                                                                           fluidRow(
-                                                                                                             column(width = 6,
-                                                                                                                    fluidRow(
-                                                                                                                      column(width = 6,
-                                                                                                                             dateInput("fertilization_start_date", label ="Start date", format = "dd/mm/yyyy")
-                                                                                                                      ),
-                                                                                                                      column(width = 6,
-                                                                                                                             dateInput("fertilization_end_date", label ="End date", format = "dd/mm/yyyy")
-                                                                                                                      )
-                                                                                                                    )
-                                                                                                             )
-                                                                                                           ),
-
-                                                                                                           fluidRow(
-                                                                                                             column(width=6,
-
-                                                                                                                    selectizeInput("app1fTypeFertilizer", "Type of fertilizer", multiple = TRUE, options = list(maxItems = 1, placeholder = "Select type..."),
-                                                                                                                                   choices=c("Inorganic", "Organic")
-                                                                                                                    )
-                                                                                                             ),
-                                                                                                             column(width=6,
-                                                                                                                    textInput(inputId = "person2Afiliation", label = "Person afiliation", value = ""),
-                                                                                                                    textInput(inputId = "person2ORCID", label = "Person ORCID", value = "")
-                                                                                                             )
-                                                                                                           )
-                                                                                                         ),
-
-
-
-                                                                                                         conditionalPanel("input.napplications == 2  |
-                                                                                                                           input.napplications == 3  |
-                                                                                                                           input.napplications == 4 |
-                                                                                                                           input.napplications == 5",
-                                                                                                                          box(
-                                                                                                                            title = tagList(shiny::icon("user"), "Personnel #2"), solidHeader = TRUE, status = "warning", width=12,
-
-                                                                                                                            fluidRow(
-                                                                                                                              column(width = 6, shiny::selectInput("personnel2Type", "Personnel type", choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other"))),
-                                                                                                                              column(width = 6, textInput(inputId = "person2Email", label = "Person email", value = ""))
-                                                                                                                            ),
-
-                                                                                                                            fluidRow(
-                                                                                                                              column(width=6,
-
-                                                                                                                                     textInput(inputId = "person2FirstName", label = "Person first name", value = ""),
-                                                                                                                                     textInput(inputId = "person2LastName", label = "Person last name", value = "")
-                                                                                                                                     # actionButton(inputId = "addAnotherPerson",label="Add another")
-                                                                                                                              ),
-                                                                                                                              column(width=6,
-                                                                                                                                     textInput(inputId = "person2Afiliation", label = "Person afiliation", value = ""),
-                                                                                                                                     textInput(inputId = "person2ORCID", label = "Person ORCID", value = "")
-                                                                                                                              )
-                                                                                                                            )
-                                                                                                                          )
-
-                                                                                                         )
-
-                                                                                                     )#end box
-                                                                                                  )
-                                                                                            )
-                                                                                          )
-
-                                                                                 ),
-                                                                                 tabPanel("Nutrient amount applied", value="tab222",
-                                                                                          fluidRow(
-                                                                                            column(width = 12,
-                                                                                                   #br(),
-                                                                                                   fluidRow(
-                                                                                                     box(title = "Nutrient amount applied",
-                                                                                                         status = "primary",
-                                                                                                         solidHeader = TRUE,
-                                                                                                         width = 12, collapsible = TRUE,
-                                                                                                         fluidRow(
-                                                                                                           column(width = 6,
-                                                                                                                  fluidRow(
-                                                                                                                    column(width = 6,
-                                                                                                                           dateInput("landLeveling_start_date", label ="Start date", format = "dd/mm/yyyy")
-                                                                                                                    ),
-                                                                                                                    column(width = 6,
-                                                                                                                           dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
-                                                                                                                    )
-                                                                                                                  )
-                                                                                                           ))
-                                                                                                     ))#end box
-                                                                                            )
-                                                                                          )
+                                                                          column(width = 6,
+                                                                                 textInput("fertilizer_application_number", "Fertilizer application number"),
+                                                                                 fluidRow(
+                                                                                   column(width = 6,
+                                                                                          textInput(inputId="fertilizer_total_quantity", label="Fertilizer total quantity")
+                                                                                   ),
+                                                                                   column(width = 6,
+                                                                                          selectizeInput("fertilizer_total_quantity_unit", multiple =T, options = list(maxItems=1, placeholder="Select one..."),"Unit", c("kg/m2","kg/ha","t/ha"))
+                                                                                   )
                                                                                  )
                                                                           )
-                                                                        )
-                                                                 )))#end tab nutrient management event
-                                                      ))
-                                                    )#asd
+                                                                        ),
+                                                                        fluidRow(
+                                                                          box(title = "Fertilization details",
+                                                                              status = "primary",
+                                                                              solidHeader = TRUE,
+                                                                              width = 12, collapsible = TRUE,  collapsed = T,
+                                                                              fluidRow(
+                                                                                column(width = 6,
+                                                                                       fluidRow(
+                                                                                         column(width = 6,
+                                                                                                dateInput("fertilization_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                         ),
+                                                                                         column(width = 6,
+                                                                                                dateInput("fertilization_end_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                         )
+                                                                                       ),
+                                                                                       fluidRow(
+                                                                                         column(width = 6,
+                                                                                                selectizeInput("appfTypeFertilizer", "Type of fertilizer used", multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."),
+                                                                                                               choices=c("Inorganic", "Organic")
+                                                                                                )
+                                                                                         ),
+                                                                                         column(width = 6,
+                                                                                                conditionalPanel("input.appfTypeFertilizer == 'Inorganic'",
+                                                                                                                 selectizeInput("typeInorganic",multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="Inorganic", choices =c(
+                                                                                                                   "Ammonium nitrate",
+                                                                                                                   "Ammonium nitrate sulfate",
+                                                                                                                   "Ammonium polyphosphate",
+                                                                                                                   "Ammonium sulfate",
+                                                                                                                   "Anhydrous ammonia",
+                                                                                                                   "Aqua ammonia",
+                                                                                                                   "Calcitic limestone",
+                                                                                                                   "Calcium ammonium nitrate solution",
+                                                                                                                   "Calcium hydroxide",
+                                                                                                                   "Calcium nitrate",
+                                                                                                                   "Diammnoium phosphate",
+                                                                                                                   "Dolomitic limestone",
+                                                                                                                   "Liquid phosphoric acid",
+                                                                                                                   "Monoammonium phosphate",
+                                                                                                                   "Potassium chloride",
+                                                                                                                   "Potassium nitrate",
+                                                                                                                   "Potassium sulfate",
+                                                                                                                   "Rock phosphate",
+                                                                                                                   "Single super phosphate",
+                                                                                                                   "Triple super phosphate",
+                                                                                                                   "Urea",
+                                                                                                                   "Urea ammonium nitrate solution",
+                                                                                                                   "Urea super granules",
+                                                                                                                   "Other")
+                                                                                                                 )
+                                                                                                ),
 
-                                                    ),
-                                                    fluidRow(
+                                                                                                conditionalPanel("input.appfTypeFertilizer == 'Organic'",
+                                                                                                                 selectizeInput("typeOrganic", multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="Organic", choices =c(
+                                                                                                                   "Alfalfa Meal",
+                                                                                                                   "Bagasse",
+                                                                                                                   "Biochar",
+                                                                                                                   "Blood meal",
+                                                                                                                   "Bone meal",
+                                                                                                                   "Chicken litter",
+                                                                                                                   "Compost",
+                                                                                                                   "Cottonseed Meal",
+                                                                                                                   "Farmyard manure",
+                                                                                                                   "Fish emulsion",
+                                                                                                                   "Fish manure",
+                                                                                                                   "Fish meal",
+                                                                                                                   "Green manure",
+                                                                                                                   "Guano",
+                                                                                                                   "Hydrolyzed Fish",
+                                                                                                                   "Liquid manure",
+                                                                                                                   "Oil cake",
+                                                                                                                   "Peat",
+                                                                                                                   "Spent mushroom compost",
+                                                                                                                   "Treated sewage sludge",
+                                                                                                                   "Other")
+                                                                                                                 )
+                                                                                                )
+                                                                                         )
+                                                                                       ),
+                                                                                       fileInput("fert_picture", "Fertilizer picture", accept = c('image/png', 'image/jpeg')),
+                                                                                       selectizeInput("fertilizer_application_technique", "Fertilizer application technique", multiple = F,
+                                                                                                      options = list(maxItems = 1, placeholder ="Select one"),
+                                                                                                      choices = c("Band application beneath surface",
+                                                                                                                  "Band application on surface",
+                                                                                                                  "Broadcast incorporated",
+                                                                                                                  "Contact placement",
+                                                                                                                  "Deep placement",
+                                                                                                                  "Fertigation",
+                                                                                                                  "Foliar application",
+                                                                                                                  "Injection",
+                                                                                                                  "Placed with seed",
+                                                                                                                  "Plough sole placement",
+                                                                                                                  "Side dressing",
+                                                                                                                  "Sub-soil placement",
+                                                                                                                  "Topdressing",
+                                                                                                                  "Other")
+                                                                                       ),
+                                                                                       textInput(inputId="fertilizer_application_depth", label="Fertilizer application depth"),
+                                                                                       fluidRow(
+                                                                                         column(width = 6,
+                                                                                                textInput(inputId="fertilizer_recommended_rate", label="Fertilizer recommended rate")
+                                                                                         ),
+
+                                                                                         column(width = 6,
+                                                                                                selectizeInput("fertilizer_recommended_rate_unit", multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "Unit", c("kg/m2","kg/ha","t/ha"))
+                                                                                         )
+                                                                                       ),
+                                                                                       textInput(inputId="percentage_of_fertilizer_recommended_rate_applied", label="Percentage of fertilizer recommended rate applied")
+                                                                                ),
+                                                                                column(width = 6,
+                                                                                       br(),
+                                                                                       fluidRow(
+                                                                                         box(
+                                                                                           title = "Fertilizer implement description", solidHeader = TRUE, status = "warning", width=12,
+                                                                                           selectizeInput("fertilizer_implement", label = "Fertilizer implement",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                                                                       choices = c("Airblast sprayer",
+                                                                                                                             "Backpack sprayer",
+                                                                                                                             "Boom sprayer",
+                                                                                                                             "Broadcast spreader",
+                                                                                                                             "Hand sprayer",
+                                                                                                                             "Manure spreader",
+                                                                                                                             "Slurry injector",
+                                                                                                                             "Other")
+                                                                                           ),
+                                                                                           fileInput("fert_implementPicture", "Fertilizer implement picture", accept = c('image/png', 'image/jpeg')),
+                                                                                           textInput("fertilizer_implement_make", value="", label = "Fertilizer implement make"),
+                                                                                           textInput("fertilizer_implement_model", value="", label = "Fertilizer implement model"),
+                                                                                           box(
+                                                                                             title = "Fertilizer implement traction", solidHeader = TRUE, status = "info", width=12,
+                                                                                             selectizeInput("fert_animalTraction", "Animal traction", multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."),
+                                                                                                            choices = c(
+                                                                                                              "Buffalo",
+                                                                                                              "Camel",
+                                                                                                              "Donkey",
+                                                                                                              "Elephant",
+                                                                                                              "Horse",
+                                                                                                              "Mule",
+                                                                                                              "Ox / Bullock / Steer",
+                                                                                                              "Other")
+                                                                                             ),
+                                                                                             textInput("fert_humanPowered", "Human powered", value= ""),
+                                                                                             selectizeInput("fert_motorizedTraction", "Motorized traction", multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."),
+                                                                                                            choices = c(
+                                                                                                              "2 wheel tractor",
+                                                                                                              "4 wheel tractor",
+                                                                                                              "Other")
+                                                                                             )
+                                                                                           )
+                                                                                         )
+                                                                                       )
+                                                                                )
+                                                                              )
+                                                                          )
+                                                                        ),
+                                                                        fluidRow(
+                                                                          box(title = "Nutrient amount applied",
+                                                                              status = "primary",
+                                                                              solidHeader = TRUE,
+                                                                              width = 12, collapsible = TRUE,  collapsed = T,
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", h4("Name"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("Number of applications"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("Order"))
+                                                                                ), column(width = 2,
+                                                                                          br(),
+                                                                                          div(style="text-align:center", h4("Amount applied"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("Amount applied (scale)"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("Nutrient concentration in fertilizer applied"))
+                                                                                )
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Nitrogen")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_nit_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_nit_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_nit_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_nit_numApps1 == 2 |
+                                                                                               input.nutrientApplied_nit_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_nit_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_nit_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_nit_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_nit_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_nit_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_nit_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_nit_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Phosphorus")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_phosp_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_phosp_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_phosp_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_phosp_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_phosp_numApps1 == 2 |
+                                                                                               input.nutrientApplied_phosp_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_phosp_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_phosp_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_phosp_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_phosp_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_phosp_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_phosp_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_phosp_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Potassium")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_potass_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_potass_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_potass_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_potass_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_potass_numApps1 == 2 |
+                                                                                               input.nutrientApplied_potass_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_potass_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_potass_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_potass_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_potass_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_potass_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_potass_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_potass_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Calcium")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_calcium_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_calcium_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_calcium_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_calcium_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_calcium_numApps1 == 2 |
+                                                                                               input.nutrientApplied_calcium_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_calcium_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_calcium_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_calcium_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_calcium_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_calcium_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_calcium_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_calcium_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Sulphur")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_sulph_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_sulph_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_sulph_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_sulph_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_sulph_numApps1 == 2 |
+                                                                                               input.nutrientApplied_sulph_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_sulph_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_sulph_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_sulph_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_sulph_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_sulph_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_sulph_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_sulph_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Magnesium")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_mangan_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 2 |
+                                                                                               input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Nitrate")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_mangan_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 2 |
+                                                                                               input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Ammonium")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_mangan_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 2 |
+                                                                                               input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Iron")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_mangan_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 2 |
+                                                                                               input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Zinc")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_mangan_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 2 |
+                                                                                               input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Copper")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_mangan_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 2 |
+                                                                                               input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Boron")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_mangan_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 2 |
+                                                                                               input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Molybdenum")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_mangan_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 2 |
+                                                                                               input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Manganese")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_mangan_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_mangan_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 2 |
+                                                                                               input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_mangan_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_mangan_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_mangan_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+                                                                              fluidRow(
+                                                                                column(width = 1,
+                                                                                       br(),
+                                                                                       div(style="text-align:right", "Chlorine")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectInput("nutrientApplied_nit_numApps1","",c(1,2,3))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       br(),
+                                                                                       div(style="text-align:center", h4("1"))
+                                                                                ),
+
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied _clh_amountApplied1","")
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       selectizeInput("nutrientApplied_clh_amountScale1","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                ),
+                                                                                column(width = 2,
+                                                                                       textInput("nutrientApplied_ clh_concentFertApplied1","")
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.nutrientApplied_clh_numApps1 == 2 |
+                                                                                               input.nutrientApplied_clh_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("2"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_clh_amountApplied2","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_clh_amountScale2","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_clh_concentFertApplied2","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              ),
+
+
+                                                                              conditionalPanel("input.nutrientApplied_clh_numApps1 == 3 ",
+                                                                                               fluidRow(
+                                                                                                 column(width = 1,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", "")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:right", " ")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        br(),
+                                                                                                        div(style="text-align:center", h4("3"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_clh_amountApplied3","")
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        selectizeInput("nutrientApplied_clh_amountScale3","", multiple=T, options=list(maxItems=1, placeholder="Select one..."),c("kg/m2","kg/ha","t/ha"))
+                                                                                                 ),
+                                                                                                 column(width = 2,
+                                                                                                        textInput("nutrientApplied_clh_concentFertApplied3","")
+                                                                                                 )
+                                                                                               )
+
+                                                                              )
+
+
+                                                                          )
+                                                                        )
+
+
+
+                                                                        #)
+                                                                 )),#)#end tab nutrient management event
+                                                      tabPanel("Harvest", value="tabHarvest",
+                                                               #br(),
+                                                               #fluidRow(
+                                                               column(width = 12,
+                                                                      #br(),
+                                                                      h2("Harvest"),
+                                                                      fluidRow(
+                                                                        box(title = "Description Harvest",
+                                                                            status = "primary",
+                                                                            solidHeader = TRUE,
+                                                                            width = 12, collapsible = TRUE, collapsed = TRUE,
+                                                                            fluidRow(
+                                                                              column(width = 6,
+                                                                                     fluidRow(
+                                                                                       column(width = 6,
+                                                                                              dateInput("harvest_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                       ),
+                                                                                       column(width = 6,
+                                                                                              dateInput("harvest_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                       )
+                                                                                     ),
+                                                                                     selectizeInput("crop_component_harvested", label = "Crop component harvested", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                                      c("Canopy",
+                                                                                                        "Fruit",
+                                                                                                        "Leaves",
+                                                                                                        "Seed",
+                                                                                                        "Tuber")
+                                                                                     )
+                                                                              ),
+                                                                              column(width = 6,
+                                                                                     br(),
+                                                                                     fluidRow(
+                                                                                       box(
+                                                                                         title = "Implement", solidHeader = TRUE, status = "warning", width=12,
+                                                                                         selectizeInput("harvest_implement", label = "Harvest implement", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                                          c("Baler",
+                                                                                                            "Chopper",
+                                                                                                            "Cotton stalk puller",
+                                                                                                            "Grass slasher",
+                                                                                                            "Manual fruit harvester",
+                                                                                                            "Mower",
+                                                                                                            "Sickle",
+                                                                                                            "Simple treadle thresher",
+                                                                                                            "Threshing rack",
+                                                                                                            "Digger",
+                                                                                                            "Reaper")
+                                                                                         ),
+                                                                                         textInput("harvest_make", value="", label = "Implement make"),
+                                                                                         textInput("harvest_model", value="", label = "Implement model"),
+                                                                                         selectizeInput("harvest_animal_traction", label = "Animal Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                                          c("Buffalo",
+                                                                                                            "Camel",
+                                                                                                            "Donkey",
+                                                                                                            "Elephant",
+                                                                                                            "Horse",
+                                                                                                            "Mule",
+                                                                                                            "Ox / Bullock / Steer",
+                                                                                                            "Other"
+                                                                                                          )
+                                                                                         ),
+                                                                                         textInput("harvest_humanPowered", value="", label = "Human powered"),
+                                                                                         selectizeInput("harvest_motorized_traction", label = "Motorized Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                                          c("2 wheel tractor",
+                                                                                                            "4 wheel tractor",
+                                                                                                            "Other"
+                                                                                                          )
+                                                                                         )
+                                                                                       ))
+                                                                              ))
+                                                                        ))#end box description harvest
+                                                               ))#),#end tab harvest
+                                                      )#end tabbox
+                                                      #)
+                                                    ),#asd
+
+                                                    #),
+                                                    #fluidRow(
                                                       sidebarPanel(id="sidebar", width = 12,
-                                                                   actionButton("btnNextAgro", "Next", class = "btn-primary",style="color: #fff;")
+                                                                   actionButton("btnNextTraits", "Next", class = "btn-primary",style="color: #fff;")
                                                       )
-                                                    )
+                                                    #)
 
 
 
                                              ),
 
                                               shiny::tabPanel("Traits", value = "tabTraits", icon = shiny::icon("leaf"),
-                                                  h2("Traits"),
-                                                  fluidRow(
+                                                  #h2("Traits"),
+                                                  #fluidRow(
                                                   #br(),
                                                     column(width = 12,
-                                                  shinyTree::shinyTree("designFieldbook_traits_agrofims",search = TRUE,checkbox = TRUE)
-                                                  )),
+                                                           h2("Traits"),
+                                                           br()
+                                                          # shinyTree::shinyTree("designFieldbook_traits_agrofims",search = TRUE,checkbox = TRUE)
+
+                                                          #uiOutput("uiTraitsList")
+                                                  ),#),
+                                                  uiOutput("uiTraitsList"),
 
                                                   # fluidRow(
                                                   #   column(width = 6, align = "left",
                                                   #          br(),
                                                   #          actionButton(inputId = "btnNextEnv", label = "Next", style="color: #fff; background-color: #35b872;"))
                                                   # )
-                                                  fluidRow(
+                                                  #fluidRow(
                                                     sidebarPanel(id="sidebar", width = 12,
                                                                  actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;")
                                                     )
-                                                  )
+                                                  #)
                                               ),
                                               shiny::tabPanel("Weather & Soil", value = 'tabEnvironment', icon = shiny::icon("bolt"),
                                                   #br(),
-                                                  h2("Weather & Soil"),
-                                                  fluidRow(
+                                                  # h2("Weather & Soil"),
+                                                  #fluidRow(
                                                     column(width = 12,
-
+                                                           h2("Weather & Soil"),
                                                   shinyTree::shinyTree("designFieldbook_weatherVar_agrofims",search = TRUE,checkbox = TRUE),
                                                   shinyTree::shinyTree("designFieldbook_soilVar_agrofims",search = TRUE,checkbox = TRUE)
-                                                    )),
+                                                    )#),
                                                   #shiny::checkboxInput("fbDesign_weather_cb", label = "Register weather data"),
                                                   #shiny::checkboxInput("fbDesign_soil_cb", label = "Register soil data")
-                                                  fluidRow(
-                                                    sidebarPanel(id="sidebar", width = 12,
-                                                                 actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;")
-                                                    )
-                                                  )
+                                                  #fluidRow(
+                                                    # sidebarPanel(id="sidebar", width = 12,
+                                                    #              actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;")
+                                                    # )
+                                                  #)
                                               )#,
                                          #) #end master
 
-                                      ))# end tabbox,
+                                      )#) end tabbox,
                                     ) #end box
                                   ), #end fluid row
 
@@ -2017,28 +3430,28 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                        shinysky::shinyalert("alert_fb_done", FALSE, auto.close.after = 4),
                                        HTML('</div>')
                                      ),
-                          rHandsontableOutput("hot", width = 1000),
+                          #rHandsontableOutput("hot", width = 1000),
+          conditionalPanel( condition = "output.show_agrotable",
                                      shiny::fluidRow(
                                          #box(
                                          #column(width = 12,height=6,
-                                         # shinydashboard::box(title = "Fieldbook Preview",
-                                         #                     status = "primary",
-                                         #                     #height = 500,
-                                         #                     #width = NULL,
-                                         #                     solidHeader = TRUE,
-                                         #                     width = 12, collapsible = TRUE,
-                                         #                     #shiny::actionButton("butNewFieldbook", "New fieldbook", inline = TRUE)#,
-                                         #                     rhandsontable::rHandsontableOutput("fbDesign_table_agrofims", height = 400)
-                                         # ),
-
-
-
-
-
+                                         shinydashboard::box(title = "Fieldbook Preview",
+                                                             status = "primary",
+                                                             #height = 500,
+                                                             #width = NULL,
+                                                             solidHeader = TRUE,
+                                                             width = 12, collapsible = TRUE,
+                                                             #shiny::actionButton("butNewFieldbook", "New fieldbook", inline = TRUE)#,
+                                                             rhandsontable::rHandsontableOutput("fbDesign_table_agrofims", height = 400)
+                                               # )#,
+                                              #)
+                                          ),
                                          br(),
                                          br(),
                                          br()
-                                     ),
+                                     )
+  ),#end conditional panel
+
                                     br(),
                                     br(),
                                     br()
