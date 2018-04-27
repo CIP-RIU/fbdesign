@@ -3401,7 +3401,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                     column(width = 12,
                                                            h2("Weather & Soil"),
                                                   shinyTree::shinyTree("designFieldbook_weatherVar_agrofims",search = TRUE,checkbox = TRUE),
-                                                  shinyTree::shinyTree("designFieldbook_soilVar_agrofims",search = TRUE,checkbox = TRUE)
+                                                  #shinyTree::shinyTree("designFieldbook_soilVar_agrofims",search = TRUE,checkbox = TRUE)
                                                     )#),
                                                   #shiny::checkboxInput("fbDesign_weather_cb", label = "Register weather data"),
                                                   #shiny::checkboxInput("fbDesign_soil_cb", label = "Register soil data")

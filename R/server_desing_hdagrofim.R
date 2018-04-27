@@ -2188,20 +2188,20 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  ##reactive soil
-  dt_soil_agrofims <- shiny::reactive({
-
-    soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
-
-    if(!is.null(soil_vars)){
-      dt  <-  matrix(nrow = 50, ncol = length(soil_vars))
-      dt  <- data.frame(dt)
-      names(dt)  <-  soil_vars
-    } else{
-      dt <- data.frame()
-    }
-    dt
-  })
+  # ##reactive soil
+  # dt_soil_agrofims <- shiny::reactive({
+  #
+  #   soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
+  #
+  #   if(!is.null(soil_vars)){
+  #     dt  <-  matrix(nrow = 50, ncol = length(soil_vars))
+  #     dt  <- data.frame(dt)
+  #     names(dt)  <-  soil_vars
+  #   } else{
+  #     dt <- data.frame()
+  #   }
+  #   dt
+  # })
 
 
 
@@ -2233,8 +2233,8 @@ server_design_agrofims <- function(input, output, session, values){
       #
       weather_vars <- unlist(shinyTree::get_selected(input$designFieldbook_weatherVar_agrofims))
       print(weather_vars)
-      soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
-      print(soil_vars)
+      # soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
+      # print(soil_vars)
 
       fb <- fb_agrofims()
 
@@ -2247,8 +2247,8 @@ server_design_agrofims <- function(input, output, session, values){
 
       weather <- dt_weather_agrofims()
       print(weather)
-      soil <- dt_soil_agrofims()
-      print(soil)
+      # soil <- dt_soil_agrofims()
+      # print(soil)
 
       fname <- paste(file,"xlsx",sep=".")
       #wb <- openxlsx::loadWorkbook(file = fname, create = TRUE)
@@ -2398,16 +2398,16 @@ server_design_agrofims <- function(input, output, session, values){
                                  colNames = TRUE, withFilter = FALSE)
       }
 
-      if(is.null(soil_vars)){
-        print("there is no soil data")
-
-      } else {
-
-        incProgress(9/10,message = "Adding soil variables sheet...")
-        openxlsx::addWorksheet(wb, "Soil", gridLines = TRUE)
-        openxlsx::writeDataTable(wb, "Soil", x = soil,
-                                 colNames = TRUE, withFilter = FALSE)
-      }
+      # if(is.null(soil_vars)){
+      #   print("there is no soil data")
+      #
+      # } else {
+      #
+      #   incProgress(9/10,message = "Adding soil variables sheet...")
+      #   openxlsx::addWorksheet(wb, "Soil", gridLines = TRUE)
+      #   openxlsx::writeDataTable(wb, "Soil", x = soil,
+      #                            colNames = TRUE, withFilter = FALSE)
+      # }
 
       incProgress(19/20,message = "Downloading file...")
 
