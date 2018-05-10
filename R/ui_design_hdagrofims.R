@@ -1516,7 +1516,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                 )
                                                                                ),
                                                                                conditionalPanel("input.pud_traction == 'Other'",
-                                                                                                textInput("contOtherTraction", "", value = "")
+                                                                                                textInput("pud_contOtherTraction", "", value = "")
 
                                                                                )
                                                                                  # selectizeInput("pud_animal_traction", label = "Animal traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -1569,7 +1569,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                                         )
                                                                                           ),
                                                                             conditionalPanel("input.till_technique == 'Other'",
-                                                                                             textInput("till_technique", "")
+                                                                                             textInput("till_technique_other", "")
 
                                                                             ),
                                                                             textInput("till_depth_method", value="", label = "Depth of tillage - measurement method"),
