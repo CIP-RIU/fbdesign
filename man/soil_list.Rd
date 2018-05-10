@@ -17,4 +17,3 @@ This list contains the list of Soil variables. Users can pick up elements on thi
 \references{
 This data is related to HiDAP crop template
 }
-

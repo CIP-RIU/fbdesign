@@ -17,4 +17,3 @@ Creates an unreplicated design with no-randomization.
 \author{
 Omar Benites
 }
-

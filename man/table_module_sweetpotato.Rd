@@ -17,4 +17,3 @@ This dataset contains the trait used in SweetPotato Trials
 \references{
 This data is related to HiDAP crop template
 }
-

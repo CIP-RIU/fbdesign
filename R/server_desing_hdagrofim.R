@@ -13,9 +13,14 @@
 
 server_design_agrofims <- function(input, output, session, values){
 
+  # makeReactiveBinding("pkg.globals")
 
   observeEvent(input$titleId, {
     js$collapse("box1")
+  })
+
+  output$uiTest <- renderUI({
+
   })
 
 
@@ -245,10 +250,10 @@ server_design_agrofims <- function(input, output, session, values){
                                                      c("CGIAR center",
                                                        "Other"
                                                      )
-                                    )
-                             ),
+                                    ),
+
                              conditionalPanel(paste0("input.projLeadEnt_", count, " == 'CGIAR center'"),
-                                              column(width = 6,
+
                                                      selectizeInput(paste0("tLeadCenter_", count), "Choose CGIAR center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
                                                        "Africa Rice Center",
                                                        "Bioversity International",
@@ -267,19 +272,22 @@ server_design_agrofims <- function(input, output, session, values){
                                                        "WorldFish",
                                                        "None")
                                                      )
-                                              )
 
                              ),
                              conditionalPanel(paste0("input.projLeadEnt_", count, " == 'Other'"),
 
+
                                               selectizeInput(paste0("lead_org_type_1_", count), "",multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),  choices = c("University","University, main campus","Agricultural experimental extension", "Government research institution (NARS)","Government research institution, designated laboratory or center", "Private company", "Farm", "Farmer association or cooperative", "Non-governmental organization", "Extension organization", "CGIAR center", "Other" )),
-                                              conditionalPanel(paste0("input.lead_org_type_1", count, " == 'Other'"),
+                                              conditionalPanel(paste0("input.lead_org_type_1_", count, " == 'Other'"),
                                                                textInput(paste0("lead_org_type_1_other_", count), "")),
 
                                               textInput(paste0("leadNameOther_", count), "Experiment, lead organization name", value = "")
 
                              ),
-                             textInput(inputId = paste0("expLead_", count), label = "Experiment lead person / Primary Investigator", value = "")
+
+
+                              textInput(inputId = paste0("expLead_", count), label = "Experiment lead person / Primary Investigator", value = "")
+                             )
 
                          ) #end box
             )
@@ -315,7 +323,7 @@ server_design_agrofims <- function(input, output, session, values){
   #### factors ####################################################################################
 
   path <- fbglobal::get_base_dir()
-  fp <- file.path(path, "listFactors.rds")
+  fp <- file.path(path, "listFactors.rds") # field operations agro features as list of factors
 
   lvl <- reactiveValues()
   factors <- as.data.frame(readRDS(fp))
@@ -355,7 +363,7 @@ server_design_agrofims <- function(input, output, session, values){
   observe( {
 
     if(!is.null(input$sel1_2)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel1_2)
+      aux <- dplyr::filter(factors,GROUP==input$sel1_1 & SUBGROUP==input$sel1_2)
 
       lvl$lv_1_3 <- unique(aux$FACTOR)
     }
@@ -369,7 +377,7 @@ server_design_agrofims <- function(input, output, session, values){
   observe({
     removeUI( selector ="#fl_title_factor_1", immediate = T )
     if(!is.null(input$sel1_3)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel1_2, FACTOR==input$sel1_3)
+      aux <- dplyr::filter(factors,GROUP==input$sel1_1 & SUBGROUP==input$sel1_2 & FACTOR==input$sel1_3)
       if(nrow(aux) > 0){
         insertUI(
           selector = "#fl_title_factor_aux_1",
@@ -419,7 +427,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   observe( {
     if(!is.null(input$sel2_2)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel2_2)
+      aux <- dplyr::filter(factors,GROUP==input$sel2_1 & SUBGROUP==input$sel2_2)
       lvl$lv_2_3 <- unique(aux$FACTOR)
     }
     else{
@@ -432,7 +440,7 @@ server_design_agrofims <- function(input, output, session, values){
   observe({
     removeUI( selector ="#fl_title_factor_2", immediate = T )
     if(!is.null(input$sel2_3)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel2_2, FACTOR==input$sel2_3)
+      aux <- dplyr::filter(factors,GROUP==input$sel2_1 & SUBGROUP==input$sel2_2 & FACTOR==input$sel2_3)
 
       if(nrow(aux) > 0){
         insertUI(
@@ -483,7 +491,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   observe( {
     if(!is.null(input$sel3_2)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel3_2)
+      aux <- dplyr::filter(factors,GROUP==input$sel3_1 & SUBGROUP==input$sel3_2)
       lvl$lv_3_3 <- unique(aux$FACTOR)
     }
     else{
@@ -496,7 +504,7 @@ server_design_agrofims <- function(input, output, session, values){
   observe({
     removeUI( selector ="#fl_title_factor_3", immediate = T )
     if(!is.null(input$sel3_3)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel3_2, FACTOR==input$sel3_3)
+      aux <- dplyr::filter(factors,GROUP==input$sel3_1 & SUBGROUP==input$sel3_2 & FACTOR==input$sel3_3)
 
       if(nrow(aux) > 0){
         insertUI(
@@ -545,7 +553,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   observe({
     if(!is.null(input$sel4_2)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel4_2)
+      aux <- dplyr::filter(factors,GROUP==input$sel4_1 & SUBGROUP==input$sel4_2)
       lvl$lv_4_3 <- unique(aux$FACTOR)
     }
     else{
@@ -558,7 +566,7 @@ server_design_agrofims <- function(input, output, session, values){
   observe({
     removeUI( selector ="#fl_title_factor_4", immediate = T )
     if(!is.null(input$sel4_3)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel4_2, FACTOR==input$sel4_3)
+      aux <- dplyr::filter(factors,GROUP==input$sel4_1 & SUBGROUP==input$sel4_2 & FACTOR==input$sel4_3)
 
       if(nrow(aux) > 0){
         insertUI(
@@ -607,7 +615,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   observe( {
     if(!is.null(input$sel5_2)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel5_2)
+      aux <- dplyr::filter(factors, GROUP==input$sel5_1 & SUBGROUP==input$sel5_2)
       lvl$lv_5_3 <- unique(aux$FACTOR)
     }
     else{
@@ -620,7 +628,7 @@ server_design_agrofims <- function(input, output, session, values){
   observe({
     removeUI( selector ="#fl_title_factor_5", immediate = T )
     if(!is.null(input$sel5_3)){
-      aux <- dplyr::filter(factors,SUBGROUP==input$sel5_2, FACTOR==input$sel5_3)
+      aux <- dplyr::filter(factors,GROUP==input$sel5_1 & SUBGROUP==input$sel5_2 & FACTOR==input$sel5_3)
 
       if(nrow(aux) > 0){
         insertUI(
@@ -834,8 +842,8 @@ server_design_agrofims <- function(input, output, session, values){
     numericInput("numLevels_5", "#levels", max = 5, min = 1, value = 1)
   })
 
-
   #### end factors ####################################################################################
+
 
 
   output$uiPreviousCrop1 <- renderUI({
@@ -1323,22 +1331,21 @@ server_design_agrofims <- function(input, output, session, values){
                                                   choices = c("m", "km")
                                    )
                             )
-                         )
-
-
-
-                  ),
-                  column(width = 6,
+                         ),
                          fluidRow(
                            column(width = 6,
-                               textInput(paste0("irrigation_bund_height_", order), value="", label = "Bund height")
+                                  textInput(paste0("irrigation_bund_height_", order), value="", label = "Bund height")
                            ),
                            column(width = 6,
                                   selectizeInput(paste0("irrigation_bund_height_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
                                                  choices = c("cm", "in", "m")
                                   )
                            )
-                         ),
+                         )
+
+                  ),
+                  column(width = 6,
+
                          fluidRow(
                              column(width = 6,
                                 textInput(paste0("irrigation_percolation_rate_", order), value="", label = "Percolation rate")
@@ -1369,6 +1376,17 @@ server_design_agrofims <- function(input, output, session, values){
                                   )
                            )
                          ),
+                         fluidRow(
+                           column(width = 6,
+                                  textInput(paste0("irrigation_amount_", order), value="", label = "Irrigation amount")
+                           ),
+                           column(width = 6,
+                                  selectizeInput(paste0("irrigation_amount_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
+                                                 choices = c("mm", "cm", "m", "in", "ft", "ml", "L", "gal", "cu m", "cu in", "cu ft")
+                                  )
+                           )
+                         ),
+
                          fluidRow(
                            column(width = 6,
                                   textInput(paste0("irrigation_area_covered_irrigation_system_", order), value="", label = "Area covered by the irrigation system")
@@ -1594,7 +1612,7 @@ server_design_agrofims <- function(input, output, session, values){
                                    dateInput(paste0("nutrient_start_date_", type, "_", order), label ="Start date", format = "dd/mm/yyyy")
                             ),
                             column(width = 6,
-                                   dateInput(paste0("nutrient_end_date_", type, "_", order), label ="Start date", format = "dd/mm/yyyy")
+                                   dateInput(paste0("nutrient_end_date_", type, "_", order), label ="End date", format = "dd/mm/yyyy")
                             )
                           ),
                           fluidRow(
@@ -1603,9 +1621,9 @@ server_design_agrofims <- function(input, output, session, values){
                             ),
                             column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
                                    selectizeInput("nutrient_app_rate_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                    c("cm",
-                                                      "in",
-                                                      "m")
+                                                    c("g/sq m",
+                                                      "kg/ha",
+                                                      "lb/ac")
                                    )
                             )
                           )
@@ -1619,7 +1637,11 @@ server_design_agrofims <- function(input, output, session, values){
                               ),
 
                               column(width = 6,
-                                     selectizeInput(paste0("fertilizer_recommended_rate_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "Unit", c("kg/m2","kg/ha","t/ha"))
+                                     selectizeInput(paste0("fertilizer_recommended_rate_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "Unit",
+                                                    c("g/sq m",
+                                                      "kg/ha",
+                                                      "lb/ac")
+                                      )
                               )
                             ),
                            textInput("perc_recomm_rate", "Percentage of recommended rate applied")
@@ -1642,19 +1664,6 @@ server_design_agrofims <- function(input, output, session, values){
                                     div(style="text-align:center", h4("#")) )
                            )
                     ),
-                    # column(width = 1,
-                    #        br(),
-                    #        div(style="text-align:right", h4("Name"))
-                    # ),
-                    # column(width = 1,
-                    #        br(),
-                    #        div(style="text-align:center", h4("Number of applications"))
-                    # ),
-                    #
-                    # column(width = 1,
-                    #        br(),
-                    #        div(style="text-align:center", h4("Order"))
-                    # ),
                     column(width = 1,
                            br(),
                            div(style="text-align:center", h4("Start date"))
@@ -1668,26 +1677,31 @@ server_design_agrofims <- function(input, output, session, values){
                            br(),
                            div(style="text-align:center", h4("Type"))
                     ),
-                    column(width = 2,
-                           br(),
-                           div(style="text-align:center", h4("Application technique"))
+                    column(width=3,
+                           fluidRow(
+                             column(width = 6,
+                                    br(),
+                                    div(style="text-align:center", h4("Technique"))
+                             ),
+                             column(width = 6,
+                                    br(),
+                                    div(style="text-align:center", h4("Implement"))
+                             )
+                           )
                     ),
-                    column(width = 1,
+
+                     column(width = 1,
                            br(),
-                           div(style="text-align:center", h4("Implement"))
-                    ),
-                    column(width = 1,
-                           br(),
-                           div(style="text-align:center", h4("Application rate"))
-                    ),
-                    column(width = 1,
-                           br(),
-                           div(style="text-align:center", h4("Application rate (unit)"))
-                    ),
-                    column(width = 1,
-                           br(),
-                           div(style="text-align:center", h4("Nutrient Content"))
-                    )
+                           div(style="text-align:center", h4("Rate"))
+                     ),
+                     column(width = 1,
+                            br(),
+                            div(style="text-align:center", h4("Rate (unit)"))
+                     ),
+                     column(width = 1,
+                            br(),
+                            div(style="text-align:center", h4("Nutrient Content"))
+                     )
 
                   ),
                   fluidRow(
@@ -1722,34 +1736,53 @@ server_design_agrofims <- function(input, output, session, values){
 
                            }
                            else if(type == "Inorganic"){
-                             selectizeInput(paste0("fert_nit_type1_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
-                               'Ammonium nitrate',
-                               'Ammonium nitrate sulfate',
-                               'Ammonium polyphosphate',
-                               'Ammonium sulfate',
-                               'Anhydrous ammonia',
-                               'Aqua ammonia',
-                               'Calcitic limestone',
-                               'Calcium ammonium nitrate solution',
-                               'Calcium hydroxide',
-                               'Calcium nitrate',
-                               'Diammonium phosphate',
-                               'Dolomitic limestone',
-                               'Liquid phosphoric acid',
-                               'Monoammonium phosphate',
-                               'Potassium chloride',
-                               'Potassium nitrate',
-                               'Potassium sulfate',
-                               'Rock phosphate',
-                               'Single super phosphate',
-                               'Triple super phosphate',
-                               'Urea',
-                               'Urea ammonium nitrate solution',
-                               'Urea super granules',
-                               'NPK fertilizers')
+                             fluidRow(
+                             column(width = 7,
+                               selectizeInput(paste0("fert_nit_type1_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
+                                 'Ammonium nitrate',
+                                 'Ammonium nitrate sulfate',
+                                 'Ammonium polyphosphate',
+                                 'Ammonium sulfate',
+                                 'Anhydrous ammonia',
+                                 'Aqua ammonia',
+                                 'Calcitic limestone',
+                                 'Calcium ammonium nitrate solution',
+                                 'Calcium hydroxide',
+                                 'Calcium nitrate',
+                                 'Diammonium phosphate',
+                                 'Dolomitic limestone',
+                                 'Liquid phosphoric acid',
+                                 'Monoammonium phosphate',
+                                 'Potassium chloride',
+                                 'Potassium nitrate',
+                                 'Potassium sulfate',
+                                 'Rock phosphate',
+                                 'Single super phosphate',
+                                 'Triple super phosphate',
+                                 'Urea',
+                                 'Urea ammonium nitrate solution',
+                                 'Urea super granules',
+                                 'NPK fertilizers',
+                                 'Other')
+                               )
+                             ),
+                               column(width = 5,
+                                      selectizeInput(paste0("fert_nit_type1_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                     c("g/sq m","kg/ha","lb/ac"))
+
+                               ),
+                               conditionalPanel(paste0("input.fert_nit_type1_", type, "_", order, " == 'Other'"),
+                                                column(width=12,
+                                                textInput(paste0("fert_nit_type1_other_", type, "_", order), "")
+                                                )
+                               )
+
                              )
+
                            }
                            else{
+                             fluidRow(
+                               column(width = 7,
                                  selectizeInput(paste0("fert_nit_type1_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                    "Alfalfa Meal",
                                    "Bagasse",
@@ -1762,55 +1795,77 @@ server_design_agrofims <- function(input, output, session, values){
                                    "Oil cake",
                                    "Treated sewage sludge",
                                    "Vermicompost",
-                                   "Fish fertilizer"
+                                   "Fish fertilizer",
+                                   "Other"
                                    )
                                  )
-                             }
+                               ),
+                               column(width = 5,
+                                      selectizeInput(paste0("fert_nit_type1_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                     c("g/sq m","kg/ha","lb/ac"))
+                               ),
+                               conditionalPanel(paste0("input.fert_nit_type1_", type, "_", order, " == 'Other'"),
+                                                column(width=12,
+                                                textInput(paste0("fert_nit_type1_other_", type, "_", order), "")
+                                                )
+                               )
+                             )
+                            }
                     ),
-                    column(width = 2,
-                           selectizeInput(paste0("fertilizer_nit_application_technique1_", type, "_", order), "", multiple = T,
-                                          options = list(maxItems = 1, placeholder ="Select one"),
-                                          choices = c(
-                                                      "Band application on surface",
-                                                      "Band application incorporated (Band application beneath surface)",
-                                                      "Broadcast surface",
-                                                      "Broadcast incorporated",
-                                                      "Contact placement (seed placement)",
-                                                      "Deep placement",
-                                                      "Fertigation",
-                                                      "Foliar application",
-                                                      "Injection",
-                                                      "Placed with seed (seed placement)",
-                                                      "Side dressing",
-                                                      "Sub-soil placement (injection)",
-                                                      "Localized application (using mechanical or hand device)",
-                                                      "Other")
-                           )
+                    column(width = 3,
+                      fluidRow(
+                        column(width = 6,
+                             selectizeInput(paste0("fertilizer_nit_application_technique1_", type, "_", order), "", multiple = T,
+                                            options = list(maxItems = 1, placeholder ="Select one"),
+                                            choices = c(
+                                                        "Band application on surface",
+                                                        "Band application incorporated (Band application beneath surface)",
+                                                        "Broadcast surface",
+                                                        "Broadcast incorporated",
+                                                        "Contact placement (seed placement)",
+                                                        "Deep placement",
+                                                        "Fertigation",
+                                                        "Foliar application",
+                                                        "Injection",
+                                                        "Placed with seed (seed placement)",
+                                                        "Side dressing",
+                                                        "Sub-soil placement (injection)",
+                                                        "Localized application (using mechanical or hand device)",
+                                                        "Other")
+                             ),
+                             conditionalPanel(paste0("input.fertilizer_nit_application_technique1_", type, "_", order, " == 'Other'"),
+                                              textInput(paste0("fertilizer_nit_application_technique1_other_", type, "_", order), "")
+                             )
+                        ),
+                        column(width = 6,
+                             selectizeInput(paste0("fertilizer_nit_implement1_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                            choices = c("Backpack sprayer (airblast sprayer)",
+                                                        "Boom sprayer",
+                                                        "Broadcast spreader",
+                                                        "Hand sprayer",
+                                                        "Manure spreader",
+                                                        "Slurry injector",
+                                                        "Manual application",
+                                                        "Other")
+                             ),
+                             conditionalPanel(paste0("input.fertilizer_nit_implement1_", type, "_", order, " == 'Other'"),
+                                              textInput(paste0("fertilizer_nit_implement1_other_", type, "_", order), "")
+                             )
+                        )
+                      )
                     ),
-                    column(width = 1,
-                           selectizeInput(paste0("fertilizer_nit_implement1_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                          choices = c("Backpack sprayer (airblast sprayer)",
-                                                      "Boom sprayer",
-                                                      "Broadcast spreader",
-                                                      "Hand sprayer",
-                                                      "Manure spreader",
-                                                      "Slurry injector",
-                                                      "Manual application",
-                                                      "Other")
-                           )
-                    ),
-                    column(width = 1,
-                           textInput(paste0("fert_nit_amountApplied1_", type, "_", order),"")
-                    ),
-                    column(width = 1,
-                           selectizeInput(paste0("fert_nit_amountAppliedScale1_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "",
-                                          c("kg/m2","kg/ha","t/ha"))
-                    ),
-                    column(width = 1,
-                           textInput(paste0("fert_nit_nutrientContent1_", type, "_", order),"")
-                    )
-                  ),
+                   column(width = 1,
+                          textInput(paste0("fert_nit_amountApplied1_", type, "_", order),"")
+                   ),
+                   column(width = 1,
+                          selectizeInput(paste0("fert_nit_amountAppliedScale1_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                         c("g/sq m","kg/ha","lb/ac"))
+                   ),
+                   column(width = 1,
+                          textInput(paste0("fert_nit_nutrientContent1_", type, "_", order),"")
+                   )
 
+                  ),
                   conditionalPanel(paste0("input.nutrientApplied_nit_numApps1_", type, "_", order,  " == 2 |
                                    input.nutrientApplied_nit_numApps1_", type, "_", order, " == 3 "),
                                           fluidRow(
@@ -1845,34 +1900,54 @@ server_design_agrofims <- function(input, output, session, values){
                                                      textInput(paste0("fert_nit_type2_", type, "_", order), "")
                                                    }
                                                    else if(type == "Inorganic"){
-                                                     selectizeInput(paste0("fert_nit_type2_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
-                                                       'Ammonium nitrate',
-                                                       'Ammonium nitrate sulfate',
-                                                       'Ammonium polyphosphate',
-                                                       'Ammonium sulfate',
-                                                       'Anhydrous ammonia',
-                                                       'Aqua ammonia',
-                                                       'Calcitic limestone',
-                                                       'Calcium ammonium nitrate solution',
-                                                       'Calcium hydroxide',
-                                                       'Calcium nitrate',
-                                                       'Diammonium phosphate',
-                                                       'Dolomitic limestone',
-                                                       'Liquid phosphoric acid',
-                                                       'Monoammonium phosphate',
-                                                       'Potassium chloride',
-                                                       'Potassium nitrate',
-                                                       'Potassium sulfate',
-                                                       'Rock phosphate',
-                                                       'Single super phosphate',
-                                                       'Triple super phosphate',
-                                                       'Urea',
-                                                       'Urea ammonium nitrate solution',
-                                                       'Urea super granules',
-                                                       'NPK fertilizers')
-                                                     )
+                                                     fluidRow(
+                                                       column(width = 7,
+
+                                                       selectizeInput(paste0("fert_nit_type2_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
+                                                         'Ammonium nitrate',
+                                                         'Ammonium nitrate sulfate',
+                                                         'Ammonium polyphosphate',
+                                                         'Ammonium sulfate',
+                                                         'Anhydrous ammonia',
+                                                         'Aqua ammonia',
+                                                         'Calcitic limestone',
+                                                         'Calcium ammonium nitrate solution',
+                                                         'Calcium hydroxide',
+                                                         'Calcium nitrate',
+                                                         'Diammonium phosphate',
+                                                         'Dolomitic limestone',
+                                                         'Liquid phosphoric acid',
+                                                         'Monoammonium phosphate',
+                                                         'Potassium chloride',
+                                                         'Potassium nitrate',
+                                                         'Potassium sulfate',
+                                                         'Rock phosphate',
+                                                         'Single super phosphate',
+                                                         'Triple super phosphate',
+                                                         'Urea',
+                                                         'Urea ammonium nitrate solution',
+                                                         'Urea super granules',
+                                                         'NPK fertilizers',
+                                                         "Other")
+                                                       )
+                                                        ),
+                                                        column(width = 5,
+                                                               selectizeInput(paste0("fert_nit_type2_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                              c("g/sq m","kg/ha","lb/ac"))
+
+                                                        ),
+                                                       conditionalPanel(paste0("input.fert_nit_type2_", type, "_", order, " == 'Other'"),
+                                                                        column(width=12,
+                                                                        textInput(paste0("fert_nit_type2_other_", type, "_", order), "")
+                                                                        )
+                                                       )
+
+                                                      )
                                                    }
                                                    else{
+                                                     fluidRow(
+                                                       column(width = 7,
+
                                                          selectizeInput(paste0("fert_nit_type2_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                            "Alfalfa Meal",
                                                            "Bagasse",
@@ -1885,53 +1960,79 @@ server_design_agrofims <- function(input, output, session, values){
                                                            "Oil cake",
                                                            "Treated sewage sludge",
                                                            "Vermicompost",
-                                                           "Fish fertilizer"
+                                                           "Fish fertilizer",
+                                                           "Other")
                                                          )
-                                                         )
+                                                       ),
+                                                       column(width = 5,
+                                                              selectizeInput(paste0("fert_nit_type2_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                             c("g/sq m","kg/ha","lb/ac"))
+
+                                                       ),
+                                                       conditionalPanel(paste0("input.fert_nit_type2_", type, "_", order, " == 'Other'"),
+                                                                        column(width=12,
+                                                                        textInput(paste0("fert_nit_type2_other_", type, "_", order), "")
+                                                                        )
+                                                       )
+
+                                                     )
+
+
+
                                                      }
                                             ),
-                                            column(width = 2,
-                                                   selectizeInput(paste0("fertilizer_nit_application_technique2_", type, "_", order), "", multiple = T,
-                                                                  options = list(maxItems = 1, placeholder ="Select one"),
-                                                                  choices = c(
-                                                                    "Band application on surface",
-                                                                    "Band application incorporated (Band application beneath surface)",
-                                                                    "Broadcast surface",
-                                                                    "Broadcast incorporated",
-                                                                    "Contact placement (seed placement)",
-                                                                    "Deep placement",
-                                                                    "Fertigation",
-                                                                    "Foliar application",
-                                                                    "Injection",
-                                                                    "Placed with seed (seed placement)",
-                                                                    "Side dressing",
-                                                                    "Sub-soil placement (injection)",
-                                                                    "Localized application (using mechanical or hand device)",
-                                                                    "Other")
-                                                   )
+                                            column(width =3,
+                                              fluidRow(
+                                                column(width = 6,
+                                                       selectizeInput(paste0("fertilizer_nit_application_technique2_", type, "_", order), "", multiple = T,
+                                                                      options = list(maxItems = 1, placeholder ="Select one"),
+                                                                      choices = c(
+                                                                        "Band application on surface",
+                                                                        "Band application incorporated (Band application beneath surface)",
+                                                                        "Broadcast surface",
+                                                                        "Broadcast incorporated",
+                                                                        "Contact placement (seed placement)",
+                                                                        "Deep placement",
+                                                                        "Fertigation",
+                                                                        "Foliar application",
+                                                                        "Injection",
+                                                                        "Placed with seed (seed placement)",
+                                                                        "Side dressing",
+                                                                        "Sub-soil placement (injection)",
+                                                                        "Localized application (using mechanical or hand device)",
+                                                                        "Other")
+                                                       ),
+                                                       conditionalPanel(paste0("input.fertilizer_nit_application_technique2_", type, "_", order, " == 'Other'"),
+                                                                        textInput(paste0("fertilizer_nit_application_technique2_other_", type, "_", order), "")
+                                                       )
+                                                ),
+                                                column(width = 6,
+                                                       selectizeInput(paste0("fertilizer_nit_implement2_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                                       choices = c("Backpack sprayer (airblast sprayer)",
+                                                                                            "Boom sprayer",
+                                                                                            "Broadcast spreader",
+                                                                                            "Hand sprayer",
+                                                                                            "Manure spreader",
+                                                                                            "Slurry injector",
+                                                                                            "Manual application",
+                                                                                            "Other")
+                                                       ),
+                                                       conditionalPanel(paste0("input.fertilizer_nit_implement2_", type, "_", order, " == 'Other'"),
+                                                                        textInput(paste0("fertilizer_nit_implement2_other_", type, "_", order), "")
+                                                       )
+                                                )
+                                              )
                                             ),
-                                            column(width = 1,
-                                                   selectizeInput(paste0("fertilizer_nit_implement2_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                                                   choices = c("Backpack sprayer (airblast sprayer)",
-                                                                                        "Boom sprayer",
-                                                                                        "Broadcast spreader",
-                                                                                        "Hand sprayer",
-                                                                                        "Manure spreader",
-                                                                                        "Slurry injector",
-                                                                                        "Manual application",
-                                                                                        "Other")
-                                                   )
-                                            ),
-                                            column(width = 1,
-                                                   textInput(paste0("fert_nit_amountApplied2_", type, "_", order),"")
-                                            ),
-                                            column(width = 1,
-                                                   selectizeInput(paste0("fert_nit_amountAppliedScale2_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "",
-                                                                  c("kg/m2","kg/ha","t/ha"))
-                                            ),
-                                            column(width = 1,
-                                                   textInput(paste0("fert_nit_nutrientContent2_", type, "_", order),"")
-                                            )
+                                           column(width = 1,
+                                                  textInput(paste0("fert_nit_amountApplied2_", type, "_", order),"")
+                                           ),
+                                           column(width = 1,
+                                                  selectizeInput(paste0("fert_nit_amountAppliedScale2_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                 c("kg/m2","kg/ha","t/ha"))
+                                           ),
+                                           column(width = 1,
+                                                  textInput(paste0("fert_nit_nutrientContent2_", type, "_", order),"")
+                                           )
                                           )
 
                   ),
@@ -1969,6 +2070,9 @@ server_design_agrofims <- function(input, output, session, values){
                                               textInput(paste0("fert_nit_type3_", type, "_", order), "")
                                             }
                                             else if(type == "Inorganic"){
+                                              fluidRow(
+                                                column(width = 7,
+
                                               selectizeInput(paste0("fert_nit_type3_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                 'Ammonium nitrate',
                                                 'Ammonium nitrate sulfate',
@@ -1993,10 +2097,28 @@ server_design_agrofims <- function(input, output, session, values){
                                                 'Urea',
                                                 'Urea ammonium nitrate solution',
                                                 'Urea super granules',
-                                                'NPK fertilizers')
+                                                'NPK fertilizers',
+                                                "Other")
                                               )
+                                                ),
+                                              column(width = 5,
+                                                     selectizeInput(paste0("fert_nit_type3_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                    c("g/sq m","kg/ha","lb/ac"))
+
+                                              ),
+                                              conditionalPanel(paste0("input.fert_nit_type3_", type, "_", order, " == 'Other'"),
+                                                               column(width=12,
+                                                               textInput(paste0("fert_nit_type3_other_", type, "_", order), "")
+                                                               )
+                                              )
+
+                                              )
+
                                             }
                                             else{
+                                              fluidRow(
+                                                column(width = 7,
+
                                                   selectizeInput(paste0("fert_nit_type3_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                     "Alfalfa Meal",
                                                     "Bagasse",
@@ -2009,52 +2131,77 @@ server_design_agrofims <- function(input, output, session, values){
                                                     "Oil cake",
                                                     "Treated sewage sludge",
                                                     "Vermicompost",
-                                                    "Fish fertilizer"
+                                                    "Fish fertilizer",
+                                                    "Other")
                                                   )
-                                                  )
+                                                ),
+                                                column(width = 5,
+                                                       selectizeInput(paste0("fert_nit_type3_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                      c("g/sq m","kg/ha","lb/ac"))
+                                                ),
+                                                conditionalPanel(paste0("input.fert_nit_type3_", type, "_", order, " == 'Other'"),
+                                                                 column(width=12,
+                                                                 textInput(paste0("fert_nit_type3_other_", type, "_", order), "")
+                                                                 )
+                                                )
+
+                                              )
+
+
                                               }
                                      ),
-                                     column(width = 2,
-                                            selectizeInput(paste0("fertilizer_nit_application_technique3_", type, "_", order),label = "", multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                                             choices = c(
-                                                               "Band application on surface",
-                                                               "Band application incorporated (Band application beneath surface)",
-                                                               "Broadcast surface",
-                                                               "Broadcast incorporated",
-                                                               "Contact placement (seed placement)",
-                                                               "Deep placement",
-                                                               "Fertigation",
-                                                               "Foliar application",
-                                                               "Injection",
-                                                               "Placed with seed (seed placement)",
-                                                               "Side dressing",
-                                                               "Sub-soil placement (injection)",
-                                                               "Localized application (using mechanical or hand device)",
-                                                               "Other")
-                                            )
+                                     column(width=3,
+                                        fluidRow(
+                                         column(width = 6,
+                                                selectizeInput(paste0("fertilizer_nit_application_technique3_", type, "_", order),label = "", multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                                 choices = c(
+                                                                   "Band application on surface",
+                                                                   "Band application incorporated (Band application beneath surface)",
+                                                                   "Broadcast surface",
+                                                                   "Broadcast incorporated",
+                                                                   "Contact placement (seed placement)",
+                                                                   "Deep placement",
+                                                                   "Fertigation",
+                                                                   "Foliar application",
+                                                                   "Injection",
+                                                                   "Placed with seed (seed placement)",
+                                                                   "Side dressing",
+                                                                   "Sub-soil placement (injection)",
+                                                                   "Localized application (using mechanical or hand device)",
+                                                                   "Other")
+                                                ),
+                                                conditionalPanel(paste0("input.fertilizer_nit_application_technique3_", type, "_", order, " == 'Other'"),
+                                                                 textInput(paste0("fertilizer_nit_application_technique3_other_", type, "_", order), "")
+                                                )
+                                         ),
+                                         column(width = 6,
+                                                selectizeInput(paste0("fertilizer_nit_implement3_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                               choices = c("Backpack sprayer (airblast sprayer)",
+                                                                           "Boom sprayer",
+                                                                           "Broadcast spreader",
+                                                                           "Hand sprayer",
+                                                                           "Manure spreader",
+                                                                           "Slurry injector",
+                                                                           "Manual application",
+                                                                           "Other")
+                                                ),
+                                                conditionalPanel(paste0("input.fertilizer_nit_implement3_", type, "_", order, " == 'Other'"),
+                                                                 textInput(paste0("fertilizer_nit_implement3_other_", type, "_", order), "")
+                                                )
+                                         )
+                                        )
                                      ),
-                                     column(width = 1,
-                                            selectizeInput(paste0("fertilizer_nit_implement3_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                                           choices = c("Backpack sprayer (airblast sprayer)",
-                                                                       "Boom sprayer",
-                                                                       "Broadcast spreader",
-                                                                       "Hand sprayer",
-                                                                       "Manure spreader",
-                                                                       "Slurry injector",
-                                                                       "Manual application",
-                                                                       "Other")
-                                            )
-                                     ),
-                                     column(width = 1,
-                                            textInput(paste0("fert_nit_amountApplied3_", type, "_", order),"")
-                                     ),
-                                     column(width = 1,
-                                            selectizeInput(paste0("fert_nit_amountAppliedScale3_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "",
-                                                           c("kg/m2","kg/ha","t/ha"))
-                                     ),
-                                     column(width = 1,
-                                            textInput(paste0("fert_nit_nutrientContent3_", type, "_", order),"")
-                                     )
+
+                                    column(width = 1,
+                                           textInput(paste0("fert_nit_amountApplied3_", type, "_", order),"")
+                                    ),
+                                    column(width = 1,
+                                           selectizeInput(paste0("fert_nit_amountAppliedScale3_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                          c("kg/m2","kg/ha","t/ha"))
+                                    ),
+                                    column(width = 1,
+                                           textInput(paste0("fert_nit_nutrientContent3_", type, "_", order),"")
+                                    )
                                    )
 
 
@@ -2091,6 +2238,9 @@ server_design_agrofims <- function(input, output, session, values){
                              textInput(paste0("fert_phos_type1_", type, "_", order), "")
                            }
                            else if(type == "Inorganic"){
+                             fluidRow(
+                               column(width = 7,
+
                              selectizeInput(paste0("fert_phos_type1_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                'Ammonium nitrate',
                                'Ammonium nitrate sulfate',
@@ -2115,10 +2265,27 @@ server_design_agrofims <- function(input, output, session, values){
                                'Urea',
                                'Urea ammonium nitrate solution',
                                'Urea super granules',
-                               'NPK fertilizers')
+                               'NPK fertilizers',
+                               "Other")
                              )
+                               ),
+                             column(width = 5,
+                                    selectizeInput(paste0("fert_phos_type1_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                   c("g/sq m","kg/ha","lb/ac"))
+
+                             ),
+                             conditionalPanel(paste0("input.fert_phos_type1_", type, "_", order, " == 'Other'"),
+                                              column(width=12,
+                                              textInput(paste0("fert_phos_type1_other_", type, "_", order), "")
+                                              )
+                             )
+
+                             )
+
                            }
                            else{
+                             fluidRow(
+                               column(width = 7,
                                  selectizeInput(paste0("fert_phos_type1_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                    "Alfalfa Meal",
                                    "Bagasse",
@@ -2131,53 +2298,75 @@ server_design_agrofims <- function(input, output, session, values){
                                    "Oil cake",
                                    "Treated sewage sludge",
                                    "Vermicompost",
-                                   "Fish fertilizer"
+                                   "Fish fertilizer",
+                                   "Other")
                                  )
-                                 )
+                                ),
+                                column(width = 5,
+                                       selectizeInput(paste0("fert_phos_type1_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                      c("g/sq m","kg/ha","lb/ac"))
+                                ),
+                               conditionalPanel(paste0("input.fert_phos_type1_", type, "_", order, " == 'Other'"),
+                                                column(width=12,
+                                                textInput(paste0("fert_phos_type1_other_", type, "_", order), "")
+                                                )
+                               )
+
+                              )
                              }
                     ),
-                    column(width = 2,
-                           selectizeInput(paste0("fertilizer_phos_application_technique1_", type, "_", order), "", multiple = T,
-                                          options = list(maxItems = 1, placeholder ="Select one"),
-                                          choices = c(
-                                            "Band application on surface",
-                                            "Band application incorporated (Band application beneath surface)",
-                                            "Broadcast surface",
-                                            "Broadcast incorporated",
-                                            "Contact placement (seed placement)",
-                                            "Deep placement",
-                                            "Fertigation",
-                                            "Foliar application",
-                                            "Injection",
-                                            "Placed with seed (seed placement)",
-                                            "Side dressing",
-                                            "Sub-soil placement (injection)",
-                                            "Localized application (using mechanical or hand device)",
-                                            "Other")
-                           )
+                    column(width=3 ,
+                      fluidRow(
+                        column(width = 6,
+                               selectizeInput(paste0("fertilizer_phos_application_technique1_", type, "_", order), "", multiple = T,
+                                              options = list(maxItems = 1, placeholder ="Select one"),
+                                              choices = c(
+                                                "Band application on surface",
+                                                "Band application incorporated (Band application beneath surface)",
+                                                "Broadcast surface",
+                                                "Broadcast incorporated",
+                                                "Contact placement (seed placement)",
+                                                "Deep placement",
+                                                "Fertigation",
+                                                "Foliar application",
+                                                "Injection",
+                                                "Placed with seed (seed placement)",
+                                                "Side dressing",
+                                                "Sub-soil placement (injection)",
+                                                "Localized application (using mechanical or hand device)",
+                                                "Other")
+                               ),
+                               conditionalPanel(paste0("input.fertilizer_phos_application_technique1_", type, "_", order, " == 'Other'"),
+                                                textInput(paste0("fertilizer_phos_application_technique1_other_", type, "_", order), "")
+                               )
+                        ),
+                        column(width = 6,
+                               selectizeInput(paste0("fertilizer_phos_implement1_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                              choices = c("Backpack sprayer (airblast sprayer)",
+                                                          "Boom sprayer",
+                                                          "Broadcast spreader",
+                                                          "Hand sprayer",
+                                                          "Manure spreader",
+                                                          "Slurry injector",
+                                                          "Manual application",
+                                                          "Other")
+                               ),
+                               conditionalPanel(paste0("input.fertilizer_phos_implement1_", type, "_", order, " == 'Other'"),
+                                                textInput(paste0("fertilizer_phos_implement1_other_", type, "_", order), "")
+                               )
+                        )
+                      )
                     ),
-                    column(width = 1,
-                           selectizeInput(paste0("fertilizer_phos_implement1_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                          choices = c("Backpack sprayer (airblast sprayer)",
-                                                      "Boom sprayer",
-                                                      "Broadcast spreader",
-                                                      "Hand sprayer",
-                                                      "Manure spreader",
-                                                      "Slurry injector",
-                                                      "Manual application",
-                                                      "Other")
-                           )
-                    ),
-                    column(width = 1,
-                           textInput(paste0("fert_phos_amountApplied1_", type, "_", order),"")
-                    ),
-                    column(width = 1,
-                           selectizeInput(paste0("fert_phos_amountAppliedScale1_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "",
-                                          c("kg/m2","kg/ha","t/ha"))
-                    ),
-                    column(width = 1,
-                           textInput(paste0("fert_phos_nutrientContent1_", type, "_", order),"")
-                    )
+                   column(width = 1,
+                          textInput(paste0("fert_phos_amountApplied1_", type, "_", order),"")
+                   ),
+                   column(width = 1,
+                          selectizeInput(paste0("fert_phos_amountAppliedScale1_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                         c("kg/m2","kg/ha","t/ha"))
+                   ),
+                   column(width = 1,
+                          textInput(paste0("fert_phos_nutrientContent1_", type, "_", order),"")
+                   )
                   ),
 
                   conditionalPanel(paste0("input.nutrientApplied_phos_numApps1_", type, "_", order,  " == 2 |
@@ -2213,6 +2402,9 @@ server_design_agrofims <- function(input, output, session, values){
                                               textInput(paste0("fert_phos_type2_", type, "_", order), "")
                                             }
                                             else if(type == "Inorganic"){
+                                              fluidRow(
+                                                column(width = 7,
+
                                               selectizeInput(paste0("fert_phos_type2_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                 'Ammonium nitrate',
                                                 'Ammonium nitrate sulfate',
@@ -2237,10 +2429,26 @@ server_design_agrofims <- function(input, output, session, values){
                                                 'Urea',
                                                 'Urea ammonium nitrate solution',
                                                 'Urea super granules',
-                                                'NPK fertilizers')
+                                                'NPK fertilizers',
+                                                "Other")
                                               )
+                                                ),
+                                              column(width = 5,
+                                                     selectizeInput(paste0("fert_phos_type2_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                    c("g/sq m","kg/ha","lb/ac"))
+                                              ),
+                                              conditionalPanel(paste0("input.fert_phos_type2_", type, "_", order, " == 'Other'"),
+                                                               column(width=12,
+                                                               textInput(paste0("fert_phos_type2_other_", type, "_", order), "")
+                                                               )
+                                              )
+                                            )
+
                                             }
                                             else{
+                                              fluidRow(
+                                                column(width = 7,
+
                                             selectizeInput(paste0("fert_phos_type2_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                   "Alfalfa Meal",
                                                   "Bagasse",
@@ -2253,54 +2461,80 @@ server_design_agrofims <- function(input, output, session, values){
                                                   "Oil cake",
                                                   "Treated sewage sludge",
                                                   "Vermicompost",
-                                                  "Fish fertilizer"
+                                                  "Fish fertilizer",
+                                                  "Other")
                                                 )
-                                                )
+                                                ),
+                                            column(width = 5,
+                                                   selectizeInput(paste0("fert_phos_type2_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                  c("g/sq m","kg/ha","lb/ac"))
+                                            ),
+                                            conditionalPanel(paste0("input.fert_phos_type2_", type, "_", order, " == 'Other'"),
+                                                             column(width=12,
+                                                             textInput(paste0("fert_phos_type2_other_", type, "_", order), "")
+                                                             )
+                                            )
+
+                                              )
+
                                               }
                                      ),
-                                     column(width =2,
-                                            selectizeInput(paste0("fertilizer_phos_application_technique2_", type, "_", order), "", multiple = T,
-                                                           options = list(maxItems = 1, placeholder ="Select one"),
-                                                           choices = c(
-                                                             "Band application on surface",
-                                                             "Band application incorporated (Band application beneath surface)",
-                                                             "Broadcast surface",
-                                                             "Broadcast incorporated",
-                                                             "Contact placement (seed placement)",
-                                                             "Deep placement",
-                                                             "Fertigation",
-                                                             "Foliar application",
-                                                             "Injection",
-                                                             "Placed with seed (seed placement)",
-                                                             "Side dressing",
-                                                             "Sub-soil placement (injection)",
-                                                             "Localized application (using mechanical or hand device)",
-                                                             "Other")
-                                            )
+                                     column(width=3 ,
+                                        fluidRow(
+                                           column(width =6,
+                                                  selectizeInput(paste0("fertilizer_phos_application_technique2_", type, "_", order), "", multiple = T,
+                                                                 options = list(maxItems = 1, placeholder ="Select one"),
+                                                                 choices = c(
+                                                                   "Band application on surface",
+                                                                   "Band application incorporated (Band application beneath surface)",
+                                                                   "Broadcast surface",
+                                                                   "Broadcast incorporated",
+                                                                   "Contact placement (seed placement)",
+                                                                   "Deep placement",
+                                                                   "Fertigation",
+                                                                   "Foliar application",
+                                                                   "Injection",
+                                                                   "Placed with seed (seed placement)",
+                                                                   "Side dressing",
+                                                                   "Sub-soil placement (injection)",
+                                                                   "Localized application (using mechanical or hand device)",
+                                                                   "Other")
+                                                  ),
+                                                  conditionalPanel(paste0("input.fertilizer_phos_application_technique2_", type, "_", order, " == 'Other'"),
+                                                                   column(width=12,
+                                                                   textInput(paste0("fertilizer_phos_application_technique2_other_", type, "_", order), "")
+                                                                   )
+                                                  )
+                                         ),
+                                         column(width = 6,
+                                                selectizeInput(paste0("fertilizer_phos_implement2_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                               choices = c("Backpack sprayer (airblast sprayer)",
+                                                                           "Boom sprayer",
+                                                                           "Broadcast spreader",
+                                                                           "Hand sprayer",
+                                                                           "Manure spreader",
+                                                                           "Slurry injector",
+                                                                           "Manual application",
+                                                                           "Other")
+                                                ),
+                                                conditionalPanel(paste0("input.fertilizer_phos_implement2_", type, "_", order, " == 'Other'"),
+                                                                   textInput(paste0("fertilizer_phos_implement2_other_", type, "_", order), "")
+                                                )
+                                         )
+                                        )
                                      ),
-                                     column(width = 1,
-                                            selectizeInput(paste0("fertilizer_phos_implement2_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                                           choices = c("Backpack sprayer (airblast sprayer)",
-                                                                       "Boom sprayer",
-                                                                       "Broadcast spreader",
-                                                                       "Hand sprayer",
-                                                                       "Manure spreader",
-                                                                       "Slurry injector",
-                                                                       "Manual application",
-                                                                       "Other")
-                                            )
-                                     ),
-                                     column(width = 1,
-                                            textInput(paste0("fert_phos_amountApplied2_", type, "_", order),"")
-                                     ),
-                                     column(width = 1,
-                                            selectizeInput(paste0("fert_phos_amountAppliedScale2_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "",
-                                                           c("kg/m2","kg/ha","t/ha"))
-                                     ),
-                                     column(width = 1,
-                                            textInput(paste0("fert_phos_nutrientContent2_", type, "_", order),"")
-                                     )
-                                   )
+                                    column(width = 1,
+                                           textInput(paste0("fert_phos_amountApplied2_", type, "_", order),"")
+                                    ),
+                                    column(width = 1,
+                                           selectizeInput(paste0("fert_phos_amountAppliedScale2_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                          c("kg/m2","kg/ha","t/ha"))
+                                    ),
+                                    column(width = 1,
+                                           textInput(paste0("fert_phos_nutrientContent2_", type, "_", order),"")
+                                    )
+
+                              )
 
                   ),
 
@@ -2338,6 +2572,10 @@ server_design_agrofims <- function(input, output, session, values){
                                               textInput(paste0("fert_phos_type3_", type, "_", order), "")
                                             }
                                             else if(type == "Inorganic"){
+                                              fluidRow(
+                                                column(width = 7,
+
+
                                               selectizeInput(paste0("fert_phos_type3_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                 'Ammonium nitrate',
                                                 'Ammonium nitrate sulfate',
@@ -2362,10 +2600,28 @@ server_design_agrofims <- function(input, output, session, values){
                                                 'Urea',
                                                 'Urea ammonium nitrate solution',
                                                 'Urea super granules',
-                                                'NPK fertilizers')
+                                                'NPK fertilizers',
+                                                "Other")
                                               )
+                                                ),
+                                              column(width = 5,
+                                                     selectizeInput(paste0("fert_phos_type3_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                    c("g/sq m","kg/ha","lb/ac"))
+
+                                              ),
+                                              conditionalPanel(paste0("input.fert_phos_type3_", type, "_", order, " == 'Other'"),
+                                                               column(width=12,
+                                                               textInput(paste0("fert_phos_type3_other_", type, "_", order), "")
+                                                               )
+                                              )
+
+                                              )
+
                                             }
                                             else{
+                                              fluidRow(
+                                                column(width = 7,
+
                                                 selectizeInput(paste0("fert_phos_type3_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                   "Alfalfa Meal",
                                                   "Bagasse",
@@ -2378,53 +2634,77 @@ server_design_agrofims <- function(input, output, session, values){
                                                   "Oil cake",
                                                   "Treated sewage sludge",
                                                   "Vermicompost",
-                                                  "Fish fertilizer"
+                                                  "Fish fertilizer",
+                                                  "Other")
                                                 )
+                                                ),
+                                                column(width = 5,
+                                                       selectizeInput(paste0("fert_phos_type3_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                      c("g/sq m","kg/ha","lb/ac"))
+                                                ),
+                                                conditionalPanel(paste0("input.fert_phos_type3_", type, "_", order, " == 'Other'"),
+                                                                 column(width=12,
+                                                                 textInput(paste0("fert_phos_type3_other_", type, "_", order), "")
+                                                                 )
                                                 )
+
+                                              )
+
                                             }
                                      ),
-                                     column(width = 2,
-                                            selectizeInput(paste0("fertilizer_phos_application_technique3_", type, "_", order),label = "", multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                                           choices = c(
-                                                             "Band application on surface",
-                                                             "Band application incorporated (Band application beneath surface)",
-                                                             "Broadcast surface",
-                                                             "Broadcast incorporated",
-                                                             "Contact placement (seed placement)",
-                                                             "Deep placement",
-                                                             "Fertigation",
-                                                             "Foliar application",
-                                                             "Injection",
-                                                             "Placed with seed (seed placement)",
-                                                             "Side dressing",
-                                                             "Sub-soil placement (injection)",
-                                                             "Localized application (using mechanical or hand device)",
-                                                             "Other")
-                                            )
+                                     column(width=3 ,
+                                      fluidRow(
+                                         column(width = 6,
+                                                selectizeInput(paste0("fertilizer_phos_application_technique3_", type, "_", order),label = "", multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                               choices = c(
+                                                                 "Band application on surface",
+                                                                 "Band application incorporated (Band application beneath surface)",
+                                                                 "Broadcast surface",
+                                                                 "Broadcast incorporated",
+                                                                 "Contact placement (seed placement)",
+                                                                 "Deep placement",
+                                                                 "Fertigation",
+                                                                 "Foliar application",
+                                                                 "Injection",
+                                                                 "Placed with seed (seed placement)",
+                                                                 "Side dressing",
+                                                                 "Sub-soil placement (injection)",
+                                                                 "Localized application (using mechanical or hand device)",
+                                                                 "Other")
+                                                ),
+                                                conditionalPanel(paste0("input.fertilizer_phos_application_technique3_", type, "_", order, " == 'Other'"),
+                                                                 textInput(paste0("fertilizer_phos_application_technique3_other_", type, "_", order), "")
+                                                )
+                                         ),
+                                         column(width = 6,
+                                                selectizeInput(paste0("fertilizer_phos_implement3_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                               choices = c("Backpack sprayer (airblast sprayer)",
+                                                                           "Boom sprayer",
+                                                                           "Broadcast spreader",
+                                                                           "Hand sprayer",
+                                                                           "Manure spreader",
+                                                                           "Slurry injector",
+                                                                           "Manual application",
+                                                                           "Other")
+                                                ),
+                                                conditionalPanel(paste0("input.fertilizer_phos_implement3_", type, "_", order, " == 'Other'"),
+                                                                 textInput(paste0("fertilizer_phos_implement3_other_", type, "_", order), "")
+                                                )
+                                         )
+                                      )
                                      ),
-                                     column(width = 1,
-                                            selectizeInput(paste0("fertilizer_phos_implement3_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                                           choices = c("Backpack sprayer (airblast sprayer)",
-                                                                       "Boom sprayer",
-                                                                       "Broadcast spreader",
-                                                                       "Hand sprayer",
-                                                                       "Manure spreader",
-                                                                       "Slurry injector",
-                                                                       "Manual application",
-                                                                       "Other")
-                                            )
-                                     ),
-                                     column(width = 1,
-                                            textInput(paste0("fert_phos_amountApplied3_", type, "_", order),"")
-                                     ),
-                                     column(width = 1,
-                                            selectizeInput(paste0("fert_phos_amountAppliedScale3_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "",
-                                                           c("kg/m2","kg/ha","t/ha"))
-                                     ),
-                                     column(width = 1,
-                                            textInput(paste0("fert_phos_nutrientContent3_", type, "_", order),"")
-                                     )
-                                   )
+                                    column(width = 1,
+                                           textInput(paste0("fert_phos_amountApplied3_", type, "_", order),"")
+                                    ),
+                                    column(width = 1,
+                                           selectizeInput(paste0("fert_phos_amountAppliedScale3_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                          c("kg/m2","kg/ha","t/ha"))
+                                    ),
+                                    column(width = 1,
+                                           textInput(paste0("fert_phos_nutrientContent3_", type, "_", order),"")
+                                    )
+
+                                )
 
 
                   ),#end conditional2
@@ -2460,6 +2740,9 @@ server_design_agrofims <- function(input, output, session, values){
                              textInput(paste0("fert_potas_type1_", type, "_", order), "")
                            }
                            else if(type == "Inorganic"){
+                             fluidRow(
+                               column(width = 7,
+
                              selectizeInput(paste0("fert_potas_type1_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                'Ammonium nitrate',
                                'Ammonium nitrate sulfate',
@@ -2484,10 +2767,27 @@ server_design_agrofims <- function(input, output, session, values){
                                'Urea',
                                'Urea ammonium nitrate solution',
                                'Urea super granules',
-                               'NPK fertilizers')
+                               'NPK fertilizers',
+                               "Other")
                              )
+                               ),
+                             column(width = 5,
+                                    selectizeInput(paste0("fert_potas_type1_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                   c("g/sq m","kg/ha","lb/ac"))
+                             ),
+                             conditionalPanel(paste0("input.fert_potas_type1_", type, "_", order, " == 'Other'"),
+                                              column(width=12,
+                                              textInput(paste0("fert_potas_type1_other_", type, "_", order), "")
+                                              )
+                             )
+
+                             )
+
                            }
                            else{
+                             fluidRow(
+                               column(width = 7,
+
                                selectizeInput(paste0("fert_potas_type1_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                  "Alfalfa Meal",
                                  "Bagasse",
@@ -2500,53 +2800,78 @@ server_design_agrofims <- function(input, output, session, values){
                                  "Oil cake",
                                  "Treated sewage sludge",
                                  "Vermicompost",
-                                 "Fish fertilizer"
+                                 "Fish fertilizer",
+                                 "Other")
                                )
+                               ),
+                               column(width = 5,
+                                      selectizeInput(paste0("fert_potas_type1_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                     c("g/sq m","kg/ha","lb/ac"))
+                               ),
+                               conditionalPanel(paste0("input.fert_potas_type1_", type, "_", order, " == 'Other'"),
+                                                column(width=12,
+                                                       textInput(paste0("fert_potas_type1_other_", type, "_", order), "")
+                                                )
                                )
+
+                             )
+
                              }
                     ),
-                    column(width = 2,
-                           selectizeInput(paste0("fertilizer_potas_application_technique1_", type, "_", order), "", multiple = T,
-                                          options = list(maxItems = 1, placeholder ="Select one"),
-                                          choices = c(
-                                            "Band application on surface",
-                                            "Band application incorporated (Band application beneath surface)",
-                                            "Broadcast surface",
-                                            "Broadcast incorporated",
-                                            "Contact placement (seed placement)",
-                                            "Deep placement",
-                                            "Fertigation",
-                                            "Foliar application",
-                                            "Injection",
-                                            "Placed with seed (seed placement)",
-                                            "Side dressing",
-                                            "Sub-soil placement (injection)",
-                                            "Localized application (using mechanical or hand device)",
-                                            "Other")
-                           )
+                    column(width=3 ,
+                      fluidRow(
+                          column(width = 6,
+                                 selectizeInput(paste0("fertilizer_potas_application_technique1_", type, "_", order), "", multiple = T,
+                                                options = list(maxItems = 1, placeholder ="Select one"),
+                                                choices = c(
+                                                  "Band application on surface",
+                                                  "Band application incorporated (Band application beneath surface)",
+                                                  "Broadcast surface",
+                                                  "Broadcast incorporated",
+                                                  "Contact placement (seed placement)",
+                                                  "Deep placement",
+                                                  "Fertigation",
+                                                  "Foliar application",
+                                                  "Injection",
+                                                  "Placed with seed (seed placement)",
+                                                  "Side dressing",
+                                                  "Sub-soil placement (injection)",
+                                                  "Localized application (using mechanical or hand device)",
+                                                  "Other")
+                                 ),
+                                 conditionalPanel(paste0("input.fertilizer_potas_application_technique1_", type, "_", order, " == 'Other'"),
+                                                  textInput(paste0("fertilizer_potas_application_technique1_other_", type, "_", order), "")
+                                 )
+                          ),
+                          column(width = 6,
+                                 selectizeInput(paste0("fertilizer_potas_implement1_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                choices = c("Backpack sprayer (airblast sprayer)",
+                                                            "Boom sprayer",
+                                                            "Broadcast spreader",
+                                                            "Hand sprayer",
+                                                            "Manure spreader",
+                                                            "Slurry injector",
+                                                            "Manual application",
+                                                            "Other")
+                                 ),
+                                 conditionalPanel(paste0("input.fertilizer_potas_implement1_", type, "_", order, " == 'Other'"),
+                                                  textInput(paste0("fertilizer_potas_implement1__other_", type, "_", order), "")
+                                 )
+
+                          )
+                        )
                     ),
-                    column(width = 1,
-                           selectizeInput(paste0("fertilizer_potas_implement1_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                          choices = c("Backpack sprayer (airblast sprayer)",
-                                                      "Boom sprayer",
-                                                      "Broadcast spreader",
-                                                      "Hand sprayer",
-                                                      "Manure spreader",
-                                                      "Slurry injector",
-                                                      "Manual application",
-                                                      "Other")
-                           )
-                    ),
-                    column(width = 1,
-                           textInput(paste0("fert_potas_amountApplied1_", type, "_", order),"")
-                    ),
-                    column(width = 1,
-                           selectizeInput(paste0("fert_potas_amountAppliedScale1_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "",
-                                          c("kg/m2","kg/ha","t/ha"))
-                    ),
-                    column(width = 1,
-                           textInput(paste0("fert_potas_nutrientContent1_", type, "_", order),"")
-                    )
+
+                   column(width = 1,
+                          textInput(paste0("fert_potas_amountApplied1_", type, "_", order),"")
+                   ),
+                   column(width = 1,
+                          selectizeInput(paste0("fert_potas_amountAppliedScale1_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                         c("kg/m2","kg/ha","t/ha"))
+                   ),
+                   column(width = 1,
+                          textInput(paste0("fert_potas_nutrientContent1_", type, "_", order),"")
+                   )
                   ),
 
                   conditionalPanel(paste0("input.nutrientApplied_potas_numApps1_", type, "_", order,  " == 2 |
@@ -2582,6 +2907,9 @@ server_design_agrofims <- function(input, output, session, values){
                                               textInput(paste0("fert_potas_type2_", type, "_", order), "")
                                             }
                                             else if(type == "Inorganic"){
+                                              fluidRow(
+                                                column(width = 7,
+
                                               selectizeInput(paste0("fert_potas_type2_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                 'Ammonium nitrate',
                                                 'Ammonium nitrate sulfate',
@@ -2606,10 +2934,26 @@ server_design_agrofims <- function(input, output, session, values){
                                                 'Urea',
                                                 'Urea ammonium nitrate solution',
                                                 'Urea super granules',
-                                                'NPK fertilizers')
+                                                'NPK fertilizers',
+                                                "Other")
+                                              )
+                                                ),
+                                              column(width = 5,
+                                                     selectizeInput(paste0("fert_potas_type2_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                    c("g/sq m","kg/ha","lb/ac"))
+                                              ),
+                                              conditionalPanel(paste0("input.fert_potas_type2_", type, "_", order, " == 'Other'"),
+                                                               column(width=12,
+                                                                      textInput(paste0("fert_potas_type2_other_", type, "_", order), "")
+                                                               )
+                                              )
+
                                               )
                                             }
                                             else{
+                                              fluidRow(
+                                                column(width = 7,
+
                                                   selectizeInput(paste0("fert_potas_type2_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                     "Alfalfa Meal",
                                                     "Bagasse",
@@ -2622,53 +2966,76 @@ server_design_agrofims <- function(input, output, session, values){
                                                     "Oil cake",
                                                     "Treated sewage sludge",
                                                     "Vermicompost",
-                                                    "Fish fertilizer"
+                                                    "Fish fertilizer",
+                                                    "Other")
                                                   )
-                                                  )
+                                                ),
+                                                column(width = 5,
+                                                       selectizeInput(paste0("fert_potas_type2_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                      c("g/sq m","kg/ha","lb/ac"))
+
+                                                ),
+                                                conditionalPanel(paste0("input.fert_potas_type2_", type, "_", order, " == 'Other'"),
+                                                                 column(width=12,
+                                                                        textInput(paste0("fert_potas_type2_other_", type, "_", order), "")
+                                                                 )
+                                                )
+
+                                              )
                                               }
                                      ),
-                                     column(width = 2,
-                                            selectizeInput(paste0("fertilizer_potas_application_technique2_", type, "_", order), "", multiple = T,
-                                                           options = list(maxItems = 1, placeholder ="Select one"),
-                                                           choices = c(
-                                                             "Band application on surface",
-                                                             "Band application incorporated (Band application beneath surface)",
-                                                             "Broadcast surface",
-                                                             "Broadcast incorporated",
-                                                             "Contact placement (seed placement)",
-                                                             "Deep placement",
-                                                             "Fertigation",
-                                                             "Foliar application",
-                                                             "Injection",
-                                                             "Placed with seed (seed placement)",
-                                                             "Side dressing",
-                                                             "Sub-soil placement (injection)",
-                                                             "Localized application (using mechanical or hand device)",
-                                                             "Other")
-                                            )
+                                     column(width=3 ,
+                                      fluidRow(
+                                         column(width = 6,
+                                                selectizeInput(paste0("fertilizer_potas_application_technique2_", type, "_", order), "", multiple = T,
+                                                               options = list(maxItems = 1, placeholder ="Select one"),
+                                                               choices = c(
+                                                                 "Band application on surface",
+                                                                 "Band application incorporated (Band application beneath surface)",
+                                                                 "Broadcast surface",
+                                                                 "Broadcast incorporated",
+                                                                 "Contact placement (seed placement)",
+                                                                 "Deep placement",
+                                                                 "Fertigation",
+                                                                 "Foliar application",
+                                                                 "Injection",
+                                                                 "Placed with seed (seed placement)",
+                                                                 "Side dressing",
+                                                                 "Sub-soil placement (injection)",
+                                                                 "Localized application (using mechanical or hand device)",
+                                                                 "Other")
+                                                ),
+                                                conditionalPanel(paste0("input.fertilizer_potas_application_technique2_", type, "_", order, " == 'Other'"),
+                                                                 textInput(paste0("fertilizer_potas_application_technique2_other_", type, "_", order), "")
+                                                )
+                                         ),
+                                         column(width = 6,
+                                                selectizeInput(paste0("fertilizer_potas_implement2_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                               choices = c("Backpack sprayer (airblast sprayer)",
+                                                                           "Boom sprayer",
+                                                                           "Broadcast spreader",
+                                                                           "Hand sprayer",
+                                                                           "Manure spreader",
+                                                                           "Slurry injector",
+                                                                           "Manual application",
+                                                                           "Other")
+                                                ),
+                                                conditionalPanel(paste0("input.fertilizer_potas_implement2_", type, "_", order, " == 'Other'"),
+                                                                 textInput(paste0("fertilizer_potas_implement2__other_", type, "_", order), "")
+                                                )
+                                         )
+                                      )
                                      ),
-                                     column(width = 1,
-                                            selectizeInput(paste0("fertilizer_potas_implement2_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                                           choices = c("Backpack sprayer (airblast sprayer)",
-                                                                       "Boom sprayer",
-                                                                       "Broadcast spreader",
-                                                                       "Hand sprayer",
-                                                                       "Manure spreader",
-                                                                       "Slurry injector",
-                                                                       "Manual application",
-                                                                       "Other")
-                                            )
-                                     ),
-                                     column(width = 1,
-                                            textInput(paste0("fert_potas_amountApplied2_", type, "_", order),"")
-                                     ),
-                                     column(width = 1,
-                                            selectizeInput(paste0("fert_potas_amountAppliedScale2_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "",
-                                                           c("kg/m2","kg/ha","t/ha"))
-                                     ),
-                                     column(width = 1,
-                                            textInput(paste0("fert_potas_nutrientContent2_", type, "_", order),"")
-                                     )
+                                    column(width = 1,
+                                           textInput(paste0("fert_potas_amountApplied2_", type, "_", order),"")
+                                    ),
+                                    column(width = 1,
+                                           selectizeInput(paste0("fert_potas_amountAppliedScale2_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                          c("kg/m2","kg/ha","t/ha"))
+                                    ),
+                                    column(width = 1,
+                                           textInput(paste0("fert_potas_nutrientContent2_", type, "_", order),"")
+                                    )
                                    )
 
                   ),
@@ -2706,6 +3073,9 @@ server_design_agrofims <- function(input, output, session, values){
                                               textInput(paste0("fert_potas_type3_", type, "_", order), "")
                                             }
                                             else if(type == "Inorganic"){
+                                              fluidRow(
+                                                column(width = 7,
+
                                               selectizeInput(paste0("fert_potas_type3_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                 'Ammonium nitrate',
                                                 'Ammonium nitrate sulfate',
@@ -2730,10 +3100,26 @@ server_design_agrofims <- function(input, output, session, values){
                                                 'Urea',
                                                 'Urea ammonium nitrate solution',
                                                 'Urea super granules',
-                                                'NPK fertilizers')
+                                                'NPK fertilizers',
+                                                "Other")
                                               )
+                                                ),
+                                              column(width = 5,
+                                                     selectizeInput(paste0("fert_potas_type3_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                    c("g/sq m","kg/ha","lb/ac"))
+                                              ),
+                                              conditionalPanel(paste0("input.fert_potas_type3_", type, "_", order, " == 'Other'"),
+                                                               column(width=12,
+                                                                      textInput(paste0("fert_potas_type3_other_", type, "_", order), "")
+                                                               )
+                                              )
+                                            )
+
                                             }
                                             else{
+                                              fluidRow(
+                                                column(width = 7,
+
                                                   selectizeInput(paste0("fert_potas_type3_", type, "_", order), multiple = TRUE, options = list(maxItems = 1, placeholder = "Select one..."), label ="", choices =c(
                                                     "Alfalfa Meal",
                                                     "Bagasse",
@@ -2746,65 +3132,86 @@ server_design_agrofims <- function(input, output, session, values){
                                                     "Oil cake",
                                                     "Treated sewage sludge",
                                                     "Vermicompost",
-                                                    "Fish fertilizer"
+                                                    "Fish fertilizer",
+                                                    "Other")
                                                   )
-                                                  )
-                                              }
+                                                ),
+                                                column(width = 5,
+                                                       selectizeInput(paste0("fert_potas_type3_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
+                                                                      c("g/sq m","kg/ha","lb/ac"))
+                                                ),
+                                                conditionalPanel(paste0("input.fert_potas_type3_", type, "_", order, " == 'Other'"),
+                                                                 column(width=12,
+                                                                        textInput(paste0("fert_potas_type3_other_", type, "_", order), "")
+                                                                 )
+                                                )
+
+                                              )
+                                            }
                                      ),
-                                     column(width = 2,
-                                            selectizeInput(paste0("fertilizer_potas_application_technique3_", type, "_", order),label = "", multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                                           choices = c(
-                                                             "Band application on surface",
-                                                             "Band application incorporated (Band application beneath surface)",
-                                                             "Broadcast surface",
-                                                             "Broadcast incorporated",
-                                                             "Contact placement (seed placement)",
-                                                             "Deep placement",
-                                                             "Fertigation",
-                                                             "Foliar application",
-                                                             "Injection",
-                                                             "Placed with seed (seed placement)",
-                                                             "Side dressing",
-                                                             "Sub-soil placement (injection)",
-                                                             "Localized application (using mechanical or hand device)",
-                                                             "Other")
-                                            )
-                                     ),
-                                     column(width = 1,
-                                            selectizeInput(paste0("fertilizer_potas_implement3_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
-                                                           choices = c("Backpack sprayer (airblast sprayer)",
-                                                                       "Boom sprayer",
-                                                                       "Broadcast spreader",
-                                                                       "Hand sprayer",
-                                                                       "Manure spreader",
-                                                                       "Slurry injector",
-                                                                       "Manual application",
-                                                                       "Other")
-                                            )
+                                     column(width=3 ,
+                                      fluidRow(
+                                         column(width = 6,
+                                                selectizeInput(paste0("fertilizer_potas_application_technique3_", type, "_", order),label = "", multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                               choices = c(
+                                                                 "Band application on surface",
+                                                                 "Band application incorporated (Band application beneath surface)",
+                                                                 "Broadcast surface",
+                                                                 "Broadcast incorporated",
+                                                                 "Contact placement (seed placement)",
+                                                                 "Deep placement",
+                                                                 "Fertigation",
+                                                                 "Foliar application",
+                                                                 "Injection",
+                                                                 "Placed with seed (seed placement)",
+                                                                 "Side dressing",
+                                                                 "Sub-soil placement (injection)",
+                                                                 "Localized application (using mechanical or hand device)",
+                                                                 "Other")
+                                                ),
+                                                conditionalPanel(paste0("input.fertilizer_potas_application_technique3_", type, "_", order, " == 'Other'"),
+                                                                 textInput(paste0("fertilizer_potas_application_technique3_other_", type, "_", order), "")
+                                                )
+                                         ),
+                                         column(width = 6,
+                                                selectizeInput(paste0("fertilizer_potas_implement3_", type, "_", order), label = "",multiple =T, options = list(maxItems=1, placeholder="Select one..."),
+                                                               choices = c("Backpack sprayer (airblast sprayer)",
+                                                                           "Boom sprayer",
+                                                                           "Broadcast spreader",
+                                                                           "Hand sprayer",
+                                                                           "Manure spreader",
+                                                                           "Slurry injector",
+                                                                           "Manual application",
+                                                                           "Other")
+                                                ),
+                                                conditionalPanel(paste0("input.fertilizer_potas_implement3_", type, "_", order, " == 'Other'"),
+                                                                 textInput(paste0("fertilizer_potas_implement3_other_", type, "_", order), "")
+                                                )
+                                         )
+                                      )
                                      ),
                                      column(width = 1,
                                             textInput(paste0("fert_potas_amountApplied3_", type, "_", order),"")
                                      ),
                                      column(width = 1,
-                                            selectizeInput(paste0("fert_potas_amountAppliedScale3_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "",
+                                            selectizeInput(paste0("fert_potas_amountAppliedScale3_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
                                                            c("kg/m2","kg/ha","t/ha"))
                                      ),
                                      column(width = 1,
                                             textInput(paste0("fert_potas_nutrientContent3_", type, "_", order),"")
                                      )
-                                   )
+
+                              )
 
 
                   )#end conditional2
-
-
 
              ))
 
 
   }
 
-  ####################################################################
+  ###################### end nutrients #####################################
 
 
   observeEvent(input$land_impl_type,{
@@ -2821,21 +3228,42 @@ server_design_agrofims <- function(input, output, session, values){
   traitsVals$aux <- data.frame()
   traitsVals$selectedRows <- list()
   traitsVals$Data <- data.table()
-  dict <- data.frame(stringsAsFactors = FALSE,
-         # c("<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>"
-         c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"
-),
+#   dict <- data.frame(stringsAsFactors = FALSE,
+#          # c("<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>"
+#          c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"
 # ),
-         c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean'),
-         c('Number of tubers planted','Number of emerged plants','Percentage plants emerged','Number of harvested plants','Percentage of plants harvested','Non-marketable tuber number','Total number of tubers','Number marketable tubers','Non-marketable tuber weight','Total tuber weight','Total tuber yield no adjusted','Total tuber yield adjusted','Marketable tuber weight','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield in fresh weight','Root Yield in dry weight','Root Yield in Fresh Aerial','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Number of germinated stakes','Root Yield','Storage root weight ','Storage root weight Peel','Number of stakes','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','Grain row number','Grain weight','Grain yield adjusted','Grain yield in dry weight','Grain yield in fresh weight','Grain yield rank number','Grain yield relative to check','Grain yield relative','Shelled cob in fresh weight','Grain test weight ','Grain weight adjusted','Grain weight in fresh weight','Grain yield in fresh weight','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots ','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots ','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Seed yield','Seed weight'),
-         c('CO_330:0000265-/plot','CO_330:0000268-/plot','CO_330:0000283- ','CO_330:0000287-/plot','CO_330:0000290- ','CO_330:0000300-/plot','CO_330:0000304-/plot,CO_330:0000305-/plant','CO_330:0000293-/plot,CO_330:0000297-/plant','CO_330:0000314-kg/plot','CO_330:0000317-kg/plot,CO_330:0000321-kg/plant','CO_330:0000324-t/ha','CO_330:0000323-t/ha','CO_330:0000308- ','CO_330:0000330-t/ha','CO_330:0000327-t/ha','CO_330:0000333-g','CO_330:0000336-g','CO_334:0000008-ratio','CO_334:0000009- ','CO_334:0000010-/plant','CO_334:0000011- ','CO_334:0000012- kg/plot','CO_334:0000013-t/ha','CO_334:0000014-t/ha','CO_334:0000017-t/ha','CO_334:0000127-kg/pl','CO_334:0000129-Stem','CO_334:0000131-kg/plot','CO_334:0000132-/plot','CO_334:0000133- ','CO_334:0000157-kg/pl,CO_334:0000158-kg/plot','CO_334:0000159- ','CO_334:0000166- ','CO_334:0000168-/plot','CO_334:0000169-/plot','CO_334:0000170-/kg','CO_334:0000171-/kg','CO_334:0000213-1 month,CO_334:0000214-3 months,CO_334:0000215-6 months,CO_334:0000216-9 months,CO_334:0000217-12 months','CO_334:0000230-kg/plant,CO_334:0000231-t/ha','CO_334:0000247-kg','CO_334:0000248-kg','CO_334:0000250- ','CO_321:0001034-m2/kg,CO_321:0001035-kg/ha,CO_321:0001036-t/ha,CO_321:0001037-g/plant,CO_321:0001038-g/plot,CO_321:0001039-kg/plot','CO_321:0001213-g/1000 grain,CO_321:0001214-g/100 grain,CO_321:0001215-g/200 grain','CO_321:0001217-g/m2,CO_321:0001218-kg/ha,CO_321:0001219-t/ha,CO_321:0001220-g/plant,CO_321:0001221-g/plot,CO_321:0001222-kg/plot,CO_321:0001223-%','CO_321:0001224- ','CO_321:0001231- ,CO_321:0001232-%','CO_321:0001246-m2/kg,CO_321:0001247-kg/ha,CO_321:0001248-t/ha,CO_321:0001249-g/plot,CO_321:0001250-kg/plot,CO_321:0001651- ','CO_322:0000694- ','CO_322:0000723-g/1000grain,CO_322:0000725-g/100grain,CO_322:0000727-g/200grain','CO_322:0000730-kg/ha,CO_322:0000731-t/ha','CO_322:0000734-g/plot,CO_322:0000737-kg/ha,CO_322:0000740-kg/plot,CO_322:0000742-t/ha','CO_322:0000744-g/plot,CO_322:0000747-kg/ha,CO_322:0000749-kg/plot,CO_322:0000751-t/ha','CO_322:0000754- ','CO_322:0000756-%','CO_322:0000757-%','CO_322:0000928-g/plot,CO_322:0000931-kg/plot','CO_322:0001008-lb/bsh','CO_322:0001009-g/1000grain,CO_322:0001010-g/100grain,CO_322:0001011-g/200grain','CO_322:0001012-g/200grain,CO_322:0001013-g/1000grain,CO_322:0001014-g/100grain','CO_322:0001016-lb/plot','CO_331:0000192-/plot','CO_331:0000678-/plot','CO_331:0000679-/plot','CO_331:0000211-/plot','CO_331:0000214-/plot','CO_331:0000217-/plot','CO_331:0000233-/plot,CO_331:0000230-/plant','CO_331:0000220-kg/plot','CO_331:0000223-kg/plot','CO_331:0000227-kg/plot','CO_331:0000237-kg/plot','CO_331:0000218-t/ha','CO_331:0000680-t/ha','CO_331:0000681-kg/plot,CO_331:0000296-t/ha','CO_331:0000682-%','CO_331:0000683-t/ha','CO_331:0000791- ','CO_331:0000792- ','CO_336:0000262-g/plot,CO_336:0000340-kg/ha','CO_336:0000261-g/plot,CO_336:0000337-kg/ha','CO_336:0000333-g'),
-         # c('', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '','','','','','','','','','','','','','','','','','', '','','',''),
-         # c('', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '','','','','','','','','','','','','','','','','','', '','','','')
-         c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000293','CO_330:0000314','CO_330:0000317','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001213','CO_321:0001217','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_322:0000694','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000744','CO_322:0000754','CO_322:0000756','CO_322:0000757','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000261','CO_336:0000333'),
-         c('/plot','/plot','','/plot','','/plot','/plot','/plot','kg/plot','kg/plot','t/ha','t/ha','','t/ha','t/ha','g','g','ratio','','/plant','',' kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','/plot','','kg/pl','','','/plot','/plot','/kg','/kg','1 month','kg/plant','kg','kg','','m2/kg','g/1000 grain','g/m2','','','m2/kg','','g/1000grain','kg/ha','g/plot','g/plot','','%','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','/plot','/plot','/plot','/plot','/plot','/plot','/plot','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','kg/plot','%','t/ha','','','g/plot','g/plot','g')
+# # ),
+#          c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean'),
+#          c('Number of tubers planted','Number of emerged plants','Percentage plants emerged','Number of harvested plants','Percentage of plants harvested','Non-marketable tuber number','Total number of tubers','Number marketable tubers','Non-marketable tuber weight','Total tuber weight','Total tuber yield no adjusted','Total tuber yield adjusted','Marketable tuber weight','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield in fresh weight','Root Yield in dry weight','Root Yield in Fresh Aerial','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Number of germinated stakes','Root Yield','Storage root weight ','Storage root weight Peel','Number of stakes','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','Grain row number','Grain weight','Grain yield adjusted','Grain yield in dry weight','Grain yield in fresh weight','Grain yield rank number','Grain yield relative to check','Grain yield relative','Shelled cob in fresh weight','Grain test weight ','Grain weight adjusted','Grain weight in fresh weight','Grain yield in fresh weight','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots ','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots ','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Seed yield','Seed weight'),
+#          c('CO_330:0000265-/plot','CO_330:0000268-/plot','CO_330:0000283- ','CO_330:0000287-/plot','CO_330:0000290- ','CO_330:0000300-/plot','CO_330:0000304-/plot,CO_330:0000305-/plant','CO_330:0000293-/plot,CO_330:0000297-/plant','CO_330:0000314-kg/plot','CO_330:0000317-kg/plot,CO_330:0000321-kg/plant','CO_330:0000324-t/ha','CO_330:0000323-t/ha','CO_330:0000308- ','CO_330:0000330-t/ha','CO_330:0000327-t/ha','CO_330:0000333-g','CO_330:0000336-g','CO_334:0000008-ratio','CO_334:0000009- ','CO_334:0000010-/plant','CO_334:0000011- ','CO_334:0000012- kg/plot','CO_334:0000013-t/ha','CO_334:0000014-t/ha','CO_334:0000017-t/ha','CO_334:0000127-kg/pl','CO_334:0000129-Stem','CO_334:0000131-kg/plot','CO_334:0000132-/plot','CO_334:0000133- ','CO_334:0000157-kg/pl,CO_334:0000158-kg/plot','CO_334:0000159- ','CO_334:0000166- ','CO_334:0000168-/plot','CO_334:0000169-/plot','CO_334:0000170-/kg','CO_334:0000171-/kg','CO_334:0000213-1 month,CO_334:0000214-3 months,CO_334:0000215-6 months,CO_334:0000216-9 months,CO_334:0000217-12 months','CO_334:0000230-kg/plant,CO_334:0000231-t/ha','CO_334:0000247-kg','CO_334:0000248-kg','CO_334:0000250- ','CO_321:0001034-m2/kg,CO_321:0001035-kg/ha,CO_321:0001036-t/ha,CO_321:0001037-g/plant,CO_321:0001038-g/plot,CO_321:0001039-kg/plot','CO_321:0001213-g/1000 grain,CO_321:0001214-g/100 grain,CO_321:0001215-g/200 grain','CO_321:0001217-g/m2,CO_321:0001218-kg/ha,CO_321:0001219-t/ha,CO_321:0001220-g/plant,CO_321:0001221-g/plot,CO_321:0001222-kg/plot,CO_321:0001223-%','CO_321:0001224- ','CO_321:0001231- ,CO_321:0001232-%','CO_321:0001246-m2/kg,CO_321:0001247-kg/ha,CO_321:0001248-t/ha,CO_321:0001249-g/plot,CO_321:0001250-kg/plot,CO_321:0001651- ','CO_322:0000694- ','CO_322:0000723-g/1000grain,CO_322:0000725-g/100grain,CO_322:0000727-g/200grain','CO_322:0000730-kg/ha,CO_322:0000731-t/ha','CO_322:0000734-g/plot,CO_322:0000737-kg/ha,CO_322:0000740-kg/plot,CO_322:0000742-t/ha','CO_322:0000744-g/plot,CO_322:0000747-kg/ha,CO_322:0000749-kg/plot,CO_322:0000751-t/ha','CO_322:0000754- ','CO_322:0000756-%','CO_322:0000757-%','CO_322:0000928-g/plot,CO_322:0000931-kg/plot','CO_322:0001008-lb/bsh','CO_322:0001009-g/1000grain,CO_322:0001010-g/100grain,CO_322:0001011-g/200grain','CO_322:0001012-g/200grain,CO_322:0001013-g/1000grain,CO_322:0001014-g/100grain','CO_322:0001016-lb/plot','CO_331:0000192-/plot','CO_331:0000678-/plot','CO_331:0000679-/plot','CO_331:0000211-/plot','CO_331:0000214-/plot','CO_331:0000217-/plot','CO_331:0000233-/plot,CO_331:0000230-/plant','CO_331:0000220-kg/plot','CO_331:0000223-kg/plot','CO_331:0000227-kg/plot','CO_331:0000237-kg/plot','CO_331:0000218-t/ha','CO_331:0000680-t/ha','CO_331:0000681-kg/plot,CO_331:0000296-t/ha','CO_331:0000682-%','CO_331:0000683-t/ha','CO_331:0000791- ','CO_331:0000792- ','CO_336:0000262-g/plot,CO_336:0000340-kg/ha','CO_336:0000261-g/plot,CO_336:0000337-kg/ha','CO_336:0000333-g'),
+#          # c('', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '','','','','','','','','','','','','','','','','','', '','','',''),
+#          # c('', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '','','','','','','','','','','','','','','','','','', '','','','')
+#          c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000293','CO_330:0000314','CO_330:0000317','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001213','CO_321:0001217','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_322:0000694','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000744','CO_322:0000754','CO_322:0000756','CO_322:0000757','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000261','CO_336:0000333'),
+#          c('/plot','/plot','','/plot','','/plot','/plot','/plot','kg/plot','kg/plot','t/ha','t/ha','','t/ha','t/ha','g','g','ratio','','/plant','',' kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','/plot','','kg/pl','','','/plot','/plot','/kg','/kg','1 month','kg/plant','kg','kg','','m2/kg','g/1000 grain','g/m2','','','m2/kg','','g/1000grain','kg/ha','g/plot','g/plot','','%','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','/plot','/plot','/plot','/plot','/plot','/plot','/plot','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','kg/plot','%','t/ha','','','g/plot','g/plot','g')
+#
+#   )
+#   colnames(dict) <- c("Status","Crop", "Crop trait management", "traitCode", "VariableId", "Scale")
+
+  dict <- data.frame(stringsAsFactors = FALSE,
+      # c("Not selected",'"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"'),
+      # c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean','Soybean','Soybean'),
+      # c('Number of tubers planted','Number of emerged plants','Plant emergence proportion','Number of harvested plants','Proportion of plants harvested','Non-marketable tuber number','Tuber number','Tuber number per plant','Number of marketable tubers','Number of marketable tubers per plant','Non-marketable tuber weight','Tuber weight','Tuber weight per plant','Tuber yield no adjusted','Tuber yield adjusted','Marketable tuber weight','Marketable tuber weight per plant','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield','Root Yield','Root Yield','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Sprout count','Root Yield','Root Yield','Storage root weight','Storage root weight','Number of stakes','Aboveground biomass at maturity','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','In-season aboveground biomass','In-season aboveground biomass','Grain row number','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Shelled cob weight','Grain test weight','Grain weight','Grain weight','Grain yield','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots','Total number of root','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Fodder Yield','Seed yield','Seed yield','Seed weight'),
+      # c('Number of tubers planted - method','Number of emerged plants - method','Plant emergence proportion - method','Number of harvested plants - method','Proportion of plants harvested - method','Non-marketable tuber number - method','Tuber number - method','Tuber number per plant - method','Number of marketable tubers - method','Number of marketable tubers per plant - method','Non-marketable tuber weight - method','Tuber weight - method','Tuber weight per plant - method','Tuber yield no adjusted - method','Tuber yield adjusted - method','Marketable tuber weight - method','Marketable tuber weight per plant - method','Marketable tuber yield no adjusted - method','Marketable tuber yield adjusted - method','Average of tuber weight - method','Average of marketable tuber weight - method','Counting:Sprouting_method','Visual Rating:Initial Vigor_method','Counting:Plant Stands Harvested_method','Counting: Root number_method','Measurement :Fresh Weight of Storage Root_method','Calculation :Fresh Root Yield_method','Calculation :Dry Yield_method','Calculation :Top Yield_method','Measurement :Stem weight_method','Counting:stem number_method','Measurement :marketable root weight_method','Measurement : Non marketable root weight_method','Counting:Stem rot_method','Measurement :root weight in air_method','Measurement :root weight in water_method','Counting:number of planted stakes_method','Counting:germination count_method','Counting:non marketable root number_method','Counting:marketable root number_method','Measurement :stock weight_method','Counting:stem yield_method','Counting:sprout count at month_method','Estimation :plant yield_method','Estimation :yield per year_method','Measurement: root weight after washing_method','Measurement :root weight after peel_method','Counting:number of stakes_method','BM Computation','BM Measurement','GW Measurement','GY Computation','GY Measurement','GY Relative to check Computation','GYFac Computation','HI Computation','ISBM Computation','ISBM Measurement','ISBM Estimation','GCol - Estimation','GW DW - Measurement','Adjusted GY - Computation','DW GY - Measurement','DW GY - Computation','FW GY - Measurement','FW GY - Computation','RGY - Computation','GYRank - Computation','Relative to check - Computation','ShellCobW - Measurement (duplicate)','GTW - Computation','GW Adjusted - Computation','GW FW - Measurement','FW GY - Measurement','Evaluation of plant vine establishment','Recording planting materials','Evaluation of plants','Evaluation of plants','Evaluation of roots','Evaluation of roots','Estimated number per plot - Method','Estimated number per plant - Method','Measurements of root mass','Measurements of root mass','Measurements of vine mass','Estimated weight per plot - Method','Estimated marketable yield per hectare - Method','Estimated marketable yield per hectare - Method','Estimated yield of total roots per hectare - No adjusted, Method','Estimated yield per hectare - Adjusted, Method','Percentage of marketable - Method','Biomass yield','Observation of an average or all storage roots within a single plant or plot','Relative to check - Computation','Weighing of fodder per plot','Calculation of fodder yield','Weighing of grain per plot','grain yield calculation','100 weight'),
+      # c('tuber/plot-CO_330:0000265','tuber/plot-CO_330:0000268','%-CO_330:0000283','plants/plot-CO_330:0000287','%-CO_330:0000290','tuber/plot-CO_330:0000300','tuber/ plot-CO_330:0000304','tuber /plant-CO_330:0000305','tuber/plot-CO_330:0000293','tuber/plant-CO_330:0000297','kg/plot-CO_330:0000314','kg/plot-CO_330:0000317','kg/plant-CO_330:0000321','t/ha-CO_330:0000324','t/ha-CO_330:0000323','kg/plot-CO_330:0000308','kg/plant-CO_330:0000311','t/ha-CO_330:0000330','t/ha-CO_330:0000327','g-CO_330:0000333','g-CO_330:0000336','ratio-CO_334:0000008','7 pt scale-CO_334:0000009','Plant-CO_334:0000010','Count-CO_334:0000011','kg/plot-CO_334:0000012','t/ha-CO_334:0000013','t/ha-CO_334:0000014','t/ha-CO_334:0000017','kg/pl-CO_334:0000127','Stem-CO_334:0000129','kg/plot-CO_334:0000131','kg/plot-CO_334:0000132','Number-CO_334:0000133','kg/pl-CO_334:0000157','kg/plot-CO_334:0000158','Number-CO_334:0000159','Seedling-CO_334:0000166','plot-CO_334:0000168','plot-CO_334:0000169','kg-CO_334:0000170','kg-CO_334:0000171','1 month-CO_334:0000213,3 months-CO_334:0000214,6 months-CO_334:0000215,9 months-CO_334:0000216','kg/plant-CO_334:0000230','t/ha-CO_334:0000231','kg-CO_334:0000247','kg-CO_334:0000248','Count-CO_334:0000250','m2/kg-CO_321:0001034,kg/ha-CO_321:0001035,t/ha-CO_321:0001036','g/plant-CO_321:0001037,g/plot-CO_321:0001038,kg/plot-CO_321:0001039','g/1000 grain-CO_321:0001213,g/100 grain-CO_321:0001214,g/200 grain-CO_321:0001215','g/m2-CO_321:0001217,kg/ha-CO_321:0001218,t/ha-CO_321:0001219','/plant-CO_321:0001220,g/plot-CO_321:0001221,kg/plot-CO_321:0001222','%-CO_321:0001223','num-CO_321:0001224','index-CO_321:0001231,%-CO_321:0001232','m2/kg-CO_321:0001246,kg/ha-CO_321:0001247,t/ha-CO_321:0001248','g/plot-CO_321:0001249,kg/plot-CO_321:0001250','1-5 scoring scale-CO_321:0001651','row/ear-CO_322:0000694','g/1000grain-CO_322:0000723,g/100grain-CO_322:0000725,g/200grain-CO_322:0000727','kg/ha-CO_322:0000730,t/ha-CO_322:0000731','g/plot-CO_322:0000734,kg/plot-CO_322:0000740','t/ha-CO_322:0000742,kg/ha-CO_322:0000737','g/plot-CO_322:0000744,kg/plot-CO_322:0000749','kg/ha-CO_322:0000747,t/ha-CO_322:0000751','%-CO_322:0000757','Rank number-CO_322:0000754','%-CO_322:0000756','/plot-CO_322:0000928,kg/plot-CO_322:0000931','lb/bsh-CO_322:0001008','g/1000grain-CO_322:0001009,g/100grain-CO_322:0001010,g/200grain-CO_322:0001011','g/200grain-CO_322:0001012,g/1000grain-CO_322:0001013,g/100grain-CO_322:0001014','lb/plot-CO_322:0001016','plants/plot-CO_331:0000192','plants/plot-CO_331:0000678','plants/plot-CO_331:0000679','plants/plot-CO_331:0000211','roots/plot-CO_331:0000214','roots/plot-CO_331:0000217','roots/ plot-CO_331:0000233','roots/ plant-CO_331:0000230','kg/plot-CO_331:0000220','kg/plot-CO_331:0000223','kg/plot-CO_331:0000227','kg/plot-CO_331:0000237','t/ha-CO_331:0000218','t/ha-CO_331:0000680','t/ha-CO_331:0000681','t/ha-CO_331:0000296','%-CO_331:0000682','t/ha-CO_331:0000683','RtYldR 5 pt. scale-CO_331:0000791','%-CO_331:0000792','g/plot-CO_336:0000262','kg/ha-CO_336:0000340','g/plot-CO_336:0000261','kg/ha-CO_336:0000337','g-CO_336:0000333'),
+      # c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000305','CO_330:0000293','CO_330:0000297','CO_330:0000314','CO_330:0000317','CO_330:0000321','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000311','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000158','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000231','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001037','CO_321:0001213','CO_321:0001217','CO_321:0001220','CO_321:0001223','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_321:0001249','CO_321:0001651','CO_322:0000694','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000742','CO_322:0000744','CO_322:0000747','CO_322:0000757','CO_322:0000754','CO_322:0000756','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000230','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000296','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000340','CO_336:0000261','CO_336:0000337','CO_336:0000333'),
+      # c('tuber/plot','tuber/plot','%','plants/plot','%','tuber/plot','tuber/ plot','tuber /plant','tuber/plot','tuber/plant','kg/plot','kg/plot','kg/plant','t/ha','t/ha','kg/plot','kg/plant','t/ha','t/ha','g','g','ratio','7 pt scale','Plant','Count','kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','kg/plot','Number','kg/pl','kg/plot','Number','Seedling','plot','plot','kg','kg','1 month','kg/plant','t/ha','kg','kg','Count','m2/kg','g/plant','g/1000 grain','g/m2','g/plant','%','num','index','m2/kg','g/plot','1-5 scoring scale','row/ear','g/1000grain','kg/ha','g/plot','t/ha','g/plot','kg/ha','%','Rank number','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','plants/plot','plants/plot','plants/plot','plants/plot','roots/plot','roots/plot','roots/ plot','roots/ plant','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','t/ha','t/ha','%','t/ha','RtYldR 5 pt. scale','%','g/plot','kg/ha','g/plot','kg/ha','g')
+      c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"),
+      c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean','Soybean','Soybean'),
+      c('Number of tubers planted','Number of emerged plants','Plant emergence proportion','Number of harvested plants','Proportion of plants harvested','Non-marketable tuber number','Tuber number','Tuber number per plant','Number of marketable tubers','Number of marketable tubers per plant','Non-marketable tuber weight','Tuber weight','Tuber weight per plant','Tuber yield no adjusted','Tuber yield adjusted','Marketable tuber weight','Marketable tuber weight per plant','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield','Root Yield','Root Yield','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Sprout count','Root Yield','Root Yield','Storage root weight','Storage root weight','Number of stakes','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','In-season aboveground biomass','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Shelled cob weight','Grain test weight','Grain weight','Grain weight','Grain yield','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots','Total number of root','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Fodder Yield','Seed yield','Seed yield','Seed weight'),
+      c('Count the number of planted tubers and record it','Count the number of emerged plants and record it','Compute the proportion of plants emerged over tubers planted using the formula','Count the number of harvested plants and record it','Compute the proportion of plant harvested over plant emerged using the formula','Count the number of non-marketable tubers per unit area and record it','Compute the total number of tubers per unit area using the formula','Compute the total number of tubers per plant using the formula','Compute the total number of marketable tubers per unit area using the formula','Compute the total number of marketable tubers per plant','Compute the weight of non-marketable tubers per unit area usihg the formula','Compute the total weight of tubers per unit area using the formula','Compute the total weight of tubers per plant using the formula','Compute the total tuber yield no adjusted per unit area using the formula','Compute the total tuber yield adjusted per unit area using the formula','Compute the total weight of marketable tubers per unit area using the formula','Compute the total weight of marketable tubers per plant using the formula','Compute the marketable tuber yield no adjusted per unit area using the formula','Compute the marketable tuber yield adjusted per unit area using the formula','Compute the average tuber weight in grams using the formula','Compute the average marketable tuber weight in grams using the formula','The number of germinated stakes divided by the total number of planted stakes scored one month after planting','Trait monitored by observing plant vigor one month after planting','Count the number of plant stands that are harvested in a plot','','Weigh harvested storage roots per plot at harvest','Calculated as weight of fresh storage roots expressed in tons per hectares per plant at harvest','Dry weight of harvested roots derived by multiplying fresh storage root yield by dry matter content expressed in tons per hectares.','Calculated as weight of foliage and stems expressed in tons per hectares per plot at harvest','Measured stem weight excluding leaves and stump','Count of the number of stems per plot','Measured weight of harvested cassava roots usually classified as large size and medium size excluding small sized roots','','Count of the rotted stems per plot at the time of harvest','Measured weight of cassava root samples (kg) between 4 - 5kg of each of the harvested plot to determine the dry matter by specific gravity','As part of the dry matter determination method by specific gravimetry','Count of the number of stakes planted per plot','Count of the number of emerging seedlings from each family in the pre-nursery done on a daily bases until its ready for transplanting','Count of the number of small or less than 1kg root size','Count of the number of big or more than 1kg root size','Measurement of the fresh weight of the planted part anchoring the storage root(kg)','Measurement of the fresh weight of harvested plant biomass excluding leaves','Count of the number of stakes germinated','Average yield per plant in a plot. It is estimated by dividing the total weight of roots by the number of plants harvested.','Annual root yield using yield per hectare as a function of the crop duration.','Fresh cassava roots are washed in water and weighed on a pan suspended to a weighing scale','This is the weight of peeled cassava roots using a pan suspended to a weighing scale','An estimated number of plantable stakes (about 20cm long','Cut all aboveground biomass in a predetermined area (A). Avoid border effects by sampling away from edges of plot. Biomass as other yield components can be calculated or measured individually (Bell and Fischer, 1994; Reynolds et al., 2001; Pask et al., 2012), decide which method suit better for your objectives.','Dry grains at 70oC and weigh.','Use formulae to calculate grain yield in g/m2','The weight of the grain harvested is registered on a scale, decide which method suit better for your objectives. In breeding trials, a sample area (rather than the whole plot) is generally used for estimating yield. Discard borders when combine harvest for a better estimation of yield.','Calculate grain yield of an entry as percentage over a local check.','Standard method for yield factor','Harvest index is expressed as a ratio and can be calculated as Harvest index = (Grain yield/Biomass).','Sampling is typically performed at sequential developmental stages/time intervals through crop growth. Cut all aboveground biomass in a predetermined area (A). Avoid border effects by sampling away from edges of plot.  In most cases, determinations of dry mass are made on representative sub-samples to reduce oven space requirement, take additional measurements (e.g., fertile culm count) etc. Several protocols available (Bell and Fischer, 1994; Reynolds et al., 2001; Pask et al., 2012), decide which method suit better for your objectives.','Standard method for In-season aboveground biomass.','Count and weigh grains randomly selected from the total grains.','Calculate shelled grain yield per unit area adjusted to 12.5% grain moisture.','Shell the grains (kernels) from the ears harvested per plot and put grains in a paper bag and  dry at 60-70∞C for 1-2 days, then measure and record the weight of dried grain.','Shell the grains (kernels) from the ears harvested per plot and record fresh (field) weight.','It is calculated as the numerical position of the progeny when yields are arrenged from highest to lowest.','Calculated as relative grain yield agaisnst the best check in percentage.','Relative grain yield expressed as percentage of the mean grain yield of the trial. Values above 100% indicate above-average performance; values below 100% indicate below-average performance.','Record shelled cob field weight.','Standard method for grain test weight.','Compute grain weigh adjuted to 12.5% moisture.','Count and weigh grains randomly selected from the total grains.','Shell the grains (kernels) from the ears harvested per plot and record fresh (field) weight.','Counting of established plants.','Counting plants/vines planted.','Visual estimation','Visual estimation','Visual estimation','Visual estimation','Number of commercial plus Number of non-commercial roots','Total number of root per plot / Number of plants harvested','Measured using scales','Measured using scales','Measured using scales','Weight of commercial storage roots plus weight of non-commercial storage roots','(Weight of commercial storage roots/ plot size)*10','(Weight of commercial storage roots/ Number of non-commercial roots','(Weight of commercial storage roots/ plot size)*10','(Weight total of root/ plot size)*10','Number of non-commercial roots/Total number of root after harvest*100','','','','Measure the dry weight of stover, haulm harvested after threshing plants harvested from the plot excluing the borders.','Measure the dry weight of stover, haulm harvested after threshing plants harvested from the plot excluing the borders. Then divide the measured harvested weight by the effectively harvested area of the plot','Weigh the amount of harvested grains (excluding the borders) adjusted to 13% moisture,','Weigh the amount of harvested grains (excluding the borders) adjusted to 13% moisture, and then divided by the area of the plot','Weigh 100 seeds'),
+      c('tuber/plot-CO_330:0000265','tuber/plot-CO_330:0000268','%-CO_330:0000283','plants/plot-CO_330:0000287','%-CO_330:0000290','tuber/plot-CO_330:0000300','tuber/ plot-CO_330:0000304','tuber /plant-CO_330:0000305','tuber/plot-CO_330:0000293','tuber/plant-CO_330:0000297','kg/plot-CO_330:0000314','kg/plot-CO_330:0000317','kg/plant-CO_330:0000321','t/ha-CO_330:0000324','t/ha-CO_330:0000323','kg/plot-CO_330:0000308','kg/plant-CO_330:0000311','t/ha-CO_330:0000330','t/ha-CO_330:0000327','g-CO_330:0000333','g-CO_330:0000336','ratio-CO_334:0000008','7 pt scale-CO_334:0000009','Plant-CO_334:0000010','Count-CO_334:0000011','kg/plot-CO_334:0000012','t/ha-CO_334:0000013','t/ha-CO_334:0000014','t/ha-CO_334:0000017','kg/pl-CO_334:0000127','Stem-CO_334:0000129','kg/plot-CO_334:0000131','kg/plot-CO_334:0000132','Number-CO_334:0000133','kg/pl-CO_334:0000157','kg/plot-CO_334:0000158','Number-CO_334:0000159','Seedling-CO_334:0000166','plot-CO_334:0000168','plot-CO_334:0000169','kg-CO_334:0000170','kg-CO_334:0000171','1 month-CO_334:0000213,3 months-CO_334:0000214,6 months-CO_334:0000215,9 months-CO_334:0000216','kg/plant-CO_334:0000230','t/ha-CO_334:0000231','kg-CO_334:0000247','kg-CO_334:0000248','Count-CO_334:0000250','2/kg-CO_321:0001034,kg/ha-CO_321:0001035,t/ha-CO_321:0001036,g/plant-CO_321:0001037,g/plot-CO_321:0001038,kg/plot-CO_321:0001039','g/1000 grain-CO_321:0001213,g/100 grain-CO_321:0001214,g/200 grain-CO_321:0001215','g/m2-CO_321:0001217,kg/ha-CO_321:0001218,t/ha-CO_321:0001219','/plant-CO_321:0001220,g/plot-CO_321:0001221,kg/plot-CO_321:0001222','%-CO_321:0001223','num-CO_321:0001224','index-CO_321:0001231,%-CO_321:0001232','2/kg-CO_321:0001246,kg/ha-CO_321:0001247,t/ha-CO_321:0001248,g/plot-CO_321:0001249,kg/plot-CO_321:0001250','1-5 scoring scale-CO_321:0001651','g/1000grain-CO_322:0000723,g/100grain-CO_322:0000725,g/200grain-CO_322:0000727','kg/ha-CO_322:0000730,t/ha-CO_322:0000731','/plot-CO_322:0000734,kg/plot-CO_322:0000740,t/ha-CO_322:0000742,kg/ha-CO_322:0000737','/plot-CO_322:0000744,kg/plot-CO_322:0000749,kg/ha-CO_322:0000747,t/ha-CO_322:0000751','%-CO_322:0000757','Rank number-CO_322:0000754','%-CO_322:0000756','/plot-CO_322:0000928,kg/plot-CO_322:0000931','lb/bsh-CO_322:0001008','g/1000grain-CO_322:0001009,g/100grain-CO_322:0001010,g/200grain-CO_322:0001011','g/200grain-CO_322:0001012,g/1000grain-CO_322:0001013,g/100grain-CO_322:0001014','lb/plot-CO_322:0001016','plants/plot-CO_331:0000192','plants/plot-CO_331:0000678','plants/plot-CO_331:0000679','plants/plot-CO_331:0000211','roots/plot-CO_331:0000214','roots/plot-CO_331:0000217','roots/ plot-CO_331:0000233','roots/ plant-CO_331:0000230','kg/plot-CO_331:0000220','kg/plot-CO_331:0000223','kg/plot-CO_331:0000227','kg/plot-CO_331:0000237','t/ha-CO_331:0000218','t/ha-CO_331:0000680','t/ha-CO_331:0000681','t/ha-CO_331:0000296','%-CO_331:0000682','t/ha-CO_331:0000683','RtYldR 5 pt. scale-CO_331:0000791','%-CO_331:0000792','g/plot-CO_336:0000262','kg/ha-CO_336:0000340','g/plot-CO_336:0000261','kg/ha-CO_336:0000337','g-CO_336:0000333'),
+      c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000305','CO_330:0000293','CO_330:0000297','CO_330:0000314','CO_330:0000317','CO_330:0000321','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000311','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000158','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000231','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001213','CO_321:0001217','CO_321:0001220','CO_321:0001223','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_321:0001651','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000744','CO_322:0000757','CO_322:0000754','CO_322:0000756','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000230','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000296','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000340','CO_336:0000261','CO_336:0000337','CO_336:0000333'),
+      c('tuber/plot','tuber/plot','%','plants/plot','%','tuber/plot','tuber/ plot','tuber /plant','tuber/plot','tuber/plant','kg/plot','kg/plot','kg/plant','t/ha','t/ha','kg/plot','kg/plant','t/ha','t/ha','g','g','ratio','7 pt scale','Plant','Count','kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','kg/plot','Number','kg/pl','kg/plot','Number','Seedling','plot','plot','kg','kg','1 month','kg/plant','t/ha','kg','kg','Count','m2/kg','g/1000 grain','g/m2','g/plant','%','num','index','m2/kg','1-5 scoring scale','g/1000grain','kg/ha','g/plot','g/plot','%','Rank number','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','plants/plot','plants/plot','plants/plot','plants/plot','roots/plot','roots/plot','roots/ plot','roots/ plant','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','t/ha','t/ha','%','t/ha','RtYldR 5 pt. scale','%','g/plot','kg/ha','g/plot','kg/ha','g')
+
 
   )
-  colnames(dict) <- c("Status","Crop", "Crop trait management", "traitCode", "VariableId", "Scale")
+  colnames(dict) <- c("Status","Crop", "Crop management", "Measurement method", "traitCode", "VariableId", "Scale")
+
   observe({
     if(!is.null(input$cropCommonNameMono)){
       traitsVals$selectedRows <- list()
@@ -2904,11 +3332,15 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   output$Main_table <-renderDataTable({
+    # as.list(lapply(1:nrow(traitsVals$Data), "drawComboInTable"))
 
     DT= traitsVals$Data
-    DT[["Change scale"]] <- lapply(1:nrow(traitsVals$Data), "drawComboInTable")
-    DT[["Variable ID"]] <- traitsVals$Data[,5]
-    DT[["Select variable"]] <- lapply(1:nrow(traitsVals$Data), "drawButtonSelect")
+    # DT[["Change scale"]] <- as.list(lapply(1:nrow(traitsVals$Data), "drawComboInTable"))
+    DT[["Change scale"]] <- drawComboInTable()
+
+    # DT[["Select variable"]] <- lapply(1:nrow(traitsVals$Data), "drawButtonSelect")
+    DT[["Select variable"]] <- drawButtonSelect()
+    DT[["Variable ID"]] <- traitsVals$Data[,6]
     datatable(DT,
               escape=F,
               # selection = list(mode = 'multiple', selected = traitsVals$selectedRows),
@@ -2916,7 +3348,7 @@ server_design_agrofims <- function(input, output, session, values){
               options = list(
                 scrollX = TRUE,
                 pageLength = 25,
-                columnDefs = list(list(visible=FALSE, targets=c(1,4,5)), list(width = '15%', targets = c(8)), list(className = 'dt-center', targets = c(3, 5, 7)))
+                columnDefs = list(list(visible=FALSE, targets=c(1,5,6)), list(width = '15%', targets = c(9)), list(className = 'dt-center', targets = c(7,8)))
               )
     )}
   )
@@ -2959,56 +3391,110 @@ server_design_agrofims <- function(input, output, session, values){
       var <- vv
     }
 
-    traitsVals$Data[[5]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[1]]
-    traitsVals$Data[[6]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[2]]
+    traitsVals$Data[[6]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[1]]
+    traitsVals$Data[[7]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[2]]
   })
 
-  drawButtonSelect <- function(index){
-    old_row <- traitsVals$Data[index,]
-    # str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
-    #   <button style="width:100px; background-color:green; color:white;" type="button" class="btn btn-secondary selectRow" id=selectRow_',index ,'>Select</button>
-    #   </div>')
+  # drawButtonSelect <- function(index){
+  #   old_row <- traitsVals$Data[index,]
+  #   # str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
+  #   #   <button style="width:100px; background-color:green; color:white;" type="button" class="btn btn-secondary selectRow" id=selectRow_',index ,'>Select</button>
+  #   #   </div>')
+  #
+  #   ckecked <-  ""
+  #   # str <-  paste0('<button style="width:100px; background-color:green; color:white;" type="button" class="btn btn-secondary selectRow" id=selectRow_',index ,'>Select</button>')
+  #   if(old_row[[1]] %like% "Selected"){
+  #     # str <- gsub("green", "red", str)
+  #     # str <- gsub("Select", "Deselect", str)
+  #     ckecked <- "checked"
+  #   }
+  #
+  #
+  #   str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
+  #     <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
+  #     </div>')
+  #
+  #
+  #
+  #   return(str)
+  #
+  # }
 
-    ckecked <-  ""
-    # str <-  paste0('<button style="width:100px; background-color:green; color:white;" type="button" class="btn btn-secondary selectRow" id=selectRow_',index ,'>Select</button>')
-    if(old_row[[1]] %like% "Selected"){
-      # str <- gsub("green", "red", str)
-      # str <- gsub("Select", "Deselect", str)
-      ckecked <- "checked"
+  drawButtonSelect <- function(){
+    n<- nrow(traitsVals$Data)
+    l <- c()
+    for(index in 1:n){
+
+      old_row <- traitsVals$Data[index,]
+
+      ckecked <-  ""
+      if(old_row[[1]] %like% "Selected"){
+        ckecked <- "checked"
+      }
+
+      str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
+        <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
+        </div>')
+      l<- c(l,str)
     }
-
-
-    str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
-      <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
-      </div>')
-
-
-
-    return(str)
-
+    return(l)
   }
 
-  drawComboInTable <- function(index){
-    old_row = traitsVals$Data[index,]
-    options = old_row[[4]]
-    row_change=list()
+  # drawComboInTable <- function(index){
+  #   old_row = traitsVals$Data[index,]
+  #   options = old_row[[4]]
+  #
+  #   row_change=list()
+  #
+  #   str  <- paste0('<select id="select_scale_' , index, '" class="select_scale" style="width:150px;">')
+  #   arrOpt <- strsplit(options, ",")[[1]]
+  #
+  #   if(length(arrOpt) == 1){
+  #     mval1  <- strsplit(arrOpt[1], "-")[[1]]
+  #     if(mval1[[2]] == " ")
+  #       return(" ")
+  #   }
+  #
+  #   for(val in arrOpt){
+  #
+  #     mval  <- strsplit(val, "-")[[1]]
+  #     # print("aaaa")
+  #     # print(mval)
+  #     if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
+  #     str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
+  #   }
+  #   str <- paste0(str, "</select>")
+  #
+  #   return(str)
+  # }
 
-    str  <- paste0('<select id="select_scale_' , index, '" class="select_scale" style="width:150px;">')
-    arrOpt <- strsplit(options, ",")[[1]]
-    if(length(arrOpt) == 1){
-      # mval1  <- strsplit(arrOpt[1], "-")[[1]]
-      # if(mval1[[2]] == " ")
-        return(" ")
+  drawComboInTable <- function(){
+    n<- nrow(traitsVals$Data)
+    l <- c()
+    for(index in 1:n){
+      old_row = traitsVals$Data[index,]
+      options = old_row[[5]]
+      str  <- paste0('<select id="select_scale_' , index, '" class="select_scale" style="width:150px;">')
+      arrOpt <- strsplit(options, ",")[[1]]
+
+      if(length(arrOpt) == 1){
+        str <- ""
+      }
+      else{
+        for(val in arrOpt){
+          mval  <- strsplit(val, "-")[[1]]
+          # if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
+          #
+          # str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
+          if(mval[[1]] == old_row[[7]]) sel <- "selected" else sel <-""
+
+          str <- paste0(str, '<option value="', mval[[2]], "-" , mval[[1]], '" ', sel,'> ', mval[[1]], '</option>')
+        }
+        str <- paste0(str, "</select>")
+      }
+      l <- c(l, str)
     }
-
-    for(val in arrOpt){
-      mval  <- strsplit(val, "-")[[1]]
-      if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
-      str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
-    }
-    str <- paste0(str, "</select>")
-
-    return(str)
+    return(l)
   }
 
   ############ end traits table #############################################################
@@ -3309,13 +3795,6 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  # Get Trait #################################################################
-  # output$designFieldbook_traits_agrofims <- shinyTree::renderTree({
-  #
-  #   a<- agronomic_trait_list #data from fbdesign for hidap-agrofims
-  #
-  # })
-
   #output$designFieldbook_traits_agrofims <- shinyTree::renderTree({
   trait_agrofims <- reactive({
 
@@ -3353,89 +3832,6 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  # Desing of Experiment deprecated
-
-  # shiny::observeEvent(input$btnExport_fbdesign_agrofims, {
-  #
-  #   factor_name1 <- gsub("\\s+", replacement = "-" , input$factor_hdafims1) %>% stringr::str_trim(.,side = "both")
-  #   factor_lvl1 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims1) %>% stringr::str_trim(.,side = "both")
-  #
-  #   factor_name2 <- gsub("\\s+", replacement = "-" , input$factor_hdafims2) %>% stringr::str_trim(.,side = "both")
-  #   factor_lvl2 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims2) %>% stringr::str_trim(.,side = "both")
-  #
-  #   factor_name3 <- gsub("\\s+", replacement = "-" , input$factor_hdafims3) %>% stringr::str_trim(.,side = "both")
-  #   factor_lvl3 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims3) %>% stringr::str_trim(.,side = "both")
-  #
-  #   factor_name4 <- gsub("\\s+", replacement = "-" , input$factor_hdafims4) %>% stringr::str_trim(.,side = "both")
-  #   factor_lvl4 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims4) %>% stringr::str_trim(.,side = "both")
-  #
-  #   factor_name5 <- gsub("\\s+", replacement = "-" , input$factor_hdafims5) %>% stringr::str_trim(.,side = "both")
-  #   factor_lvl5 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims5) %>% stringr::str_trim(.,side = "both")
-  #
-  #   nfactors <- as.numeric(input$nfactors_hdafims)
-  #
-  #   # print(factor_lvl1)
-  #   # print(factor_lvl2)
-  #   # print(factor_lvl3)
-  #   # print(factor_lvl4)
-  #   # print(factor_lvl5)
-  #
-  #   if(nfactors == 1){ #1 factor
-  #     fb <- st4gi::cd.cr(geno = FA, nrep = 3, nc = 3)
-  #
-  #   } else if(nfactors == 2){ #2 factores
-  #
-  #     FA <-  factor_lvl1
-  #     FB <-  factor_lvl2
-  #     fb <- cd.factorial(A = FA, B = FB, design = "crd", nrep = 3,  nc = 3)
-  #
-  #   } else if(nfactors == 3){  #3 factores
-  #     #
-  #     FA <-  factor_lvl1
-  #     FB <- factor_lvl2
-  #     FC <- factor_lvl3
-  #
-  #     fb <- cd.factorial(A = FA, B = FB, C = FC, design = "crd", nrep = 3, nc = 3)
-  #
-  #   } else if(nfactors == 4){  #4 factores
-  #
-  #     FA <-  factor_lvl1
-  #     FB <- factor_lvl2
-  #     FC <- factor_lvl3
-  #     FD <- factor_lvl4
-  #
-  #     fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD, design = "crd", nrep = 3, nc = 3)
-  #
-  #   } else {  #5 factores
-  #
-  #     FA <- factor_lvl1
-  #     FB <- factor_lvl2
-  #     FC <- factor_lvl3
-  #     FD <- factor_lvl4
-  #     FE <- factor_lvl5
-  #
-  #     fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD , E = FE, design = design, nrep = 3, nc = 3)
-  #
-  #   }
-  #   fb <- fb$book
-  #
-  #   trait_agrofims <- unlist(shinyTree::get_selected(input$designFieldbook_traits_agrofims))
-  #
-  #   if(!is.null(trait_agrofims)){
-  #     mm  <-  matrix(nrow = nrow(fb), ncol = length(trait_agrofims) )
-  #     nm  <-  c(names(fb), trait_agrofims)
-  #     fb  <-  cbind(fb, mm)
-  #     names(fb)  <-  nm
-  #   }
-  #
-  #   fb
-  #   #add_fieldbook_sheet_hdfims(file = "omar.xlsx", fieldbook =fb)
-  #   #shell.exec("C://Users//obenites//Documents//omar.xlsx")
-  #
-  # } )
-
-
-
   ## Weather ShinyTree  #################################################################
 
   output$designFieldbook_weatherVar_agrofims <- shinyTree::renderTree({
@@ -3470,6 +3866,32 @@ server_design_agrofims <- function(input, output, session, values){
     geodb_file <- "table_sites_agrofims.rds"
     path <- file.path(path, geodb_file)
     values$sites_data <-  readRDS(file = path)
+
+  })
+
+  observe({
+    if(pkg.globals$userSession$logged == T){
+        print("Logged")
+    }
+    else if(pkg.globals$userSession$logged == F){
+      print("Not logged")
+    }
+  })
+
+  observeEvent(input$refreshSiteList,{
+    x_user <- fbdesign::getUserSession()
+    path <- fbglobal::get_base_dir()
+    #geodb_file <- "table_sites.rds"
+    geodb_file <- "table_sites_agrofims.rds"
+    path <- file.path(path, geodb_file)
+    if(x_user$logged){
+      x_sites_data <- readRDS(file = path)
+      values$sites_data <- dplyr::filter(x_sites_data, userId==x_user$id)
+    }
+    else{
+      values$sites_data <-  readRDS(file = path)
+    }
+
 
   })
 
@@ -3641,266 +4063,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
   })
 
-  # Reactive data.frame for designing fieldbook #################################################
-  fbdraft <- shiny::reactive({
-
-    if(input$select_import=="Template") {
-      req(input$file_mtlist)
-    }
-
-    if(input$select_import=="Local List"){
-      req( input$designFieldbook_sel_mlist)
-    }
-
-
-    try({
-      withProgress(message = 'Fieldbook loading...',
-                   detail = 'This may take a while...', value = 0, {
-
-                     incProgress(3/15)
-
-                     crp <- input$designFieldbook_crop # capture the type of crop
-
-                     #table_materials <- germoplasm_list()
-                     material_tbl = material_table()
-
-
-                     incProgress(4/15)
-                     #  #Passing function to detect parental lists (utils.R) -------------------
-                     #For parental list and genetic designs
-
-                     is_parental <- is_parentList(input$designFieldbook_sel_mlist)
-                     #type of list base on data structure
-                     tpds <- get_type_list_ds(material_tbl)
-
-                     #if(is_parental==TRUE){ #It's a parental list.
-                     if(tpds=="parental"){
-
-                       #Declaration of standard statistical designs parameters equal to NULL
-                       trt1 <- NULL
-                       trt2 <- NULL
-
-                       #Get genetic design
-                       design <-  input$design_geneticFieldbook
-
-                       # N.Caroline parameter
-                       if(design=="NCI" || design=="NCII"){
-
-                         male <- material_tbl$male$Accession_Number
-                         female <- material_tbl$female$Accession_Number
-                         set <- input$design_genetic_nc_set
-                         r <- input$design_genetic_r
-                         #r <- input$design_genetic_nc_r #deprecated code. Now works for lxt and NC
-                         if(design == "NCI"){
-                           trt1_label  = "MALE"
-                           trt2_label  = "FEMALE"
-                         }
-
-                         if(design == "NCII"){
-                           trt1_label  = "FEMALE"
-                           trt2_label  = "MALE"
-                         }
-                       }
-
-                       if(design=="LXT"){
-
-                         male <- material_tbl$male$Accession_Number
-                         female <- material_tbl$female$Accession_Number
-                         trt1_label  <-  "LINE"
-                         trt2_label  <-  "TESTER"
-                         type_lxt_scheme <- input$design_genetic_lxt_type
-                         r <- input$design_genetic_r
-                       }
-
-                     }
-
-                     #if(is_parental==FALSE){ #It's not a parental list
-                     if(tpds=="clonal"){
-
-                       #Get material list for Treatment 1
-                       trt1 <-  material_tbl$Accession_Number
-                       trt1 <-  gsub("[[:space:]]","", trt1)
-                       trt1 <-  setdiff(trt1,"")
-
-                       #Put labels for the first and second treatment/factor
-                       trt1_label <- "INSTN" #label 1 for genotypes
-                       trt2_label <- "FACTOR" #label 2 for factors
-
-                       #Get Statistical design
-                       design <-  input$designFieldbook
-                       #Get replications
-                       r <- input$designFieldbook_r
-
-
-                       #Use sub_design in case of factorials and split plot design
-                       sub_design <-  as.character(input$sub_design)
-
-                       #In case users do not select sub_design
-                       if(is.null(sub_design)) sub_design <- NULL
-
-                       # Capture of second factor
-                       print(input$factor_lvl)
-                       factor_lvl <- strsplit(x = input$factor_lvl, ",")[[1]]
-                       factor_lvl <- factor_lvl %>% stringr::str_trim(.,side = "both")
-                       factor_lvl <- gsub("\\s+", replacement = "_" , factor_lvl)
-                       trt2 <- factor_lvl
-                       trt2 <- trt2[!is.na(trt2) & trt2!=""]
-
-                       #Split plot design under CRD AND RCBD
-                       if(input$designFieldbook=="SPCRD" || input$designFieldbook=="SPRCBD"){
-
-                         if(input$designFieldbook_split_cb=="INSTN"){
-                           trt1 <- trt1
-                           trt2 <- trt2
-
-                         } else  {
-                           #In case of selecting Factor to plot the second treatment
-                           genotypes <- trt1
-                           factor <- trt2
-                           trt1 <- factor
-                           trt2 <- genotypes
-                           #Modify the labels for displaying fieldbook
-                           trt1_label  <-  "FACTOR" #label 1 for genotypes
-                           trt2_label  <-  "INSTN" #label 2 for factors
-
-                         }
-                       }
-
-                       #Augmented block design
-                       if(input$designFieldbook=="ABD"){
-                         #NOTE: In ABD(Augmented Design)  design.dau(trt1 = checks, trt2= genotypes)
-                         #For this reason : design.dau( trt1= checks =trt2 ; trt2 = genotypes=trt1)
-                         trt1 <- is_control(material_tbl)
-                         print(trt1)
-                         trt2 <-  material_tbl$Accession_Number
-                         trt2 <-  setdiff(trt2,trt1)
-                         print(trt2)
-                       }
-
-                       #Wescott Design
-                       if(input$designFieldbook=="WD"){
-                         #NOTE: In wd you need two checks
-                         #For this reason :
-
-                         trt2 <- is_control(material_tbl) #control material
-                         trt1 <- setdiff(trt1,trt2) #remove controls from material list
-
-                         #Declaration of Genetic parameters equal to NULL
-                         male <- NULL
-                         female <- NULL
-                         set <- NULL
-
-                       }
-                     }
-
-                     incProgress(6/15)
-
-                     #Get selected module
-                     mdl <-  input$designFieldbook_module
-                     mdl <-  stringr::str_extract(mdl, "([A-Z]{2})")[[1]]
-
-                     ### Cleaning Trait List  ----------------------------------------
-                     ## Remove all the trial names from the Trait List
-                     #Ex: remove yield, late blight, etc from Trait List when used pick ones
-                     #b <- input$designFieldbook_traits
-                     vars <-  get_tree_value(input$designFieldbook_traits,crop_selected = crp)
-
-                     #Redirecting to each crop.
-                     if(crp == "potato"){tbl <- table_module_potato }
-                     if(crp == "sweetpotato"){tbl <- table_module_sweetpotato }
-
-                     #Extracting modules and traits/variables
-                     mdl <- tbl[tbl$CROP == crp, c("TRIAL_ABBR", "TRIAL")] #HiDAP v1.0 Built_2
-                     mdl <- paste0(mdl[,2], " (", mdl[, 1],")")
-                     mdl <- sort(unique(mdl))
-                     ids <- str_trim(gsub("\\(.*","",mdl),side = "both")
-                     vars <- vars[!(vars %in% ids)]
-                     ### End of cleaning the Trait List abbreviations ----------------------------------------
-
-                     incProgress(8/15)
-
-                     #Design of Fieldbook
-                     fb = design_fieldbook(design = design,
-                                           trt1 = trt1,
-                                           trt2 = trt2,
-                                           #is_rwcol = FALSE,
-                                           sub_design=input$sub_design,
-                                           trt1_label = trt1_label,
-                                           trt2_label = trt2_label,
-                                           r = as.integer(r),
-                                           type_lxt = as.integer(type_lxt_scheme),
-                                           k = as.integer(input$designFieldbook_k),
-                                           # genetic design parameters
-                                           number_col = as.integer(input$designFieldbook_wd_col), #wescott design
-                                           number_colb = as.integer(input$designFieldbook_wd_colb), #wescott design
-                                           set = set,
-                                           male = male,
-                                           female= female,
-                                           ###designFieldbook_wd_col
-                                           first=TRUE,
-                                           cont = as.logical(input$designFieldbook_cont),
-                                           series = as.integer(input$designFieldbook_serie),
-                                           zigzag = FALSE,
-                                           variables = vars)
-
-                     print(fb)
-
-
-                     ### Comb Factor ###
-                     is_combfactor <- input$designFieldbook_combfactor  #designFieldbook_combfactor : checkbox, by default false
-                     combfactorName <- input$combfactor_name
-                     comfactorLvl <- input$combfactor_lvl
-                     print(comfactorLvl)
-
-                     if(is_combfactor){ #in case breeders requiere
-
-                       comfactorLvl <- strsplit(x =  comfactorLvl, ",")[[1]]
-                       comfactorLvl <- comfactorLvl %>% stringr::str_trim(.,side = "both")
-                       comfactorLvl <- gsub("\\s+", replacement = "_" , comfactorLvl)
-                       comfactorLvl <- comfactorLvl[!is.na(comfactorLvl) & comfactorLvl!=""]
-                       fb_list <- vector(mode="list", length = length(comfactorLvl)) #initialization of book's list
-
-                       for(i in 1:length(comfactorLvl)){
-                         fb_list[[i]] <- add_cl(fb = fb, design_abr = design, factor_lvl = comfactorLvl[i])
-                       }
-
-                       fb <- data.table::rbindlist(fb_list,fill = TRUE) %>% as.data.frame()#combination of field books
-                       #fb <- as.data.frame(fb)
-
-                     }
-
-
-                     is_ssample <- input$designFieldbook_cbssample
-                     print(is_ssample)
-
-                     if(is_ssample){
-
-                       nsample <- input$designFieldbook_nsample
-                       p1 <- as.list(rep(NA, times = nsample))
-                       names(p1) <- 1:nsample
-                       fb <- cbind(fb, p1)
-                       #Hint: TSSAMPLE is the temporary name for the SUB SAMPLE factor (column). Then, we change for SUBSAMPLE
-                       fb <- fb %>% tidyr::gather(key= "TSSAMPLE", value= "value", paste(1:nsample,sep="")) %>% select(-value)
-                       inst_pos <- which(names(fb) == "INSTN")
-                       print(inst_pos)
-                       #fb2 <- fb
-                       fb <- append_col(fb, list(SUBSAMPLE= fb$TSSAMPLE), after = inst_pos) %>% select(-TSSAMPLE)
-                     }
-
-                     ###
-                     incProgress(12/15)
-                     #from character to numeric
-                     fb[, 1]  <-  as.integer(fb[, 1])
-
-                     incProgress(15/15)
-                     fb
-
-
-                   })
-    })
-
-  })
-
+  #reactive value to show BookPreview/draft fieldbook table
   output$show_agrotable <- reactive({
     p <- input$fbDesign_draft_agrofims[1]
     if(p==0){
@@ -3919,20 +4082,22 @@ server_design_agrofims <- function(input, output, session, values){
 
 
 
-  # Visualization of the field book #############################################################
+  # Book preview #############################################################
   shiny::observeEvent(input$fbDesign_draft_agrofims, {
+
+    # print(f1())
+    # ben <<- f1()
 
     withProgress(message = 'Fieldbook Preview', value = 0, {
 
       incProgress(1/10,message = "...")
-
 
     flag <- TRUE #temporary
 
     if(flag){
 
       #print(agro_var_dt())
-      fb <- fb_agrofims()
+      fb <- fb_agrofims_traits()
 
       #fb <- fb[,1:129]
       output$fbDesign_table_agrofims <- rhandsontable::renderRHandsontable({
@@ -3948,386 +4113,10 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  # Download or Create Fieldboon in Excel Format ################################################
-  shiny::observeEvent(input$fbDesign_create, {
 
-
-    withProgress(message = "Downloading Fieldbook...",value= 0,
-                 {
-                   incProgress(1/15)
-                   fb = fbdraft()
-                   print("fb in exporting")
-
-                   try({
-
-                     #passing parameters to vars
-                     fn = paste0(fbdesign_id(), ".rda")
-                     #fp = file.path(fbglobal::fname_fieldbooks(input$designFieldbook_crop), fn)
-
-                     #### after fbglobal
-                     path <- fbglobal::get_base_dir()
-                     fp <- file.path(path, fn)
-                     #### end before
-
-                     #Detection of parentl list
-                     is_parental <- is_parentList(input$designFieldbook_sel_mlist)
-
-                     #In case of parental list
-
-                     tpds <- get_type_list_ds(material_table())
-
-
-                     #if(is_parental==TRUE){
-                     if(tpds=="parental"){
-                       r <- input$design_genetic_r
-                       mtl_table <- material_table()$parental_table
-                     }
-
-                     #In case of other list (genotype and family)
-                     #if(is_parental==FALSE){
-                     if(tpds=="clonal"){
-                       r <- input$designFieldbook_r
-                       mtl_table <- as.data.frame(material_table())
-                     }
-
-                     mtl_table <-  mtl_table
-                     #Get begin date
-                     begin_date <- input$fbDesign_project_time_line[1]
-                     begin_date <- unlist(str_split(begin_date,"-"))
-                     begin_date1 <- paste(begin_date[3],begin_date[2],begin_date[1],sep="/")
-
-                     #Get end date
-                     end_date <- input$fbDesign_project_time_line[2]
-                     end_date <- unlist(str_split(end_date,"-"))
-                     end_date1 <- paste(end_date[3],end_date[2],end_date[1],sep="/")
-
-                     #Setting genetic parameters NA
-                     genetic_design <- NA#hidden in 7/10/2017 11:20
-                     type_of_ploidy <- NA #hidden in 7/10/2017 11:20
-                     set <- NA
-
-
-                     #This variable serves as a flag if our fieldbook is correct.
-                     flag <- TRUE
-
-                     #Check if material list is empty
-                     if(length(mtl_table)==0 ) {
-                       flag <- FALSE
-                       shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have not selected a material list. Please select/upload one"), styleclass = "danger")
-                     }
-
-
-                     #In case of augmented block design, it must verify the checks in the stistical designs
-                     if(input$designFieldbook=="ABD"){
-
-                       mtl <- mtl_table
-                       mtl_instn <- as.character(mtl$Is_control)
-
-                       mtl_checks_count <- is_control(mtl_table)
-                       print(mtl_checks_count)
-
-                       if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1  ){
-                         shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: in Augmented Design: At least two checks are needed in 'Is_Control' column. Verify Material List file"), styleclass = "danger")
-
-                         flag <- FALSE
-
-                       } else {
-
-                         flag <- TRUE
-
-                       }
-
-                     }
-
-                     if(input$designFieldbook=="WD"){
-
-                       mtl <- mtl_table
-                       mtl_instn <- as.character(mtl$Is_control)
-
-                       mtl_checks_count <- is_control(mtl_table)
-
-                       if(all(is.na(mtl_instn)) || length(mtl_checks_count)==1 || length(mtl_checks_count)>2  ){
-
-                         shinysky::showshinyalert(session, "alert_fb_done",
-                                                  paste("ERROR in Westcott Design: Just two checks are needed in 'Is_Control' column. Verify your Material List file"), styleclass = "danger")
-                         flag <- FALSE
-                       } else {
-                         flag <- TRUE
-                       }
-
-                     }
-
-                     if(input$designFieldbook=="AD"){
-
-                       germoplasm <-material_table()$Accession_Number
-
-
-                       print(germoplasm)
-                       n <- length(germoplasm)
-                       r <- as.numeric(input$designFieldbook_r)
-                       k <- as.numeric(input$designFieldbook_k)
-
-                       dach <- fbdesign::design.alpha.check(trt= germoplasm,k=k,r=r)
-
-                       if(!dach$alfares){
-                         ms <- paste(dach$res,". The combination of ",r," and", k, " is wrong using ",n ," genotypes.")
-                         shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: ", ms), styleclass = "danger")
-                         flag <- FALSE
-                       } else{
-                         flag <- TRUE
-                       }
-
-                     }
-
-                     # To combine fieldbooks
-                     if(input$designFieldbook_combfactor) {
-                       #for combined designs. Specifically for CRD, RCBD, WescottD, AugmentedBD, AlphaD
-                       factor_input <- input$combfactor_name
-                       flevel_input <- input$combfactor_lvl
-                     }
-                     else { # for factorial/split designs
-                       #for factorial designs, split and strip plot design
-                       factor_input <- input$factor_name
-                       flevel_input <- input$factor_lvl
-                     }
-
-
-                     if(tpds=="parental"){
-
-
-                       genetic_design  <-  input$design_geneticFieldbook#hidden in 7/10/2017 11:20
-                       type_of_ploidy  <-  input$design_genetic_ploidy #hidden in 7/10/2017 11:20
-                       set  <-  input$design_genetic_nc_set
-
-
-
-                       if(input$design_geneticFieldbook=="NCI"){
-
-                         male <-  mtl_table$Male_AcceNumb
-                         female <-  mtl_table$Female_AcceNumb
-                         set <- as.numeric(input$design_genetic_nc_set)
-                         r <- as.numeric(input$design_genetic_r)
-
-                         print(male)
-                         print(female)
-
-                         if(length(male)!=length(female)){
-                           flag <- FALSE
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
-
-                         } else if (r==1 || is.na(r)){
-                           flag <- FALSE
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
-
-                         } else if (is.null(male) || is.na(male)){
-                           flag <- FALSE
-
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 male"), styleclass = "danger")
-
-                         } else if(length(female)==1 || is.null(female) || is.na(female)){
-                           flag <- FALSE
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 female"), styleclass = "danger")
-
-                         } else if (length(female) %% set !=0){
-                           flag <- FALSE
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
-
-                         } else {
-
-                           flag <- TRUE
-                         }
-
-                       }
-
-                       if(input$design_geneticFieldbook=="NCII"){
-
-                         male <-  mtl_table$Male_AcceNumb
-                         female <-  mtl_table$Female_AcceNumb
-                         set <- as.numeric(input$design_genetic_nc_set)
-                         r <- as.numeric(input$design_genetic_r)
-                         print(male)
-                         print(female)
-
-
-                         if(length(male)!=length(female)){
-                           flag <- FALSE
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
-
-                         } else if (r==1 || is.na(r)){
-                           flag <- FALSE
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
-
-                         } else if (is.null(male) || is.na(male)){
-                           flag <- FALSE
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 males"), styleclass = "danger")
-
-                         } else if(length(female)==1 || is.null(female) || is.na(female)){
-                           flag <- FALSE
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 females"), styleclass = "danger")
-
-                         } else if (length(female) %% set !=0){
-                           flag <- FALSE
-                           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
-
-                         } else {
-
-                           flag <- TRUE
-                         }
-
-                       }
-
-
-                     }
-
-
-                     #If field book does exist then print warning message: It's already created it.
-                     if(file.exists(fp))  {
-                       shinysky::showshinyalert(session, "alert_fb_done", paste("WARNING: This fieldbook already exists in HiDAP. Please Select Experiment Number in Crop & Location"),
-                                                styleclass = "warning")
-                       flag <- FALSE
-                     }
-
-                     if(!file.exists(fp) && flag == TRUE) {
-
-                       saveRDS(fb, fp)
-                       values[["ph_fb_list"]] = NULL
-                       shinysky::showshinyalert(session, "alert_fb_done", paste("GREAT: Fieldbook successfully created!"), styleclass = "success")
-
-                       ##after fbglobal
-                       #Set up the file path
-                       xlsx_path <- fbglobal::get_base_dir()
-                       xlsx_path <- file.path(xlsx_path, fbdesign_id())
-                       fn_xlsx <- paste(xlsx_path, ".xlsx",sep= "")
-                       ##
-
-                       openxlsx::write.xlsx(fb, fn_xlsx,sheet="Fieldbook",overwrite=TRUE)
-
-                       # Fieldbook Sheet ------------------------------------------------------
-                       add_fieldbook_sheet(file = fn_xlsx, fieldbook = fb)
-
-                       #load the crop_template_xlsx
-                       crop_template <- crop_template_xlsx #dataset loaded from fbdesign package
-
-
-                       ### Logical/flag value for users that combine fieldbooks
-                       combine <- input$designFieldbook_combfactor #logical
-                       ###
-
-                       print("2")
-                       incProgress(2/15)
-
-                       #varsitos <- input$designFieldbook_traits
-                       add_varlist_sheet(file=fn_xlsx, crop_template = crop_template,crop=input$designFieldbook_crop,
-                                         trait_list = input$designFieldbook_traits)
-
-                       incProgress(4/15)
-
-
-                       # Minimal Sheet ------------------------------------------------------
-
-                       add_minimal_sheet(file = fn_xlsx, crop_template = crop_template, col_name = "Value", Trial_name = fbdesign_id(),
-                                         crop = input$designFieldbook_crop,
-                                         type_trial = input$designFieldbook_module,
-                                         begin_date = begin_date1,
-                                         end_date = end_date1,
-                                         site_short_name = input$designFieldbook_sites,
-                                         country = input$fbDesign_countryTrial)
-
-                       if(input$fbDesign_environment_type!="Field"){
-                         #In case of screenhouse and greenhouse
-                         n_plant_pot <- input$fbDesign_nplantxpot
-                         n_pots <- input$fbDesign_npots
-                         n_plot_row <- NA
-                         n_plant_plot  <-  NA
-                         n_plant_row  <-  NA
-                         plot_size <- NA
-                         plant_density <- NA
-                         distance_plants <- NA
-                         distance_rows <- NA
-                       } else {
-                         ### Greenhouse and screenhouse
-                         n_plant_pot <- NA
-                         n_pots <- NA
-                         ### Field
-                         n_plot_row <- input$fbDesign_nrowplot
-                         n_plant_plot <- input$fbDesign_nplants
-                         n_plant_row <- input$fbDesign_nplantsrow
-                         plot_size <- input$fbDesign_psize
-                         plant_density <- input$fbDesign_pdensity
-                         distance_plants <- input$fbDesign_distPlants
-                         distance_rows <- input$fbDesign_distRows
-                       }
-
-                       print("3")
-                       incProgress(3/15)
-
-                       # Installation Sheet ------------------------------------------------------
-
-                       add_installation_sheet(file=fn_xlsx, crop_template = crop_template, col_name = "Value",
-                                              exp_design = input$designFieldbook,
-                                              #genetic_design = input$design_geneticFieldbook,#hidden in 7/10/2017 11:20
-                                              #type_of_ploidy = input$design_genetic_ploidy, #hidden in 7/10/2017 11:20
-                                              #set = input$design_genetic_nc_set, #hidden in 7/10/2017 11:20
-                                              genetic_design = genetic_design, #hidden in 7/10/2017 11:20
-                                              type_of_ploidy = type_of_ploidy, #hidden in 7/10/2017 11:20
-                                              set = set, #hidden in 7/10/2017 11:20
-                                              #rep = input$designFieldbook_r,#deprecated. Just for statistical design but not for genetic studies.
-                                              r = r,
-                                              block=NA,
-                                              exp_env = input$fbDesign_environment_type,
-                                              plot_start_number = NA,
-                                              #n_plant_pot = input$fbDesign_nplantxpot, #(Deprecated)If screenhouse and greenhouse is selected
-                                              #n_pots = input$fbDesign_npots, #(Deprecated) if screenhouse and greenhouse is selected
-                                              ##### Greenhouse and Screenhouse
-                                              n_plant_pot = n_plant_pot,
-                                              n_pots = n_pots,
-                                              n_plot_row = n_plot_row,
-                                              n_plant_plot = n_plant_plot,
-                                              n_plant_row = n_plant_row,
-                                              plot_size = plot_size,
-                                              plant_density = plant_density,
-                                              distance_plants = distance_plants,
-                                              distance_rows = distance_rows,
-                                              factor_name = factor_input,
-                                              factor_lvl = flevel_input,
-                                              combine= combine
-                       )
-
-                       print("4")
-                       incProgress(4/15)
-
-                       # Weather and soil Sheets ------------------------------------------------------
-                       add_metadata_sheet(file=fn_xlsx, crop_template = crop_template, soil_input = input$fbDesign_soil_cb,
-                                          weather_input = input$fbDesign_weather_cb)
-
-
-                       # Material list Sheet ------------------------------------------------------
-                       print("5")
-                       incProgress(5/15)
-                       add_material_sheet(file=fn_xlsx, crop_template=crop_template, crop= input$designFieldbook_crop,
-                                          material_list = mtl_table)
-
-
-                       # Crop management list Sheet ------------------------------------------------------
-                       print("6")
-                       incProgress(6/15)
-                       add_cmanagment_sheet(file=fn_xlsx,
-                                            crop_template = crop_template,
-                                            crop=input$designFieldbook_crop,
-                                            trait_list = input$designFieldbook_traits)
-
-                       print("11")
-                       shell.exec(fn_xlsx)
-
-                       incProgress(15/15)
-                     }
-
-                   })
-
-                 })
-  })
 
   # Material List Export, #######################################################################
+
   output$fbDesign_mlistExport <- downloadHandler(
     filename = function() {
       paste("Material_List", '.xlsx', sep='')
@@ -4344,27 +4133,355 @@ server_design_agrofims <- function(input, output, session, values){
     }
   )
 
-  ###reactive data frame for design fieldbook  ################################################
+   # Reactive Factor and Levels #############################################################
+
+   ### Factor 1  ############################################################
+   factor1StartDateInputs <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_1
+     fl <- list()
+
+     sel1_1 <-	input$sel1_1 #group
+     sel1_2<-	input$sel1_2 #subgroup
+     sel1_3<-	input$sel1_3 #factor
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_start_date_", 1, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor1EndDateInputs <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_1
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_end_date_", 1, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor1NumericInputLevel <- reactive({
+     #nfactors<- input$nfactors_hdafims
+     #nlevels <- input$numLevels_1
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     #for(i in 1:nfactors){
+     fl[[1]] <-  input[[paste0("levels_", 1)]] #i = order
+     #}
+     fl <- unlist(fl)
+   })
+   factor1TextInputLevel <- reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 1)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor1TextInputUnits <-reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("units_", 1)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor1ComboboxLevel <- reactive({
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 1)]] #i = order
+     fl <- unlist(fl)
+
+   })
+
+   f1 <- reactive({
+
+     out <- list(factor1StartDateInputs(),  factor1EndDateInputs(),  factor1NumericInputLevel(),  factor1TextInputLevel(),
+                 factor1TextInputUnits(), factor1ComboboxLevel())
+     names(out) <- c("Start date", "End date", "numeric", "text", "units", "combo")
+     out
+   })
+   ##########################################################################
+
+   ### Factor 2  ############################################################
+   factor2StartDateInputs  <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_2
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_start_date_", 2, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor2EndDateInputs <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_2
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_end_date_", 2, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor2NumericInputLevel <- reactive({
+     #nfactors<- input$nfactors_hdafims
+     #nlevels <- input$numLevels_1
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     #for(i in 1:nfactors){
+     fl[[1]] <-  input[[paste0("levels_", 2)]] #i = order
+     #}
+     fl <- unlist(fl)
+   })
+   factor2TextInputLevel <- reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 2)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor2TextInputUnits <-reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("units_", 2)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor2ComboboxLevel <- reactive({
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 2)]] #i = order
+     fl <- unlist(fl)
+
+   })
+
+   f2 <- reactive({
+
+     out <- list(factor2StartDateInputs(),  factor2EndDateInputs(),  factor2NumericInputLevel(),  factor2TextInputLevel(),
+                 factor2TextInputUnits(), factor2ComboboxLevel())
+     names(out) <- c("Start date", "End date", "numeric", "text", "units", "combo")
+     out
+   })
+   ##########################################################################
+
+   ### Factor 3  ############################################################
+   factor3StartDateInputs  <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_3
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_start_date_", 3, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor3EndDateInputs <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_3
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_end_date_", 3, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor3NumericInputLevel <- reactive({
+     #nfactors<- input$nfactors_hdafims
+     #nlevels <- input$numLevels_1
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     #for(i in 1:nfactors){
+     fl[[1]] <-  input[[paste0("levels_", 3)]] #i = order
+     #}
+     fl <- unlist(fl)
+   })
+   factor3TextInputLevel <- reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 3)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor3TextInputUnits <-reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("units_", 3)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor3ComboboxLevel <- reactive({
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 3)]] #i = order
+     fl <- unlist(fl)
+
+   })
+
+   f3 <- reactive({
+
+     out <- list(factor3StartDateInputs(),  factor3EndDateInputs(),  factor3NumericInputLevel(),  factor3TextInputLevel(),
+                 factor3TextInputUnits(), factor3ComboboxLevel())
+     names(out) <- c("Start date", "End date", "numeric", "text", "units", "combo")
+     out
+
+   })
+   ##########################################################################
+
+   ### Factor 4  ############################################################
+   factor4StartDateInputs  <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_4
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_start_date_", 4, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor4EndDateInputs <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_4
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_end_date_", 4, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor4NumericInputLevel <- reactive({
+     #nfactors<- input$nfactors_hdafims
+     #nlevels <- input$numLevels_1
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     #for(i in 1:nfactors){
+     fl[[1]] <-  input[[paste0("levels_", 4)]] #i = order
+     #}
+     fl <- unlist(fl)
+   })
+   factor4TextInputLevel <- reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 4)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor4TextInputUnits <-reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("units_", 4)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor4ComboboxLevel <- reactive({
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 4)]] #i = order
+     fl <- unlist(fl)
+
+   })
+
+   f4 <- reactive({
+
+     out <- list(factor4StartDateInputs(),  factor4EndDateInputs(),  factor4NumericInputLevel(),  factor4TextInputLevel(),
+                 factor4TextInputUnits(), factor4ComboboxLevel())
+     names(out) <- c("Start date", "End date", "numeric", "text", "units", "combo")
+     out
+
+   })
+   ##########################################################################
+
+
+   ### Factor 5  ############################################################
+   factor5StartDateInputs  <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_5
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_start_date_", 5, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor5EndDateInputs <- reactive({
+
+     nfactors<- input$nfactors_hdafims
+     nlevels <- input$numLevels_5
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     for(i in 1:nlevels){
+       fl[[i]] <-  paste(input[[paste0("factor_end_date_", 5, "_", i)]])
+     }
+     fl <- unlist(fl)
+   })
+   factor5NumericInputLevel <- reactive({
+     #nfactors<- input$nfactors_hdafims
+     #nlevels <- input$numLevels_1
+     fl <- list()
+     #print(nlevels)
+     #print(p2)
+     #for(i in 1:nfactors){
+     fl[[1]] <-  input[[paste0("levels_", 5)]] #i = order
+     #}
+     fl <- unlist(fl)
+   })
+   factor5TextInputLevel <- reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 5)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor5TextInputUnits <-reactive({
+
+     fl <- list()
+     fl[[1]] <-  input[[paste0("units_", 5)]] #i = order
+     fl <- unlist(fl)
+
+   })
+   factor5ComboboxLevel <- reactive({
+     fl <- list()
+     fl[[1]] <-  input[[paste0("levels_", 5)]] #i = order
+     fl <- unlist(fl)
+
+   })
+
+   f5 <- reactive({
+
+     out <- list(factor5StartDateInputs(),  factor5EndDateInputs(),  factor5NumericInputLevel(),  factor5TextInputLevel(),
+                 factor5TextInputUnits(), factor5ComboboxLevel())
+     names(out) <- c("Start date", "End date", "numeric", "text", "units", "combo")
+     out
+
+   })
+   ##########################################################################
+
+
+
+
+  ###fieldbook design ################################################
+
   fb_agrofims <- shiny::reactive({
 
     nrep <- as.numeric(input$designFieldbook_agrofims_r)
     design <- input$designFieldbook_agrofims
-
-
-    factor_name1 <- gsub("\\s+", replacement = "-" , input$factor_hdafims1) %>% stringr::str_trim(.,side = "both")
-    factor_lvl1 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims1) %>% stringr::str_trim(.,side = "both")
-
-    factor_name2 <- gsub("\\s+", replacement = "-" , input$factor_hdafims2) %>% stringr::str_trim(.,side = "both")
-    factor_lvl2 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims2) %>% stringr::str_trim(.,side = "both")
-
-    factor_name3 <- gsub("\\s+", replacement = "-" , input$factor_hdafims3) %>% stringr::str_trim(.,side = "both")
-    factor_lvl3 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims3) %>% stringr::str_trim(.,side = "both")
-
-    factor_name4 <- gsub("\\s+", replacement = "-" , input$factor_hdafims4) %>% stringr::str_trim(.,side = "both")
-    factor_lvl4 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims4) %>% stringr::str_trim(.,side = "both")
-
-    factor_name5 <- gsub("\\s+", replacement = "-" , input$factor_hdafims5) %>% stringr::str_trim(.,side = "both")
-    factor_lvl5 <- gsub("\\s+", replacement = "-" , input$lvl_hdafims5) %>% stringr::str_trim(.,side = "both")
 
     nfactors <- as.numeric(input$nfactors_hdafims)
 
@@ -4378,143 +4495,468 @@ server_design_agrofims <- function(input, output, session, values){
 
     if(is.null(crop_varietiesname)) crop_varietiesname <- ""
 
-    # print(factor_lvl1)
-    # print(factor_lvl2)
-    # print(factor_lvl3)
-    # print(factor_lvl4)
-    # print(factor_lvl5)
 
     if(nfactors == 1){
-      fb <- st4gi::cd.cr(geno = FA, nrep = nrep,  nc = 3)
 
-    } else if(nfactors == 2){
+        sel1_1 <-	input$sel1_1 #group
+        sel1_2<-	input$sel1_2 #subgroup
+        sel1_3<-	input$sel1_3 #factor
+        factorName1 <- paste(sel1_2, sel1_3, sep = " ")
 
-      FA <-  factor_lvl1
-      FB <-  factor_lvl2
-      #print(FA)
-      #print(FB)
-      #print(design)
-      #print(nrep)
-
-      if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
-
-        fb <- cd.factorial(A = FA, B = FB, C= crop_varietiesname, design = design, nrep = nrep,  nc = 3)
-
-        if(design == "crd"){
-          names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, "CROP_VARIETY")
+        F1 <- f1()
+        if(sel1_3 == "Start date" ){
+          lev1 <- F1[[sel1_3]]
+        } else if( sel1_3 == "End date"){
+          lev1 <- F1[[sel1_3]]
         } else{
-          names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, "CROP_VARIETY")
+          lev1<- F1[["text"]]
         }
+        #To Do Units combos
 
+     if(design == "crd"){
+              fb <- st4gi::cd.cr(geno = lev1, nrep = nrep,  nc = 3)
+              fb <- fb$book
+              names(fb) <-  c("PLOT", "ROW", "COL", factorName1)
+          }
+     if(design == "rcbd"){
+              fb <- st4gi::cd.rcb(geno = lev1, nb = nrep, nc = 3)
+              fb <- fb$book
+              names(fb) <-  c("PLOT", "BLOCK", "ROW", "COL", factorName1)
+          }
 
-      } else {
+    }
 
-        fb <- cd.factorial(A = FA, B = FB, design = design, nrep = nrep,  nc = 3)
+    if(nfactors == 2){
 
-        if(design == "crd"){
-          names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
-        } else{
-          names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
-        }
+      sel1_1 <-	input$sel1_1 #group
+      sel1_2<-	input$sel1_2 #subgroup
+      sel1_3<-	input$sel1_3 #factor
+      factorName1 <- paste(sel1_2, sel1_3, sep = " ")
 
-
+      F1 <- f1()
+      if(sel1_3 == "Start date" ){
+        lev1 <- F1[[sel1_3]]
+      } else if( sel1_3 == "End date"){
+        lev1 <- F1[[sel1_3]]
+      } else{
+        lev1<- F1[["text"]]
       }
 
+      sel2_1<-	input$sel2_1 #group
+      sel2_2<-	input$sel2_2
+      sel2_3<-	input$sel2_3
+      factorName2 <- paste(sel2_2, sel2_3, sep = "") #factor 2 name
+
+      F2 <- f2()
+      if(sel2_3 == "Start date" ){
+        lev2 <- F1[[sel2_3]]
+      } else if( sel2_3 == "End date"){
+        lev2 <- F2[[sel2_3]]
+      } else{
+        lev2<- F2[["text"]]
+      }
+
+      if(design == "crd"){
+        fb <- cd.factorial(A = lev1, B = lev2, design = design, nrep = nrep,  nc = 3)
+        fb <- fb$book
+        #To Do rename headers
+      }
+      if(design == "rcbd"){
+        fb <- cd.factorial(A = lev1, B = lev2, design = design, nrep = nrep,  nc = 3)
+        fb <- fb$book
+        #To Do rename headers
+      }
+    }
+
+    if(nfactors == 3){
+
+      sel1_1 <-	input$sel1_1 #group
+      sel1_2<-	input$sel1_2 #subgroup
+      sel1_3<-	input$sel1_3 #factor
+      factorName1 <- paste(sel1_2, sel1_3, sep = " ")
+
+      F1 <- f1()
+      if(sel1_3 == "Start date" ){
+        lev1 <- F1[[sel1_3]]
+      } else if( sel1_3 == "End date"){
+        lev1 <- F1[[sel1_3]]
+      } else{
+        lev1<- F1[["text"]]
+      }
+      #To Do Units combos
+
+      sel2_1<-	input$sel2_1 #group
+      sel2_2<-	input$sel2_2
+      sel2_3<-	input$sel2_3
+      factorName2 <- paste(sel2_2, sel2_3, sep = "") #factor 2 name
+
+      F2 <- f2()
+      if(sel2_3 == "Start date" ){
+        lev2 <- F1[[sel2_3]]
+      } else if( sel2_3 == "End date"){
+        lev2 <- F2[[sel2_3]]
+      } else{
+        lev2<- F2[["text"]]
+      }
+
+      sel2_1<-	input$sel2_1 #group
+      sel2_2<-	input$sel2_2
+      sel2_3<-	input$sel2_3
+      factorName2 <- paste(sel2_2, sel2_3, sep = "") #factor 2 name
+
+      F2 <- f2()
+      if(sel2_3 == "Start date" ){
+        lev2 <- F1[[sel2_3]]
+      } else if( sel2_3 == "End date"){
+        lev2 <- F2[[sel2_3]]
+      } else{
+        lev2<- F2[["text"]]
+      }
+
+      sel3_1 <-	input$sel3_1 #group
+      sel3_2 <-	input$sel3_2
+      sel3_3 <-	input$sel3_3
+      factorName3 <- paste(sel3_2, sel3_3, sep = "")
+
+      F3 <- f3()
+      if(sel3_3 == "Start date" ){
+        lev3 <- F3[[sel3_3]]
+      } else if( sel3_3 == "End date"){
+        lev3 <- F3[[sel3_3]]
+      } else{
+        lev3 <- F3[["text"]]
+      }
+
+
+      if(design == "crd"){
+        fb <- cd.factorial(A = lev1, B = lev2, C = lev3,  design = design, nrep = nrep,  nc = 3)
+        fb <- fb$book
+        #To Do rename headers
+      }
+      if(design == "rcbd"){
+        fb <- cd.factorial(A = lev1, B = lev2, C =  lev3, design = design, nrep = nrep,  nc = 3)
+        fb <- fb$book
+        #To Do rename headers
+      }
+    }
+
+    if(nfactors == 4){
+
+      sel1_1 <-	input$sel1_1 #group
+      sel1_2<-	input$sel1_2 #subgroup
+      sel1_3<-	input$sel1_3 #factor
+      factorName1 <- paste(sel1_2, sel1_3, sep = " ")
+
+      F1 <- f1()
+      if(sel1_3 == "Start date" ){
+        lev1 <- F1[[sel1_3]]
+      } else if( sel1_3 == "End date"){
+        lev1 <- F1[[sel1_3]]
+      } else{
+        lev1<- F1[["text"]]
+      }
+      #To Do Units combos
+
+      sel2_1<-	input$sel2_1 #group
+      sel2_2<-	input$sel2_2
+      sel2_3<-	input$sel2_3
+      factorName2 <- paste(sel2_2, sel2_3, sep = "") #factor 2 name
+
+      F2 <- f2()
+      if(sel2_3 == "Start date" ){
+        lev2 <- F1[[sel2_3]]
+      } else if( sel2_3 == "End date"){
+        lev2 <- F2[[sel2_3]]
+      } else{
+        lev2<- F2[["text"]]
+      }
+
+      sel2_1<-	input$sel2_1 #group
+      sel2_2<-	input$sel2_2
+      sel2_3<-	input$sel2_3
+      factorName2 <- paste(sel2_2, sel2_3, sep = "") #factor 2 name
+
+      F2 <- f2()
+      if(sel2_3 == "Start date" ){
+        lev2 <- F1[[sel2_3]]
+      } else if( sel2_3 == "End date"){
+        lev2 <- F2[[sel2_3]]
+      } else{
+        lev2<- F2[["text"]]
+      }
+
+      sel3_1 <-	input$sel3_1 #group
+      sel3_2 <-	input$sel3_2
+      sel3_3 <-	input$sel3_3
+      factorName3 <- paste(sel3_2, sel3_3, sep = "")
+
+      F3 <- f3()
+      if(sel3_3 == "Start date" ){
+        lev3 <- F3[[sel3_3]]
+      } else if( sel3_3 == "End date"){
+        lev3 <- F3[[sel3_3]]
+      } else{
+        lev3 <- F3[["text"]]
+      }
+
+      sel4_1 <-	input$sel4_1 #group
+      sel4_2 <-	input$sel4_2
+      sel4_3 <-	input$sel4_3
+      factorName4 <- paste(sel4_2, sel4_3, sep = "")
+
+      F4 <- f4()
+      if(sel4_3 == "Start date" ){
+        lev4 <- F4[[sel4_3]]
+      } else if( sel3_3 == "End date"){
+        lev4 <- F4[[sel4_3]]
+      } else{
+        lev4 <- F4[["text"]]
+      }
+
+      if(design == "crd"){
+        fb <- cd.factorial(A = lev1, B = lev2, C = lev3, D = lev4, design = design, nrep = nrep,  nc = 3)
+        fb <- fb$book
+        #To Do rename headers
+      }
+      if(design == "rcbd"){
+        fb <- cd.factorial(A = lev1, B = lev2, C =  lev3, D = lev4, design = design, nrep = nrep,  nc = 3)
+        fb <- fb$book
+        #To Do rename headers
+      }
+    }
+
+    if(nfactors == 4){
+
+      sel1_1 <-	input$sel1_1 #group
+      sel1_2<-	input$sel1_2 #subgroup
+      sel1_3<-	input$sel1_3 #factor
+      factorName1 <- paste(sel1_2, sel1_3, sep = " ")
+
+      F1 <- f1()
+      if(sel1_3 == "Start date" ){
+        lev1 <- F1[[sel1_3]]
+      } else if( sel1_3 == "End date"){
+        lev1 <- F1[[sel1_3]]
+      } else{
+        lev1<- F1[["text"]]
+      }
+      #To Do Units combos
+
+      sel2_1<-	input$sel2_1 #group
+      sel2_2<-	input$sel2_2
+      sel2_3<-	input$sel2_3
+      factorName2 <- paste(sel2_2, sel2_3, sep = "") #factor 2 name
+
+      F2 <- f2()
+      if(sel2_3 == "Start date" ){
+        lev2 <- F1[[sel2_3]]
+      } else if( sel2_3 == "End date"){
+        lev2 <- F2[[sel2_3]]
+      } else{
+        lev2<- F2[["text"]]
+      }
+
+      sel2_1<-	input$sel2_1 #group
+      sel2_2<-	input$sel2_2
+      sel2_3<-	input$sel2_3
+      factorName2 <- paste(sel2_2, sel2_3, sep = "") #factor 2 name
+
+      F2 <- f2()
+      if(sel2_3 == "Start date" ){
+        lev2 <- F1[[sel2_3]]
+      } else if( sel2_3 == "End date"){
+        lev2 <- F2[[sel2_3]]
+      } else{
+        lev2<- F2[["text"]]
+      }
+
+      sel3_1 <-	input$sel3_1 #group
+      sel3_2 <-	input$sel3_2
+      sel3_3 <-	input$sel3_3
+      factorName3 <- paste(sel3_2, sel3_3, sep = "")
+
+      F3 <- f3()
+      if(sel3_3 == "Start date" ){
+        lev3 <- F3[[sel3_3]]
+      } else if( sel3_3 == "End date"){
+        lev3 <- F3[[sel3_3]]
+      } else{
+        lev3 <- F3[["text"]]
+      }
+
+      sel4_1 <-	input$sel4_1 #group
+      sel4_2 <-	input$sel4_2
+      sel4_3 <-	input$sel4_3
+      factorName4 <- paste(sel4_2, sel4_3, sep = "")
+
+      F4 <- f4()
+      if(sel4_3 == "Start date" ){
+        lev4 <- F4[[sel4_3]]
+      } else if( sel4_3 == "End date"){
+        lev4 <- F4[[sel4_3]]
+      } else{
+        lev4 <- F4[["text"]]
+      }
+
+      sel5_1 <-	input$sel5_1 #group
+      sel5_2 <-	input$sel5_2
+      sel5_3 <-	input$sel5_3
+      factorName4 <- paste(sel5_2, sel5_3, sep = "")
+
+      F5 <- f5()
+      if(sel5_3 == "Start date" ){
+        lev5 <- F4[[sel5_3]]
+      } else if( sel5_3 == "End date"){
+        lev5 <- F4[[sel5_3]]
+      } else{
+        lev5 <- F5[["text"]]
+      }
+
+      if(design == "crd"){
+        fb <- cd.factorial(A = lev1, B = lev2, C = lev3, D = lev4, E = lev5, design = design, nrep = nrep,  nc = 3)
+        fb <- fb$book
+        #To Do rename headers
+      }
+      if(design == "rcbd"){
+        fb <- cd.factorial(A = lev1, B = lev2, C =  lev3, D = lev4, E = lev5, design = design, nrep = nrep,  nc = 3)
+        fb <- fb$book
+        #To Do rename headers
+      }
+    }
+
+
+   #fb
+
+    # end temporal
+
+
+    #nfactors <- input$nfactors_hdafims
+    #numLevels_1 <- input$numLevels_1 # n levels
+
+
+
+#     if(nfactors == 1){
+#       fb <- st4gi::cd.cr(geno = FA, nrep = nrep,  nc = 3)
+#
+#     } else if(nfactors == 2){
+#
+#       FA <-  factor_lvl1
+#       FB <-  factor_lvl2
+#       #print(FA)
+#       #print(FB)
+#       #print(design)
+#       #print(nrep)
+#
+#       if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
+#
+#         fb <- cd.factorial(A = FA, B = FB, C= crop_varietiesname, design = design, nrep = nrep,  nc = 3)
+#
+#         if(design == "crd"){
+#           names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, "CROP_VARIETY")
+#         } else{
+#           names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, "CROP_VARIETY")
+#         }
+#
+#
+#       } else {
+#
+#         fb <- cd.factorial(A = FA, B = FB, design = design, nrep = nrep,  nc = 3)
+#
+#         if(design == "crd"){
+#           names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
+#         } else{
+#           names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
+#         }
+#
+#
+#       }
+#
+# #
+# #       if(design == "crd"){
+# #         names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
+# #       } else{
+# #         names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
+# #       }
+#       fb <- fb
+#
+#     } else if(nfactors == 3){
+#       #
+#       FA <-  factor_lvl1
+#       FB <- factor_lvl2
+#       FC <- factor_lvl3
+#
+#       if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
+#
+#         fb <- cd.factorial(A = FA, B = FB, C = FC,  design = design, nrep = nrep,  nc = 3)
+#
+#         if(design == "crd"){
+#           names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, "CROP_VARIETY")
+#         } else{
+#           names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, "CROP_VARIETY")
+#         }
+#
+#
+#
+#       } else {
+#
+#       fb <- cd.factorial(A = FA, B = FB, C = FC, design = design, nrep = nrep, nc = 3)
 #
 #       if(design == "crd"){
-#         names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
-#       } else{
-#         names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2)
+#         names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3)
+#       } else {
+#         names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2,factor_name3)
 #       }
-      fb <- fb
-
-    } else if(nfactors == 3){
-      #
-      FA <-  factor_lvl1
-      FB <- factor_lvl2
-      FC <- factor_lvl3
-
-      if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
-
-        fb <- cd.factorial(A = FA, B = FB, C = FC,  design = design, nrep = nrep,  nc = 3)
-
-        if(design == "crd"){
-          names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, "CROP_VARIETY")
-        } else{
-          names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, "CROP_VARIETY")
-        }
-
-
-
-      } else {
-
-      fb <- cd.factorial(A = FA, B = FB, C = FC, design = design, nrep = nrep, nc = 3)
-
-      if(design == "crd"){
-        names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3)
-      } else {
-        names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2,factor_name3)
-      }
-      fb <- fb
-
-
-      }
-
-      fb <- fb
-
-    } else if(nfactors == 4){
-
-      FA <-  factor_lvl1
-      FB <- factor_lvl2
-      FC <- factor_lvl3
-      FD <- factor_lvl4
-
-      fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD, design = design, nrep = nrep, nc = 3)
-
-      if(design == "crd"){
-        names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4)
-      } else{
-        names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4)
-      }
-      fb <- fb
-
-    } else {
-
-      FA <- factor_lvl1
-      FB <- factor_lvl2
-      FC <- factor_lvl3
-      FD <- factor_lvl4
-      FE <- factor_lvl5
-
-      fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD , E = FE, design = design, nrep = nrep, nc = 3)
-
-      if(design == "crd"){
-        names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4, factor_name5)
-      } else{
-        names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4, factor_name5)
-      }
-      fb <- fb
-
-    }
-    fb <- fb$book
-
-    if(design=="crd"){
-      fb <- fb[,-c(2,3)]
-    }
-    if(design == "rcbd"){
-      fb <- fb[,-c(3,4)]
-    }
+#       fb <- fb
+#
+#
+#       }
+#
+#       fb <- fb
+#
+#     } else if(nfactors == 4){
+#
+#       FA <-  factor_lvl1
+#       FB <- factor_lvl2
+#       FC <- factor_lvl3
+#       FD <- factor_lvl4
+#
+#       fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD, design = design, nrep = nrep, nc = 3)
+#
+#       if(design == "crd"){
+#         names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4)
+#       } else{
+#         names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4)
+#       }
+#       fb <- fb
+#
+#     } else {
+#
+#       FA <- factor_lvl1
+#       FB <- factor_lvl2
+#       FC <- factor_lvl3
+#       FD <- factor_lvl4
+#       FE <- factor_lvl5
+#
+#       fb <- cd.factorial(A = FA, B = FB, C = FC, D = FD , E = FE, design = design, nrep = nrep, nc = 3)
+#
+#       if(design == "crd"){
+#         names(fb$book)<- c("PLOT", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4, factor_name5)
+#       } else{
+#         names(fb$book)<- c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factor_name1, factor_name2, factor_name3, factor_name4, factor_name5)
+#       }
+#       fb <- fb
+#
+#     }
+#     fb <- fb$book
+#
+#     if(design=="crd"){
+#       fb <- fb[,-c(2,3)]
+#     }
+#     if(design == "rcbd"){
+#       fb <- fb[,-c(3,4)]
+#     }
 
 
-    trait_selected <- trait_agrofims() %>% as.data.frame(stringsAsFactors =FALSE) #unlist(shinyTree::get_selected(input$designFieldbook_traits_agrofims))
-    trait_selected <- trait_selected[,2]
-
-    if(!is.null(trait_selected)){
-      mm  <-  matrix(nrow = nrow(fb), ncol = length(trait_selected) )
-      nm  <-  c(names(fb), trait_selected)
-      fb  <-  cbind(fb, mm)
-      names(fb)  <-  nm
-    }
 
     fb
 
@@ -4524,72 +4966,27 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  ##reactive table from agro features   ########################################################
-  dt_agrofeatures <- reactive({
+  ###fieldbook with traits ################################################
 
-    tree <- input$treeFeatures
-    p <- get_selected(tree)
-    print(p)
-    n <- length(p)
-    print(p)
-    #list_sel_values <- NULL
-    print(n)
-    #Generation of list of selected values from tree: list_sel_values
-    #as <- readRDS("inst/examples/04-selected/selagro.rds")
-    # for(i in 1:n){
-    #   list_sel_values[[i]] <- p[i][[1]]
-    # }
-    list_sel_values <- p
-    print(list_sel_values)
-
-    total_dt <- data.frame() #acumulator of tables of agronomic variables and values
-
-    list_sel_values <- list_sel_values
-    saveRDS(list_sel_values ,"list_sel_va.rds")
-    #value <- list_sel_values[[i]][1] #extrac values of each item
+  fb_agrofims_traits <- reactive({
 
 
-    for(i in 1:n){
+     fb <- fb_agrofims()
 
-      var_slevel <- attr(list_sel_values[i][[1]], "ancestry", TRUE)
-      nmax <- length(var_slevel)
+     # trait_selected <- trait_agrofims() %>% as.data.frame(stringsAsFactors =FALSE) #unlist(shinyTree::get_selected(input$designFieldbook_traits_agrofims))
+     # trait_selected <- trait_selected[,2]
+     #
+     # if(!is.null(trait_selected)){
+     #   mm  <-  matrix(nrow = nrow(fb), ncol = length(trait_selected) )
+     #   nm  <-  c(names(fb), trait_selected)
+     #   fb  <-  cbind(fb, mm)
+     #   names(fb)  <-  nm
+     # }
 
-      if( nmax ==1){
-        value <- NA #""
-        lvl <-  NA #list_sel_values[[i]][1]
-        subgroup <- NA #attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax] #max  =3
-        group <- NA #attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-1] #max =2
+     fb
 
-      } else if(nmax == 2){ #
-        value <- NA #""
-        lvl <-  NA #list_sel_values[[i]][1]
-        subgroup <- NA #attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax] #max  =3
-        group <- NA #attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-1] #max =2
-        #value <- list_sel_values[[i]][1] #extrac values of each item
-      } else  if(nmax == 3){
-        value <- ""
-        lvl <-  list_sel_values[[i]][1]
-        subgroup <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax] #max  =3
-        group <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-1] #max =2
-        #value <- list_sel_values[[i]][1] #extrac values of each item
-      }else {
-        #if(n_max == 4){
-        value <- list_sel_values[[i]][1]
-        lvl <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax] #max =4
-        subgroup <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-1] #max -1 = 3
-        group <- attr(list_sel_values[i][[1]], "ancestry", TRUE)[nmax-2] #max -2 =2
-      }
+   })
 
-      dt <- data.frame(Group  = group, Subgroup = subgroup, Level = lvl, Value = value)
-      total_dt <- rbind(total_dt, dt)
-    }
-    #end bucle
-    print(total_dt)
-    #remove na
-    total_dt <- total_dt[apply(total_dt,1,function(x)any(!is.na(x))),]
-    total_dt
-
-  })
 
   ##reactive table from metadata info   ########################################################
 
@@ -4758,94 +5155,99 @@ server_design_agrofims <- function(input, output, session, values){
   ### Land description
   dt_land_description <- reactive({
 
-      out<-  land_des(input$landLeveling_start_date,input$landLeveling_end_date,
-                  input$numPasses,input$operationsOrder,input$impl_type,
-                  input$animal_traction,input$humanPowered,input$motorized_traction,
-                  input$puddling_start_date,input$puddling_end_date,
-                  input$Penetrometer_in_field,input$puddling_depth_val,input$pud_animal_traction,
-                  input$pud_humanPowered,input$pud_motorized_traction,input$tillage_start_date,
-                  input$tillage_end_date,input$till_technique,input$till_depth_method,input$till_depth,
-                  input$till_total_op_season,input$till_impl_type,input$till_animal_traction,
-                  input$till_humanPowered,input$till_motorized_traction,input$liming_start_date,
-                  input$liming_end_date,input$lim_material,input$lim_quantity,input$lim_description
-        )
+    out <- fb_agrofims()
+
+      # out<-  land_des(input$landLeveling_start_date,input$landLeveling_end_date,
+      #             input$numPasses,input$operationsOrder,input$impl_type,
+      #             input$animal_traction,input$humanPowered,input$motorized_traction,
+      #             input$puddling_start_date,input$puddling_end_date,
+      #             input$Penetrometer_in_field,input$puddling_depth_val,input$pud_animal_traction,
+      #             input$pud_humanPowered,input$pud_motorized_traction,input$tillage_start_date,
+      #             input$tillage_end_date,input$till_technique,input$till_depth_method,input$till_depth,
+      #             input$till_total_op_season,input$till_impl_type,input$till_animal_traction,
+      #             input$till_humanPowered,input$till_motorized_traction,input$liming_start_date,
+      #             input$liming_end_date,input$lim_material,input$lim_quantity,input$lim_description
+      #   )
 
 
-      out
+    #  out <- dt
   })
 
   ### Mulching
-
   dt_mulching <- reactive({
 
-    out<-mulch(input$mulch_start_date,input$mulch_end_date,
-          input$mulch_type,input$mulch_thickness,input$mulch_amountPerSq,
-          input$mulch_color,input$mulch_percCoverage,input$mulch_remove_start_date,
-          input$mulch_remove_end_date,input$mulch_make,input$mulch_model,
-          input$mulch_animal_traction,input$mulch_humanPowered,
-          input$mulch_motorized_traction,input$residue_cropType,
-          input$residue_technique,input$residue_incorp_depth,
-          input$residue_aboveGroundMoisture,
-          input$residue_aboveGroundAmount)
-    out
+
+    out <- fb_agrofims()
+    # out<-mulch(input$mulch_start_date,input$mulch_end_date,
+    #       input$mulch_type,input$mulch_thickness,input$mulch_amountPerSq,
+    #       input$mulch_color,input$mulch_percCoverage,input$mulch_remove_start_date,
+    #       input$mulch_remove_end_date,input$mulch_make,input$mulch_model,
+    #       input$mulch_animal_traction,input$mulch_humanPowered,
+    #       input$mulch_motorized_traction,input$residue_cropType,
+    #       input$residue_technique,input$residue_incorp_depth,
+    #       input$residue_aboveGroundMoisture,
+    #       input$residue_aboveGroundAmount)
+    # out
 
   })
 
   ### Planting
-
-
   dt_planting <- reactive({
 
-    out<- plant(input$planting_start_date,input$planting_end_date,
-           input$planting_directSeeding,input$planting_seedingTech,
-           input$planting_ageSeeding,input$planting_manual,
-           input$planting_animal_traction,input$planting_motorized_traction,
-           input$planting_rowDistance,input$planting_seedingRate,
-           input$planting_seedPerhill,input$planting_distance,
-           input$planting_distribution)
-    out
+    out <- fb_agrofims()
+
+    # out<- plant(input$planting_start_date,input$planting_end_date,
+    #        input$planting_directSeeding,input$planting_seedingTech,
+    #        input$planting_ageSeeding,input$planting_manual,
+    #        input$planting_animal_traction,input$planting_motorized_traction,
+    #        input$planting_rowDistance,input$planting_seedingRate,
+    #        input$planting_seedPerhill,input$planting_distance,
+    #        input$planting_distribution)
+    # out
 
   })
 
 
   ### Harvest
-
   dt_harvest <- reactive({
 
-    out<-harvest(input$harvest_start_date,
-            input$harvest_end_date,input$crop_component_harvested,
-            input$harvest_implement,input$harvest_make,input$harvest_model,
-            input$harvest_animal_traction,input$harvest_humanPowered,
-            input$harvest_motorized_traction)
-    out
+    out <- fb_agrofims()
+    # out<-harvest(input$harvest_start_date,
+    #         input$harvest_end_date,input$crop_component_harvested,
+    #         input$harvest_implement,input$harvest_make,input$harvest_model,
+    #         input$harvest_animal_traction,input$harvest_humanPowered,
+    #         input$harvest_motorized_traction)
+    # out
 
   })
 
   #irrigation
   dt_irrigation <- reactive({
 
-    out<-irrigation(input$irrigationevent_start_date,
-                input$irrigationevent_end_date,input$irrigation_system_type,
-                input$irrigation_technique,input$surface_irrigation_technique,
-                input$localized_irrigation_technique,input$irrigation_using_sprinkler_systems,
-                irrigation_system_picture = "", #input$rrigation_system picture,
-                input$irrigation_water_source,input$irrigation_water_source_distance,
-                input$irrigation_bund_height,input$irrigation_percolation_rate,input$irrigation_equipment_depth,
-                input$irrigation_well_depth,input$irrigation_area_covered_irrigation_system)
-
-    out
+    out <- fb_agrofims()
+    # out<-irrigation(input$irrigationevent_start_date,
+    #             input$irrigationevent_end_date,input$irrigation_system_type,
+    #             input$irrigation_technique,input$surface_irrigation_technique,
+    #             input$localized_irrigation_technique,input$irrigation_using_sprinkler_systems,
+    #             irrigation_system_picture = "", #input$rrigation_system picture,
+    #             input$irrigation_water_source,input$irrigation_water_source_distance,
+    #             input$irrigation_bund_height,input$irrigation_percolation_rate,input$irrigation_equipment_depth,
+    #             input$irrigation_well_depth,input$irrigation_area_covered_irrigation_system)
+    #
+    # out
 
   })
 
   ##biofertilization
   dt_bioferti <- reactive({
 
-    out<-biofer( input$biofertilizer_landLeveling_start_date,input$biofertilizer_landLeveling_end_date,
-            input$biofertilizer_rhizobium_inoculum_strain,input$biofertilizer_quantity_inoculated,
-            input$biofertilizer_inoculation_method,input$biofertilizer_product_formulation,
-            input$biofertilizer_days_sowing_after_rhizobium_inocculation)
-
-    out
+    out <- fb_agrofims()
+    # out<-biofer( input$biofertilizer_landLeveling_start_date,input$biofertilizer_landLeveling_end_date,
+    #         input$biofertilizer_rhizobium_inoculum_strain,input$biofertilizer_quantity_inoculated,
+    #         input$biofertilizer_inoculation_method,input$biofertilizer_product_formulation,
+    #         input$biofertilizer_days_sowing_after_rhizobium_inocculation)
+    #
+    # out
 
   })
 
@@ -4853,20 +5255,19 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   ### pest and disease
-
-
   dt_pestdis <- reactive({
 
-    out<-pestdis (input$disease_observation_date,input$disease_name,
-              input$disease_plant_parts_affected,input$disease_percentage_experiement_affected,
-              input$disease_damages_notes,input$disease_notes,input$pest_type,input$pest_name,
-              input$pest_damage_notes,input$pest_notes,input$pestcontrol_start_date,input$pestcontrol_end_date,
-              input$pest_control_technique,input$pesticide_application_depth,input$pesticide_amount,
-              "", #input$pest_image,
-              input$pest_control_applications_totnumber,input$pest_control_details,input$chemical_pest_control_equipment,
-              input$pesticide_implement_make,input$pesticide_implement_model,input$pesticide_animal_traction,
-              input$pesticide_humanPowered,input$pesticide_motorized_traction)
-    out
+    out <- fb_agrofims()
+    # out<-pestdis (input$disease_observation_date,input$disease_name,
+    #           input$disease_plant_parts_affected,input$disease_percentage_experiement_affected,
+    #           input$disease_damages_notes,input$disease_notes,input$pest_type,input$pest_name,
+    #           input$pest_damage_notes,input$pest_notes,input$pestcontrol_start_date,input$pestcontrol_end_date,
+    #           input$pest_control_technique,input$pesticide_application_depth,input$pesticide_amount,
+    #           "", #input$pest_image,
+    #           input$pest_control_applications_totnumber,input$pest_control_details,input$chemical_pest_control_equipment,
+    #           input$pesticide_implement_make,input$pesticide_implement_model,input$pesticide_animal_traction,
+    #           input$pesticide_humanPowered,input$pesticide_motorized_traction)
+    # out
 
 
   })
@@ -4946,11 +5347,11 @@ server_design_agrofims <- function(input, output, session, values){
       # soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
       # print(soil_vars)
 
-      fb <- fb_agrofims()
+      fb_traits <- fb_agrofims_traits()
 
       # agrofeatures <- dt_agrofeatures()
-      metadata <- dt_metadata_agrofims()
-      installation <-dt_installation_agrofims()
+      #metadata <- dt_metadata_agrofims()
+      #installation <-dt_installation_agrofims()
 
       trait_agrofims_dt <- trait_agrofims()
       trait_agrofims_dt<- trait_agrofims_dt[,-3]
@@ -4958,7 +5359,7 @@ server_design_agrofims <- function(input, output, session, values){
       weather <- dt_weather_agrofims()
       print(weather)
       # soil <- dt_soil_agrofims()
-      # print(soil)
+      ## print(soil)
 
       fname <- paste(file,"xlsx",sep=".")
       #wb <- openxlsx::loadWorkbook(file = fname, create = TRUE)
@@ -4968,33 +5369,26 @@ server_design_agrofims <- function(input, output, session, values){
         incProgress(2/20,message = "Adding fieldbook data...")
 
 
-
-      # incProgress(3/10,message = "Adding agronomic features...")
-      # openxlsx::addWorksheet(wb, "Agronomic_Features", gridLines = TRUE)
-      # openxlsx::writeDataTable(wb, "Agronomic_Features", x = agrofeatures,
+      # incProgress(6/20,message = "Metadata metadata sheet...")
+      #
+      # openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
+      # openxlsx::writeDataTable(wb, "Metadata", x = metadata,
       #                          colNames = TRUE, withFilter = FALSE)
 
 
-      incProgress(6/20,message = "Metadata metadata sheet...")
-
-      openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "Metadata", x = metadata,
-                               colNames = TRUE, withFilter = FALSE)
-
-
-      incProgress(7/20,message = "Adding installation sheet...")
-
-      openxlsx::addWorksheet(wb, "Installation", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "Installation", x = installation,
-                               colNames = TRUE, withFilter = FALSE)
+      # incProgress(7/20,message = "Adding installation sheet...")
+      #
+      # openxlsx::addWorksheet(wb, "Installation", gridLines = TRUE)
+      # openxlsx::writeDataTable(wb, "Installation", x = installation,
+      #                          colNames = TRUE, withFilter = FALSE)
 
 
 
       #write agrofeatures sheet
-      agroFeaSelected <-input$selectAgroFeature
+      #agroFeaSelected <-input$selectAgroFeature
       #agrofea_sheets <- c("Land preparation", "Mulching", "Planting","Irrigation event", "Biofertilizer", "Pest & disease", "Nutrient management event","Harvest")
 
-      if(is.element("Land preparation", agroFeaSelected)) {
+      #if(is.element("Land preparation", agroFeaSelected)) {
 
       incProgress(10/20,message = "Adding land preparation sheet...")
 
@@ -5004,9 +5398,9 @@ server_design_agrofims <- function(input, output, session, values){
       openxlsx::writeDataTable(wb, "Land preparation", x = dt_land ,
                                colNames = TRUE, withFilter = FALSE)
 
-      }
+      #}
 
-      if(is.element("Mulching", agroFeaSelected)) {
+      #if(is.element("Mulching", agroFeaSelected)) {
 
       incProgress(11/20,message = "Adding mulching data...")
 
@@ -5017,9 +5411,9 @@ server_design_agrofims <- function(input, output, session, values){
                                colNames = TRUE, withFilter = FALSE)
 
 
-      }
+      #}
 
-      if(is.element("Planting", agroFeaSelected)) {
+      #if(is.element("Planting", agroFeaSelected)) {
 
       incProgress(12/20,message = "Adding planting data...")
 
@@ -5029,9 +5423,9 @@ server_design_agrofims <- function(input, output, session, values){
       openxlsx::writeDataTable(wb, "Planting", x = dt_plant,
                                colNames = TRUE, withFilter = FALSE)
 
-      }
+      #}
 
-      if(is.element("Irrigation event", agroFeaSelected)) {
+      #if(is.element("Irrigation event", agroFeaSelected)) {
 
       incProgress(14/20,message = "Adding irrigation data...")
 
@@ -5041,9 +5435,9 @@ server_design_agrofims <- function(input, output, session, values){
       openxlsx::writeDataTable(wb, "Irrigation", x = dt_irri,
                                colNames = TRUE, withFilter = FALSE)
 
-      }
+      #}
 
-      if(is.element("Biofertilizer", agroFeaSelected)) {
+      #if(is.element("Biofertilizer", agroFeaSelected)) {
 
       incProgress(15/20,message = "Adding biofertilizer data...")
 
@@ -5053,13 +5447,13 @@ server_design_agrofims <- function(input, output, session, values){
       openxlsx::writeDataTable(wb, "Biofertilizer", x = dt_biof,
                                colNames = TRUE, withFilter = FALSE)
 
-      }
+      #}
 
       # openxlsx::addWorksheet(wb, "Nutrient", gridLines = TRUE)
       # openxlsx::writeDataTable(wb, "Nutrient", x = ,
       #                          colNames = TRUE, withFilter = FALSE)
 
-      if(is.element("Harvest", agroFeaSelected)) {
+      #if(is.element("Harvest", agroFeaSelected)) {
 
         incProgress(13/20,message = "Adding harvest data...")
 
@@ -5069,9 +5463,9 @@ server_design_agrofims <- function(input, output, session, values){
         openxlsx::writeDataTable(wb, "Harvest", x = dt_harv,
                                  colNames = TRUE, withFilter = FALSE)
 
-      }
+        #}
 
-      if(is.element("Pest & disease", agroFeaSelected)) {
+        #if(is.element("Pest & disease", agroFeaSelected)) {
 
       incProgress(16/20,message = "Adding pest and disease data...")
 
@@ -5081,18 +5475,18 @@ server_design_agrofims <- function(input, output, session, values){
       openxlsx::writeDataTable(wb, "PestDisease", x = dt_pestd,
                                colNames = TRUE, withFilter = FALSE)
 
-      }
+      #}
 
       incProgress(9/20,message = "Adding trait list sheet...")
 
-      openxlsx::addWorksheet(wb, "Trait list", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "Trait list", x = trait_agrofims_dt,
-                               colNames = TRUE, withFilter = FALSE)
+      # openxlsx::addWorksheet(wb, "Trait list", gridLines = TRUE)
+      # openxlsx::writeDataTable(wb, "Trait list", x = trait_agrofims_dt,
+      #                          colNames = TRUE, withFilter = FALSE)
 
       incProgress(8/20,message = "Adding fieldbook sheet...")
 
       openxlsx::addWorksheet(wb, "Fieldbook", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "Fieldbook", x = fb,
+      openxlsx::writeDataTable(wb, "Fieldbook", x = fb_traits,
                                colNames = TRUE, withFilter = FALSE)
 
 

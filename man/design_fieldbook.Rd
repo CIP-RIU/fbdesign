@@ -71,4 +71,3 @@ a dataframe
 \description{
 Generic fieldbook design function
 }
-

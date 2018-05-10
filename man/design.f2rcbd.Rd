@@ -23,4 +23,3 @@ Creates an factorial two-Way design under Complete Block Randomization
 \author{
 Omar Benites
 }
-

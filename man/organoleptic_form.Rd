@@ -22,4 +22,3 @@ A data frame with the organoleptic form
 On farm methodologies requiere short and large organoleptic screenings where agricultors give sensorial scores
 (taste, apparearence and texture) #' for selecting best clones or genotypes. In order to achive, this function
 }
-

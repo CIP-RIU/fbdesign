@@ -17,4 +17,3 @@ This dataset contains the crops used in HiDAP
 \references{
 This data is related to HiDAP crop template
 }
-

@@ -23,4 +23,3 @@ returns a re-usable user interface element big
 \author{
 Reinhard Simon
 }
-

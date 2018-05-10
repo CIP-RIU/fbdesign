@@ -17,4 +17,3 @@ This list contains the list of Weather variables. Users can pick up elements on 
 \references{
 This data is related to HiDAP crop template
 }
-

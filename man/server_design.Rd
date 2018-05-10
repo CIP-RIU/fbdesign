@@ -21,4 +21,3 @@ Design field book
 \author{
 Omar Benites
 }
-

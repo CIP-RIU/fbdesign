@@ -17,4 +17,3 @@ This list contains the list of Agronomic Traits. Users can pick up elements on t
 \references{
 This data is related to HiDAP crop template
 }
-

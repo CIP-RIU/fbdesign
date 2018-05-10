@@ -17,4 +17,3 @@ This list contains a selection criterias list for Participatory Varietal Selecti
 \references{
 This data is related to HiDAP crop template
 }
-

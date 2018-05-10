@@ -21,4 +21,3 @@ Design field book for HIDAP-AGROFIMS
 \author{
 Omar Benites
 }
-

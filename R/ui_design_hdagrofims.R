@@ -435,7 +435,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                               "International Research Center")
                                                                           ),
                                                            fluidRow(id="fl_agencies_assoc_exp"),
-                                                           numericInput("numProjEntity", "Number of project entities", min = 1, max=5, value = 1)
+                                                           numericInput("numProjEntity", "Number of project management entities", min = 1, max=5, value = 1)
                                                            # textInput(inputId = "fundName", label = "Funding agency name", value = ""),
                                                     ),
                                                   column(width = 12,
@@ -481,7 +481,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                       textInput(inputId = "person1FirstName", label = "Person, first name", value = ""),
                                                                       textInput(inputId = "person1LastName", label = "Person, last name", value = ""),
-                                                                      selectizeInput("person1Afiliation", "Person, afiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
+                                                                      selectizeInput("person1Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
                                                                                        c("CGIAR Center",
                                                                                          "Other"
                                                                                        )
@@ -532,7 +532,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                    textInput(inputId = "person2FirstName", label = "Person, first name", value = ""),
                                                                    textInput(inputId = "person2LastName", label = "Person, last name", value = ""),
-                                                                   selectizeInput("person2Afiliation", "Person, afiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
+                                                                   selectizeInput("person2Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
                                                                                     c("CGIAR Center",
                                                                                       "Other"
                                                                                     )
@@ -584,7 +584,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                                   textInput(inputId = "person3FirstName", label = "Person, first name", value = ""),
                                                                                   textInput(inputId = "person3LastName", label = "Person, last name", value = ""),
-                                                                                  selectizeInput("person3Afiliation", "Person, afiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
+                                                                                  selectizeInput("person3Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
                                                                                                    c("CGIAR Center",
                                                                                                      "Other"
                                                                                                    )
@@ -635,7 +635,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                                   textInput(inputId = "person4FirstName", label = "Person, first name", value = ""),
                                                                                   textInput(inputId = "person4LastName", label = "Person, last name", value = ""),
-                                                                                  selectizeInput("person4Afiliation", "Person, afiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
+                                                                                  selectizeInput("person4Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
                                                                                                    c("CGIAR Center",
                                                                                                      "Other"
                                                                                                    )
@@ -680,7 +680,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                                   textInput(inputId = "person5FirstName", label = "Person, first name", value = ""),
                                                                                   textInput(inputId = "person5LastName", label = "Person, last name", value = ""),
-                                                                                  selectizeInput("person5Afiliation", "Person, afiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
+                                                                                  selectizeInput("person5Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
                                                                                                    c("CGIAR Center",
                                                                                                      "Other"
                                                                                                    )
@@ -733,6 +733,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                        #fluidRow(
                                                          column(width = 6,
                                                                 h2("Site information"),
+
+                                                                uiOutput("uiTest"),
 
                                                                 shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),
                                                                 shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
@@ -1009,7 +1011,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
 
                                                              #select number of factors
-                                                             selectInput(inputId = "nfactors_hdafims", label = "Number of factors", choices = 2:5)
+                                                             selectInput(inputId = "nfactors_hdafims", label = "Number of factors", choices = 1:5)
                                                       ),
                                                     #),
 
@@ -2374,7 +2376,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                               textInput("area_harvested", value = "", label="Area harvested")
                                                                                        ),
                                                                                        column(width = 6,#IMPLEMENTAR EN EXCEL
-                                                                                              selectizeInput("area_harvested_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices=c("m2", "in2", "ft2"))
+                                                                                              selectizeInput("area_harvested_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices=c("sq m", "sq in", "sq ft", "ha", "ac"))
                                                                                        )
                                                                                      ),
                                                                                      textInput("num_plants_area_harvested", "Number of plants in area harvested")
