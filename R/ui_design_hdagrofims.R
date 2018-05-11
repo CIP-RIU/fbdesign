@@ -2074,7 +2074,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                           )
                                                                                           ),
                                                                                           conditionalPanel("input.seeding_traction == 'Other'",
-                                                                                              textInput("traction_name", "", value="")
+                                                                                              textInput("seeding_traction_name", "", value="")
 
                                                                                           )
                                                                                         )

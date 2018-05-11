@@ -3865,7 +3865,9 @@ server_design_agrofims <- function(input, output, session, values){
     #geodb_file <- "table_sites.rds"
     geodb_file <- "table_sites_agrofims.rds"
     path <- file.path(path, geodb_file)
-    values$sites_data <-  readRDS(file = path)
+    # values$sites_data <-  readRDS(file = path)
+    x_sites_data <- readRDS(file = path)
+    values$sites_data <-  dplyr::filter(x_sites_data, userId==0)
 
   })
 
@@ -3884,12 +3886,13 @@ server_design_agrofims <- function(input, output, session, values){
     #geodb_file <- "table_sites.rds"
     geodb_file <- "table_sites_agrofims.rds"
     path <- file.path(path, geodb_file)
+    x_sites_data <- readRDS(file = path)
     if(x_user$logged){
-      x_sites_data <- readRDS(file = path)
       values$sites_data <- dplyr::filter(x_sites_data, userId==x_user$id)
     }
     else{
-      values$sites_data <-  readRDS(file = path)
+      values$sites_data <-  dplyr::filter(x_sites_data, userId==0)
+      # values$sites_data <- readRDS(file = path)
     }
 
 
@@ -3934,7 +3937,14 @@ server_design_agrofims <- function(input, output, session, values){
     #locs <- site_table #using data from package fbsite (OLD CODE)
     locs <- values$sites_data # read trial sites using reactive values from xdata folder (NEW CODE)
 
-    fbdesign_sites_selected <- fbdesign_sites()
+    if(nrow(locs) == 0){
+      fbdesign_sites_selected = c()
+
+    }else{
+      fbdesign_sites_selected <- fbdesign_sites()
+    }
+
+
     #print(locs)
     if (nrow(locs) > 0 ){
       #chc = locs$shortn
@@ -4501,7 +4511,7 @@ server_design_agrofims <- function(input, output, session, values){
         sel1_1 <-	input$sel1_1 #group
         sel1_2<-	input$sel1_2 #subgroup
         sel1_3<-	input$sel1_3 #factor
-        factorName1 <- paste(sel1_2, sel1_3, sep = " ")
+        factorName1 <- paste(sel1_2, sel1_3, sep = "")
 
         F1 <- f1()
         if(sel1_3 == "Start date" ){
@@ -4531,7 +4541,7 @@ server_design_agrofims <- function(input, output, session, values){
       sel1_1 <-	input$sel1_1 #group
       sel1_2<-	input$sel1_2 #subgroup
       sel1_3<-	input$sel1_3 #factor
-      factorName1 <- paste(sel1_2, sel1_3, sep = " ")
+      factorName1 <- paste(sel1_2, sel1_3, sep = "")
 
       F1 <- f1()
       if(sel1_3 == "Start date" ){
@@ -4541,11 +4551,13 @@ server_design_agrofims <- function(input, output, session, values){
       } else{
         lev1<- F1[["text"]]
       }
+
       # factor2
       sel2_1<-	input$sel2_1 #group
       sel2_2<-	input$sel2_2
       sel2_3<-	input$sel2_3
       factorName2 <- paste(sel2_2, sel2_3, sep = "") #factor 2 name
+      print(factorName2)
 
       F2 <- f2()
       if(sel2_3 == "Start date" ){
@@ -4559,13 +4571,13 @@ server_design_agrofims <- function(input, output, session, values){
       if(design == "crd"){
         fb <- cd.factorial(A = lev1, B = lev2, design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
-        names(fb) <-  c("PLOT", "ROW", "COL", factorName1, factorName2)
+        names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT", factorName1, factorName2)
 
       }
       if(design == "rcbd"){
         fb <- cd.factorial(A = lev1, B = lev2, design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
-        names(fb) <-  c("PLOT", "BLOCK", "ROW", "COL", factorName1, )
+        names(fb) <-  c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factorName1, factorName2)
 
       }
     }
@@ -4575,7 +4587,7 @@ server_design_agrofims <- function(input, output, session, values){
       sel1_1 <-	input$sel1_1 #group
       sel1_2<-	input$sel1_2 #subgroup
       sel1_3<-	input$sel1_3 #factor
-      factorName1 <- paste(sel1_2, sel1_3, sep = " ")
+      factorName1 <- paste(sel1_2, sel1_3, sep = "")
 
       F1 <- f1()
       if(sel1_3 == "Start date" ){
@@ -4633,11 +4645,13 @@ server_design_agrofims <- function(input, output, session, values){
       if(design == "crd"){
         fb <- cd.factorial(A = lev1, B = lev2, C = lev3,  design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
+        names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT",factorName1, factorName2,factorName3)
         #To Do rename headers
       }
       if(design == "rcbd"){
         fb <- cd.factorial(A = lev1, B = lev2, C =  lev3, design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
+        names(fb) <-  c("PLOT","BLOCK", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3)
         #To Do rename headers
       }
     }
@@ -4647,7 +4661,7 @@ server_design_agrofims <- function(input, output, session, values){
       sel1_1 <-	input$sel1_1 #group
       sel1_2<-	input$sel1_2 #subgroup
       sel1_3<-	input$sel1_3 #factor
-      factorName1 <- paste(sel1_2, sel1_3, sep = " ")
+      factorName1 <- paste(sel1_2, sel1_3, sep = "")
 
       F1 <- f1()
       if(sel1_3 == "Start date" ){
@@ -4718,11 +4732,13 @@ server_design_agrofims <- function(input, output, session, values){
       if(design == "crd"){
         fb <- cd.factorial(A = lev1, B = lev2, C = lev3, D = lev4, design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
+        names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3, factorName4)
         #To Do rename headers
       }
       if(design == "rcbd"){
         fb <- cd.factorial(A = lev1, B = lev2, C =  lev3, D = lev4, design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
+        names(fb) <-  c("PLOT","BLOCK", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3, factorName4)
         #To Do rename headers
       }
     }
@@ -4733,7 +4749,7 @@ server_design_agrofims <- function(input, output, session, values){
       sel1_1 <-	input$sel1_1 #group
       sel1_2<-	input$sel1_2 #subgroup
       sel1_3<-	input$sel1_3 #factor
-      factorName1 <- paste(sel1_2, sel1_3, sep = " ")
+      factorName1 <- paste(sel1_2, sel1_3, sep = "")
 
       F1 <- f1()
       if(sel1_3 == "Start date" ){
@@ -4810,11 +4826,13 @@ server_design_agrofims <- function(input, output, session, values){
       if(design == "crd"){
         fb <- cd.factorial(A = lev1, B = lev2, C = lev3, D = lev4, E = lev5, design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
+        names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3, factorName4 , factorName5)
         #To Do rename headers
       }
       if(design == "rcbd"){
         fb <- cd.factorial(A = lev1, B = lev2, C =  lev3, D = lev4, E = lev5, design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
+        names(fb) <-  c("PLOT","BLOCK", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3, factorName4, factorName5)
         #To Do rename headers
       }
     }
@@ -5152,6 +5170,184 @@ server_design_agrofims <- function(input, output, session, values){
 
     out <- fb_agrofims()
 
+
+    landLeveling_start_date	<-	paste(input$landLeveling_start_date)
+    landLeveling_end_date	<-	paste(input$landLeveling_end_date)
+    numPasses	<-	input$numPasses
+
+    land_impl_type	<-	input$land_impl_type
+    if(is.null(land_impl_type)){
+      land_impl_type	<-	""
+    }
+    if(land_impl_type=="Other"){
+      land_impl_type	<-	input$land_impl_type_other
+    }
+
+    land_traction	<-	input$land_traction
+    if(is.null(land_traction)){
+      land_traction		<-	""
+    }
+    if(land_traction=="Other"){
+      land_traction		<-	input$contOtherTraction
+    }
+    puddling_start_date	<-	paste(input$puddling_start_date)
+    puddling_end_date	<-	paste(input$puddling_end_date)
+    Penetrometer_in_field	<-	input$Penetrometer_in_field
+    puddling_depth_val	<-	input$puddling_depth_val
+
+    puddling_depth_unit	<-	input$puddling_depth_unit
+    if(is.null(puddling_depth_unit)){
+      puddling_depth_unit	<-	""
+    }
+
+    pud_impl_type	<-	input$pud_impl_type
+    if(is.null(pud_impl_type)){
+      pud_impl_type	<-	""
+    }
+    if(pud_impl_type=="Other"){
+      pud_impl_type	<-	input$pud_impl_type_other
+    }
+    pud_traction	<-	input$pud_traction
+
+    if(is.null(pud_traction)){
+      pud_traction	<-	""
+    }
+    if(pud_traction=="Other"){
+      pud_traction	<-	input$pud_contOtherTraction
+    }
+
+    tillage_start_date	<-	paste(input$tillage_start_date)
+    tillage_end_date	<-	paste(input$tillage_end_date)
+
+    till_technique	<-	input$till_technique
+    if(is.null(till_technique)){
+      till_technique	<-	""
+    }
+    if(is.null(till_technique)){
+      till_technique	<-	""
+    }
+    if(till_technique=="Other"){
+    till_technique	<-	input$till_technique_other
+    }
+
+    till_depth_method	<-	input$till_depth_method
+    tillage_depth	<-	input$tillage_depth
+
+    tillage_depth_unit	<-	input$tillage_depth_unit
+    if(is.null(tillage_depth_unit)){
+      tillage_depth_unit <- ""
+    }
+
+    total_number_tillage_passes	<-	input$total_number_tillage_passes
+
+    till_impl_type	<-	input$till_impl_type
+    if(is.null(till_impl_type)){
+      till_impl_type	<-	""
+    }
+    if(till_impl_type=="Other"){
+      till_impl_type	<-	input$contOthertill_impl_type
+    }
+
+    till_traction	<-	input$till_traction
+
+    if(is.null(till_traction)){
+      till_traction	<-	""
+    }
+    if(till_traction=="Other"){
+      till_traction	<-	input$contOthertill_traction
+    }
+
+    liming_start_date	<-	paste(input$liming_start_date)
+    liming_end_date	<-	paste(input$liming_end_date)
+    lim_material	<-	input$lim_material
+    lim_quantity	<-	input$lim_quantity
+
+    lim_quantity_unit	<-	input$lim_quantity_unit
+    if(is.null(lim_quantity_unit)){
+      lim_quantity_unit	<-	""
+    }
+
+    lim_description	<-	input$lim_description
+
+    liming_impl_type	<-	input$liming_impl_type
+    if(is.null(liming_impl_type)){
+      liming_impl_type	<-	""
+    }
+    if(liming_impl_type== "Other"){
+      liming_impl_type	<-	input$contOtherliming_impl_type
+    }
+
+    dtLandprep <- data.frame(landLeveling_start_date,
+                             landLeveling_end_date,
+                             numPasses,
+                             land_impl_type,
+                             land_traction,
+
+                             puddling_start_date,
+                             puddling_end_date,
+                             Penetrometer_in_field,
+                             puddling_depth_val,
+                             puddling_depth_unit,
+                             pud_impl_type,
+                             pud_traction,#)#,
+
+                             tillage_start_date,
+                             tillage_end_date,
+                             till_technique,
+                             till_depth_method,
+                             tillage_depth,
+                             tillage_depth_unit,
+                             total_number_tillage_passes,
+                             till_impl_type,
+                             till_traction,#)#,
+
+                             liming_start_date,
+                             liming_end_date,
+                             lim_material,
+                             lim_quantity,
+                             lim_quantity_unit,
+                             lim_description,
+                             liming_impl_type)
+
+    landpreNames <- c('Land levelling start date',
+                       'Land levelling end date',
+                       'Total number of levelling passes',
+                       'Land levelling implement type',
+                       'Land levelling traction',
+
+                       'Puddling start date',
+                       'Puddling end date',
+                       'Penetrometer in field',
+                       'Puddling depth val',
+                       'Puddling depth unit',
+                       'Puddling implement type',
+                       'Puddling traction',#)#,
+
+                       'Tillage start date',
+                       'Tillage end date',
+                       'Tillage technique',
+                       'Tillage depth method',
+                       'Tillage depth',
+                       'Tillage depth unit',
+                       'Total number of tillage passes',
+                       'Tillage implement',
+                       'Tillage traction',#,
+                       #
+                       'Liming start date',
+                       'Liming end date',
+                       'Liming material',
+                       'Quantity of liming material',
+                       'Quantity of liming material unit',
+                       'Liming description',
+                       'Liming implement')
+
+
+    names(dtLandprep) <- landpreNames
+
+
+    out <- merge(out, dtLandprep, by = 0, all = TRUE)[-1]
+
+    #print(out)
     # c(input$landLeveling_start_date, input$landLeveling_end_date,
     #   input$numPasses,input$land_impl_type,input$land_impl_type_other,
     #   input$land_traction,input$contOtherTraction,input$puddling_start_date,input$puddling_end_date,
@@ -5178,8 +5374,8 @@ server_design_agrofims <- function(input, output, session, values){
       #             input$liming_end_date,input$lim_material,input$lim_quantity,input$lim_description
       #   )
 
-
-    #  out <- dt
+     out
+     # out <- dt
   })
 
   ### Mulching
@@ -5187,6 +5383,162 @@ server_design_agrofims <- function(input, output, session, values){
 
 
     out <- fb_agrofims()
+
+
+    mulch_start_date	<-	input$mulch_start_date
+    mulch_end_date	<-	input$mulch_end_date
+
+    mulch_type	<-	input$mulch_type
+    if(is.null(mulch_type)){
+      mulch_type	<-	""
+    }
+    if(mulch_type == "Other"){
+      mulch_type <- input$mulch_type_other
+    }
+
+    mulch_thickness	<-	input$mulch_thickness
+    mulch_thickness_unit	<-	input$mulch_thickness_unit #unit
+    if(is.null(mulch_thickness_unit)){
+      mulch_thickness_unit	<-	""
+    }
+
+    mulch_amountPerSq	<-	input$mulch_amountPerSq
+    mulch_amountPerSq_unit	<-	input$mulch_amountPerSq_unit #unit
+    if(is.null(mulch_amountPerSq_unit)){
+      mulch_amountPerSq_unit	<-	""
+    }
+
+    mulch_color	<-	input$mulch_color
+    if(is.null(mulch_color)){
+      mulch_color	<-	""
+    }
+
+    mulch_percCoverage	<-	input$mulch_percCoverage
+    mulch_remove_start_date	<-	input$mulch_remove_start_date
+    mulch_remove_end_date	<-	input$mulch_remove_end_date
+
+    mulch_traction	<-	input$mulch_traction
+    if(is.null(mulch_traction)){
+      mulch_traction	<-	""
+    }
+    if(mulch_traction == "Other"){
+      mulch_traction <- input$mulch_type_other
+    }
+
+    residue_start_date	<-	input$residue_start_date
+    residure_end_date	<-	input$residure_end_date
+
+    residue_cropType	<-	input$residue_cropType
+    if(is.null(residue_cropType)){
+      residue_cropType	<-	""
+    }
+    if(residue_cropType == "Other"){
+      residue_cropType <- input$residue_traction_other
+    }
+
+
+    residue_technique	<-	input$residue_technique
+    if(is.null(residue_technique)){
+      residue_technique	<-	""
+    }
+
+    residue_traction	<-	input$residue_traction
+    if(is.null(residue_traction)){
+      residue_traction	<-	""
+    }
+    if(residue_traction == "Other"){
+      residue_traction <- input$residue_traction_other
+    }
+
+    crop_residue_thick	<-	input$crop_residue_thick
+    crop_residue_thick_unit <- input$crop_residue_thick_unit #unit
+    if(is.null(crop_residue_thick_unit)){
+      crop_residue_thick_unit	<-	""
+    }
+
+    crop_residue_amount_sqm	<-	input$crop_residue_amount_sqm
+    crop_residue_amount_sqm_unit	<-	input$crop_residue_amount_sqm_unit #unit
+    if(is.null(crop_residue_amount_sqm_unit)){
+      crop_residue_amount_sqm_unit	<-	""
+    }
+    crop_residue_perc_cov	<-	input$crop_residue_perc_cov
+    residue_inc_depth	<-	input$residue_inc_depth
+
+    above_ground_res_moisture	<-	input$above_ground_res_moisture
+    if(is.null(above_ground_res_moisture)){
+      above_ground_res_moisture	<-	""
+    }
+
+    above_ground_res_amount	<-	input$above_ground_res_amount
+
+    above_ground_res_amount_unit	<-	input$above_ground_res_amount_unit #unit
+    if(is.null(above_ground_res_amount_unit)){
+      above_ground_res_amount_unit	<-	""
+    }
+
+    dtmulch <- data.frame(mulch_start_date,
+                          mulch_end_date,
+                          mulch_type,
+                          mulch_thickness,
+                          mulch_thickness_unit,
+                          mulch_amountPerSq,
+                          mulch_amountPerSq_unit,
+                          mulch_color,
+                          mulch_percCoverage,
+                          mulch_remove_start_date,
+                          mulch_remove_end_date,
+                          mulch_traction,
+                          residue_start_date,
+                          residure_end_date,
+                          residue_cropType,
+                          residue_technique,
+                          residue_traction,
+                          crop_residue_thick,
+                          crop_residue_thick_unit,
+                          crop_residue_amount_sqm,
+                          crop_residue_amount_sqm_unit,
+                          crop_residue_perc_cov,
+                          residue_inc_depth,
+                          above_ground_res_moisture,
+                          above_ground_res_amount,
+                          above_ground_res_amount_unit)
+
+
+
+    mulchresNames <-c(
+                'Mulching start date',
+                'Mulching end date',
+                'Mulch type',
+                'Mulch thickness',
+                'Mulch thickness unit',
+                'Mulch amount per sq. m',
+                'Mulch amount per sq. m unit',
+                'Mulch color',
+                'Mulch percentage of coverage',
+                'Mulch removal start date',
+                'Mulch removal end date',
+                'Mulching traction',
+                'Residue start date',
+                'Residue end date',
+                'Crop residue type',
+                'Residue management technique',
+                'Residue management traction ',
+                'Crop residue thickness',
+                'Crop residue thickness unit',
+                'Crop residue amount per sq. m',
+                'Crop residue amount per sq. m unit',
+                'Crop residue percentage of coverage',
+                'Residue incorporation depth',
+                'Above ground residue moisture',
+                'Above ground residue (amount)',
+                'Above ground residue (amount) unit')
+
+
+    names(dtmulch) <- mulchresNames
+
+
+    out <- merge(out, dtmulch, by = 0, all = TRUE)[-1]
+
     # out<-mulch(input$mulch_start_date,input$mulch_end_date,
     #       input$mulch_type,input$mulch_thickness,input$mulch_amountPerSq,
     #       input$mulch_color,input$mulch_percCoverage,input$mulch_remove_start_date,
@@ -5196,7 +5548,7 @@ server_design_agrofims <- function(input, output, session, values){
     #       input$residue_technique,input$residue_incorp_depth,
     #       input$residue_aboveGroundMoisture,
     #       input$residue_aboveGroundAmount)
-    # out
+     out
 
   })
 
@@ -5205,6 +5557,170 @@ server_design_agrofims <- function(input, output, session, values){
 
     out <- fb_agrofims()
 
+    plantNames<-c('Direct seeding  Start date',
+                  'Direct seeding  End date',
+                  'Direct seeding  Seeding environment',
+                  'Direct seeding  Seeding technique',
+                  'Direct seeding  Seed treatment',
+                  'Direct seeding  Traction',
+
+
+                  'Direct seeding  Distance between rows',
+                  'Direct seeding  Distance between rows unit',
+                  'Direct seeding/Seeding rate',
+                  'Direct seeding/Seeding rate unit',
+                  'Distance between plants',
+                  'Distance between plants units',
+                  'Transplanting Start date',
+                  'Transplanting End date',
+                  'Transplanting Age of seedling',
+                  'Transplanting seeding Environment',
+                  'Transplanting Seed treatment',
+                  'Transplanting Technique',
+                  'Transplanting Traction',
+
+                  'Transplanting Seedling density',
+                  'Transplanting Seedling density units',
+                  'Transplanting Distance between rows',
+                  'Transplanting Distance between rows units',
+                  'Transplanting Distance between plants',
+                  'Transplanting Distance between plants units',
+                  'Transplanting number of row')
+
+
+
+    planting_start_date	<-	input$planting_start_date
+    planting_end_date	<-	input$planting_end_date
+
+    seeding_environment	<-	input$seeding_environment
+    if(is.null(seeding_environment )){
+      seeding_environment	<-	""
+    }
+
+    seeding_technique	<-	input$seeding_technique
+    if(is.null(seeding_technique )){
+      seeding_technique	<-	""
+    }
+
+
+    seed_treatment	<-	input$seed_treatment
+
+    seeding_traction	<-	input$seeding_traction
+    if(is.null(seeding_traction )){
+      seeding_traction	<-	""
+    }
+    if(seeding_traction== "Other"){
+      seeding_traction	<-	input$seeding_traction_name
+    }
+
+    distance_rows	<-	input$distance_rows
+
+    distance_rows_unit	<-	input$distance_rows_unit
+    if(is.null(distance_rows_unit )){
+      distance_rows_unit	<-	""
+    }
+
+    seeding_rate	<-	input$seeding_rate
+    seeding_rate_unit	<-	input$seeding_rate_unit
+    if(is.null(seeding_rate_unit )){
+      seeding_rate_unit	<-	""
+    }
+
+    distance_plants	<-	input$distance_plants
+    distance_plants_unit	<-	input$distance_plants_unit
+    if(is.null(distance_plants_unit )){
+      distance_plants_unit	<-	""
+    }
+
+
+    transplanting_start_date	<-	input$transplanting_start_date
+    transplanting_end_date	<-	input$transplanting_end_date
+    age_seedling	<-	input$age_seedling
+
+    transplanting_environment	<-	input$transplanting_environment
+    if(is.null(transplanting_environment )){
+      transplanting_environment	<-	""
+    }
+
+    transplanting_treatment	<-	input$transplanting_treatment
+
+
+    transplanting_technique	<-	input$transplanting_technique
+    if(is.null(transplanting_technique )){
+      transplanting_technique	<-	""
+    }
+
+    trans_traction	<-	input$trans_traction
+    if(is.null(trans_traction )){
+      trans_traction	<-	""
+    }
+    if(trans_traction== "Other"){
+      trans_traction	<-	input$trans_traction_name
+    }
+
+    trans_seeding_density	<-	input$trans_seeding_density
+
+    trans_seeding_density_unit	<-	input$trans_seeding_density_unit
+
+    if(is.null(trans_seeding_density_unit )){
+      trans_seeding_density_unit	<-	""
+    }
+
+    trans_distance_rows	<-	input$trans_distance_rows
+    trans_distance_rows_unit	<-	input$trans_distance_rows_unit
+    if(is.null(trans_distance_rows_unit )){
+      trans_distance_rows_unit	<-	""
+    }
+
+    trans_distance_plants	<-	input$trans_distance_plants
+    trans_distance_plants_unit	<-	input$trans_distance_plants_unit
+
+    if(is.null(trans_distance_plants_unit )){
+      trans_distance_plants_unit	<-	""
+    }
+
+    trans_num_rows	<-	input$trans_num_rows
+
+
+    dtPlanting <- data.frame(
+                      planting_start_date,
+                      planting_end_date,
+                      seeding_environment,
+                      seeding_technique,
+
+                      seed_treatment,
+                      seeding_traction,
+                      distance_rows,
+                      distance_rows_unit,
+                      seeding_rate,
+                      seeding_rate_unit,
+                      distance_plants,
+                      distance_plants_unit,
+
+                      transplanting_start_date,
+                      transplanting_end_date,
+                      age_seedling,
+                      transplanting_environment,
+                      transplanting_treatment,
+                      transplanting_technique,
+                      trans_traction,
+                      trans_seeding_density,
+                      trans_seeding_density_unit,
+                      trans_distance_rows,
+                      trans_distance_rows_unit,
+                      trans_distance_plants,
+                      trans_distance_plants_unit,
+                      trans_num_rows
+    )
+
+
+    names(dtPlanting) <- plantNames
+
+
+    out <- merge(out, dtPlanting, by = 0, all = TRUE)[-1]
+
+
+
     # out<- plant(input$planting_start_date,input$planting_end_date,
     #        input$planting_directSeeding,input$planting_seedingTech,
     #        input$planting_ageSeeding,input$planting_manual,
@@ -5212,7 +5728,7 @@ server_design_agrofims <- function(input, output, session, values){
     #        input$planting_rowDistance,input$planting_seedingRate,
     #        input$planting_seedPerhill,input$planting_distance,
     #        input$planting_distribution)
-    # out
+     out
 
   })
 
@@ -5221,6 +5737,103 @@ server_design_agrofims <- function(input, output, session, values){
   dt_harvest <- reactive({
 
     out <- fb_agrofims()
+
+    harvest_start_date	<-	input$harvest_start_date
+    harvest_end_date	<-	input$harvest_end_date
+    harvest_cut_height	<-	input$harvest_cut_height
+    num_rows_harvested	<-	input$num_rows_harvested
+    len_row_harvested	<-	input$len_row_harvested
+
+    len_row_harvested_unit	<-	input$len_row_harvested_unit
+    if(is.null(len_row_harvested_unit )){
+      len_row_harvested_unit	<-	""
+    }
+
+
+    space_rows_harvested	<-	input$space_rows_harvested
+    space_rows_harvested_unit	<-	input$space_rows_harvested_unit
+    if(is.null(space_rows_harvested_unit )){
+      space_rows_harvested_unit	<-	""
+    }
+
+
+    area_harvested	<-	input$area_harvested
+    area_harvested_unit	<-	input$area_harvested_unit
+    if(is.null(area_harvested_unit )){
+      area_harvested_unit	<-	""
+    }
+
+    num_plants_area_harvested	<-	input$num_plants_area_harvested
+    crop_component_harvested	<-	input$crop_component_harvested
+    if(is.null(crop_component_harvested )){
+      crop_component_harvested	<-	""
+    }
+
+    harvest_implement	<-	input$harvest_implement
+    if(is.null(harvest_implement )){
+      harvest_implement	<-	""
+    }
+    if(harvest_implement== "Other"){
+      harvest_implement	<-	input$harvest_implement_other
+    }
+
+
+    harvest_make	<-	input$harvest_make
+    harvest_model	<-	input$harvest_model
+
+    harvest_traction	<-	input$harvest_traction
+    if(is.null(harvest_traction )){
+      harvest_traction	<-	""
+    }
+    if(harvest_traction== "Other"){
+      harvest_traction	<-	input$harvest_traction_other
+    }
+
+    harvNames <- c('Harvest start date',
+                  'Harvest end date',
+                  'Harvest cut height',
+                  'Number of rows harvested',
+                  'Length of rows harvested',
+                  'Length of rows harvested unit',
+                  'Space between rows harvested',
+                  'Space between rows harvested unit',
+                  'Area harvested',
+                  'Area harvested unit',
+                  'Number of plants in area harvested',
+                  'Crop component harvested',
+                  'Harvest implement',
+
+                  'Harvest implement make',
+                  'Harvest implement model',
+                  'Harvest implement traction'
+    )
+
+    dtHarv <- data.frame( harvest_start_date,
+                          harvest_end_date,
+                          harvest_cut_height,
+                          num_rows_harvested,
+                          len_row_harvested,
+                          len_row_harvested_unit,
+                          space_rows_harvested,
+                          space_rows_harvested_unit,
+                          area_harvested,
+                          area_harvested_unit,
+                          num_plants_area_harvested,
+                          crop_component_harvested,
+                          harvest_implement,
+
+                          harvest_make,
+                          harvest_model,
+                          harvest_traction
+    )
+
+    names(dtHarv) <- harvNames
+    out <- merge(out, dtHarv, by = 0, all = TRUE)[-1]
+
+    out
+
+
+
     # out<-harvest(input$harvest_start_date,
     #         input$harvest_end_date,input$crop_component_harvested,
     #         input$harvest_implement,input$harvest_make,input$harvest_model,
@@ -5394,10 +6007,10 @@ server_design_agrofims <- function(input, output, session, values){
 
 
       #write agrofeatures sheet
-      #agroFeaSelected <-input$selectAgroFeature
-      #agrofea_sheets <- c("Land preparation", "Mulching", "Planting","Irrigation event", "Biofertilizer", "Pest & disease", "Nutrient management event","Harvest")
+      agroFeaSelected <- input$selectAgroFeature
+      agrofea_sheets <- c("Land preparation", "Mulching", "Planting","Irrigation event", "Biofertilizer", "Pest & disease", "Nutrient management event","Harvest")
 
-      #if(is.element("Land preparation", agroFeaSelected)) {
+      if(is.element("Land preparation", agroFeaSelected)) {
 
       incProgress(10/20,message = "Adding land preparation sheet...")
 
@@ -5407,32 +6020,32 @@ server_design_agrofims <- function(input, output, session, values){
       openxlsx::writeDataTable(wb, "Land preparation", x = dt_land ,
                                colNames = TRUE, withFilter = FALSE)
 
-      #}
+      }
 
-      #if(is.element("Mulching", agroFeaSelected)) {
+      if(is.element("Mulching and residue management", agroFeaSelected)) {
 
       incProgress(11/20,message = "Adding mulching data...")
 
       dt_mulch <- dt_mulching()
 
-      openxlsx::addWorksheet(wb, "Mulching", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "Mulching", x = dt_mulch,
+      openxlsx::addWorksheet(wb, "Mulching and residue management", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Mulching and residue management", x = dt_mulch,
                                colNames = TRUE, withFilter = FALSE)
 
 
-      #}
+      }
 
-      #if(is.element("Planting", agroFeaSelected)) {
+      if(is.element("Planting, transplanting", agroFeaSelected)) {
 
       incProgress(12/20,message = "Adding planting data...")
 
       dt_plant <- dt_planting()
 
-      openxlsx::addWorksheet(wb, "Planting", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "Planting", x = dt_plant,
+      openxlsx::addWorksheet(wb, "Planting, transplanting", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Planting, transplanting", x = dt_plant,
                                colNames = TRUE, withFilter = FALSE)
 
-      #}
+      }
 
       #if(is.element("Irrigation event", agroFeaSelected)) {
 
@@ -5462,7 +6075,7 @@ server_design_agrofims <- function(input, output, session, values){
       # openxlsx::writeDataTable(wb, "Nutrient", x = ,
       #                          colNames = TRUE, withFilter = FALSE)
 
-      #if(is.element("Harvest", agroFeaSelected)) {
+      if(is.element("Harvest", agroFeaSelected)) {
 
         incProgress(13/20,message = "Adding harvest data...")
 
@@ -5472,7 +6085,7 @@ server_design_agrofims <- function(input, output, session, values){
         openxlsx::writeDataTable(wb, "Harvest", x = dt_harv,
                                  colNames = TRUE, withFilter = FALSE)
 
-        #}
+     }
 
         #if(is.element("Pest & disease", agroFeaSelected)) {
 
