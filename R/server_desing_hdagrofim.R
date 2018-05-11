@@ -3262,7 +3262,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   )
-  colnames(dict) <- c("Status","Crop", "Crop management", "Measurement method", "traitCode", "VariableId", "Scale")
+  colnames(dict) <- c("Status","Crop", "Crop measurement", "Measurement method", "traitCode", "VariableId", "Scale")
 
   observe({
     if(!is.null(input$cropCommonNameMono)){
@@ -3348,7 +3348,7 @@ server_design_agrofims <- function(input, output, session, values){
               options = list(
                 scrollX = TRUE,
                 pageLength = 25,
-                columnDefs = list(list(visible=FALSE, targets=c(1,5,6)), list(className = 'dt-center', targets = c(7,8)))
+                columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
               )
     )}
   )
