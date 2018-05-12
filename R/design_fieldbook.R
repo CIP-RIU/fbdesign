@@ -64,7 +64,7 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
      #randomized complete block design
      RCBD = design.rcbd(trt1, r, series, randomization = random, first = first), #ok #agricolae
      #RCBD = st4gi::cd.rcb(geno = trt1, nb = r, nc = number_col), #st4gi
-
+    #new
 
      #complete randomzized design
      CRD = design.crd(trt1, r, series, randomization = random ), #ok #AGRICOLAE
