@@ -777,7 +777,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
   output$ui_numIn_1 <- renderUI({
-    numericInput("numLevels_1", HTML("#levels"), max = 5, min = 1, value = 2)
+    numericInput("numLevels_1", HTML("#levels"), max = 5, min = 2, value = 2)
   })
 
   output$ui_sel2_1 <- renderUI({
@@ -793,7 +793,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
   output$ui_numIn_2 <- renderUI({
-    numericInput("numLevels_2", "#levels", max = 5, min = 1, value = 2)
+    numericInput("numLevels_2", "#levels", max = 5, min = 2, value = 2)
   })
 
   output$ui_sel3_1 <- renderUI({
@@ -807,7 +807,7 @@ server_design_agrofims <- function(input, output, session, values){
     selectizeInput("sel3_3", "",choices =lvl$lv_3_3, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
   })
   output$ui_numIn_3 <- renderUI({
-    numericInput("numLevels_3", "#levels", max = 5, min = 1, value = 2)
+    numericInput("numLevels_3", "#levels", max = 5, min = 2, value = 2)
   })
 
   output$ui_sel4_1 <- renderUI({
@@ -823,7 +823,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
   output$ui_numIn_4 <- renderUI({
-    numericInput("numLevels_4", "#levels", max = 5, min = 1, value = 2)
+    numericInput("numLevels_4", "#levels", max = 5, min = 2, value = 2)
   })
 
   output$ui_sel5_1 <- renderUI({
@@ -839,7 +839,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
   output$ui_numIn_5 <- renderUI({
-    numericInput("numLevels_5", "#levels", max = 5, min = 1, value = 2)
+    numericInput("numLevels_5", "#levels", max = 5, min = 2, value = 2)
   })
 
   #### end factors ####################################################################################
