@@ -707,16 +707,20 @@ irrigation <- function(irrigationevent_start_date,irrigationevent_end_date,
   if(is.null(irrigation_well_depth)){irrigation_well_depth<-''}
   if(is.null(irrigation_area_covered_irrigation_system)){irrigation_area_covered_irrigation_system<-''}
 
+  paste0("surface_irrigation_technique_", order)
 
 
   irri1	<-	c('Irrigation event','Irrigation start date', paste(irrigationevent_start_date))
   irri2	<-	c('Irrigation event','Irrigation end date', paste(irrigationevent_end_date))
   irri3	<-	c('Irrigation event','Irrigation system type',irrigation_system_type)
   irri4	<-	c('Irrigation event','Irrigation technique',irrigation_technique)
+
   irri5	<-	c('Irrigation event','Surface irrigation technique',surface_irrigation_technique)
   irri6	<-	c('Irrigation event','Localized irrigation technique',localized_irrigation_technique)
   irri7	<-	c('Irrigation event','Irrigation using sprinkler systems',irrigation_using_sprinkler_systems)
   irri8	<-	c('Irrigation event','Irrigation system picture', "")#irrigation_system_picture)
+
+
   irri9	<-	c('Irrigation event','Water source',irrigation_water_source)
   irri10	<-	c('Irrigation event','Water source distance',irrigation_water_source_distance)
   irri11	<-	c('Irrigation event','Bund height',irrigation_bund_height)

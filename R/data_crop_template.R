@@ -253,4 +253,14 @@ NULL
 #' @source CGIAR Big Data Platform, Bioversity, International Potato Center CIP, CIAT,  CGIAR
 NULL
 
+#' @name soil_list_prov
+#' @title soil_list_provisional provisional
+#' @docType data
+#' @aliases soil_list_prov
+#' @description This list contains the list of installation sheet data. Users can pick up elements on this list trough ShinyTree
+#' @references This data is related to HiDAP-Agromfims crop template
+#' @usage soil_list_prov
+#' @format A list of installation sheet data in HiDAP-AGROFIMS
+#' @source CGIAR Big Data Platform, Bioversity, International Potato Center CIP, CIAT,  CGIAR
+NULL
 

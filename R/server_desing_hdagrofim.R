@@ -376,7 +376,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   observe({
     removeUI( selector ="#fl_title_factor_1", immediate = T )
-    if(!is.null(input$sel1_3)){
+    if(!is.null(input$sel1_3) && is.numeric(input$numLevels_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel1_1 & SUBGROUP==input$sel1_2 & FACTOR==input$sel1_3)
       if(nrow(aux) > 0){
         insertUI(
@@ -439,7 +439,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   observe({
     removeUI( selector ="#fl_title_factor_2", immediate = T )
-    if(!is.null(input$sel2_3)){
+    if(!is.null(input$sel2_3) && is.numeric(input$numLevels_2)){
       aux <- dplyr::filter(factors,GROUP==input$sel2_1 & SUBGROUP==input$sel2_2 & FACTOR==input$sel2_3)
 
       if(nrow(aux) > 0){
@@ -503,7 +503,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   observe({
     removeUI( selector ="#fl_title_factor_3", immediate = T )
-    if(!is.null(input$sel3_3)){
+    if(!is.null(input$sel3_3) && is.numeric(input$numLevels_3)){
       aux <- dplyr::filter(factors,GROUP==input$sel3_1 & SUBGROUP==input$sel3_2 & FACTOR==input$sel3_3)
 
       if(nrow(aux) > 0){
@@ -565,7 +565,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   observe({
     removeUI( selector ="#fl_title_factor_4", immediate = T )
-    if(!is.null(input$sel4_3)){
+    if(!is.null(input$sel4_3) && is.numeric(input$numLevels_4)){
       aux <- dplyr::filter(factors,GROUP==input$sel4_1 & SUBGROUP==input$sel4_2 & FACTOR==input$sel4_3)
 
       if(nrow(aux) > 0){
@@ -627,7 +627,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   observe({
     removeUI( selector ="#fl_title_factor_5", immediate = T )
-    if(!is.null(input$sel5_3)){
+    if(!is.null(input$sel5_3) && is.numeric(input$numLevels_5)){
       aux <- dplyr::filter(factors,GROUP==input$sel5_1 & SUBGROUP==input$sel5_2 & FACTOR==input$sel5_3)
 
       if(nrow(aux) > 0){
@@ -708,7 +708,7 @@ server_design_agrofims <- function(input, output, session, values){
                                      )
                               ),
                               column(width = 6,
-                                     selectizeInput(paste0("units_", order), HTML("Unit"),
+                                     selectizeInput(paste0("funits_", order), HTML("Unit"),
                                                     multiple =T, choices = vunits[[1]] ,
                                                     options = list(maxItems = 1, placeholder = "Select unit...")
                                      )
@@ -990,7 +990,7 @@ server_design_agrofims <- function(input, output, session, values){
                         dateInput(paste0("biofertilizer_landLeveling_start_date_", order), label ="Start date", format = "dd/mm/yyyy")
                  ),
                  column(width = 6,
-                        dateInput("biofertilizer_landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
+                        dateInput(paste0("biofertilizer_landLeveling_end_date",  order), label ="End date", format = "dd/mm/yyyy")
                  )
                ),
                selectizeInput(paste0("biofertilizer_rhizobium_inoculum_strain_", order), label = "Rhizobium inoculum strain", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -1031,7 +1031,7 @@ server_design_agrofims <- function(input, output, session, values){
                          c("Soil application with granules/pellets",
                            "Soil application with slurry of liquid culture")
         ),
-        textInput(paste0("biofertilizer_days_sowing_after_rhizobium_inocculation_", order), value="", label = "Days to sowing after Rhizobium inocculation")
+        textInput(paste0("biofertilizer_days_sowing_after_rhizobium_inocculation_", order), value="", label = "Days to sowing after Rhizobium inoculation")
       )
     ))
 
@@ -1182,8 +1182,22 @@ server_design_agrofims <- function(input, output, session, values){
                       column(width = 6,#IMPLEMENTAR EN EXCEL
                              selectizeInput(paste0("pesticide_amount_unit_",order), label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices=c("kg/m2", "kg/ha", "t/ha"))
                       )
-                    )
-                    )
+                    ),
+                    selectizeInput(paste0("pesticide_control_equip",order), "Pest control equipment", multiple =T, options=list(maxItems=1, placeholder ="Select one..."),
+                                   choices = c("Aerial applicator",
+                                               "Airblast sprayer",
+                                               "Backpack sprayer",
+                                               "Boom sprayer",
+                                               "Duster",
+                                               "Electrostatic sprayer",
+                                               "Fogger",
+                                               "Hand sprayer",
+                                               "Injection sprayer",
+                                               "Injection sprayer",
+                                               "Mist blower",
+                                               "Recirculating sprayer" )
+                              )
+                  )
              ))
 
 
@@ -1271,7 +1285,7 @@ server_design_agrofims <- function(input, output, session, values){
                          ),
                          selectizeInput(paste0("irrigation_technique_", order), label = "Irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                           c("Surface",
-                                            "Localized ",
+                                            "Localized",
                                             "Irrigation sprinker",
                                             "Sub-irrigation")
                          ),
@@ -1617,10 +1631,10 @@ server_design_agrofims <- function(input, output, session, values){
                           ),
                           fluidRow(
                             column(width = 6,
-                                   textInput("nutrient_app_rate_",  label = "Total application rate for the season", value="")
+                                   textInput(paste0("nutrient_app_rate_", type, "_", order),  label = "Total application rate for the season", value="")
                             ),
                             column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
-                                   selectizeInput("nutrient_app_rate_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                   selectizeInput(paste0("nutrient_app_rate_unit", type, "_", order), label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                     c("g/sq m",
                                                       "kg/ha",
                                                       "lb/ac")
@@ -1637,14 +1651,14 @@ server_design_agrofims <- function(input, output, session, values){
                               ),
 
                               column(width = 6,
-                                     selectizeInput(paste0("fertilizer_recommended_rate_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "Unit",
+                                     selectizeInput(paste0("nutrient_recommended_rate_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder="Select one..."), label= "Unit",
                                                     c("g/sq m",
                                                       "kg/ha",
                                                       "lb/ac")
                                       )
                               )
                             ),
-                           textInput("perc_recomm_rate", "Percentage of recommended rate applied")
+                           textInput(paste0("perc_recomm_rate_", type, "_", order), "Percentage of recommended rate applied")
                     )
                   ),
                   h2(paste0("Fertilizer amount applied: ",gsub("_", " ", type))),
@@ -1674,8 +1688,15 @@ server_design_agrofims <- function(input, output, session, values){
                     ),
 
                     column(width = 2,
-                           br(),
-                           div(style="text-align:center", h4("Type"))
+
+                           column( width= 7,
+                                   br(),
+                            div(style="text-align:center", h4("Type"))
+                           ),
+                           column(width = 5,
+                                  br(),
+                                  div(style="text-align:center", h4("Type (Unit)"))
+                            )
                     ),
                     column(width=3,
                            fluidRow(
@@ -3840,11 +3861,11 @@ server_design_agrofims <- function(input, output, session, values){
     a
   })
 
-  ## Weather ShinyTree #################################################################
+  ## Soil ShinyTree #################################################################
 
   output$designFieldbook_soilVar_agrofims <- shinyTree::renderTree({
 
-    a<- soil_list #data from fbdesign for hidap-agrofims
+    a<- soil_list_prov #data from fbdesign for hidap-agrofims
     a
   })
 
@@ -4524,14 +4545,30 @@ server_design_agrofims <- function(input, output, session, values){
         #To Do Units combos
 
      if(design == "crd"){
+
               fb <- st4gi::cd.cr(geno = lev1, nrep = nrep,  nc = 3)
               fb <- fb$book
               names(fb) <-  c("PLOT", "ROW", "COL", factorName1)
+
+              if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
+                fb <- cd.factorial(A = lev1, B =crop_varietiesname , design = design, nrep = nrep,  nc = 3)
+                fb <- fb$book
+                names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT", factorName1, "VARIETIES")
+              }
+              fb
+
           }
      if(design == "rcbd"){
               fb <- st4gi::cd.rcb(geno = lev1, nb = nrep, nc = 3)
               fb <- fb$book
               names(fb) <-  c("PLOT", "BLOCK", "ROW", "COL", factorName1)
+
+              if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
+                fb <- cd.factorial(A = lev1, B = crop_varietiesname , design = design, nrep = nrep,  nc = 3)
+                fb <- fb$book
+                names(fb) <-  c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factorName1, "VARIETIES")
+              }
+              fb
           }
 
     }
@@ -4573,11 +4610,29 @@ server_design_agrofims <- function(input, output, session, values){
         fb <- fb$book
         names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT", factorName1, factorName2)
 
+
+        if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
+          fb <- cd.factorial(A = lev1, B = lev2, C = crop_varietiesname , design = design, nrep = nrep,  nc = 3)
+          fb <- fb$book
+          names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT", factorName1, factorName2, "VARIETIES")
+        }
+        fb
+
+
       }
       if(design == "rcbd"){
         fb <- cd.factorial(A = lev1, B = lev2, design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
         names(fb) <-  c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factorName1, factorName2)
+
+        if( isCropFactor==TRUE  && length(crop_varietiesname)>=2 ){
+          fb <- cd.factorial(A = lev1, B = lev2, C = crop_varietiesname , design = design, nrep = nrep,  nc = 3)
+          fb <- fb$book
+          names(fb) <-  c("PLOT","BLOCK" , "ROW", "COL", "TREATMENT",factorName1, factorName2, "VARIETIES")
+        }
+        fb
+
+
 
       }
     }
@@ -4646,6 +4701,16 @@ server_design_agrofims <- function(input, output, session, values){
         fb <- cd.factorial(A = lev1, B = lev2, C = lev3,  design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
         names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT",factorName1, factorName2,factorName3)
+
+        if( isCropFactor == TRUE  && length(crop_varietiesname)>=2 ){
+          fb <- cd.factorial(A = lev1, B = lev2, C= lev3 ,D = crop_varietiesname , design = design, nrep = nrep,  nc = 3)
+          fb <- fb$book
+          names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT",factorName1, factorName2, factorName3, "VARIETIES")
+        }
+        fb
+
+
+
         #To Do rename headers
       }
       if(design == "rcbd"){
@@ -4653,6 +4718,15 @@ server_design_agrofims <- function(input, output, session, values){
         fb <- fb$book
         names(fb) <-  c("PLOT","BLOCK", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3)
         #To Do rename headers
+
+        if( isCropFactor == TRUE  && length(crop_varietiesname)>=2 ){
+          fb <- cd.factorial(A = lev1, B = lev2, C= lev3 ,D = crop_varietiesname , design = design, nrep = nrep,  nc = 3)
+          fb <- fb$book
+          names(fb) <-  c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3, "VARIETIES")
+        }
+        fb
+
+
       }
     }
 
@@ -4733,6 +4807,16 @@ server_design_agrofims <- function(input, output, session, values){
         fb <- cd.factorial(A = lev1, B = lev2, C = lev3, D = lev4, design = design, nrep = nrep,  nc = 3)
         fb <- fb$book
         names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3, factorName4)
+
+        if( isCropFactor == TRUE  && length(crop_varietiesname)>=2 ){
+          fb <- cd.factorial(A = lev1, B = lev2, C= lev3 , D = lev4, E = crop_varietiesname , design = design, nrep = nrep,  nc = 3)
+          fb <- fb$book
+          names(fb) <-  c("PLOT", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3, factorName4, "VARIETIES")
+        }
+        fb
+
+
+
         #To Do rename headers
       }
       if(design == "rcbd"){
@@ -4740,6 +4824,13 @@ server_design_agrofims <- function(input, output, session, values){
         fb <- fb$book
         names(fb) <-  c("PLOT","BLOCK", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3, factorName4)
         #To Do rename headers
+        if( isCropFactor == TRUE  && length(crop_varietiesname)>=2 ){
+          fb <- cd.factorial(A = lev1, B = lev2, C= lev3 , D = lev4, E = crop_varietiesname , design = design, nrep = nrep,  nc = 3)
+          fb <- fb$book
+          names(fb) <-  c("PLOT", "BLOCK", "ROW", "COL", "TREATMENT", factorName1, factorName2, factorName3, factorName4 ,"VARIETIES")
+        }
+        fb
+
       }
     }
 
@@ -4985,6 +5076,26 @@ server_design_agrofims <- function(input, output, session, values){
 
 
      fb <- fb_agrofims()
+
+     trait <- traits_dt()
+     #print(trait)
+     cm <- trait$`Crop measurement`
+     sc <- trait$Scale
+     co <- trait$VariableId
+     cs <- paste(cm, sc, co, sep="-")
+
+     #trait_selected <- trait_agrofims() %>% as.data.frame(stringsAsFactors =FALSE) #unlist(shinyTree::get_selected(input$designFieldbook_traits_agrofims))
+     trait_selected <- cs
+     print("Trait selected")
+     print(trait_selected)
+
+     if(!is.null(trait_selected) || length(trait_selected)==0 ){
+       mm  <-  matrix(nrow = nrow(fb), ncol = length(trait_selected) )
+       nm  <-  c(names(fb), trait_selected)
+       fb  <-  cbind(fb, mm)
+       names(fb)  <-  nm
+     }
+
 
      # trait_selected <- trait_agrofims() %>% as.data.frame(stringsAsFactors =FALSE) #unlist(shinyTree::get_selected(input$designFieldbook_traits_agrofims))
      # trait_selected <- trait_selected[,2]
@@ -5847,6 +5958,138 @@ server_design_agrofims <- function(input, output, session, values){
   dt_irrigation <- reactive({
 
     out <- fb_agrofims()
+
+    nirri <- input$numApplicationsIrrigation
+
+    sdate <- edate <-  tech <- vt <- vt_label <- list()
+    ws <-   wsdist <-    wsuni <-    wb <-    wbu <-    wpr <-    wpru <-    depth <-    depthu <-    iwdepth <-    iwdepthu <- list()
+    amount <- uamount <-  area <- uarea <- list()
+
+
+    nirri <- input$numApplicationsIrrigation
+
+    for(i in 1:nirri) {
+      sdate[[i]] <-  paste(input[[	paste0("irrigationevent_start_date_", i)	]])
+      edate[[i]] <-  paste(input[[	paste0("irrigationevent_end_date_", i)	]])
+      tech[[i]] <-  paste(input[[	paste0("irrigation_technique_", i)	]])
+      if(is.null( tech[[i]] ) || length(tech[[i]]) ==0) tech[[i]] <-  ""
+
+      #if( tech[[i]] == "Other" ) tech[[i]] <-   paste(input[[  paste0("irrigation_water_source_", i,  "_other")  ]])
+      if( tech[[i]] == "Surface" ) {
+            vt[[i]] <-  paste(input[[ paste0("surface_irrigation_technique_", i) ]])
+            vt_label[[i]] <-  "Surface irrigation technique"
+          } else if( tech[[i]] == "Localized" ) {
+            vt[[i]] <- "" #paste(input[[  paste0("localized_irrigation_technique", i) ]]){
+            vt_label <- paste("foo",i, sep ="")
+          } else if( tech[[i]]== "Irrigation sprinker" ) {
+            vt[[i]] <-  paste(input[[ paste0("irrigation_using_sprinkler_systems_", i) ]])
+            vt_label[[i]] <- "Irrigation using sprinkler systems"
+          } else {
+            vt[[i]] <- ""
+            vt_label <- paste("foo",i , sep ="")
+      }
+
+      print(vt[[i]])
+
+        ws[[i]] <-  paste(input[[	paste0("irrigation_water_source_", i)	]])
+        if(is.null( ws[[i]] ) || length(ws[[i]]) ==0) ws[[i]] <-  ""
+        wsdist[[i]] <-  paste(input[[	paste0("irrigation_water_source_distance_", i)	]])
+        wsuni[[i]] <-  paste(input[[	paste0("irrigation_water_source_distance_", i, "unit")	]])
+        if(is.null( wsuni[[i]] ) || length(wsuni[[i]]) ==0) wsuni[[i]] <-  ""
+
+        wb[[i]] <-  paste(input[[	paste0("irrigation_bund_height_", i)	]])
+        wbu[[i]] <-  paste(input[[	paste0("irrigation_bund_height_", i, "unit")	]])
+        if(is.null( wbu[[i]] ) || length(wbu[[i]]) ==0) wbu[[i]] <-  ""
+
+        wpr[[i]] <-  paste(input[[	paste0("irrigation_percolation_rate_", i)	]])
+        wpru[[i]] <-  paste(input[[	paste0("irrigation_percolation_rate_", i, "unit")	]])
+        if(is.null(wpru[[i]] ) || length(wpru[[i]]) ==0) wpru[[i]] <-  ""
+
+        depth[[i]] <-  paste(input[[	paste0("irrigation_equipment_depth_", i)	]])
+        depthu[[i]] <-  paste(input[[	paste0("irrigation_equipment_depth_", i, "unit")	]])
+        if(is.null( depthu[[i]] ) || length(depthu[[i]]) ==0) depthu[[i]] <-  ""
+
+        iwdepth[[i]] <-  paste(input[[	paste0("irrigation_well_depth_", i)	]])
+        iwdepthu[[i]] <-  paste(input[[	paste0("irrigation_well_depth_", i, "unit")	]])
+        if(is.null( iwdepthu[[i]] ) || length(iwdepthu[[i]]) ==0) iwdepthu[[i]] <-  ""
+
+        amount[[i]] <-  paste(input[[	paste0("irrigation_amount_", i)	]])
+        uamount[[i]] <-  paste(input[[	paste0("irrigation_amount_", i, "unit")	]])
+        if(is.null( uamount[[i]] ) || length(uamount[[i]]) ==0) uamount[[i]] <-  ""
+
+        area[[i]] <-  paste(input[[	paste0("irrigation_area_covered_irrigation_system_", i)	]])
+        uarea[[i]] <-  paste(input[[	paste0("irrigation_area_covered_irrigation_system_", i, "unit")	]])
+        if(is.null( uarea[[i]] ) || length(uarea[[i]]) ==0) uarea[[i]] <-  ""
+
+    }
+
+
+      sdate <- unlist(sdate)
+      edate <- unlist(edate)
+      tech <- unlist(tech )
+      vt <- unlist(vt)
+      vt_label <- unlist(vt_label) #no considerar
+
+      ws <- unlist(ws )
+      wsdist <- unlist(wsdist )
+      wsuni <- unlist(wsuni )
+      wb <- unlist(wb )
+      wbu <- unlist(wbu )
+      wpr <-unlist(wpr )
+      wpru <-unlist(wpru)
+      depth <- unlist(depth )
+      depthu <- unlist(depthu)
+      iwdepth <- unlist(iwdepth )
+      iwdepthu <- unlist(iwdepthu )
+      amount <- unlist(amount)
+      uamount <- unlist(uamount )
+      area <- unlist(area )
+      uarea <- unlist(uarea )
+
+        irri <- c( sdate , edate ,tech, vt,  ws, wsdist , wsuni,wb ,wbu ,wpr,wpru,depth ,depthu ,iwdepth ,iwdepthu ,amount ,uamount ,area ,uarea )
+        print(irri)
+        temp <- t(irri)
+        irridt <- as.data.frame(temp, stringsAsFactors =FALSE)
+        print(irridt)
+
+        for(i in 1:nirri){
+          a2	<-paste(	'Start date'	, 1:i)
+          a3	<-paste(	'End date'	, 1:i)
+          a4	<-paste(	'Irrigation technique'	, 1:i)
+          a5	<-paste(	'Water source'	, 1:i)
+          a6	<-paste(	'Water source distance'	, 1:i)
+          a7	<-paste(	'Unit'	, 1:i)
+          a8	<-paste(	'Bund height'	, 1:i)
+          a9	<-paste(	'Bund height unit'	, 1:i)
+          a10	<-paste(	'Percolation rate'	, 1:i)
+          a11	<-paste(	'Percolation rate unit'	, 1:i)
+          a12	<-paste(	'Irrigation equipment depth'	, 1:i)
+          a13	<-paste(	'Irrigation equipment depth unit'	, 1:i)
+          a14	<-paste(	'Well depth'	, 1:i)
+          a15	<-paste(	'Well depth unit'	, 1:i)
+          a16	<-paste(	'Irrigation amount'	, 1:i)
+          a17	<-paste(	'Irrigation amount unit'	, 1:i)
+          a18	<-paste(	'Area covered by the irrigation system'	, 1:i)
+          a19	<-paste(	'Area covered by the irrigation system unit'	, 1:i)
+        }
+
+
+  irriNames <- c(a2, a3, a4, vt_label, a5, a6, a7, a8, a9, a10, a11, a12,a13, a14, a15, a16, a17, a18, a19)
+
+  print(irriNames)
+
+  names(irridt) <- irriNames
+  as <- grepl("foo", names(irridt)) #detec foo variables
+  irridt <- irridt[!as] #remove foo variables
+
+  out <- merge(out, irridt, by = 0, all = TRUE)[-1]
+
+  names(out) <- stringr::str_replace_na(names(out))
+  as2 <- grepl("NA", names(out)) #detec foo variables
+  out <- out[!as2]
+
+ out
+
     # out<-irrigation(input$irrigationevent_start_date,
     #             input$irrigationevent_end_date,input$irrigation_system_type,
     #             input$irrigation_technique,input$surface_irrigation_technique,
@@ -5864,22 +6107,330 @@ server_design_agrofims <- function(input, output, session, values){
   dt_bioferti <- reactive({
 
     out <- fb_agrofims()
-    # out<-biofer( input$biofertilizer_landLeveling_start_date,input$biofertilizer_landLeveling_end_date,
-    #         input$biofertilizer_rhizobium_inoculum_strain,input$biofertilizer_quantity_inoculated,
-    #         input$biofertilizer_inoculation_method,input$biofertilizer_product_formulation,
-    #         input$biofertilizer_days_sowing_after_rhizobium_inocculation)
-    #
-    # out
+
+    nbio <- input$numApplicationsBiofert
+
+    sdate <- edate <-  strain <- quant <- uni <- method<- prodbiofer <- daysbiofer <- list()
+
+    for(i in 1:nbio) {
+
+      sdate[[i]] <-  paste(input[[  paste0("biofertilizer_landLeveling_start_date_", i)    ]])
+      edate[[i]] <-  paste(input[[   paste0("biofertilizer_landLeveling_end_date",  i)      ]])
+      strain[[i]] <- paste(  input[[   paste0("biofertilizer_rhizobium_inoculum_strain_", i)    ]])
+      if(is.null( strain[[i]] ) || length(strain[[i]])==0 ) strain[[i]] <- ""
+      if(is.null( strain[[i]]=="Other")) strain[[i]] <- paste(input[[ paste0("rhizobium_name_", i)  ]])
+      quant[[i]] <- paste(input[[  paste0("biofertilizer_quantity_inoculated_", i) ]])
+      uni[[i]] <-  paste(input[[ paste0("biofertilizer_quantity_inoculated_unit_", i) ]])
+      if(is.null(uni[[i]]) || length(uni[[i]])==0 ) uni[[i]]  <- ""
+      method[[i]]  <-  paste(input[[  paste0("biofertilizer_inoculation_method_", i)    ]])
+      if(is.null( method[[i]] ) || length(  method[[i]])==0 ) method[[i]] <- ""
+      if(is.null( method[[i]]=="Other")) method[[i]] <- paste(input[[  paste0("inoculation_method_name_", i)  ]])
+      prodbiofer[[i]] <- paste( input[[   paste0("biofertilizer_product_formulation_", i) ]])
+      if(is.null( prodbiofer[[i]] ) || length(  prodbiofer[[i]])==0 ) prodbiofer[[i]] <- ""
+      if(is.null( prodbiofer[[i]]=="Other")) prodbiofer[[i]] <- paste(input[[  paste0("inoculation_method_name_", i)  ]])
+      daysbiofer[[i]] <-   paste(input[[ paste0("biofertilizer_days_sowing_after_rhizobium_inocculation_", i) ]])
+
+    }
+
+
+    sdate <-unlist(sdate)
+    edate <-  unlist(edate)
+    strain <- unlist(strain)
+    quant <- unlist(quant)
+    uni <- unlist(uni)
+    method <- unlist(method)
+    prodbiofer <- unlist(prodbiofer)
+    daysbiofer <- unlist(daysbiofer)
+
+    biofer <- c(  sdate , edate ,  strain , quant , uni , method, prodbiofer , daysbiofer )
+    temp <- t(biofer)
+    bioferdt <- as.data.frame(temp)
+
+    for(i in 1:nbio){
+      #a1 <- paste('Number of applications', 1:i )
+      a2 <-paste('Biofertilizer control Start date', 1:i)
+      a3 <-paste('Biofertilizer control End date', 1:i )
+      a4 <-paste('Rhizobium inoculum strain', 1:i )
+      a5 <-paste('Biofertilizer quantity inoculated', 1:i)
+      a6 <-paste('Biofertilizer quantity inoculated unit', 1:i)
+      a7 <-paste('Biofertilizer Inoculation method', 1:i )
+      a8 <-paste('Biofertilizer Product formulation', 1:i )
+      a9<- paste('Days to sowing after Rhizobium inocculation', 1:i )
+    }
+    bioferNames <- c(a2, a3, a4, a5, a6, a7, a8, a9)
+
+    names(bioferdt) <- bioferNames
+
+    out <- merge(out, bioferdt, by = 0, all = TRUE)[-1]
+
 
   })
 
   ### nutrient
 
+  dt_nutrient <- reactive ({
+
+      out <- fb_agrofims()
+
+      a1<- a2<-  a3<- a4<- a5<- a6<- a7<- a8<- a9<- " "
+       h1<- c("Fertilizer amount applied: Organic Start date 1" ,
+              "Fertilizer amount applied Organic End date 1",
+              "Fertilizer amount applied Organic Type 1",
+              "Fertilizer amount applied Organic Unit 1",
+              "Fertilizer amount applied Organic Technique 1",
+              "Fertilizer amount applied Organic Implement 1",
+              "Fertilizer amount applied Organic Rate 1",
+              "Fertilizer amount applied Organic Rate (unit) 1" ,
+              "Fertilizer amount applied Organic Nutrient Content 1")
+
+      dta <- data.frame(a1,a2,a3,a4,a5,a6,a7,a8,a9, stringsAsFactors = FALSE)
+      names(dta) < h1
+
+
+       b1<- b2<-  b3<- b4<- b5<- b6<- b7<- b8<- b9<- " "
+      h2<- c("Fertilizer amount applied: Inorganic Start date 1" ,
+            "Fertilizer amount applied: Inorganic End date 1",
+             "Fertilizer amount applied: Inorganic Inorganic 1",
+            "Fertilizer amount applied: Inorganic Unit 1",
+               "Fertilizer amount applied: Inorganic Technique 1",
+             "Fertilizer amount applied: Inorganic Implement 1",
+               "Fertilizer amount applied: Inorganic Rate 1",
+               "Fertilizer amount applied: Inorganic Rate (unit) 1",
+              "Fertilizer amount applied: Inorganic Nutrient Content 1")
+
+      dtb <- data.frame(b1,b2,b3,b4,b5,b6,b7,b8,b9, stringsAsFactors = FALSE)
+      names(dtb) < h2
+
+
+      c1<- c2<-  c3<- c4<- c5<- c6<- c7<- c8<- c9<- " "
+
+      h3<- c(
+        "Fertilizer amount applied: Green manure Start date 1",
+        "Fertilizer amount applied: Green manure End date 1" ,
+        "Fertilizer amount applied: Green manure Green manure 1" ,
+        "Fertilizer amount applied: Green manure Unit 1",
+        "Fertilizer amount applied: Green manure Technique 1",
+        "Fertilizer amount applied: Green manure Implement 1",
+        "Fertilizer amount applied: Green manure Rate 1",
+        "Fertilizer amount applied: Green manure Rate (unit) 1" ,
+        "Fertilizer amount applied: Green manure Nutrient Content 1"
+      )
+
+      dtc <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9, stringsAsFactors = FALSE)
+      names(dtc) < h3
+
+      dtotal <- data.frame(a1,a2,a3,a4,a5,a6,a7,a8,a9,b1,b2,b3,b4,b5,b6,b7,b8,b9,c1,c2,c3,c4,c5,c6,c7,c8,c9, stringsAsFactors = FALSE )
+      names(dtotal)<- c(h1,h2,h3)
+      # #organic
+      # #norg <- input$numApplications_Organic
+      # norg <- 1
+      #
+      # for(i in 1:norg){
+      #
+      #   norgsdate <-  paste(input[[  paste0("nutrient_start_date_", "Organic" , "_", norg)    ]])
+      #   print(norgsdate)
+      #   norgedate <-  paste(input[[  paste0("nutrient_end_date_", "Organic" , "_", norg)  ]])
+      #   print(norgedate)
+      #   norgtotino <- paste(input[[  paste0("nutrient_app_rate_", "Organic" , "_", norg)  ]])
+      #   norgtotinounit <- paste(input[[ paste0("nutrient_app_rate_unit_", "Organic" , "_", norg) ]])
+      #   if(is.null( norgtotinounit) || length(norgtotinounit)) norgtotinounit <- ""
+      #   norgrecino <-  paste(input[[ paste0("nutrient_recommended_rate_", "Organic" , "_", norg) ]])
+      #   norgrecinounit  <- paste(input[[ paste0("nutrient_recommended_rate_unit_", "Organic" , "_", norg) ]])
+      #   if(is.null( norgrecinounit) || is.null( norgrecinounit)) norgrecinounit <- ""
+      #   norgperecinounit  <- paste(input[[ paste0("perc_recomm_rate_", "Organic" , "_", norg) ]])
+      #
+      #   #nitrogen1
+      #   #`Fertilizer amount applied: Organic # of app 1'  paste(input[[  paste0("nutrient_start_date_", type, "_", 1)    ]])
+      #   `Fertilizer amount applied: Organic Start date 1` <- paste(input[[paste0("nutrient_start_date_", "Organic", "_", norg)    ]])
+      #   `Fertilizer amount applied: Organic End date 1` <-  paste(input[[paste0("nutrient_end_date_", "Organic", "_", norg)  ]])
+      #   `Fertilizer amount applied: Organic Type 1` <-  paste(input[[paste0("fert_nit_type1_", "Organic", "_", norg)  ]])
+      #   if(is.null(  `Fertilizer amount applied: Organic Type 1` ) || length( `Fertilizer amount applied: Organic Type 1`)==0)  `Fertilizer amount applied: Organic Type 1` <- ""
+      #
+      #
+      #   `Fertilizer amount applied: Organic Unit 1`<-  paste(input[[paste0("fert_nit_type1_unit_", "Organic", "_", norg) ]])
+      #   if(is.null( `Fertilizer amount applied: Organic Unit 1`) || length(`Fertilizer amount applied: Organic Unit 1`)) `Fertilizer amount applied: Organic Unit 1` <- ""
+      #
+      #   `Fertilizer amount applied: Organic Technique 1` <- paste(input[[ paste0("fertilizer_nit_application_technique1_", "Organic", "_", norg)   ]])
+      #   if(is.null( `Fertilizer amount applied: Organic Technique 1`) || length(`Fertilizer amount applied: Organic Technique 1`)) `Fertilizer amount applied: Organic Technique 1` <- ""
+      #
+      #   `Fertilizer amount applied: Organic Implement 1` <- paste(input[[paste0("fertilizer_nit_implement1_", "Organic", "_", norg)   ]])
+      #
+      #   `Fertilizer amount applied: Organic Rate 1`<-  paste(input[[ paste0("fert_nit_amountApplied1_", "Organic", "_", norg)    ]])
+      #   `Fertilizer amount applied: Organic Rate (unit) 1` <- paste(input[[paste0("fert_nit_amountAppliedScale1_", "Organic", "_", norg)    ]])
+      #   if(is.null( `Fertilizer amount applied: Organic Rate (unit) 1`) || length(`Fertilizer amount applied: Organic Rate (unit) 1`)==0) `Fertilizer amount applied: Organic Rate (unit) 1` <- ""
+      #
+      #   `Fertilizer amount applied: Organic Nutrient Content 1`<-  paste(input[[ paste0("fert_nit_nutrientContent1_", "Organic", "_", norg)   ]])
+      # }
+      # morg <- data.frame( norgsdate,norgedate,  norgtotino, norgtotinounit, norgrecino, norgrecinounit, norgperecinounit, stringsAsFactors = FALSE )
+      # print(morg)
+      # #`Fertilizer amount applied: Organic # of app 1'  paste(input[[  paste0("nutrient_start_date_", type, "_", 1)    ]])
+      # dtorg <- data.frame(`Fertilizer amount applied: Organic Start date 1`,
+      #                     `Fertilizer amount applied: Organic End date 1`,
+      #                     `Fertilizer amount applied: Organic Type 1`,
+      #                     `Fertilizer amount applied: Organic Unit 1`,
+      #                     `Fertilizer amount applied: Organic Technique 1`,
+      #                     `Fertilizer amount applied: Organic Implement 1`,
+      #                     `Fertilizer amount applied: Organic Rate 1`,
+      #                     `Fertilizer amount applied: Organic Rate (unit) 1` ,
+      #                     `Fertilizer amount applied: Organic Nutrient Content 1`,stringsAsFactors = FALSE)
+      #
+      # print(dtorg)
+      # tot_dtorg <- data.frame(morg, dtorg, stringsAsFactors = FALSE)
+      #
+      # #inorganic
+      # #ninorg <- input$numApplications_Inorganic
+      # ninorg <- 1
+      # for(i in 1:ninorg){
+      #
+      #   #in1inor<- paste(input[[	numApplications_Inorganic	]])
+      #   in2inor<- paste(input[[	paste0("nutrient_start_date_", "Inorganic", "_", ninorg)	]])
+      #   in3inor<- paste(input[[	paste0("nutrient_end_date_", "Inorganic", "_", ninorg)	]])
+      #   in3inor<- paste(input[[	paste0("nutrient_app_rate_", "Inorganic", "_", ninorg)	]])
+      #   in4inor<- paste(input[[	paste0("nutrient_app_rate_unit_", "Inorganic", "_", ninorg)	]])
+      #   if(is.null(in4inor)) in4inor <- ""
+      #
+      #   in5inor<- paste(input[[	paste0("nutrient_recommended_rate_", "Inorganic", "_", ninorg)	]])
+      #   in6inor<- paste(input[[	paste0("fertilizer_recommended_rate_unit_", "Inorganic", "_", ninorg)	]])
+      #   in7inor<- paste(input[[	paste0("perc_recomm_rate_", "Inorganic", "_", ninorg)	]])
+      #   if(is.null(in7inor))  in7inor <- ""
+      #
+      #   #`Fertilizer amount applied: Inorganic # of app 1` <- paste(input[[	paste0("nutrientApplied_nit_numApps1_", "Inorganic", "_", ninorg) ]])
+      #   `Fertilizer amount applied: Inorganic Start date 1` <- paste(input[[	paste0("fert_nit_start_date1_", "Inorganic", "_", ninorg) ]])
+      #   `Fertilizer amount applied: Inorganic End date 1`<- paste(input[[	paste0("fert_nit_end_date1_", "Inorganic", "_", ninorg) ]])
+      #   `Fertilizer amount applied: Inorganic "Inorganic" 1`<- paste(input[[	paste0("fert_nit_type1_", "Inorganic", "_", ninorg) ]])
+      #   `Fertilizer amount applied: Inorganic Unit 1`<- paste(input[[	paste0("fert_nit_type1_unit_", "Inorganic", "_", ninorg) ]])
+      #   `Fertilizer amount applied: Inorganic Technique 1`<- paste(input[[	paste0("fertilizer_nit_application_technique1_", "Inorganic", "_", ninorg) ]])
+      #   if(is.null(`Fertilizer amount applied: Inorganic Technique 1`) || length(`Fertilizer amount applied: Inorganic Technique 1`)==0 ) `Fertilizer amount applied: Inorganic Technique 1`<- ""
+      #   if(`Fertilizer amount applied: Inorganic Technique 1` == "Other") `Fertilizer amount applied: Inorganic Technique 1`<- ""
+      #   `Fertilizer amount applied: Inorganic Implement 1`<- paste(input[[	paste0("fertilizer_nit_implement1_", "Inorganic", "_", ninorg) ]])
+      #   `Fertilizer amount applied: Inorganic Rate 1`<- paste(input[[	paste0("fert_nit_amountApplied1_", "Inorganic", "_", ninorg) ]])
+      #   `Fertilizer amount applied: Inorganic Rate (unit) 1`<- paste(input[[	paste0("fert_nit_amountAppliedScale1_", "Inorganic", "_", ninorg) ]])
+      #   if(is.null(`Fertilizer amount applied: Inorganic Rate (unit) 1`) || length(`Fertilizer amount applied: Inorganic Rate (unit) 1`)==0  ) `Fertilizer amount applied: Inorganic Rate (unit) 1`<- ""
+      #   if(`Fertilizer amount applied: Inorganic Rate (unit) 1`== "Other") `Fertilizer amount applied: Inorganic Rate (unit) 1` <- ""
+      #   `Fertilizer amount applied: Inorganic Nutrient Content 1`<- paste(input[[	paste0("fert_nit_nutrientContent1_", "Inorganic", "_", ninorg) ]])
+      #
+      # }
+      # minorg <- data.frame( in1inor , in2inor  ,  in3inor, in4inor, in5inor, in6inor, ininor, stringsAsFactors = FALSE )
+      # dtinor<- data.frame(
+      #                      `Fertilizer amount applied: Inorganic Start date 1` ,
+      #                      `Fertilizer amount applied: Inorganic End date 1`,
+      #                      `Fertilizer amount applied: Inorganic "Inorganic 1`,
+      #                      `Fertilizer amount applied: Inorganic Unit 1`,
+      #                      `Fertilizer amount applied: Inorganic Technique 1`,
+      #                      `Fertilizer amount applied: Inorganic Implement 1`,
+      #                      `Fertilizer amount applied: Inorganic Rate 1`,
+      #                      `Fertilizer amount applied: Inorganic Rate (unit) 1`,
+      #                      `Fertilizer amount applied: Inorganic Nutrient Content 1` ,stringsAsFactors = FALSE)
+      #
+      # tot_inor <- data.frame(minorg, dtinor, stringsAsFactors = FALSE)
+      #
+      # #Green manure ####
+      # #ngreen<- input$numApplications_Green_manure
+      # ngreen <- 1
+      # for(i in 1:ngreen){
+      #
+      #   green1inor <- paste(input[[	paste0("nutrient_start_date_", "Green manure", "_", ngreen)	]])
+      #   green2inor<- paste(input[[	paste0("nutrient_end_date_", "Green manure" , "_", ngreen)	]])
+      #   green3inor<- paste(input[[	paste0("nutrient_app_rate_", "Green manure", "_", ngreen)	]])
+      #   green4inor<- paste(input[[	paste0("nutrient_app_rate_unit_", "Green manure", "_", ngreen)	]])
+      #   if(is.null(green4inor) ||  length(green4inor)==0 ) green4inor <- ""
+      #   green5inor<- paste(input[[	paste0("nutrient_recommended_rate_", "Green manure", "_", ngreen)	]])
+      #   green6inor<- paste(input[[	paste0("fertilizer_recommended_rate_unit_","Green manure", "_", ngreen)	]])
+      #   if(is.null(green6inor) ||   length(green6inor)==0) green6inor <- ""
+      #   green7inor<- paste(input[[	paste0("perc_recomm_rate_", "Green manure", "_", ngreen)	]])
+      #
+      #
+      #   #`Fertilizer amount applied: Green manure # of app 1` <-	paste0("nutrientApplied_nit_numApps1_", "Green manure", "_", ngreen)
+      #   `Fertilizer amount applied: Green manure Start date 1`<-	paste0("fert_nit_start_date1_", "Green manure", "_", ngreen)
+      #   `Fertilizer amount applied: Green manure End date 1` <-	paste0("fert_nit_end_date1_", "Green manure", "_", ngreen)
+      #   `Fertilizer amount applied: Green manure Green manure type 1` <-	paste0("fert_nit_type1_", "Green manure", "_", ngreen)
+      #   if(is.null(`Fertilizer amount applied: Green manure Green manure type 1`) ||  length(`Fertilizer amount applied: Green manure Green manure type 1`)==0     ) `Fertilizer amount applied: Green manure Green manure type 1`<- ""
+      #   if(`Fertilizer amount applied: Green manure Green manure type 1` == "Other") `Fertilizer amount applied: Green manure Green manure type 1`<- ""
+      #
+      #   `Fertilizer amount applied: Green manure Unit 1`<-	paste0("fert_nit_type1_unit_", "Green manure", "_", ngreen)
+      #   `Fertilizer amount applied: Green manure Technique 1`<-	paste0("fertilizer_nit_application_technique1_", "Green manure", "_", ngreen)
+      #   `Fertilizer amount applied: Green manure Implement 1` <-	paste0("fertilizer_nit_implement1_", "Green manure", "_", ngreen)
+      #   `Fertilizer amount applied: Green manure Rate 1`<-	paste0("fert_nit_amountApplied1_", "Green manure", "_", ngreen)
+      #   `Fertilizer amount applied: Green manure Rate (unit) 1` <-	paste0("fert_nit_amountAppliedScale1_", "Green manure", "_", ngreen)
+      #   if(is.null(`Fertilizer amount applied: Green manure Rate (unit) 1`) || length(`Fertilizer amount applied: Green manure Rate (unit) 1`)==0 )`Fertilizer amount applied: Green manure Rate (unit) 1` <- ""
+      #   `Fertilizer amount applied: Green manure Nutrient Content 1` <-	paste0("fert_nit_nutrientContent1_", "Green manure", "_", ngreen)
+      # }
+      # mgreen <- data.frame( green1inor , green2inor  ,  green3inor, green4inor, green5inor, green6inor, green7inor, stringsAsFactors = FALSE )
+      # dtgreen <- data.frame (
+      #                        `Fertilizer amount applied: Green manure Start date 1`,
+      #                        `Fertilizer amount applied: Green manure End date 1` ,
+      #                        `Fertilizer amount applied: Green manure Green manure 1` ,
+      #                        `Fertilizer amount applied: Green manure Unit 1`,
+      #                        `Fertilizer amount applied: Green manure Technique 1`,
+      #                        `Fertilizer amount applied: Green manure Implement 1`,
+      #                        `Fertilizer amount applied: Green manure Rate 1`,
+      #                        `Fertilizer amount applied: Green manure Rate (unit) 1` ,
+      #                        `Fertilizer amount applied: Green manure Nutrient Content 1` ,stringsAsFactors = FALSE)
+      #
+      # tot_green <- data.frame(mgreen, dtgreen, stringsAsFactors = FALSE)
+
+      #subtot <- data.frame(tot_dtorg,tot_inor, dtgreen, stringsAsFactors = FALSE)
+      out <- merge(out, dtotal, by = 0, all = TRUE)[-1]
+      out
+
+  })
+
 
   ### pest and disease
   dt_pestdis <- reactive({
 
+
     out <- fb_agrofims()
+
+    npest<- input$numApplicationsPestDisease
+
+    sdate <- edate <- tech<- forname <- depth <- amount <- uni <- list()
+    for(i in 1:npest) {
+
+      sdate[[i]] <-  paste(input[[paste0("pestcontrol_start_date_", i) ]])
+      edate[[i]] <-  paste(input[[paste0("pestcontrol_start_date_", i) ]])
+      tech[[i]]  <-  paste(input[[paste0("pest_control_technique_",i) ]])
+      print(tech[[i]])
+      if(is.null( tech[[i]] ) || length(tech[[i]]) ==0) tech[[i]] <-  ""
+      #if(  tech[[i]]]=="Other"  )  tech[[i]] <-  ""
+      forname[[i]] <- paste(input[[ paste0("pest_name_form_", i) ]])
+      depth[[i]] <-  paste(input[[ paste0("pesticide_application_depth_", i) ]])
+      amount[[i]] <- paste(input[[ paste0("pesticide_amount_", i) ]])
+      uni[[i]] <-   paste(input[[ paste0("pesticide_amount_unit_", i) ]])
+      print(uni[[i]])
+      if(is.null(uni[[i]]) || length(uni[[i]])==0 ) uni[[i]]  <- ""
+
+    }
+
+    sdate <-unlist(sdate)
+    edate  <-unlist( edate)
+    tech  <-unlist(tech)
+    forname<-unlist( forname)
+    depth  <-unlist(depth)
+    amount  <-unlist(amount)
+    uni <-unlist(uni)
+
+    pest <- c(sdate, edate, tech, forname, depth, amount, uni)
+    temp <- t(pest)
+    pestdt <- as.data.frame(temp)
+
+    for(i in 1:npest){
+      #a1 <- paste('Number of applications', 1:i )
+      a2 <-paste('Pest control Start date', 1:i)
+      a3 <-paste('Pest control End date', 1:i )
+      a4 <-paste('Pest control Technique', 1:i )
+      a5 <-paste('Pest control Pesticide name / formulation', 1:i)
+      a6 <-paste('Pest control Pesticide application depth', 1:i)
+      a7 <-paste('Pest control Pesticide amount', 1:i )
+      a8 <-paste('Pest control Pesticide amount unit', 1:i )
+    }
+    pestNames <- c(a2, a3, a4, a5, a6, a7, a8)
+
+    names(pestdt) <- pestNames
+
+    out <- merge(out, pestdt, by = 0, all = TRUE)[-1]
+
+
     # out<-pestdis (input$disease_observation_date,input$disease_name,
     #           input$disease_plant_parts_affected,input$disease_percentage_experiement_affected,
     #           input$disease_damages_notes,input$disease_notes,input$pest_type,input$pest_name,
@@ -5921,26 +6472,461 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  # ##reactive soil
-  # dt_soil_agrofims <- shiny::reactive({
+  ##reactive soil
+  dt_soil_agrofims <- shiny::reactive({
+
+    soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
+
+    if(!is.null(soil_vars)){
+      dt  <-  matrix(nrow = 50, ncol = length(soil_vars))
+      dt  <- data.frame(dt)
+      names(dt)  <-  soil_vars
+    } else{
+      dt <- data.frame()
+    }
+    dt
+  })
+
+
+
+  metadata_dt2 <- reactive({
+
+    c1 <- c('Experiment ID', input$experimentId)
+    c2 <- c('Experiment name', input$experimentName )
+    c3 <- c('Experiment project name', input$experimentProjectName)
+    c4 <- c('Experiment start date', paste(input$fbDesign_project_time_line[1]) )
+    c5 <- c('Experiment end date', paste(input$fbDesign_project_time_line[2]))
+
+    xdur <- interval(ymd(input$fbDesign_project_time_line[1]),ymd(input$fbDesign_project_time_line[2]))
+    xdur <- xdur %/% months(1)
+    xdur <- paste(xdur," months", sep = "")
+
+
+    c6 <- c('Experiment duration', xdur)
+    vTypeExperiment <- ""
+    if(!is.null(input$designFieldbook_typeExperiment)) vTypeExperiment <- input$designFieldbook_typeExperiment
+
+    c7 <- c('Type of experiment', vTypeExperiment)
+    c8 <- c('Experiment objective', input$experimentObj)
+
+    vfundAgenType <- ""
+    vfundName <-""
+    if(!is.null(input$designFieldbook_fundAgencyType)) {
+      vfundAgenType <- paste(input$designFieldbook_fundAgencyType, collapse = ",")
+      vn <- length(input$designFieldbook_fundAgencyType)
+      vfundName <- input[[paste0("fundName_", 1)]]
+
+      for(i in 2:vn){
+        vfundName <- paste(vfundName, ",", input[[paste0("fundName_", i)]])
+      }
+    }
+
+    c9 <- c('Funding agency type', vfundAgenType)
+    c10 <- c('Funding agency name', vfundName)
+
+    vNumPrEnt <- ""
+    vPrEnt <- c()
+    vContCenter <- c()
+    vcontCRP <- c()
+    vPrName <- c()
+
+
+
+    if(is.numeric(input$numProjEntity)){
+      vNumPrEnt <- input$numProjEntity
+      vn <- input$numProjEntity
+
+      for(i in 1:vn){
+        aux <- input[[paste0("projEntity_", i)]]
+        if(!is.null(aux)){
+          vPrEnt <- c(vPrEnt,aux)
+          if(aux == "Other"){
+            vPrName <- c(vPrName, input[[paste0("contOtherCenter_", i)]])
+          }
+          else{
+            if(!is.null(input[[paste0("contCenter_", i)]])){
+              vContCenter <- c(vContCenter, input[[paste0("contCenter_", i)]])
+            }
+            else{
+              vContCenter <- c(vContCenter, "")
+            }
+            if(!is.null(input[[paste0("contCRP_", i)]])){
+              vcontCRP <- c(vcontCRP, input[[paste0("contCRP_", i)]])
+            }
+            else{
+              vcontCRP <- c(vcontCRP, "")
+            }
+          }
+        }
+      }
+      vPrEnt <- paste(vPrEnt, collapse = ",")
+      vContCenter <- paste(vContCenter, collapse = ",")
+      vcontCRP <- paste(vcontCRP, collapse = ",")
+      vPrName <- paste(vPrName, collapse = ",")
+    }
+
+    c11 <- c('Number of project management entities',vNumPrEnt )
+    c12 <- c('Project management entity',vPrEnt )
+    c13 <- c('Contribuitor center',vContCenter )
+    c14 <- c('Contribuitor CRP', vcontCRP)
+    c15 <- c('Project management entity name', vPrName )
+
+
+
+    vleadOrgType <- c()
+    vleadPerson <- c()
+    vleadOrgName <- c()
+
+    if(is.numeric(input$numLeads)){
+      vn <- input$numProjEntity
+      for(i in 1:vn){
+        aux <- input[[paste0("projLeadEnt_", i)]]
+        if(!is.null(aux)){
+          if(aux == "Other"){
+            if(is.null(input[[paste0("lead_org_type_1_", i)]])) vleadOrgType <- c(vleadOrgType,aux)
+            else vleadOrgType <- c(vleadOrgType, input[[paste0("lead_org_type_1_", i)]])
+            vleadOrgName <- c(vleadOrgName, input[[paste0("leadNameOther_", i)]])
+          }
+          else{
+            vleadOrgType <- c(vleadOrgType,aux)
+            if(!is.null(input[[paste0("tLeadCenter_", i)]])){
+              vleadOrgName <- c(vleadOrgName, input[[paste0("tLeadCenter_", i)]])
+            }
+            else{
+              vleadOrgName <- c(vleadOrgName, "")
+            }
+          }
+          vleadPerson <- c(vleadPerson, input[[paste0("expLead_", i)]])
+        }
+      }
+
+      vleadOrgType <- paste(vleadOrgType, collapse = ";")
+      vleadOrgName <- paste(vleadOrgName, collapse = ";")
+      vleadPerson <- paste(vleadPerson, collapse = ";")
+    }
+
+    c16 <- c('Experiment, lead organization type',vleadOrgType )
+    c17 <- c('Experiment lead person / Primary Investigator', vleadOrgName)
+    c18 <- c('Experiment, lead organization name',vleadPerson )
+
+    np <- input$npersons
+    vperType <- c()
+    vperfname <- c()
+    vperlname <- c()
+    vperemail <- c()
+    vperAff <- c()
+    vperOrcid <- c()
+    vpercountry <- c()
+
+    for(i  in 1:np){
+      if(is.null(input[[paste0("personnel",i,"Type")]])) vperType <- c(vperType, "")
+      else vperType <- c(vperType, input[[paste0("personnel",i,"Type")]])
+
+      vperfname <- c(vperfname, input[[paste0("person",i,"FirstName")]])
+      vperlname <- c(vperlname, input[[paste0("person",i,"LastName")]])
+
+      if(is.null(input[[paste0("person",i,"Affiliation")]])) vperAff <- c(vperAff, "")
+      else{
+        if(input[[paste0("person",i,"Affiliation")]] == "CGIAR Center"){
+          if(is.null(input[[paste0("person",i,"Center")]])) vperAff <- c(vperAff, "CGIAR Center")
+          else vperAff <- c(vperAff, input[[paste0("person",i,"Center")]])
+        }
+        else{
+          vperAff <- c(vperAff, input[[paste0("person",i,"CenterOther")]])
+        }
+      }
+
+      vperemail <- c(vperemail, input[[paste0("person",i,"Email")]])
+      vperOrcid <- c(vperOrcid, input[[paste0("person",i,"ORCID")]])
+
+      if(is.null(input[[paste0("person",i,"Country")]])) vpercountry <- c(vpercountry, "")
+      else vpercountry <- c(vpercountry, input[[paste0("person",i,"Country")]])
+    }
+
+    vperType <- paste(vperType, collapse = ",")
+    vperfname <-paste(vperfname, collapse = ",")
+    vperlname <- paste(vperlname, collapse = ",")
+    vperemail <- paste(vperemail, collapse = ",")
+    vperAff <- paste(vperAff, collapse = ",")
+    vperOrcid <- paste(vperOrcid, collapse = ",")
+    vpercountry <- paste(vpercountry, collapse = ",")
+
+    c19 <- c('Person type',vperType )
+    c20 <- c('Person, first name',vperfname )
+    c21 <- c('Person, last name', vperlname)
+    c22 <- c('Person, email', vperemail)
+    c23 <- c('Person, affiliation', vperAff)
+    c24 <- c('Person, ORCID',vperOrcid )
+    c25 <- c('Country in which active', vpercountry)
+
+
+    vsitetype <- ""
+    vsitename <- ""
+    vsiteId <- ""
+    vsiteCountry <- ""
+    vsiteadmin1 <- ""
+    vsiteadmin2 <- ""
+    vsiteVillage <- ""
+    vsitenear <- ""
+    vsiteElev <- ""
+    vsiteLat <- ""
+    visteLon <- ""
+
+    if(!is.null(input$fbDesign_countryTrial) && !is.null(input$designFieldbook_sites)){
+      vsiteCountry <- input$fbDesign_countryTrial
+
+      xpath <- fbglobal::get_base_dir()
+      xfp <- file.path(path, "table_sites_agrofims.rds")
+
+      xaux <- input$designFieldbook_sites
+      # print(xaux)
+      # xstart <- which(strsplit(xaux, "")[[1]]=="(")
+      # vsiteId <- substr(xaux, xstart+1, nchar(xaux)-1)
+      vsiteId <- xaux
+
+      x_sites_data <- readRDS(file = xfp)
+      data <- dplyr::filter(x_sites_data, shortn==vsiteId)
+      if(nrow(data) != 0){
+        xsite <- data[1,]
+        vsitetype <- xsite$Type
+        vsitename <- xsite$local
+        vsiteadmin1 <- xsite$adm1
+        vsiteadmin2 <- xsite$adm2
+        vsiteVillage <- xsite$village
+        vsitenear <- xsite$nearpop
+        vsiteElev <- xsite$elev
+        vsiteLat <- xsite$latd
+        visteLon <- xsite$lond
+      }
+
+
+    }
+
+    c26 <- c('Site type',vsitetype)
+    c27 <- c('Site name',vsitename)
+    c28 <- c('Site ID', vsiteId)
+    c29 <- c('Country name', vsiteCountry)
+    c30 <- c('Site, first-level administrative division name',vsiteadmin1 )
+    c31 <- c('Site, second-level administrative division name',vsiteadmin2 )
+    c32 <- c('Village name', vsiteVillage)
+    c33 <- c('Nearest populated place', vsitenear)
+    c34 <- c('Site elevation',vsiteElev )
+    c35 <- c('Site latitude (in decimal degrees)', vsiteLat)
+    c36 <- c('Site longitude (in decimal degrees)',visteLon )
+
+    vHighLevel <- ""
+    if(!is.null(input$fbDesign_inHighLevel)) vHighLevel <- input$fbDesign_inHighLevel
+
+    c37 <- c('Higher-level landform',vHighLevel)
+
+    vSiteVegetation <- ""
+    if(!is.null(input$fbDesign_inSiteVegetation)) vSiteVegetation <- paste(input$fbDesign_inSiteVegetation, collapse = ",")
+
+    c38 <- c('Vegetation surrounding the experimental site', vSiteVegetation)
+    c39 <- c('Site description notes', input$inSiteDescNotes)
+
+    c40 <- c('Cropping type', input$croppingType )
+
+    vCropCommon <- ""
+    if(!is.null(input$cropCommonNameMono)) vCropCommon <- input$cropCommonNameMono
+
+    c41 <- c('Crop common name',vCropCommon )
+    c42 <- c('Crop latin name', input$cropLatinNameMono)
+
+    vCropVarName <- ""
+    if(!is.null(input$cropVarietyNameMono)) vCropVarName <- paste(input$cropVarietyNameMono, collapse = ",")
+
+    c43 <- c('Crop variety name', vCropVarName)
+    c44 <- c('Cultivar name',input$cultivarNameMono )
+    c45 <- c('Crop local name', input$monoCropLocalName)
+
+    nCropPrevCrop <- ""
+    nprevCropName <- ""
+    nprevCropVar <- ""
+
+    if(is.numeric(input$numPreviousCrop)) nCropPrevCrop <-input$numPreviousCrop
+    if(!is.null(input$prevCropName)) nprevCropName <- paste(input$prevCropName, collapse = ",")
+    if(!is.null(input$prevCropVar)) nprevCropVar <- paste(input$prevCropVar, collapse = ",")
+
+    c46 <- c('Number of previous crop', nCropPrevCrop)
+    c47 <- c('Previous crop name', nprevCropName)
+    c48 <- c('Previous crop variety',nprevCropVar )
+
+    # c56 <- c('Subject', )
+    # c57 <- c('Keywords', )
+    # c58 <- c('Embargo end date', )
+
+    df_metadata <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,
+                              c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,
+                              c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,
+                              c31,c32,c33,c34,c35,c36,c37,c38,c39,c40,
+                              c41,c42,c43,c44,c45,c46,c47, c48)
+    var_metadata <-  t(df_metadata)
+    # print(df_metadata)
+
+  })
+
+
+  factor_dt2 <- reactive({
+
+
+    vinfExp <-""
+    if(!is.null(input$info_experiment_unit)) vinfExp <- input$info_experiment_unit
+
+
+    c1 <- c('Information on experimental unit',vinfExp )
+
+    vfarea <-""
+    vfexpmaxwidth <- ""
+    vfexpmaxlength <- ""
+    vpdiam <- ""
+    vpdpth <- ""
+    if(vinfExp == "plot"  ){
+      vfarea <- vinfExp
+      wunit <- ""
+      lunit <- ""
+      if(!is.null(input$expt_plot_width_unit))  wunit <- input$expt_plot_width_unit
+      if(!is.null(input$expt_plot_length_unit))  lunit <- input$expt_plot_length_unit
+      vfexpmaxwidth <- paste0(input$expt_plot_width, " " , wunit)
+      vfexpmaxlength <- paste0(input$expt_plot_length, " " , lunit)
+    }
+    else if(vinfExp == "field"){
+      vfarea <- vinfExp
+      wunit <- ""
+      lunit <- ""
+      if(!is.null(input$expt_field_width_unit))  wunit <- input$expt_field_width_unit
+      if(!is.null(input$expt_field_length_unit))  lunit <- input$expt_field_length_unit
+      vfexpmaxwidth <- paste0(input$expt_field_width, " " , wunit)
+      vfexpmaxlength <- paste0(input$expt_field_length, " " , lunit)
+    }
+    else if(vinfExp == "pot"){
+      wunit <- ""
+      lunit <- ""
+      if(!is.null(input$pot_diameter_unit))  wunit <- input$pot_diameter_unit
+      if(!is.null(input$pot_depth_unit))  lunit <- input$pot_depth_unit
+      vpdiam <- paste0(input$pot_diameter, " " , wunit)
+      vpdpth <- paste0(input$pot_depth, " " , lunit)
+
+    }
+
+    c2 <- c('Field area',vfarea )
+    c3 <- c('Experimental field maximum width', vfexpmaxwidth)
+    c4 <- c('Experimental field maximum length', vfexpmaxlength)
+    c5 <- c('Pot diameter',vpdiam )
+    c6 <- c('Pot depth',vpdpth )
+    c7 <- c('Experimental design', input$designFieldbook_agrofims)
+    c8 <- c('Experimental design abbreviation', "")
+    c9 <- c('Number of replications', input$designFieldbook_agrofims_r)
+    c40 <- c('Number of factors', input$nfactors_hdafims)
+
+    levels1 <- c("NA", "NA", "NA", "NA","NA")
+    levels2 <- c("NA", "NA", "NA", "NA","NA")
+    levels3 <- c("NA", "NA", "NA", "NA","NA")
+    levels4 <- c("NA", "NA", "NA", "NA","NA")
+    levels5 <- c("NA", "NA", "NA", "NA","NA")
+    levelsDt <- data.table(levels1,levels2,levels3,levels4,levels5)
+
+
+    nf <- input$nfactors_hdafims
+
+    factors <- c("NA", "NA", "NA", "NA","NA")
+    for(i in 1:nf){
+      g1 <- input[[paste0("sel" , i, "_2" )]]
+      g2 <- input[[paste0("sel" , i, "_3" )]]
+      if(!is.null(g1) && !is.null(g2)){
+        factors[i] <- paste0(g1, " ", g2)
+
+        g3 <- input[[paste0("sel" , i, "_3" )]]
+        ls1 <- input[[paste0("numLevels_", i)]]
+        if(is_numeric(ls1) && !is.null(g3)){
+          if (ls1>5) ls1 <- 5 #max5
+          if(g3 %like% "date"){
+            for(j in 1:ls1){
+              sdate <- input[[paste0("factor_start_date_",i, "_", j)]]
+              edate <- input[[paste0("factor_end_date_",i, "_", j)]]
+              levelsDt[i,j] <- paste0(sdate, " - ", edate)
+            }
+          }
+          else{
+            nl <- input[[paste0("levels_",i)]]
+            count <- 1
+            for(lv in nl){
+              if(count <= 5){
+                if(is.null(input[[paste0("funits_", i)]])){
+                  levelsDt[i,count] <- lv
+                }
+                else{
+                  levelsDt[i,count]<- paste0(lv, " ", input[[paste0("funits_", i)]])
+                }
+              }
+              count <- count + 1
+            }
+          }
+        }
+
+      }
+
+    }
+
+
+    c10 <- c('Factor 1',factors[1])
+    c11 <- c('Factor 1 - level 1',levelsDt[1,1])
+    c12 <- c('Factor 1 - level 2',levelsDt[1,2] )
+    c13 <- c('Factor 1 - level 3',levelsDt[1,3])
+    c14 <- c('Factor 1 - level 4',levelsDt[1,4] )
+    c15 <- c('Factor 1 - level 5',levelsDt[1,5] )
+
+    c16 <- c('Factor 2', factors[2])
+    c17 <- c('Factor 2 - level 1',levelsDt[2,1])
+    c18 <- c('Factor 2 - level 2',levelsDt[2,2])
+    c19 <- c('Factor 2 - level 3',levelsDt[2,3])
+    c20 <- c('Factor 2 - level 4',levelsDt[2,4] )
+    c21 <- c('Factor 2 - level 5',levelsDt[2,5] )
+
+    c22 <- c('Factor 3', factors[3])
+    c23 <- c('Factor 3 - level 1',levelsDt[3,1] )
+    c24 <- c('Factor 3 - level 2',levelsDt[3,2] )
+    c25 <- c('Factor 3 - level 3',levelsDt[3,3] )
+    c26 <- c('Factor 3 - level 4',levelsDt[3,4] )
+    c27 <- c('Factor 3 - level 5',levelsDt[3,5] )
+
+    c28 <- c('Factor 4', factors[4] )
+    c29 <- c('Factor 4 - level 1',levelsDt[4,1])
+    c30 <- c('Factor 4 - level 2',levelsDt[4,2] )
+    c31 <- c('Factor 4 - level 3',levelsDt[4,3])
+    c32 <- c('Factor 4 - level 4',levelsDt[4,4] )
+    c33 <- c('Factor 4 - level 5',levelsDt[4,5])
+
+    c34 <- c('Factor 5', factors[5])
+    c35 <- c('Factor 5 - level 1',levelsDt[5,1] )
+    c36 <- c('Factor 5 - level 2',levelsDt[5,2])
+    c37 <- c('Factor 5 - level 3',levelsDt[5,3])
+    c38 <- c('Factor 5 - level 4',levelsDt[5,4] )
+    c39 <- c('Factor 5 - level 5',levelsDt[5,5])
+
+
+    df_metadata <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c40,c10,
+                              c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,
+                              c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,
+                              c31,c32,c33,c34,c35,c36,c37,c38,c39)
+    var_metadata <-  t(df_metadata)
+    # print(df_metadata)
+
+  })
+
+  # traits_dt2 <- reactive({
   #
-  #   soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
+  #   print("trait dt")
+  #   print(traits_dt())
   #
-  #   if(!is.null(soil_vars)){
-  #     dt  <-  matrix(nrow = 50, ncol = length(soil_vars))
-  #     dt  <- data.frame(dt)
-  #     names(dt)  <-  soil_vars
-  #   } else{
-  #     dt <- data.frame()
+  #   a<- traitsVals$Data
+  #   if(nrow(traitsVals$Data) >0){
+  #     aux_dt <- dplyr::filter(traitsVals$Data, Status=="Selected")
+  #     a<- aux_dt
   #   }
-  #   dt
+  #   a
+  #
   # })
-
-
-
-
-
-
 
 
 
@@ -5969,19 +6955,28 @@ server_design_agrofims <- function(input, output, session, values){
       # soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
       # print(soil_vars)
 
+      print("trait dt")
+      print(traits_dt())
+
+
       fb_traits <- fb_agrofims_traits()
+      #print(fb_traits)
 
       # agrofeatures <- dt_agrofeatures()
       #metadata <- dt_metadata_agrofims()
-      #installation <-dt_installation_agrofims()
+      metadata <- as.data.frame(metadata_dt2())
+      names(metadata) <- c("Variable", "Value")
+      installation <- as.data.frame(factor_dt2())
+      names(installation) <- c("Variable", "Value")
 
+      print(installation)
       trait_agrofims_dt <- trait_agrofims()
       trait_agrofims_dt<- trait_agrofims_dt[,-3]
 
       weather <- dt_weather_agrofims()
       print(weather)
-      # soil <- dt_soil_agrofims()
-      ## print(soil)
+      soil_vars <- dt_soil_agrofims()
+       print(soil_vars)
 
       fname <- paste(file,"xlsx",sep=".")
       #wb <- openxlsx::loadWorkbook(file = fname, create = TRUE)
@@ -5990,19 +6985,18 @@ server_design_agrofims <- function(input, output, session, values){
 
         incProgress(2/20,message = "Adding fieldbook data...")
 
+      incProgress(6/20,message = "Metadata metadata sheet...")
 
-      # incProgress(6/20,message = "Metadata metadata sheet...")
-      #
-      # openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
-      # openxlsx::writeDataTable(wb, "Metadata", x = metadata,
-      #                          colNames = TRUE, withFilter = FALSE)
+      openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Metadata", x = metadata,
+                               colNames = TRUE, withFilter = FALSE)
 
 
       # incProgress(7/20,message = "Adding installation sheet...")
       #
-      # openxlsx::addWorksheet(wb, "Installation", gridLines = TRUE)
-      # openxlsx::writeDataTable(wb, "Installation", x = installation,
-      #                          colNames = TRUE, withFilter = FALSE)
+      openxlsx::addWorksheet(wb, "Variables", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Variables", x = installation,
+                               colNames = TRUE, withFilter = FALSE)
 
 
 
@@ -6037,29 +7031,27 @@ server_design_agrofims <- function(input, output, session, values){
 
       if(is.element("Planting, transplanting", agroFeaSelected)) {
 
-      incProgress(12/20,message = "Adding planting data...")
+        incProgress(12/20,message = "Adding planting data...")
 
-      dt_plant <- dt_planting()
+        dt_plant <- dt_planting()
 
-      openxlsx::addWorksheet(wb, "Planting, transplanting", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "Planting, transplanting", x = dt_plant,
-                               colNames = TRUE, withFilter = FALSE)
+        openxlsx::addWorksheet(wb, "Planting, transplanting", gridLines = TRUE)
+        openxlsx::writeDataTable(wb, "Planting, transplanting", x = dt_plant,
+                                 colNames = TRUE, withFilter = FALSE)
 
       }
 
-      #if(is.element("Irrigation event", agroFeaSelected)) {
+      if(is.element("Nutrient management", agroFeaSelected)) {
+        dt_nut<-  dt_nutrient()
+        #print(dt_nut)
+        openxlsx::addWorksheet(wb, "Nutrient management", gridLines = TRUE)
+        openxlsx::writeDataTable(wb, "Nutrient management", x = dt_nut,
+                                 colNames = TRUE, withFilter = FALSE)
 
-      incProgress(14/20,message = "Adding irrigation data...")
+      }
 
-      dt_irri <- dt_irrigation()
 
-      openxlsx::addWorksheet(wb, "Irrigation", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "Irrigation", x = dt_irri,
-                               colNames = TRUE, withFilter = FALSE)
-
-      #}
-
-      #if(is.element("Biofertilizer", agroFeaSelected)) {
+      if(is.element("Biofertilizer", agroFeaSelected)) {
 
       incProgress(15/20,message = "Adding biofertilizer data...")
 
@@ -6069,11 +7061,20 @@ server_design_agrofims <- function(input, output, session, values){
       openxlsx::writeDataTable(wb, "Biofertilizer", x = dt_biof,
                                colNames = TRUE, withFilter = FALSE)
 
-      #}
+      }
 
-      # openxlsx::addWorksheet(wb, "Nutrient", gridLines = TRUE)
-      # openxlsx::writeDataTable(wb, "Nutrient", x = ,
-      #                          colNames = TRUE, withFilter = FALSE)
+      if(is.element("Irrigation", agroFeaSelected)) {
+
+        incProgress(14/20,message = "Adding irrigation data...")
+
+        dt_irri <- dt_irrigation()
+        #print(dt_irri)
+        openxlsx::addWorksheet(wb, "Irrigation", gridLines = TRUE)
+        openxlsx::writeDataTable(wb, "Irrigation", x = dt_irri,
+                                 colNames = TRUE, withFilter = FALSE)
+
+      }
+
 
       if(is.element("Harvest", agroFeaSelected)) {
 
@@ -6087,17 +7088,17 @@ server_design_agrofims <- function(input, output, session, values){
 
      }
 
-        #if(is.element("Pest & disease", agroFeaSelected)) {
+      if(is.element("Pest & disease", agroFeaSelected)) {
 
       incProgress(16/20,message = "Adding pest and disease data...")
 
       dt_pestd <- dt_pestdis()
 
-      openxlsx::addWorksheet(wb, "PestDisease", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "PestDisease", x = dt_pestd,
+      openxlsx::addWorksheet(wb, "Pest and disease", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Pest and disease", x = dt_pestd,
                                colNames = TRUE, withFilter = FALSE)
 
-      #}
+      }
 
       incProgress(9/20,message = "Adding trait list sheet...")
 
@@ -6112,7 +7113,7 @@ server_design_agrofims <- function(input, output, session, values){
                                colNames = TRUE, withFilter = FALSE)
 
 
-      if(is.null(weather_vars)){
+      if(is.null(weather) || length(weather)==0 || nrow(weather)==0  ){
         print("there is no weather data")
 
       } else {
@@ -6124,16 +7125,16 @@ server_design_agrofims <- function(input, output, session, values){
                                  colNames = TRUE, withFilter = FALSE)
       }
 
-      # if(is.null(soil_vars)){
-      #   print("there is no soil data")
-      #
-      # } else {
-      #
-      #   incProgress(9/10,message = "Adding soil variables sheet...")
-      #   openxlsx::addWorksheet(wb, "Soil", gridLines = TRUE)
-      #   openxlsx::writeDataTable(wb, "Soil", x = soil,
-      #                            colNames = TRUE, withFilter = FALSE)
-      # }
+      if(is.null(soil_vars) || length(soil_vars)==0 || nrow(soil_vars)==0 ){
+        print("there is no soil data")
+
+      } else {
+
+        incProgress(9/10,message = "Adding soil variables sheet...")
+        openxlsx::addWorksheet(wb, "Soil", gridLines = TRUE)
+        openxlsx::writeDataTable(wb, "Soil", x = soil_vars,
+                                 colNames = TRUE, withFilter = FALSE)
+      }
 
       incProgress(19/20,message = "Downloading file...")
 
@@ -6147,6 +7148,447 @@ server_design_agrofims <- function(input, output, session, values){
     },
     contentType="application/xlsx"
   )
+
+
+
+  metadata_dt <- function(){
+
+    c1 <- c('Experiment ID', input$experimentId)
+    c2 <- c('Experiment name', input$experimentName )
+    c3 <- c('Experiment project name', input$experimentProjectName)
+    c4 <- c('Experiment start date', paste(input$fbDesign_project_time_line[1]) )
+    c5 <- c('Experiment end date', paste(input$fbDesign_project_time_line[2]))
+
+    xdur <- interval(ymd(input$fbDesign_project_time_line[1]),ymd(input$fbDesign_project_time_line[2]))
+    xdur <- xdur %/% months(1)
+    xdur <- paste(xdur," months", sep = "")
+
+
+    c6 <- c('Experiment duration', xdur)
+    vTypeExperiment <- ""
+    if(!is.null(input$designFieldbook_typeExperiment)) vTypeExperiment <- input$designFieldbook_typeExperiment
+
+    c7 <- c('Type of experiment', vTypeExperiment)
+    c8 <- c('Experiment objective', input$experimentObj)
+
+    vfundAgenType <- ""
+    vfundName <-""
+    if(!is.null(input$designFieldbook_fundAgencyType)) {
+      vfundAgenType <- paste(input$designFieldbook_fundAgencyType, collapse = ",")
+      vn <- length(input$designFieldbook_fundAgencyType)
+      vfundName <- input[[paste0("fundName_", 1)]]
+
+      for(i in 2:vn){
+        vfundName <- paste(vfundName, ",", input[[paste0("fundName_", i)]])
+      }
+    }
+
+    c9 <- c('Funding agency type', vfundAgenType)
+    c10 <- c('Funding agency name', vfundName)
+
+    vNumPrEnt <- ""
+    vPrEnt <- c()
+    vContCenter <- c()
+    vcontCRP <- c()
+    vPrName <- c()
+
+
+
+    if(is.numeric(input$numProjEntity)){
+      vNumPrEnt <- input$numProjEntity
+      vn <- input$numProjEntity
+
+      for(i in 1:vn){
+        aux <- input[[paste0("projEntity_", i)]]
+        if(!is.null(aux)){
+          vPrEnt <- c(vPrEnt,aux)
+          if(aux == "Other"){
+            vPrName <- c(vPrName, input[[paste0("contOtherCenter_", i)]])
+          }
+          else{
+            if(!is.null(input[[paste0("contCenter_", i)]])){
+              vContCenter <- c(vContCenter, input[[paste0("contCenter_", i)]])
+            }
+            else{
+              vContCenter <- c(vContCenter, "")
+            }
+            if(!is.null(input[[paste0("contCRP_", i)]])){
+              vcontCRP <- c(vcontCRP, input[[paste0("contCRP_", i)]])
+            }
+            else{
+              vcontCRP <- c(vcontCRP, "")
+            }
+          }
+        }
+      }
+      vPrEnt <- paste(vPrEnt, collapse = ",")
+      vContCenter <- paste(vContCenter, collapse = ",")
+      vcontCRP <- paste(vcontCRP, collapse = ",")
+      vPrName <- paste(vPrName, collapse = ",")
+    }
+
+    c11 <- c('Number of project management entities',vNumPrEnt )
+    c12 <- c('Project management entity',vPrEnt )
+    c13 <- c('Contribuitor center',vContCenter )
+    c14 <- c('Contribuitor CRP', vcontCRP)
+    c15 <- c('Project management entity name', vPrName )
+
+
+
+    vleadOrgType <- c()
+    vleadPerson <- c()
+    vleadOrgName <- c()
+
+    if(is.numeric(input$numLeads)){
+      vn <- input$numProjEntity
+      for(i in 1:vn){
+        aux <- input[[paste0("projLeadEnt_", i)]]
+        if(!is.null(aux)){
+          if(aux == "Other"){
+            if(is.null(input[[paste0("lead_org_type_1_", i)]])) vleadOrgType <- c(vleadOrgType,aux)
+            else vleadOrgType <- c(vleadOrgType, input[[paste0("lead_org_type_1_", i)]])
+            vleadOrgName <- c(vleadOrgName, input[[paste0("leadNameOther_", i)]])
+          }
+          else{
+            vleadOrgType <- c(vleadOrgType,aux)
+            if(!is.null(input[[paste0("tLeadCenter_", i)]])){
+              vleadOrgName <- c(vleadOrgName, input[[paste0("tLeadCenter_", i)]])
+            }
+            else{
+              vleadOrgName <- c(vleadOrgName, "")
+            }
+          }
+          vleadPerson <- c(vleadPerson, input[[paste0("expLead_", i)]])
+        }
+      }
+
+      vleadOrgType <- paste(vleadOrgType, collapse = ";")
+      vleadOrgName <- paste(vleadOrgName, collapse = ";")
+      vleadPerson <- paste(vleadPerson, collapse = ";")
+    }
+
+    c16 <- c('Experiment, lead organization type',vleadOrgType )
+    c17 <- c('Experiment lead person / Primary Investigator', vleadOrgName)
+    c18 <- c('Experiment, lead organization name',vleadPerson )
+
+    np <- input$npersons
+    vperType <- c()
+    vperfname <- c()
+    vperlname <- c()
+    vperemail <- c()
+    vperAff <- c()
+    vperOrcid <- c()
+    vpercountry <- c()
+
+    for(i  in 1:np){
+      if(is.null(input[[paste0("personnel",i,"Type")]])) vperType <- c(vperType, "")
+      else vperType <- c(vperType, input[[paste0("personnel",i,"Type")]])
+
+      vperfname <- c(vperfname, input[[paste0("person",i,"FirstName")]])
+      vperlname <- c(vperlname, input[[paste0("person",i,"LastName")]])
+
+      if(is.null(input[[paste0("person",i,"Affiliation")]])) vperAff <- c(vperAff, "")
+      else{
+        if(input[[paste0("person",i,"Affiliation")]] == "CGIAR Center"){
+          if(is.null(input[[paste0("person",i,"Center")]])) vperAff <- c(vperAff, "CGIAR Center")
+          else vperAff <- c(vperAff, input[[paste0("person",i,"Center")]])
+        }
+        else{
+          vperAff <- c(vperAff, input[[paste0("person",i,"CenterOther")]])
+        }
+      }
+
+      vperemail <- c(vperemail, input[[paste0("person",i,"Email")]])
+      vperOrcid <- c(vperOrcid, input[[paste0("person",i,"ORCID")]])
+
+      if(is.null(input[[paste0("person",i,"Country")]])) vpercountry <- c(vpercountry, "")
+      else vpercountry <- c(vpercountry, input[[paste0("person",i,"Country")]])
+    }
+
+    vperType <- paste(vperType, collapse = ",")
+    vperfname <-paste(vperfname, collapse = ",")
+    vperlname <- paste(vperlname, collapse = ",")
+    vperemail <- paste(vperemail, collapse = ",")
+    vperAff <- paste(vperAff, collapse = ",")
+    vperOrcid <- paste(vperOrcid, collapse = ",")
+    vpercountry <- paste(vpercountry, collapse = ",")
+
+    c19 <- c('Person type',vperType )
+    c20 <- c('Person, first name',vperfname )
+    c21 <- c('Person, last name', vperlname)
+    c22 <- c('Person, email', vperemail)
+    c23 <- c('Person, affiliation', vperAff)
+    c24 <- c('Person, ORCID',vperOrcid )
+    c25 <- c('Country in which active', vpercountry)
+
+
+    vsitetype <- ""
+    vsitename <- ""
+    vsiteId <- ""
+    vsiteCountry <- ""
+    vsiteadmin1 <- ""
+    vsiteadmin2 <- ""
+    vsiteVillage <- ""
+    vsitenear <- ""
+    vsiteElev <- ""
+    vsiteLat <- ""
+    visteLon <- ""
+
+    if(!is.null(input$fbDesign_countryTrial) && !is.null(input$designFieldbook_sites)){
+      vsiteCountry <- input$fbDesign_countryTrial
+
+      xpath <- fbglobal::get_base_dir()
+      xfp <- file.path(path, "table_sites_agrofims.rds")
+
+      xaux <- input$designFieldbook_sites
+      # print(xaux)
+      # xstart <- which(strsplit(xaux, "")[[1]]=="(")
+      # vsiteId <- substr(xaux, xstart+1, nchar(xaux)-1)
+      vsiteId <- xaux
+
+      x_sites_data <- readRDS(file = xfp)
+      data <- dplyr::filter(x_sites_data, shortn==vsiteId)
+      if(nrow(data) != 0){
+        xsite <- data[1,]
+        vsitetype <- xsite$Type
+        vsitename <- xsite$local
+        vsiteadmin1 <- xsite$adm1
+        vsiteadmin2 <- xsite$adm2
+        vsiteVillage <- xsite$village
+        vsitenear <- xsite$nearpop
+        vsiteElev <- xsite$elev
+        vsiteLat <- xsite$latd
+        visteLon <- xsite$lond
+      }
+
+
+    }
+
+    c26 <- c('Site type',vsitetype)
+    c27 <- c('Site name',vsitename)
+    c28 <- c('Site ID', vsiteId)
+    c29 <- c('Country name', vsiteCountry)
+    c30 <- c('Site, first-level administrative division name',vsiteadmin1 )
+    c31 <- c('Site, second-level administrative division name',vsiteadmin2 )
+    c32 <- c('Village name', vsiteVillage)
+    c33 <- c('Nearest populated place', vsitenear)
+    c34 <- c('Site elevation',vsiteElev )
+    c35 <- c('Site latitude (in decimal degrees)', vsiteLat)
+    c36 <- c('Site longitude (in decimal degrees)',visteLon )
+
+    vHighLevel <- ""
+    if(!is.null(input$fbDesign_inHighLevel)) vHighLevel <- input$fbDesign_inHighLevel
+
+    c37 <- c('Higher-level landform',vHighLevel)
+
+    vSiteVegetation <- ""
+    if(!is.null(input$fbDesign_inSiteVegetation)) vSiteVegetation <- paste(input$fbDesign_inSiteVegetation, collapse = ",")
+
+    c38 <- c('Vegetation surrounding the experimental site', vSiteVegetation)
+    c39 <- c('Site description notes', input$inSiteDescNotes)
+
+    c40 <- c('Cropping type', input$croppingType )
+
+    vCropCommon <- ""
+    if(!is.null(input$cropCommonNameMono)) vCropCommon <- input$cropCommonNameMono
+
+    c41 <- c('Crop common name',vCropCommon )
+    c42 <- c('Crop latin name', input$cropLatinNameMono)
+
+    vCropVarName <- ""
+    if(!is.null(input$cropVarietyNameMono)) vCropVarName <- paste(input$cropVarietyNameMono, collapse = ",")
+
+    c43 <- c('Crop variety name', vCropVarName)
+    c44 <- c('Cultivar name',input$cultivarNameMono )
+    c45 <- c('Crop local name', input$monoCropLocalName)
+
+    nCropPrevCrop <- ""
+    nprevCropName <- ""
+    nprevCropVar <- ""
+
+    if(is.numeric(input$numPreviousCrop)) nCropPrevCrop <-input$numPreviousCrop
+    if(!is.null(input$prevCropName)) nprevCropName <- paste(input$prevCropName, collapse = ",")
+    if(!is.null(input$prevCropVar)) nprevCropVar <- paste(input$prevCropVar, collapse = ",")
+
+    c46 <- c('Number of previous crop', nCropPrevCrop)
+    c47 <- c('Previous crop name', nprevCropName)
+    c48 <- c('Previous crop variety',nprevCropVar )
+
+    # c56 <- c('Subject', )
+    # c57 <- c('Keywords', )
+    # c58 <- c('Embargo end date', )
+
+    df_metadata <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,
+                              c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,
+                              c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,
+                              c31,c32,c33,c34,c35,c36,c37,c38,c39,c40,
+                              c41,c42,c43,c44,c45,c46,c47, c48)
+    var_metadata <-  t(df_metadata)
+    # print(df_metadata)
+
+  }
+
+  factor_dt <- function(){
+
+
+    vinfExp <-""
+    if(!is.null(input$info_experiment_unit)) vinfExp <- input$info_experiment_unit
+
+
+    c1 <- c('Information on experimental unit',vinfExp )
+
+    vfarea <-""
+    vfexpmaxwidth <- ""
+    vfexpmaxlength <- ""
+    vpdiam <- ""
+    vpdpth <- ""
+    if(vinfExp == "plot"  ){
+      vfarea <- vinfExp
+      wunit <- ""
+      lunit <- ""
+      if(!is.null(input$expt_plot_width_unit))  wunit <- input$expt_plot_width_unit
+      if(!is.null(input$expt_plot_length_unit))  lunit <- input$expt_plot_length_unit
+      vfexpmaxwidth <- paste0(input$expt_plot_width, " " , wunit)
+      vfexpmaxlength <- paste0(input$expt_plot_length, " " , lunit)
+    }
+    else if(vinfExp == "field"){
+      vfarea <- vinfExp
+      wunit <- ""
+      lunit <- ""
+      if(!is.null(input$expt_field_width_unit))  wunit <- input$expt_field_width_unit
+      if(!is.null(input$expt_field_length_unit))  lunit <- input$expt_field_length_unit
+      vfexpmaxwidth <- paste0(input$expt_field_width, " " , wunit)
+      vfexpmaxlength <- paste0(input$expt_field_length, " " , lunit)
+    }
+    else if(vinfExp == "pot"){
+      wunit <- ""
+      lunit <- ""
+      if(!is.null(input$pot_diameter_unit))  wunit <- input$pot_diameter_unit
+      if(!is.null(input$pot_depth_unit))  lunit <- input$pot_depth_unit
+      vpdiam <- paste0(input$pot_diameter, " " , wunit)
+      vpdpth <- paste0(input$pot_depth, " " , lunit)
+
+    }
+
+    c2 <- c('Field area',vfarea )
+    c3 <- c('Experimental field maximum width', vfexpmaxwidth)
+    c4 <- c('Experimental field maximum length', vfexpmaxlength)
+    c5 <- c('Pot diameter',vpdiam )
+    c6 <- c('Pot depth',vpdpth )
+    c7 <- c('Experimental design', input$designFieldbook_agrofims)
+    c8 <- c('Experimental design abbreviation', "")
+    c9 <- c('Number of replications', input$designFieldbook_agrofims_r)
+    c40 <- c('Number of factors', input$nfactors_hdafims)
+
+    levels1 <- c("NA", "NA", "NA", "NA","NA")
+    levels2 <- c("NA", "NA", "NA", "NA","NA")
+    levels3 <- c("NA", "NA", "NA", "NA","NA")
+    levels4 <- c("NA", "NA", "NA", "NA","NA")
+    levels5 <- c("NA", "NA", "NA", "NA","NA")
+    levelsDt <- data.table(levels1,levels2,levels3,levels4,levels5)
+
+
+    nf <- input$nfactors_hdafims
+
+    factors <- c("NA", "NA", "NA", "NA","NA")
+    for(i in 1:nf){
+      g1 <- input[[paste0("sel" , i, "_2" )]]
+      g2 <- input[[paste0("sel" , i, "_3" )]]
+      if(!is.null(g1) && !is.null(g2)){
+        factors[i] <- paste0(g1, " ", g2)
+
+        g3 <- input[[paste0("sel" , i, "_3" )]]
+        ls1 <- input[[paste0("numLevels_", i)]]
+        if(is_numeric(ls1) && !is.null(g3)){
+          if (ls1>5) ls1 <- 5 #max5
+          if(g3 %like% "date"){
+            for(j in 1:ls1){
+              sdate <- input[[paste0("factor_start_date_",i, "_", j)]]
+              edate <- input[[paste0("factor_end_date_",i, "_", j)]]
+              levelsDt[i,j] <- paste0(sdate, " - ", edate)
+            }
+          }
+          else{
+            nl <- input[[paste0("levels_",i)]]
+            count <- 1
+            for(lv in nl){
+              if(count <= 5){
+                if(is.null(input[[paste0("funits_", i)]])){
+                  levelsDt[i,count] <- lv
+                }
+                else{
+                  levelsDt[i,count]<- paste0(lv, " ", input[[paste0("funits_", i)]])
+                }
+              }
+              count <- count + 1
+            }
+          }
+        }
+
+      }
+
+    }
+
+
+    c10 <- c('Factor 1',factors[1])
+    c11 <- c('Factor 1 - level 1',levelsDt[1,1])
+    c12 <- c('Factor 1 - level 2',levelsDt[1,2] )
+    c13 <- c('Factor 1 - level 3',levelsDt[1,3])
+    c14 <- c('Factor 1 - level 4',levelsDt[1,4] )
+    c15 <- c('Factor 1 - level 5',levelsDt[1,5] )
+
+    c16 <- c('Factor 2', factors[2])
+    c17 <- c('Factor 2 - level 1',levelsDt[2,1])
+    c18 <- c('Factor 2 - level 2',levelsDt[2,2])
+    c19 <- c('Factor 2 - level 3',levelsDt[2,3])
+    c20 <- c('Factor 2 - level 4',levelsDt[2,4] )
+    c21 <- c('Factor 2 - level 5',levelsDt[2,5] )
+
+    c22 <- c('Factor 3', factors[3])
+    c23 <- c('Factor 3 - level 1',levelsDt[3,1] )
+    c24 <- c('Factor 3 - level 2',levelsDt[3,2] )
+    c25 <- c('Factor 3 - level 3',levelsDt[3,3] )
+    c26 <- c('Factor 3 - level 4',levelsDt[3,4] )
+    c27 <- c('Factor 3 - level 5',levelsDt[3,5] )
+
+    c28 <- c('Factor 4', factors[4] )
+    c29 <- c('Factor 4 - level 1',levelsDt[4,1])
+    c30 <- c('Factor 4 - level 2',levelsDt[4,2] )
+    c31 <- c('Factor 4 - level 3',levelsDt[4,3])
+    c32 <- c('Factor 4 - level 4',levelsDt[4,4] )
+    c33 <- c('Factor 4 - level 5',levelsDt[4,5])
+
+    c34 <- c('Factor 5', factors[5])
+    c35 <- c('Factor 5 - level 1',levelsDt[5,1] )
+    c36 <- c('Factor 5 - level 2',levelsDt[5,2])
+    c37 <- c('Factor 5 - level 3',levelsDt[5,3])
+    c38 <- c('Factor 5 - level 4',levelsDt[5,4] )
+    c39 <- c('Factor 5 - level 5',levelsDt[5,5])
+
+
+    df_metadata <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c40,c10,
+                              c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,
+                              c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,
+                              c31,c32,c33,c34,c35,c36,c37,c38,c39)
+    var_metadata <-  t(df_metadata)
+    # print(df_metadata)
+
+  }
+
+  # observeEvent(input$btTest,{
+  #   traits_dt()
+  # })
+
+  traits_dt <- function(){
+    a<- traitsVals$Data
+    if(nrow(traitsVals$Data) >0){
+      aux_dt <- dplyr::filter(traitsVals$Data, Status=="Selected")
+      a<- aux_dt
+    }
+
+    return(a)
+  }
+
 
 
 }

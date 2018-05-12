@@ -401,6 +401,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                   #fluidRow(
                                                     column(width = 6,
                                                            h2("Experiment details"),
+                                                           # actionButton("btTest", "test"),
+
                                                            disabled(textInput(inputId = "experimentId", label = "Experiment ID", value = "")),
                                                            textInput(inputId = "experimentName", label = "Experiment name", value = ""),
                                                            textInput(inputId = "experimentProjectName", label = "Experiment project name", value = ""),
@@ -486,7 +488,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                          "Other"
                                                                                        )
                                                                       ),
-                                                                      conditionalPanel("input.person1Afiliation == 'CGIAR Center'",
+                                                                      conditionalPanel("input.person1Affiliation == 'CGIAR Center'",
                                                                                        selectizeInput("person1Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
                                                                                          "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
 
@@ -494,7 +496,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                        # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
 
                                                                       ),
-                                                                      conditionalPanel("input.person1Afiliation == 'Other'",
+                                                                      conditionalPanel("input.person1Affiliation == 'Other'",
                                                                                        textInput("person1CenterOther", "", value = "")
 
                                                                       )
@@ -507,7 +509,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                       textInput(inputId = "person1Email", label = "Person email", value = ""),
 
 
-                                                                      # textInput(inputId = "person1Afiliation", label = "Person, affiliation", value = ""),
+                                                                      # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
                                                                       textInput(inputId = "person1ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = ""),
                                                                       selectizeInput("person1Country", label="Country in which active", multiple = TRUE,
                                                                                      choices = listCountries,
@@ -537,7 +539,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                       "Other"
                                                                                     )
                                                                    ),
-                                                                   conditionalPanel("input.person2Afiliation == 'CGIAR Center'",
+                                                                   conditionalPanel("input.person2Affiliation == 'CGIAR Center'",
                                                                                     selectizeInput("person2Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
                                                                                       "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
 
@@ -545,7 +547,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                     # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
 
                                                                    ),
-                                                                   conditionalPanel("input.person2Afiliation == 'Other'",
+                                                                   conditionalPanel("input.person2Affiliation == 'Other'",
                                                                                     textInput("person2CenterOther", "", value = "")
 
                                                                    )
@@ -558,7 +560,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                    textInput(inputId = "person2Email", label = "Person email", value = ""),
 
-                                                                   # textInput(inputId = "person1Afiliation", label = "Person, affiliation", value = ""),
+                                                                   # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
                                                                    textInput(inputId = "person2ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = ""),
                                                                    selectizeInput("person2Country", label="Country in which active", multiple = TRUE,
                                                                                   choices = listCountries,
@@ -589,7 +591,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                      "Other"
                                                                                                    )
                                                                                   ),
-                                                                                  conditionalPanel("input.person3Afiliation == 'CGIAR Center'",
+                                                                                  conditionalPanel("input.person3Affiliation == 'CGIAR Center'",
                                                                                                    selectizeInput("person3Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
                                                                                                      "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
 
@@ -597,7 +599,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                    # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
 
                                                                                   ),
-                                                                                  conditionalPanel("input.person3Afiliation == 'Other'",
+                                                                                  conditionalPanel("input.person3Affiliation == 'Other'",
                                                                                                    textInput("person3CenterOther", "", value = "")
 
                                                                                   )
@@ -608,7 +610,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                                   textInput(inputId = "person3Email", label = "Person email", value = ""),
 
-                                                                                  # textInput(inputId = "person1Afiliation", label = "Person, affiliation", value = ""),
+                                                                                  # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
                                                                                   textInput(inputId = "person3ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = ""),
                                                                                   selectizeInput("person3Country", label="Country in which active", multiple = TRUE,
                                                                                                  choices = listCountries,
@@ -640,7 +642,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                      "Other"
                                                                                                    )
                                                                                   ),
-                                                                                  conditionalPanel("input.person4Afiliation == 'CGIAR Center'",
+                                                                                  conditionalPanel("input.person4Affiliation == 'CGIAR Center'",
                                                                                                    selectizeInput("person1Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
                                                                                                      "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
 
@@ -648,7 +650,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                    # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
 
                                                                                   ),
-                                                                                  conditionalPanel("input.person4Afiliation == 'Other'",
+                                                                                  conditionalPanel("input.person4Affiliation == 'Other'",
                                                                                                    textInput("person4CenterOther", "", value = "")
 
                                                                                   )
@@ -658,7 +660,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                                   textInput(inputId = "person4Email", label = "Person email", value = ""),
 
-                                                                                  # textInput(inputId = "person1Afiliation", label = "Person, affiliation", value = ""),
+                                                                                  # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
                                                                                   textInput(inputId = "person4ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = ""),
                                                                                   selectizeInput("person4Country", label="Country in which active", multiple = TRUE,
                                                                                                  choices = listCountries,
@@ -685,7 +687,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                      "Other"
                                                                                                    )
                                                                                   ),
-                                                                                  conditionalPanel("input.person5Afiliation == 'CGIAR Center'",
+                                                                                  conditionalPanel("input.person5Affiliation == 'CGIAR Center'",
                                                                                                    selectizeInput("person5Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
                                                                                                      "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
 
@@ -693,7 +695,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                    # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
 
                                                                                   ),
-                                                                                  conditionalPanel("input.person5Afiliation == 'Other'",
+                                                                                  conditionalPanel("input.person5Affiliation == 'Other'",
                                                                                                    textInput("person5CenterOther", "", value = "")
 
                                                                                   )
@@ -702,7 +704,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                            column(width=6,
                                                                                   textInput(inputId = "person5Email", label = "Person email", value = ""),
 
-                                                                                  # textInput(inputId = "person1Afiliation", label = "Person, affiliation", value = ""),
+                                                                                  # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
                                                                                   textInput(inputId = "person5ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = ""),
                                                                                   selectizeInput("person5Country", label="Country in which active", multiple = TRUE,
                                                                                                  choices = listCountries,
@@ -956,45 +958,45 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                              conditionalPanel("input.info_experiment_unit == 'plot'",
                                                                fluidRow(
                                                                  column(width = 3,
-                                                                        textInput("width", label="Width", value="")
+                                                                        textInput("expt_plot_width", label="Width", value="")
                                                                  ),
                                                                  column(width = 3,
-                                                                        selectizeInput("width_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "ft"))
+                                                                        selectizeInput("expt_plot_width_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "ft"))
                                                                  ),
                                                                  column(width = 3,
-                                                                        textInput("length", label="Length", value="")
+                                                                        textInput("expt_plot_length", label="Length", value="")
                                                                  ),
                                                                  column(width = 3,
-                                                                        selectizeInput("length_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "ft"))
+                                                                        selectizeInput("expt_plot_length_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "ft"))
                                                                  )
                                                                )
                                                              ),
                                                              conditionalPanel("input.info_experiment_unit == 'field'",
                                                                               fluidRow(
                                                                                 column(width = 3,
-                                                                                       textInput("width", label="Width", value="")
+                                                                                       textInput("expt_field_width", label="Width", value="")
                                                                                 ),
                                                                                 column(width = 3,
-                                                                                       selectizeInput("width_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "km", "ft", "mi"))
+                                                                                       selectizeInput("expt_field_width_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "km", "ft", "mi"))
                                                                                 ),
                                                                                 column(width = 3,
-                                                                                       textInput("length", label="Length", value="")
+                                                                                       textInput("expt_field_length", label="Length", value="")
                                                                                 ),
                                                                                 column(width = 3,
-                                                                                       selectizeInput("length_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "km", "ft", "mi"))
+                                                                                       selectizeInput("expt_field_length_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "km", "ft", "mi"))
                                                                                 )
                                                                               )
                                                              ),
                                                              conditionalPanel("input.info_experiment_unit == 'pot'",
                                                              fluidRow(
                                                                column(width = 3,
-                                                                      textInput("pot_diameter", label="Pot diameter", value="")
+                                                                      textInput("pot_diameter", label="Diameter", value="")
                                                                ),
                                                                column(width = 3,
                                                                       selectizeInput("pot_diameter_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("cm", "in"))
                                                                ),
                                                                column(width = 3,
-                                                                      textInput("pot_depth", label="Pot depth", value="")
+                                                                      textInput("pot_depth", label="Depth", value="")
                                                                ),
                                                                column(width = 3,
                                                                       selectizeInput("pot_depth_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("cm", "in"))
@@ -2204,7 +2206,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(id = "irrig_description",
                                                                      column(width = 6,
-                                                                            numericInput("numApplicationsIrrigation", label  = "Number of irrigation", value = 1, min = 1, max = 5)
+                                                                            numericInput("numApplicationsIrrigation", label  = "Number of irrigations", value = 1, min = 1, max = 5)
 
                                                                      ))
                                                                  ))#end box description irrigation
@@ -2478,8 +2480,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                   #fluidRow(
                                                     column(width = 12,
                                                            h2("Weather & Soil"),
-                                                  shinyTree::shinyTree("designFieldbook_weatherVar_agrofims",search = TRUE,checkbox = TRUE)
-                                                  #shinyTree::shinyTree("designFieldbook_soilVar_agrofims",search = TRUE,checkbox = TRUE)
+                                                  shinyTree::shinyTree("designFieldbook_weatherVar_agrofims",search = TRUE,checkbox = TRUE),
+                                                  shinyTree::shinyTree("designFieldbook_soilVar_agrofims",search = TRUE,checkbox = TRUE)
                                                     )#),
                                                   #shiny::checkboxInput("fbDesign_weather_cb", label = "Register weather data"),
                                                   #shiny::checkboxInput("fbDesign_soil_cb", label = "Register soil data")
