@@ -7026,7 +7026,10 @@ server_design_agrofims <- function(input, output, session, values){
     print(cropAsFactor)
     print(vCropCommon)
 
-    if(factors[1]== "NA" &&  cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+    print(input$nfactors_hdafims)
+
+    if( factors[1]== "NA" &&  cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+
       c10 <- c('Factor 1', "VARIETIES")
       c11 <- c('Factor 1 - level 1', vCropCommon[1])
       c12 <- c('Factor 1 - level 2', vCropCommon[2])
@@ -7043,14 +7046,23 @@ server_design_agrofims <- function(input, output, session, values){
 
     }
 
+    print(input$nfactors_hdafims)
+    print(factors[2])
+    print(cropAsFactor)
+    print(length(vCropCommon))
+    nfactor <- as.numeric(input$factors_hdafims)
+    flag_variety <- TRUE
 
-    if(factors[2]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+    if( factors[2]== "NA" && cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+
       c16 <- c('Factor 2', "VARIETIES")
       c17 <- c('Factor 2 - level 1', vCropCommon[1])
       c18 <- c('Factor 2 - level 2', vCropCommon[2])
       c19 <- c('Factor 2 - level 3', vCropCommon[3])
       c20 <- c('Factor 2 - level 4', vCropCommon[4] )
       c21 <- c('Factor 2 - level 5', vCropCommon[5] )
+      flag_variety <- FALSE
+
     } else {
 
       c16 <- c('Factor 2', factors[2])
@@ -7061,13 +7073,14 @@ server_design_agrofims <- function(input, output, session, values){
       c21 <- c('Factor 2 - level 5',levelsDt[2,5] )
     }
 
-    if(factors[3]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+    if( flag_variety == TRUE && factors[3]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
       c22 <- c('Factor 3', "VARIETIES")
       c23 <- c('Factor 3 - level 1', vCropCommon[1])
       c24 <- c('Factor 3 - level 2', vCropCommon[2])
       c25 <- c('Factor 3 - level 3', vCropCommon[3])
       c26 <- c('Factor 3 - level 4', vCropCommon[4] )
       c27 <- c('Factor 3 - level 5', vCropCommon[5] )
+      flag_variety <- FALSE
     } else {
 
       c22 <- c('Factor 3', factors[3])
@@ -7078,13 +7091,14 @@ server_design_agrofims <- function(input, output, session, values){
       c27 <- c('Factor 3 - level 5',levelsDt[3,5] )
     }
 
-    if(factors[4]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+    if( flag_variety == TRUE &&  factors[4]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
       c28 <- c('Factor 4', "VARIETIES")
       c29 <- c('Factor 4 - level 1', vCropCommon[1])
       c30 <- c('Factor 4 - level 2', vCropCommon[2])
       c31 <- c('Factor 4 - level 3', vCropCommon[3])
       c32 <- c('Factor 4 - level 4', vCropCommon[4] )
       c33 <- c('Factor 4 - level 5', vCropCommon[5] )
+      flag_variety <- FALSE
     } else {
 
       c28 <- c('Factor 4', factors[4] )
@@ -7095,13 +7109,15 @@ server_design_agrofims <- function(input, output, session, values){
       c33 <- c('Factor 4 - level 5',levelsDt[4,5])
     }
 
-    if(factors[5]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+    if( flag_variety == TRUE && factors[5]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+
       c34 <- c('Factor 5', "VARIETIES")
       c35 <- c('Factor 5 - level 1', vCropCommon[1])
       c36 <- c('Factor 5 - level 2', vCropCommon[2])
       c37 <- c('Factor 5 - level 3', vCropCommon[3])
       c38 <- c('Factor 5 - level 4', vCropCommon[4] )
       c39 <- c('Factor 5 - level 5', vCropCommon[5] )
+      flag_variety <- FALSE
     } else {
 
       c34 <- c('Factor 5', factors[5])
