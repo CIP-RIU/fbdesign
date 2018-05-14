@@ -15,9 +15,56 @@ server_design_agrofims <- function(input, output, session, values){
 
   # makeReactiveBinding("pkg.globals")
 
-  observeEvent(input$titleId, {
-    js$collapse("box1")
+  # titulos para abrir boxes
+  observeEvent(input$land_levelling_titleId, {
+    js$collapse("land_levelling_boxid")
   })
+
+  observeEvent(input$puddling_titleId, {
+    js$collapse("puddling_boxid")
+  })
+
+  observeEvent(input$tillage_titleId, {
+    js$collapse("tillage_boxid")
+  })
+
+  observeEvent(input$liming_titleId, {
+    js$collapse("liming_boxid")
+  })
+
+  observeEvent(input$mulch_management_titleId, {
+    js$collapse("mulch_management_boxid")
+  })
+
+  observeEvent(input$residue_management_titleId, {
+    js$collapse("residue_management_boxid")
+  })
+
+  observeEvent(input$direct_seeding_titleId, {
+    js$collapse("direct_seeding_boxid")
+  })
+
+  observeEvent(input$transplanting_titleId, {
+    js$collapse("transplanting_boxid")
+  })
+
+  observeEvent(input$desc_biofertilizer_titleId, {
+    js$collapse("desc_biofertilizer_boxid")
+  })
+
+  observeEvent(input$irrigation_desc_titleId, {
+    js$collapse("irrigation_desc_boxid")
+  })
+
+  observeEvent(input$desc_harvest_titleId, {
+    js$collapse("desc_harvest_boxid")
+  })
+
+  observeEvent(input$pest_control_titleId, {
+    js$collapse("pest_control_boxid")
+  })
+
+  ###
 
   output$uiTest <- renderUI({
 
@@ -4124,18 +4171,116 @@ server_design_agrofims <- function(input, output, session, values){
       incProgress(1/10,message = "...")
 
     flag <- TRUE #temporary
+    if(input$setCropFactor == TRUE && length(input$cropVarietyNameMono)<=1){
+      flag  <- FALSE
+      shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to enter more than 1 variety."), styleclass = "danger")
+    }
+
+    print(input$nfactors_hdafims)
+    print(input$sel1_1)
+    print(input$sel1_2)
+    print(input$sel1_3)
+
+    if(input$nfactors_hdafims == "1"  &&
+        is.null(input$sel1_1) && is.null(input$sel1_2) && is.null(input$sel1_3) ){
+      shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
+      flag  <- FALSE
+      print("flag1")
+    }
+
+    if( (input$nfactors_hdafims == "2")  &&
+        (is.null(input$sel1_1) || is.null(input$sel1_2) || is.null(input$sel1_3) ||
+        is.null(input$sel2_1) || is.null(input$sel2_2) || is.null(input$sel2_3)  )) {
+      shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
+      flag  <- FALSE
+      print("flag2")
+    }
+
+    if( (input$nfactors_hdafims == "3")  &&
+        (is.null(input$sel1_1) || is.null(input$sel1_2) || is.null(input$sel1_3) ||
+         is.null(input$sel2_1) || is.null(input$sel2_2) || is.null(input$sel2_3)  ||
+         is.null(input$sel3_1) || is.null(input$sel3_2) || is.null(input$sel3_3)  )) {
+      shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
+      flag  <- FALSE
+      print("flag2")
+    }
+
+    if( (input$nfactors_hdafims == "4")  &&
+        (is.null(input$sel1_1) || is.null(input$sel1_2) || is.null(input$sel1_3) ||
+         is.null(input$sel2_1) || is.null(input$sel2_2) || is.null(input$sel2_3)  ||
+         is.null(input$sel3_1) || is.null(input$sel3_2) || is.null(input$sel3_3)  ||
+         is.null(input$sel4_1) || is.null(input$sel4_2) || is.null(input$sel4_3)
+         )) {
+      shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
+      flag  <- FALSE
+      print("flag2")
+    }
+
+    if( (input$nfactors_hdafims == "5")  &&
+        (is.null(input$sel1_1) || is.null(input$sel1_2) || is.null(input$sel1_3) ||
+         is.null(input$sel2_1) || is.null(input$sel2_2) || is.null(input$sel2_3)  ||
+         is.null(input$sel3_1) || is.null(input$sel3_2) || is.null(input$sel3_3)  ||
+         is.null(input$sel4_1) || is.null(input$sel4_2) || is.null(input$sel4_3)  ||
+         is.null(input$sel5_1) || is.null(input$sel5_2) || is.null(input$sel5_3)
+        )) {
+      shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
+      flag  <- FALSE
+      print("flag2")
+    }
+
+
+
+
+
+    # if( (input$nfactors_hdafims == "1" || input$nfactors_hdafims == "2" || input$nfactors_hdafims == "3")  &&
+    #     is.null(input$sel1_1) && is.null(input$sel1_2) && is.null(input$sel1_3) &&
+    #     is.null(input$sel2_1) && is.null(input$sel2_2) && is.null(input$sel2_3) &
+    #     is.null(input$sel3_1) && is.null(input$sel3_2) && is.null(input$sel3_3) ){
+    #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
+    #   flag  <- FALSE
+    #   print("flag4")
+    # }
+    #
+    # if( (input$nfactors_hdafims == "1" || input$nfactors_hdafims == "2" || input$nfactors_hdafims == "3" || input$nfactors_hdafims == "4")  &&
+    #     (is.null(input$sel1_1) && is.null(input$sel1_2) && is.null(input$sel1_3) ) ||
+    #     (is.null(input$sel2_1) && is.null(input$sel2_2) && is.null(input$sel2_3) )||
+    #     (is.null(input$sel3_1) && is.null(input$sel3_2) && is.null(input$sel3_3) )||
+    #     (is.null(input$sel4_1) && is.null(input$sel4_2) && is.null(input$sel4_3))  ){
+    #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
+    #   flag  <- FALSE
+    #   print("flag4")
+    # }
+    #
+    # if( (input$nfactors_hdafims == "5")  &&
+    #     (is.null(input$sel1_1) && is.null(input$sel1_2) && is.null(input$sel1_3)) ||
+    #     (is.null(input$sel2_1) && is.null(input$sel2_2) && is.null(input$sel2_3)) ||
+    #     (is.null(input$sel3_1) && is.null(input$sel3_2) && is.null(input$sel3_3)) ||
+    #     (is.null(input$sel4_1) && is.null(input$sel4_2) && is.null(input$sel4_3)) ||
+    #     (is.null(input$sel5_1) && is.null(input$sel5_2) && is.null(input$sel5_3)) ){
+    #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
+    #   flag  <- FALSE
+    #   print("flag5")
+    # }
+
+
+    # if( input$nfactors_hdafims <= 2  &&  is.null(input$input$ui_sel2_1) &&
+    #     is.null(input$input$ui_sel2_2) && is.null(input$input$ui_sel2_3) )
+    #
+    #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
+    # }
+    #
+
+
+
 
     if(flag){
-
-      #print(agro_var_dt())
       fb <- fb_agrofims_traits()
-
-      #fb <- fb[,1:129]
       output$fbDesign_table_agrofims <- rhandsontable::renderRHandsontable({
-
         rhandsontable::rhandsontable(fb , readOnly = T)})
 
     }
+
+
 
       incProgress(9/10,message = "...")
       incProgress(10/10,message = "...")
@@ -4524,8 +4669,9 @@ server_design_agrofims <- function(input, output, session, values){
     isCropFactor <- input$setCropFactor
     crop_varietiesname <- input$cropVarietyNameMono
 
-    if(is.null(crop_varietiesname)) crop_varietiesname <- ""
+    try({
 
+    if(is.null(crop_varietiesname)) crop_varietiesname <- ""
 
     if(nfactors == 1){
       # factor1
@@ -5060,10 +5206,16 @@ server_design_agrofims <- function(input, output, session, values){
 #       fb <- fb[,-c(3,4)]
 #     }
 
+    if(is.element("ROW", names(fb))){
+      fb$ROW <- NULL
+    }
 
+    if(is.element("COL", names(fb))){
+      fb$COL <- NULL
+    }
 
     fb
-
+    })
 
     #add_fieldbook_sheet_hdfims(file = "omar.xlsx", fieldbook =fb)
     #shell.exec("C://Users//obenites//Documents//omar.xlsx")
@@ -6766,7 +6918,6 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-
   factor_dt2 <- reactive({
 
 
@@ -6775,6 +6926,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
     c1 <- c('Information on experimental unit',vinfExp )
+
 
     vfarea <-""
     vfexpmaxwidth <- ""
@@ -6868,42 +7020,98 @@ server_design_agrofims <- function(input, output, session, values){
 
     }
 
+    vCropCommon <- ""
+    if(!is.null(input$cropVarietyNameMono)) vCropCommon <- input$cropVarietyNameMono
+    cropAsFactor<- input$setCropFactor #by defult false or unselect checkbox
+    print(cropAsFactor)
+    print(vCropCommon)
 
-    c10 <- c('Factor 1',factors[1])
-    c11 <- c('Factor 1 - level 1',levelsDt[1,1])
-    c12 <- c('Factor 1 - level 2',levelsDt[1,2] )
-    c13 <- c('Factor 1 - level 3',levelsDt[1,3])
-    c14 <- c('Factor 1 - level 4',levelsDt[1,4] )
-    c15 <- c('Factor 1 - level 5',levelsDt[1,5] )
+    if(factors[1]== "NA" &&  cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+      c10 <- c('Factor 1', "VARIETIES")
+      c11 <- c('Factor 1 - level 1', vCropCommon[1])
+      c12 <- c('Factor 1 - level 2', vCropCommon[2])
+      c13 <- c('Factor 1 - level 3', vCropCommon[3])
+      c14 <- c('Factor 1 - level 4', vCropCommon[4] )
+      c15 <- c('Factor 1 - level 5', vCropCommon[5] )
+    } else {
+      c10 <- c('Factor 1',factors[1])
+      c11 <- c('Factor 1 - level 1',levelsDt[1,1])
+      c12 <- c('Factor 1 - level 2',levelsDt[1,2] )
+      c13 <- c('Factor 1 - level 3',levelsDt[1,3])
+      c14 <- c('Factor 1 - level 4',levelsDt[1,4] )
+      c15 <- c('Factor 1 - level 5',levelsDt[1,5] )
 
-    c16 <- c('Factor 2', factors[2])
-    c17 <- c('Factor 2 - level 1',levelsDt[2,1])
-    c18 <- c('Factor 2 - level 2',levelsDt[2,2])
-    c19 <- c('Factor 2 - level 3',levelsDt[2,3])
-    c20 <- c('Factor 2 - level 4',levelsDt[2,4] )
-    c21 <- c('Factor 2 - level 5',levelsDt[2,5] )
+    }
 
-    c22 <- c('Factor 3', factors[3])
-    c23 <- c('Factor 3 - level 1',levelsDt[3,1] )
-    c24 <- c('Factor 3 - level 2',levelsDt[3,2] )
-    c25 <- c('Factor 3 - level 3',levelsDt[3,3] )
-    c26 <- c('Factor 3 - level 4',levelsDt[3,4] )
-    c27 <- c('Factor 3 - level 5',levelsDt[3,5] )
 
-    c28 <- c('Factor 4', factors[4] )
-    c29 <- c('Factor 4 - level 1',levelsDt[4,1])
-    c30 <- c('Factor 4 - level 2',levelsDt[4,2] )
-    c31 <- c('Factor 4 - level 3',levelsDt[4,3])
-    c32 <- c('Factor 4 - level 4',levelsDt[4,4] )
-    c33 <- c('Factor 4 - level 5',levelsDt[4,5])
+    if(factors[2]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+      c16 <- c('Factor 2', "VARIETIES")
+      c17 <- c('Factor 2 - level 1', vCropCommon[1])
+      c18 <- c('Factor 2 - level 2', vCropCommon[2])
+      c19 <- c('Factor 2 - level 3', vCropCommon[3])
+      c20 <- c('Factor 2 - level 4', vCropCommon[4] )
+      c21 <- c('Factor 2 - level 5', vCropCommon[5] )
+    } else {
 
-    c34 <- c('Factor 5', factors[5])
-    c35 <- c('Factor 5 - level 1',levelsDt[5,1] )
-    c36 <- c('Factor 5 - level 2',levelsDt[5,2])
-    c37 <- c('Factor 5 - level 3',levelsDt[5,3])
-    c38 <- c('Factor 5 - level 4',levelsDt[5,4] )
-    c39 <- c('Factor 5 - level 5',levelsDt[5,5])
+      c16 <- c('Factor 2', factors[2])
+      c17 <- c('Factor 2 - level 1',levelsDt[2,1])
+      c18 <- c('Factor 2 - level 2',levelsDt[2,2])
+      c19 <- c('Factor 2 - level 3',levelsDt[2,3])
+      c20 <- c('Factor 2 - level 4',levelsDt[2,4] )
+      c21 <- c('Factor 2 - level 5',levelsDt[2,5] )
+    }
 
+    if(factors[3]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+      c22 <- c('Factor 3', "VARIETIES")
+      c23 <- c('Factor 3 - level 1', vCropCommon[1])
+      c24 <- c('Factor 3 - level 2', vCropCommon[2])
+      c25 <- c('Factor 3 - level 3', vCropCommon[3])
+      c26 <- c('Factor 3 - level 4', vCropCommon[4] )
+      c27 <- c('Factor 3 - level 5', vCropCommon[5] )
+    } else {
+
+      c22 <- c('Factor 3', factors[3])
+      c23 <- c('Factor 3 - level 1',levelsDt[3,1] )
+      c24 <- c('Factor 3 - level 2',levelsDt[3,2] )
+      c25 <- c('Factor 3 - level 3',levelsDt[3,3] )
+      c26 <- c('Factor 3 - level 4',levelsDt[3,4] )
+      c27 <- c('Factor 3 - level 5',levelsDt[3,5] )
+    }
+
+    if(factors[4]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+      c28 <- c('Factor 4', "VARIETIES")
+      c29 <- c('Factor 4 - level 1', vCropCommon[1])
+      c30 <- c('Factor 4 - level 2', vCropCommon[2])
+      c31 <- c('Factor 4 - level 3', vCropCommon[3])
+      c32 <- c('Factor 4 - level 4', vCropCommon[4] )
+      c33 <- c('Factor 4 - level 5', vCropCommon[5] )
+    } else {
+
+      c28 <- c('Factor 4', factors[4] )
+      c29 <- c('Factor 4 - level 1',levelsDt[4,1])
+      c30 <- c('Factor 4 - level 2',levelsDt[4,2] )
+      c31 <- c('Factor 4 - level 3',levelsDt[4,3])
+      c32 <- c('Factor 4 - level 4',levelsDt[4,4] )
+      c33 <- c('Factor 4 - level 5',levelsDt[4,5])
+    }
+
+    if(factors[5]== "NA" &&   cropAsFactor==TRUE && length(vCropCommon)>=2 ){
+      c34 <- c('Factor 5', "VARIETIES")
+      c35 <- c('Factor 5 - level 1', vCropCommon[1])
+      c36 <- c('Factor 5 - level 2', vCropCommon[2])
+      c37 <- c('Factor 5 - level 3', vCropCommon[3])
+      c38 <- c('Factor 5 - level 4', vCropCommon[4] )
+      c39 <- c('Factor 5 - level 5', vCropCommon[5] )
+    } else {
+
+      c34 <- c('Factor 5', factors[5])
+      c35 <- c('Factor 5 - level 1',levelsDt[5,1] )
+      c36 <- c('Factor 5 - level 2',levelsDt[5,2])
+      c37 <- c('Factor 5 - level 3',levelsDt[5,3])
+      c38 <- c('Factor 5 - level 4',levelsDt[5,4] )
+      c39 <- c('Factor 5 - level 5',levelsDt[5,5])
+
+    }
 
     df_metadata <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c40,c10,
                               c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,
@@ -6938,22 +7146,22 @@ server_design_agrofims <- function(input, output, session, values){
 
       withProgress(message = 'Downloading fieldbook', value = 0, {
 
-        incProgress(1/10, message = "...")
+      incProgress(1/10, message = "...")
 
-        print(input$cropCommonNameMono)
+        flag <- TRUE #temporary
+        if(input$setCropFactor == TRUE && length(input$cropVarietyNameMono)<=1){
+          flag  <- FALSE
+          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to enter more than 1 variety."), styleclass = "danger")
+        }
 
-      #print( input$cropsSelected)
+
+
+      print(input$cropCommonNameMono)
+
       design <- input$designFieldbook_agrofims
       nrep <- input$designFieldbook_agrofims_r
-      #
-      # print("common variety name")
-      # #print(input$cropVarietyNameMono)
-      # print("end common var name")
-      #
       weather_vars <- unlist(shinyTree::get_selected(input$designFieldbook_weatherVar_agrofims))
       print(weather_vars)
-      # soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
-      # print(soil_vars)
 
       print("trait dt")
       print(traits_dt())
@@ -6967,6 +7175,7 @@ server_design_agrofims <- function(input, output, session, values){
       metadata <- as.data.frame(metadata_dt2())
       names(metadata) <- c("Variable", "Value")
       installation <- as.data.frame(factor_dt2())
+      print(installation)
       names(installation) <- c("Variable", "Value")
 
       print(installation)
@@ -6998,6 +7207,10 @@ server_design_agrofims <- function(input, output, session, values){
       openxlsx::writeDataTable(wb, "Variables", x = installation,
                                colNames = TRUE, withFilter = FALSE)
 
+
+      openxlsx::addWorksheet(wb, "Fieldbook", gridLines = TRUE)
+      openxlsx::writeDataTable(wb, "Fieldbook", x = fb_traits,
+                               colNames = TRUE, withFilter = FALSE)
 
 
       #write agrofeatures sheet
@@ -7050,7 +7263,6 @@ server_design_agrofims <- function(input, output, session, values){
 
       }
 
-
       if(is.element("Biofertilizer", agroFeaSelected)) {
 
       incProgress(15/20,message = "Adding biofertilizer data...")
@@ -7074,7 +7286,6 @@ server_design_agrofims <- function(input, output, session, values){
                                  colNames = TRUE, withFilter = FALSE)
 
       }
-
 
       if(is.element("Harvest", agroFeaSelected)) {
 
@@ -7108,9 +7319,6 @@ server_design_agrofims <- function(input, output, session, values){
 
       incProgress(8/20,message = "Adding fieldbook sheet...")
 
-      openxlsx::addWorksheet(wb, "Fieldbook", gridLines = TRUE)
-      openxlsx::writeDataTable(wb, "Fieldbook", x = fb_traits,
-                               colNames = TRUE, withFilter = FALSE)
 
 
       if(is.null(weather) || length(weather)==0 || nrow(weather)==0  ){

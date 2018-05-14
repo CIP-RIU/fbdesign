@@ -1246,7 +1246,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                     # )
                                                     #fluidRow(
                                                       sidebarPanel(id="sidebar", width = 12,
-                                                                   actionButton("btnNextPlotInfo", "Next", class = "btn-primary",style="color: #fff;")
+                                                                   actionButton("btnNextAgro", "Next", class = "btn-primary",style="color: #fff;")
                                                       )
                                                     #)
 
@@ -1386,8 +1386,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  #br(),
                                                                  h2("Land preparation"),
                                                                  fluidRow(
-                                                                 box(id="box1",
-                                                                     title = actionLink("titleId", "Land Levelling"),
+                                                                 box(id="land_levelling_boxid",
+                                                                     title = actionLink("land_levelling_titleId", "Land Levelling"),
                                                                      #title = "Land Levelling",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
@@ -1454,7 +1454,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                     ))
                                                                 )),
                                                                 fluidRow(
-                                                                 box(title = "Puddling",
+                                                                 box(id="puddling_boxid",
+                                                                     title = actionLink("puddling_titleId", "Puddling"),
                                                                      solidHeader = TRUE,
                                                                      status = "primary",
                                                                      width = 12, collapsible = TRUE,  collapsed = TRUE,
@@ -1546,7 +1547,9 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                  )),
                                                                 fluidRow(
-                                                                 box(title = "Tillage",
+                                                                 box(id="tillage_boxid",
+                                                                     title = actionLink("tillage_titleId", "Tillage"),
+                                                                     #title = "Tillage",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE,  collapsed = TRUE,
@@ -1661,7 +1664,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                   )
                                                                  )),
                                                                 fluidRow(
-                                                                 box(title = "Liming",
+                                                                 box(id="liming_boxid",
+                                                                     title = actionLink("liming_titleId", "Liming"),
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE, collapsed = TRUE,
@@ -1736,7 +1740,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                           h2("Mulching and residue management"),
                                                                  #br(),
                                                                  fluidRow(
-                                                                 box(title = "Mulch management",
+                                                                 box(id="mulch_management_boxid",
+                                                                     title = actionLink("mulch_management_titleId", "Mulch management"),
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE, collapsed = TRUE,
@@ -1837,7 +1842,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                  )),
                                                                  fluidRow(
-                                                                 box(title = "Residue management",
+                                                                 box(id="residue_management_boxid",
+                                                                     title = actionLink("residue_management_titleId", "Residue management"),
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE,  collapsed = TRUE,
@@ -1970,7 +1976,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                           #br(),
                                                                           h2("Planting, transplanting"),
                                                                  fluidRow(
-                                                                       box(title = "Direct seeding",
+                                                                       box(id="direct_seeding_boxid",
+                                                                           title = actionLink("direct_seeding_titleId", "Direct seeding"),
                                                                            status = "primary",
                                                                            solidHeader = TRUE,
                                                                            width = 12, collapsible = TRUE,  collapsed = TRUE,
@@ -2090,7 +2097,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                        )
                                                                  ),
                                                                  fluidRow(
-                                                                   box(title = "Transplanting",
+                                                                   box(id="transplanting_boxid",
+                                                                       title = actionLink("transplanting_titleId", "Transplanting"),
                                                                        status = "primary",
                                                                        solidHeader = TRUE,
                                                                        width = 12, collapsible = TRUE, collapsed = TRUE,
@@ -2198,9 +2206,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  #fluidRow(
                                                                    column(width = 12,
                                                                           #br(),
-                                                                          h2("Irrigation event"),
+                                                                          h2("Irrigation"),
                                                                  fluidRow(
-                                                                 box(title = "Irrigation description",
+                                                                 box(id="irrigation_desc_boxid",
+                                                                     title = actionLink("irrigation_desc_titleId", "Irrigation description"),
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE, collapsed = TRUE,
@@ -2218,7 +2227,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                           #br(),
                                                                           h2("Biofertilizer"),
                                                                           fluidRow(
-                                                                 box(title = "Description Biofertilizer",
+                                                                 box(id="desc_biofertilizer_boxid",
+                                                                     title = actionLink("desc_biofertilizer_titleId", "Description Biofertilizer"),
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE, collapsed = TRUE,
@@ -2291,7 +2301,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  #            textInput("pest_notes", value="", label = "Pest, notes")
                                                                  #     ))
                                                                  # )),#end box pest observation
-                                                                 box(title = "Pest control",
+                                                                 box(id="pest_control_boxid",
+                                                                     title = actionLink("pest_control_titleId", "Pest control"),
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE, collapsed = TRUE,
@@ -2334,7 +2345,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                       #br(),
                                                                       h2("Harvest"),
                                                                       fluidRow(
-                                                                        box(title = "Description Harvest",
+                                                                        box(id="desc_harvest_boxid",
+                                                                            title = actionLink("desc_harvest_titleId", "Description Harvest"),
                                                                             status = "primary",
                                                                             solidHeader = TRUE,
                                                                             width = 12, collapsible = TRUE, collapsed = TRUE,
