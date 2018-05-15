@@ -3928,42 +3928,38 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
   # Observed value for geographical information #################################################################
-  shiny::observe({
-    path <- fbglobal::get_base_dir()
-    #geodb_file <- "table_sites.rds"
-    geodb_file <- "table_sites_agrofims.rds"
-    path <- file.path(path, geodb_file)
-    # values$sites_data <-  readRDS(file = path)
-    x_sites_data <- readRDS(file = path)
-    values$sites_data <-  dplyr::filter(x_sites_data, userId==0)
 
-  })
 
-  observe({
-    if(pkg.globals$userSession$logged == T){
-        print("Logged")
-    }
-    else if(pkg.globals$userSession$logged == F){
-      print("Not logged")
-    }
-  })
+  path <- fbglobal::get_base_dir()
+  geodb_file <- "table_sites_agrofims.rds"
+  path <- file.path(path, geodb_file)
+  x_sites_data <- readRDS(file = path)
+  values$sites_data <-  dplyr::filter(x_sites_data, userId==0)
+
+
+  # shiny::observe({
+  #   path <- fbglobal::get_base_dir()
+  #   #geodb_file <- "table_sites.rds"
+  #   geodb_file <- "table_sites_agrofims.rds"
+  #   path <- file.path(path, geodb_file)
+  #   # values$sites_data <-  readRDS(file = path)
+  #   x_sites_data <- readRDS(file = path)
+  #   values$sites_data <-  dplyr::filter(x_sites_data, userId==0)
+  #
+  # })
+
 
   observeEvent(input$refreshSiteList,{
-    x_user <- fbdesign::getUserSession()
-    path <- fbglobal::get_base_dir()
-    #geodb_file <- "table_sites.rds"
-    geodb_file <- "table_sites_agrofims.rds"
-    path <- file.path(path, geodb_file)
-    x_sites_data <- readRDS(file = path)
-    if(x_user$logged){
-      values$sites_data <- dplyr::filter(x_sites_data, userId==x_user$id)
+    # x_user <- fbdesign::getUserSession()
+    # x_user <- session$user
+    # if(x_user$logged){
+    if(session$userData$logged){
+      # values$sites_data <- dplyr::filter(x_sites_data, userId==x_user$id)
+      values$sites_data <- dplyr::filter(x_sites_data, userId==session$userData$userId)
     }
     else{
       values$sites_data <-  dplyr::filter(x_sites_data, userId==0)
-      # values$sites_data <- readRDS(file = path)
     }
-
-
   })
 
 
@@ -3972,10 +3968,6 @@ server_design_agrofims <- function(input, output, session, values){
   output$fbDesign_country <- shiny::renderUI({
     #sites_data <- fbsites::get_site_table() #before
     # sites_data <- site_table #data from package fbdesign as an internal data BEFORE
-
-    # if(USER$Logged == FALSE){
-    #   print("Asdaadas")
-    # }
 
     sites_data <- values$sites_data # read trial sites using reactive values from xdata folder (NEW CODE)
 
@@ -3991,9 +3983,7 @@ server_design_agrofims <- function(input, output, session, values){
   fbdesign_sites <- reactive({
 
     #sites_data <- site_table #using data from package #Former code before useing rective values
-
     sites_data <- values$sites_data
-
     fbsites::get_filter_locality_agrofims(sites_data = sites_data, country_input= input$fbDesign_countryTrial)
   })
 
@@ -7800,7 +7790,6 @@ server_design_agrofims <- function(input, output, session, values){
   }
 
   # observeEvent(input$btTest,{
-  #   traits_dt()
   # })
 
   traits_dt <- function(){
