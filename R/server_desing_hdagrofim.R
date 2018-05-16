@@ -3920,7 +3920,6 @@ server_design_agrofims <- function(input, output, session, values){
 
   # SelectInput for split plot designs #################################################################
   output$fbdesign_split_cb <- shiny::renderUI({
-
     choices <- c(input$factor_name, "INSTN")
     shiny::selectInput("designFieldbook_split_cb",label = "Factor to Plots", choices =  choices, selected= "INSTN")
 
@@ -3929,32 +3928,23 @@ server_design_agrofims <- function(input, output, session, values){
 
   # Observed value for geographical information #################################################################
 
-
-  path <- fbglobal::get_base_dir()
-  geodb_file <- "table_sites_agrofims.rds"
-  path <- file.path(path, geodb_file)
-  x_sites_data <- readRDS(file = path)
-  values$sites_data <-  dplyr::filter(x_sites_data, userId==0)
-
-
-  # shiny::observe({
-  #   path <- fbglobal::get_base_dir()
-  #   #geodb_file <- "table_sites.rds"
-  #   geodb_file <- "table_sites_agrofims.rds"
-  #   path <- file.path(path, geodb_file)
-  #   # values$sites_data <-  readRDS(file = path)
-  #   x_sites_data <- readRDS(file = path)
-  #   values$sites_data <-  dplyr::filter(x_sites_data, userId==0)
-  #
-  # })
+  shiny::observe({
+    path <- fbglobal::get_base_dir()
+    geodb_file <- "table_sites_agrofims.rds"
+    path <- file.path(path, geodb_file)
+    x_sites_data <- readRDS(file = path)
+    values$sites_data <-  dplyr::filter(x_sites_data, userId==0)
+  })
 
 
   observeEvent(input$refreshSiteList,{
-    # x_user <- fbdesign::getUserSession()
-    # x_user <- session$user
-    # if(x_user$logged){
+
+    path <- fbglobal::get_base_dir()
+    geodb_file <- "table_sites_agrofims.rds"
+    path <- file.path(path, geodb_file)
+    x_sites_data <- readRDS(file = path)
+
     if(session$userData$logged){
-      # values$sites_data <- dplyr::filter(x_sites_data, userId==x_user$id)
       values$sites_data <- dplyr::filter(x_sites_data, userId==session$userData$userId)
     }
     else{
