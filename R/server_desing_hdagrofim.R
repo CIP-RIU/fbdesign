@@ -785,10 +785,10 @@ server_design_agrofims <- function(input, output, session, values){
                             column(width = 12,
                                 fluidRow( id = paste0("factor_dates_", order , "_1"),
                                   column(width = 6,
-                                         dateInput(paste0("factor_start_date_", order, "_1"), HTML("#1 Start date"),format = "dd/mm/yyyy")
+                                         dateInput(paste0("factor_start_date_", order, "_1"), HTML("#1 Start date"),format = "yyyy/mm/dd")
                                          ),
                                   column(width = 6,
-                                         dateInput(paste0("factor_end_date_", order, "_1"), HTML("#1 End date"),format = "dd/mm/yyyy")
+                                         dateInput(paste0("factor_end_date_", order, "_1"), HTML("#1 End date"),format = "yyyy/mm/dd")
                                   )
                                 )
                             )
@@ -800,13 +800,13 @@ server_design_agrofims <- function(input, output, session, values){
                  where = "afterEnd",
                  ui = fluidRow(id = paste0("factor_dates_", order , "_", i) ,
                    column(width = 6,
-                          dateInput(paste0("factor_start_date_", order, "_", i), HTML(paste0("#",i, " Start date")),format = "dd/mm/yyyy")
+                          dateInput(paste0("factor_start_date_", order, "_", i), HTML(paste0("#",i, " Start date")),format = "yyyy/mm/dd")
                    ),
                    column(width = 6,
-                          dateInput(paste0("factor_end_date_", order, "_", i), HTML(paste0("#", i, " End date")),format = "dd/mm/yyyy")
+                          dateInput(paste0("factor_end_date_", order, "_", i), HTML(paste0("#", i, " End date")),format = "yyyy/mm/dd")
                    )
                  )
-                 # ui =  dateRangeInput(paste0("dates_",order ,"_", i), paste0("#" ,i, " Select dates"), startview = "year",format = "dd/mm/yyyy")
+                 # ui =  dateRangeInput(paste0("dates_",order ,"_", i), paste0("#" ,i, " Select dates"), startview = "year",format = "yyyy/mm/dd")
         )
       }}
   }
@@ -1034,10 +1034,10 @@ server_design_agrofims <- function(input, output, session, values){
 
                fluidRow(
                  column(width = 6,
-                        dateInput(paste0("biofertilizer_landLeveling_start_date_", order), label ="Start date", format = "dd/mm/yyyy")
+                        dateInput(paste0("biofertilizer_landLeveling_start_date_", order), label ="Start date", format = "yyyy/mm/dd")
                  ),
                  column(width = 6,
-                        dateInput(paste0("biofertilizer_landLeveling_end_date",  order), label ="End date", format = "dd/mm/yyyy")
+                        dateInput(paste0("biofertilizer_landLeveling_end_date",  order), label ="End date", format = "yyyy/mm/dd")
                  )
                ),
                selectizeInput(paste0("biofertilizer_rhizobium_inoculum_strain_", order), label = "Rhizobium inoculum strain", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -1158,10 +1158,10 @@ server_design_agrofims <- function(input, output, session, values){
 
                                   fluidRow(
                                     column(width = 6,
-                                           dateInput(paste0("pestcontrol_start_date_",order), label ="Start date", format = "dd/mm/yyyy")
+                                           dateInput(paste0("pestcontrol_start_date_",order), label ="Start date", format = "yyyy/mm/dd")
                                     ),
                                     column(width = 6,
-                                           dateInput(paste0("pestcontrol_end_date_",order), label ="End date", format = "dd/mm/yyyy")
+                                           dateInput(paste0("pestcontrol_end_date_",order), label ="End date", format = "yyyy/mm/dd")
                                     )
                                   ),
                                   selectizeInput(paste0("pest_control_technique_",order), label = "Pest control technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -1260,23 +1260,43 @@ server_design_agrofims <- function(input, output, session, values){
   ###########  irrigation ##########################################
 
   irrigVar <- reactiveValues()
-  irrigVar$nApps <-1
+  irrigVar$nApps <-3
 
 
   observeEvent(input$numApplicationsIrrigation, {
     num <- input$numApplicationsIrrigation
-    if(is.numeric(num) &&  num>0){
-      if(irrigVar$nApps == 1 && num  == 1 ){
+
+    if(is.numeric(num) &&  num > 2){
+      if(irrigVar$nApps == 3 && num  == 3){
 
         insertUI(selector ="#irrig_description",
                  where = "afterEnd",
                  ui = drawBoxIrrigation(1))
+
+        insertUI(selector = paste0("#box_irrig_", 1),
+                 where = "afterEnd",
+                 ui = drawBoxIrrigation(2)
+        )
+
+        insertUI(selector = paste0("#box_irrig_", 2),
+                 where = "afterEnd",
+                 ui = drawBoxIrrigation(3)
+        )
+
       }
-      else if(irrigVar$nApps == 0 && num  == 1 ){
+      else if(irrigVar$nApps == 0 ){
 
         insertUI(selector ="#irrig_description",
                  where = "afterEnd",
                  ui = drawBoxIrrigation(1))
+        start = 2;
+        for (i in start:num ) {
+          insertUI(selector = paste0("#box_irrig_", i-1),
+                   where = "afterEnd",
+                   ui = drawBoxIrrigation(i)
+          )
+        }
+        irrigVar$nApps <- num
       }
       else if(irrigVar$nApps > num){
         removeBoxesIrrigation(num+1, irrigVar$nApps)
@@ -1324,10 +1344,10 @@ server_design_agrofims <- function(input, output, session, values){
 
                          fluidRow(
                            column(width = 6,
-                                  dateInput(paste0("irrigationevent_start_date_", order), label ="Start date", format = "dd/mm/yyyy")
+                                  dateInput(paste0("irrigationevent_start_date_", order), label ="Start date", value = NA, format = "yyyy/mm/dd")
                            ),
                            column(width = 6,
-                                  dateInput(paste0("irrigationevent_end_date_", order), label ="End date", format = "dd/mm/yyyy")
+                                  dateInput(paste0("irrigationevent_end_date_", order), label = "End date", value = NA, format = "yyyy/mm/dd")
                            )
                          ),
                          selectizeInput(paste0("irrigation_technique_", order), label = "Irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -1670,10 +1690,10 @@ server_design_agrofims <- function(input, output, session, values){
                     column(width = 6,
                           fluidRow(
                             column(width = 6,
-                                   dateInput(paste0("nutrient_start_date_", type, "_", order), label ="Start date", format = "dd/mm/yyyy")
+                                   dateInput(paste0("nutrient_start_date_", type, "_", order), label ="Start date", format = "yyyy/mm/dd")
                             ),
                             column(width = 6,
-                                   dateInput(paste0("nutrient_end_date_", type, "_", order), label ="End date", format = "dd/mm/yyyy")
+                                   dateInput(paste0("nutrient_end_date_", type, "_", order), label ="End date", format = "yyyy/mm/dd")
                             )
                           ),
                           fluidRow(
@@ -1790,11 +1810,11 @@ server_design_agrofims <- function(input, output, session, values){
                            )
                       ),
                     column(width = 1,
-                           dateInput(paste0("fert_nit_start_date1_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                           dateInput(paste0("fert_nit_start_date1_", type, "_", order), label ="", format = "yyyy/mm/dd")
                     ),
 
                     column(width = 1,
-                           dateInput(paste0("fert_nit_end_date1_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                           dateInput(paste0("fert_nit_end_date1_", type, "_", order), label ="", format = "yyyy/mm/dd")
                     ),
 
 
@@ -1955,11 +1975,11 @@ server_design_agrofims <- function(input, output, session, values){
                                                    )
                                             ),
                                             column(width = 1,
-                                                   dateInput(paste0("fert_nit_start_date2_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                                   dateInput(paste0("fert_nit_start_date2_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                             ),
 
                                             column(width = 1,
-                                                   dateInput(paste0("fert_nit_end_date2_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                                   dateInput(paste0("fert_nit_end_date2_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                             ),
 
 
@@ -2126,11 +2146,11 @@ server_design_agrofims <- function(input, output, session, values){
                                             )
                                      ),
                                      column(width = 1,
-                                            dateInput(paste0("fert_nit_start_date3_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_nit_start_date3_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
 
                                      column(width = 1,
-                                            dateInput(paste0("fert_nit_end_date3_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_nit_end_date3_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
 
                                      column(width = 2,
@@ -2293,11 +2313,11 @@ server_design_agrofims <- function(input, output, session, values){
                            )
                     ),
                     column(width = 1,
-                           dateInput(paste0("fert_phos_start_date1_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                           dateInput(paste0("fert_phos_start_date1_", type, "_", order), label ="", format = "yyyy/mm/dd")
                     ),
 
                     column(width = 1,
-                           dateInput(paste0("fert_phos_end_date1_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                           dateInput(paste0("fert_phos_end_date1_", type, "_", order), label ="", format = "yyyy/mm/dd")
                     ),
 
 
@@ -2459,11 +2479,11 @@ server_design_agrofims <- function(input, output, session, values){
                                      ),
 
                                      column(width = 1,
-                                            dateInput(paste0("fert_phos_start_date2_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_phos_start_date2_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
 
                                      column(width = 1,
-                                            dateInput(paste0("fert_phos_end_date2_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_phos_end_date2_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
                                      column(width = 2,
                                             if(type == "Green_manure"){
@@ -2627,11 +2647,11 @@ server_design_agrofims <- function(input, output, session, values){
                                             )
                                      ),
                                      column(width = 1,
-                                            dateInput(paste0("fert_phos_start_date3_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_phos_start_date3_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
 
                                      column(width = 1,
-                                            dateInput(paste0("fert_phos_end_date3_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_phos_end_date3_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
 
 
@@ -2796,11 +2816,11 @@ server_design_agrofims <- function(input, output, session, values){
                            )
                     ),
                     column(width = 1,
-                           dateInput(paste0("fert_potas_start_date1_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                           dateInput(paste0("fert_potas_start_date1_", type, "_", order), label ="", format = "yyyy/mm/dd")
                     ),
 
                     column(width = 1,
-                           dateInput(paste0("fert_potas_end_date1_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                           dateInput(paste0("fert_potas_end_date1_", type, "_", order), label ="", format = "yyyy/mm/dd")
                     ),
 
                     column(width = 2,
@@ -2963,11 +2983,11 @@ server_design_agrofims <- function(input, output, session, values){
                                             )
                                      ),
                                      column(width = 1,
-                                            dateInput(paste0("fert_potas_start_date2_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_potas_start_date2_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
 
                                      column(width = 1,
-                                            dateInput(paste0("fert_potas_end_date2_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_potas_end_date2_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
 
                                      column(width = 2,
@@ -3129,11 +3149,11 @@ server_design_agrofims <- function(input, output, session, values){
                                             )
                                      ),
                                      column(width = 1,
-                                            dateInput(paste0("fert_potas_start_date3_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_potas_start_date3_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
 
                                      column(width = 1,
-                                            dateInput(paste0("fert_potas_end_date3_", type, "_", order), label ="", format = "dd/mm/yyyy")
+                                            dateInput(paste0("fert_potas_end_date3_", type, "_", order), label ="", format = "yyyy/mm/dd")
                                      ),
 
                                      column(width = 2,
@@ -6045,7 +6065,6 @@ server_design_agrofims <- function(input, output, session, values){
                   'Number of plants in area harvested',
                   'Crop component harvested',
                   'Harvest implement',
-
                   'Harvest implement make',
                   'Harvest implement model',
                   'Harvest implement traction'
@@ -6093,6 +6112,7 @@ server_design_agrofims <- function(input, output, session, values){
 
     nirri <- input$numApplicationsIrrigation
 
+
     sdate <- edate <-  tech <- vt <- vt_label <- list()
     ws <-   wsdist <-    wsuni <-    wb <-    wbu <-    wpr <-    wpru <-    depth <-    depthu <-    iwdepth <-    iwdepthu <- list()
     amount <- uamount <-  area <- uarea <- list()
@@ -6102,7 +6122,11 @@ server_design_agrofims <- function(input, output, session, values){
 
     for(i in 1:nirri) {
       sdate[[i]] <-  paste(input[[	paste0("irrigationevent_start_date_", i)	]])
+      if(length(sdate[[i]])==0){ sdate[[i]] <- ""   }
+
       edate[[i]] <-  paste(input[[	paste0("irrigationevent_end_date_", i)	]])
+      if(length(edate[[i]])==0){ edate[[i]] <- ""   }
+
       tech[[i]] <-  paste(input[[	paste0("irrigation_technique_", i)	]])
       if(is.null( tech[[i]] ) || length(tech[[i]]) ==0) tech[[i]] <-  ""
 
@@ -6121,7 +6145,7 @@ server_design_agrofims <- function(input, output, session, values){
             vt_label <- paste("foo",i , sep ="")
       }
 
-      print(vt[[i]])
+      #print(vt[[i]])
 
         ws[[i]] <-  paste(input[[	paste0("irrigation_water_source_", i)	]])
         if(is.null( ws[[i]] ) || length(ws[[i]]) ==0) ws[[i]] <-  ""
@@ -6178,7 +6202,8 @@ server_design_agrofims <- function(input, output, session, values){
       area <- unlist(area )
       uarea <- unlist(uarea )
 
-        irri <- c( sdate , edate ,tech, vt,  ws, wsdist , wsuni,wb ,wbu ,wpr,wpru,depth ,depthu ,iwdepth ,iwdepthu ,amount ,uamount ,area ,uarea )
+        #irri <- c( sdate , edate ,tech, vt,  ws, wsdist , wsuni,wb ,wbu ,wpr,wpru,depth ,depthu ,iwdepth ,iwdepthu ,amount ,uamount ,area ,uarea )
+        irri <- c(rbind(sdate , edate ,tech, vt,  ws, wsdist , wsuni,wb ,wbu ,wpr,wpru,depth ,depthu ,iwdepth ,iwdepthu ,amount ,uamount ,area ,uarea ))
         print(irri)
         temp <- t(irri)
         irridt <- as.data.frame(temp, stringsAsFactors =FALSE)
@@ -6190,7 +6215,7 @@ server_design_agrofims <- function(input, output, session, values){
           a4	<-paste(	'Irrigation technique'	, 1:i)
           a5	<-paste(	'Water source'	, 1:i)
           a6	<-paste(	'Water source distance'	, 1:i)
-          a7	<-paste(	'Unit'	, 1:i)
+          a7	<-paste(	'Water source distance Unit'	, 1:i)
           a8	<-paste(	'Bund height'	, 1:i)
           a9	<-paste(	'Bund height unit'	, 1:i)
           a10	<-paste(	'Percolation rate'	, 1:i)
@@ -6205,10 +6230,19 @@ server_design_agrofims <- function(input, output, session, values){
           a19	<-paste(	'Area covered by the irrigation system unit'	, 1:i)
         }
 
+  a67 <- c(rbind(a6,a7)) #intercalate values for water source distance
+  a89 <- c(rbind(a8,a9)) #intercalate values for bund height
+  a1011 <- c(rbind(a10,a11)) #intercalate values for bund height
+  a1213 <- c(rbind(a12,a13)) #intercalate values for irrigation equipment depth
+  a1415 <- c(rbind(a14,a15)) #intercalate values for well depth
+  a1617 <- c(rbind(a16,a17)) #intercalate values for irrigation amount
+  a1819 <- c(rbind(a18,a19)) #intercalate values for irrigation system
 
-  irriNames <- c(a2, a3, a4, vt_label, a5, a6, a7, a8, a9, a10, a11, a12,a13, a14, a15, a16, a17, a18, a19)
+  #irriNames <- c(a2, a3, a4, vt_label, a5, a6, a7, a8, a9, a10, a11, a12,a13, a14, a15, a16, a17, a18, a19)
+  irriNames <- c(rbind(a2,a3, a4, vt_label, a5, a6, a7, a8,a9,a10,a11,a12, a13, a14, a15, a16, a17, a18, a19))
+  #irriNames <- c(a2, a3, a4, vt_label, a5, a67, a89, a1011, a1213, a1415, a1617, a1819)
 
-  print(irriNames)
+  #print(irriNames)
 
   names(irridt) <- irriNames
   as <- grepl("foo", names(irridt)) #detec foo variables
@@ -6222,18 +6256,7 @@ server_design_agrofims <- function(input, output, session, values){
 
  out
 
-    # out<-irrigation(input$irrigationevent_start_date,
-    #             input$irrigationevent_end_date,input$irrigation_system_type,
-    #             input$irrigation_technique,input$surface_irrigation_technique,
-    #             input$localized_irrigation_technique,input$irrigation_using_sprinkler_systems,
-    #             irrigation_system_picture = "", #input$rrigation_system picture,
-    #             input$irrigation_water_source,input$irrigation_water_source_distance,
-    #             input$irrigation_bund_height,input$irrigation_percolation_rate,input$irrigation_equipment_depth,
-    #             input$irrigation_well_depth,input$irrigation_area_covered_irrigation_system)
-    #
-    # out
-
-  })
+})
 
   ##biofertilization
   dt_bioferti <- reactive({

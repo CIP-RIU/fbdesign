@@ -408,8 +408,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                            textInput(inputId = "experimentProjectName", label = "Experiment project name", value = ""),
 
                                                            shiny::dateRangeInput("fbDesign_project_time_line", "Experiment date", start = Sys.Date() - 2,
-                                                                                 end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
-                                                           # dateInput("Embargo_date", label ="Embargo end date", format = "dd/mm/yyyy"),
+                                                                                 end = Sys.Date() + 20, startview = "year",format = "yyyy/mm/dd"),
+                                                           # dateInput("Embargo_date", label ="Embargo end date", format = "yyyy/mm/dd"),
                                                            # shiny::selectInput("designFieldbook_expSeason", "Experiment season", choices = c("Summer","Spring","Winter", "Autumn")),
                                                            # shiny::selectInput("designFieldbook_typeExperiment", "Type of experiment", choices = c("Select one...","Controlled treatment trial","Observation trial","Varietal trial", "Demonstration trial", "Germplasm screening trial")),
                                                            selectizeInput("designFieldbook_typeExperiment", "Type of experiment", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Controlled treatment trial","Observation trial","Varietal trial", "Demonstration trial", "Germplasm screening trial")),
@@ -1398,10 +1398,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      column(width = 6,
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     dateInput("landLeveling_start_date", label ="Start date 1", format = "dd/mm/yyyy")
+                                                                                     dateInput("landLeveling_start_date", label ="Start date 1", format = "yyyy/mm/dd")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                     dateInput("landLeveling_end_date", label ="End date", format = "yyyy/dd/mm")
                                                                               )
                                                                             ),
                                                                             textInput("numPasses", value="", label = "Total number of levelling passes")#,
@@ -1463,10 +1463,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                         column(width = 6,
                                                                                fluidRow(
                                                                                   column(width = 6,
-                                                                                         dateInput("puddling_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                         dateInput("puddling_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                                   ),
                                                                                   column(width = 6,
-                                                                                         dateInput("puddling_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                         dateInput("puddling_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                                   )
                                                                                )
                                                                          )
@@ -1557,10 +1557,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      column(width = 6,
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     dateInput("tillage_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                     dateInput("tillage_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     dateInput("tillage_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                     dateInput("tillage_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                               )
                                                                             ),
                                                                             selectizeInput("till_technique",  label = "Technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -1673,10 +1673,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      column(width = 6,
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     dateInput("liming_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                     dateInput("liming_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     dateInput("liming_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                     dateInput("liming_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                               )
                                                                             ),
                                                                             textInput("lim_material", label="Material", value=""),
@@ -1749,10 +1749,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      column(width = 6,
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     dateInput("mulch_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                     dateInput("mulch_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     dateInput("mulch_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                     dateInput("mulch_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                               )
                                                                             ),
                                                                             selectizeInput("mulch_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Bark chips",
@@ -1804,10 +1804,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             textInput("mulch_percCoverage", value="", label = "Percentage of coverage"),
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     dateInput("mulch_remove_start_date", label ="Mulch removal start date", format = "dd/mm/yyyy")
+                                                                                     dateInput("mulch_remove_start_date", label ="Mulch removal start date", format = "yyyy/mm/dd")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     dateInput("mulch_remove_end_date", label ="Mulch removal end date", format = "dd/mm/yyyy")
+                                                                                     dateInput("mulch_remove_end_date", label ="Mulch removal end date", format = "yyyy/mm/dd")
                                                                               )
                                                                             )
                                                                           ),
@@ -1851,10 +1851,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      column(width = 6,
                                                                             fluidRow( ##IMPLEMENTAR EN EL EXCEL
                                                                               column(width = 6,
-                                                                                     dateInput("residue_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                     dateInput("residue_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                               ),
                                                                               column(width = 6,##IMPLEMENTAR EN EL EXCEL
-                                                                                     dateInput("residure_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                     dateInput("residure_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                               )
                                                                             ),
                                                                             selectizeInput("residue_cropType", label = "Crop type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -1986,10 +1986,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                              column(width = 6,
                                                                                     fluidRow(
                                                                                column(width = 6,
-                                                                                      dateInput("planting_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                      dateInput("planting_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                                ),
                                                                                column(width = 6,
-                                                                                      dateInput("planting_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                      dateInput("planting_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                                ))
                                                                              )
                                                                            ),
@@ -2107,10 +2107,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                        column(width = 6,
                                                                               fluidRow(
                                                                                 column(width = 6,
-                                                                                       dateInput("transplanting_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                       dateInput("transplanting_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                                 ),
                                                                                 column(width = 6,
-                                                                                       dateInput("transplanting_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                       dateInput("transplanting_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                                 )),
                                                                               textInput("age_seedling", value="", label = "Age of seeding (days)"),
                                                                               selectizeInput("transplanting_environment", label = "Seedling environment", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -2215,7 +2215,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      width = 12, collapsible = TRUE, collapsed = TRUE,
                                                                      fluidRow(id = "irrig_description",
                                                                      column(width = 6,
-                                                                            numericInput("numApplicationsIrrigation", label  = "Number of irrigations", value = 1, min = 1, max = 5)
+                                                                            numericInput("numApplicationsIrrigation", label  = "Number of irrigations", value = 3, min = 3, max = 10)
 
                                                                      ))
                                                                  ))#end box description irrigation
@@ -2254,14 +2254,14 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  #     column(width = 6,
                                                                  #            # fluidRow(
                                                                  #            #   column(width = 6,
-                                                                 #            #          dateInput("landLeveling_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                 #            #          dateInput("landLeveling_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                  #            #   ),
                                                                  #            #   column(width = 6,
-                                                                 #            #          dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                 #            #          dateInput("landLeveling_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                  #            #   )
                                                                  #            # ),
                                                                  #
-                                                                 #            dateInput("disease_observation_date", label ="Disease observation date", format = "dd/mm/yyyy"),
+                                                                 #            dateInput("disease_observation_date", label ="Disease observation date", format = "yyyy/mm/dd"),
                                                                  #            textInput("disease_name", value="", label = "Disease name"),
                                                                  #            textInput("disease_plant_parts_affected", value="", label = "Plant parts affected"),
                                                                  #            textInput("disease_percentage_experiement_affected", value="", label = "Percentage of the experiment affected"),
@@ -2278,10 +2278,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  #     column(width = 6,
                                                                  #            # fluidRow(
                                                                  #            #   column(width = 6,
-                                                                 #            #          dateInput("landLeveling_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                 #            #          dateInput("landLeveling_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                  #            #   ),
                                                                  #            #   column(width = 6,
-                                                                 #            #          dateInput("landLeveling_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                 #            #          dateInput("landLeveling_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                  #            #   )
                                                                  #            # ),
                                                                  #            selectizeInput("pest_type", label = "Pest type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -2354,10 +2354,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                               column(width = 6,
                                                                                      fluidRow(
                                                                                        column(width = 6,
-                                                                                              dateInput("harvest_start_date", label ="Start date", format = "dd/mm/yyyy")
+                                                                                              dateInput("harvest_start_date", label ="Start date", format = "yyyy/mm/dd")
                                                                                        ),
                                                                                        column(width = 6,
-                                                                                              dateInput("harvest_end_date", label ="End date", format = "dd/mm/yyyy")
+                                                                                              dateInput("harvest_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                                        )
                                                                                      ),
                                                                                      textInput("harvest_cut_height", "Harvest cut height"),
