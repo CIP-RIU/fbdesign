@@ -480,6 +480,9 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                              fluidRow(
                                                                column(width=6,
                                                                       selectizeInput("personnel1Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
+                                                                      conditionalPanel("input.personnel1Type == 'Other'",
+                                                                                       textInput(inputId = "personnel1TypeOther", label = "", value = "")
+                                                                                       ),
 
                                                                       textInput(inputId = "person1FirstName", label = "Person, first name", value = ""),
                                                                       textInput(inputId = "person1LastName", label = "Person, last name", value = ""),
@@ -531,6 +534,9 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                           fluidRow(
                                                             column(width=6,
                                                                    selectizeInput("personnel2Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
+                                                                   conditionalPanel("input.personnel2Type == 'Other'",
+                                                                                    textInput(inputId = "personnel2TypeOther", label = "", value = "")
+                                                                   ),
 
                                                                    textInput(inputId = "person2FirstName", label = "Person, first name", value = ""),
                                                                    textInput(inputId = "person2LastName", label = "Person, last name", value = ""),
@@ -583,6 +589,9 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                            column(width=6,
 
                                                                                   selectizeInput("personnel3Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
+                                                                                  conditionalPanel("input.personnel3Type == 'Other'",
+                                                                                                   textInput(inputId = "personnel3TypeOther", label = "", value = "")
+                                                                                  ),
 
                                                                                   textInput(inputId = "person3FirstName", label = "Person, first name", value = ""),
                                                                                   textInput(inputId = "person3LastName", label = "Person, last name", value = ""),
@@ -633,7 +642,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                          fluidRow(
                                                                            column(width=6,
 
-                                                                                  selectizeInput("personne41Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
+                                                                                  selectizeInput("personnel4Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
+                                                                                  conditionalPanel("input.personnel4Type == 'Other'",
+                                                                                                   textInput(inputId = "personnel4TypeOther", label = "", value = "")
+                                                                                  ),
 
                                                                                   textInput(inputId = "person4FirstName", label = "Person, first name", value = ""),
                                                                                   textInput(inputId = "person4LastName", label = "Person, last name", value = ""),
@@ -679,6 +691,9 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                          fluidRow(
                                                                            column(width=6,
                                                                                   selectizeInput("personnel5Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
+                                                                                  conditionalPanel("input.personnel5Type == 'Other'",
+                                                                                                   textInput(inputId = "personnel5TypeOther", label = "", value = "")
+                                                                                  ),
 
                                                                                   textInput(inputId = "person5FirstName", label = "Person, first name", value = ""),
                                                                                   textInput(inputId = "person5LastName", label = "Person, last name", value = ""),
