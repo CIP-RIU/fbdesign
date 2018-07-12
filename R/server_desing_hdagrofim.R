@@ -13,6 +13,32 @@
 
 server_design_agrofims <- function(input, output, session, values){
 
+  path <- fbglobal::get_base_dir()
+  fp <- file.path(path, "listFactors.rds") # field operations agro features as list of factors
+  print(path)
+  lvl <- reactiveValues()
+  factors <- as.data.frame(readRDS(fp))
+  lvl$lv_1_1 <- unique(factors$GROUP)
+  lvl$lv_1_2 <- NULL
+  lvl$lv_1_3 <- NULL
+
+  lvl$lv_2_1 <- unique(factors$GROUP)
+  lvl$lv_2_2 <- NULL
+  lvl$lv_2_3 <- NULL
+
+  lvl$lv_3_1 <- unique(factors$GROUP)
+  lvl$lv_3_2 <- NULL
+  lvl$lv_3_3 <- NULL
+
+  lvl$lv_4_1 <- unique(factors$GROUP)
+  lvl$lv_4_2 <- NULL
+  lvl$lv_4_3 <- NULL
+
+  lvl$lv_5_1 <- unique(factors$GROUP)
+  lvl$lv_5_2 <- NULL
+  lvl$lv_5_3 <- NULL
+
+
   # makeReactiveBinding("pkg.globals")
 
   # titulos para abrir boxes
@@ -64,11 +90,328 @@ server_design_agrofims <- function(input, output, session, values){
     js$collapse("pest_control_boxid")
   })
 
-  ###
+  observeEvent(input$crop_titleId, {
+    js$collapse("crop_boxid")
+  })
 
-  output$uiTest <- renderUI({
+
+  treatmentValues <- reactiveValues()
+  ## init the datable to be used for the table ouptut of treatment
+  # treatmentValues$data <- data.table(as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)))
+
+
+  numFactors <- reactiveValues()
+  numFactors$numFull <- 0
+  numFactors$numNotFull <- 0
+
+  num <- reactiveValues()
+  num$currNumReplications <- 2
+
+  observeEvent(input$fullFactorialRB, {
+    if(input$fullFactorialRB == "Yes"){
+
+
+
+      end <- numFactors$numNotFull
+      for(num in 1:end){
+        removeUI(
+          selector = paste0("#not_full_factor_box_", num),
+          immediate = T
+        )
+      }
+      numFactors$numNotFull <- 0
+
+      removeUI(
+        selector="#not_fluid_full_factor",
+        immediate = T
+      )
+
+      insertUI(
+        selector = "#fluid_treatment_description",
+        where = "afterBegin",
+        ui = fluidRow( id= "fluid_full_factor",
+              column(width = 12,
+                   column(width = 6,
+                         shiny::selectInput("designFieldbook_agrofims_r_y", "Replications", 2:100, 2 )
+                   ),
+                   column(width = 6,
+                         selectInput(inputId = "nfactors_hdafims_y", label = "Number of factors", choices = 1:5)
+                   ),
+
+                   fluidRow(id="full_factor_input")
+              )
+            )
+
+      )
+
+      treatmentValues$data <- data.table(as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)))
+      colnames(treatmentValues$data) <-  c('FACTOR 1', 'FACTOR 2', 'FACTOR 3',   'FACTOR 4','FACTOR 5')
+
+    }
+    else if(input$fullFactorialRB == "No"){
+
+
+      end <- numFactors$numFull
+      for(num in 1:end){
+        removeUI(
+          selector = paste0("#full_factor_box_", num),
+          immediate = T
+        )
+      }
+      numFactors$numFull <- 0
+
+      removeUI(
+        selector="#fluid_full_factor",
+        immediate = T
+      )
+
+
+      insertUI(
+        selector = "#fluid_treatment_description",
+        where = "afterBegin",
+        ui = fluidRow( id= "not_fluid_full_factor",
+                column(width = 12,
+                       column(width = 4,
+                           shiny::selectInput("designFieldbook_agrofims_t_n", "Number of treatment", 2:100, 1 )
+                       ),
+                       column(width = 4,
+                             shiny::selectInput("designFieldbook_agrofims_r_n", "Replication or block", 2:100, 2 )
+                       ),
+                       column(width = 4,
+                              selectizeInput(inputId = "nfactors_hdafims_n", label = "Number of factors", selected =NULL, choices = 1:5)
+                             # selectInput(inputId = "nfactors_hdafims_n", label = "Number of factors", choices = 1:5)
+                       ),
+                       fluidRow(id="not_full_factor_input"),
+
+                       # uiOutput("uiTraitsList"),
+                       # actionButton("generateTreatmentTable", "Generate table"),
+                       column(12,dataTableOutput("Table_treatments"))
+
+
+                )
+        )
+      )
+
+    }
+  })
+
+  observeEvent(input$nfactors_hdafims_y, {
+    iter <- as.numeric(input$nfactors_hdafims_y)
+
+
+    if(numFactors$numFull < iter){
+      start <- numFactors$numFull + 1
+      for(i in start:iter){
+        drawFullFactorialFactor(i)
+      }
+    }
+    else if(numFactors$numFull > iter){
+      start <- iter+1
+      end <- numFactors$numFull
+      for(num in start:end){
+        removeUI(
+          selector = paste0("#full_factor_box_", num),
+          immediate = T
+        )
+      }
+
+    }
+    numFactors$numFull <- iter
+  })
+
+  drawFullFactorialFactor <- function(order){
+    insertUI(
+      selector = "#full_factor_input",
+      # selector = "#fluid_factor_input",
+      where = "beforeBegin",
+      ui =fluidRow(id = paste0("full_factor_box_", order),
+            column(width = 12,
+                box(title = paste0("#", order, " Agronomic Operations/Practices"),
+                   width = 12,
+                   solidHeader = TRUE, status = "warning",
+                   column(width = 12,
+                          fluidRow(
+                            column( width = 6,
+                                    fluidRow(
+                                      # column(width = 12,
+                                      fluidRow(
+                                        column(width = 4,
+                                               selectizeInput(paste0("sel", order, "_1"), "", choices = lvl[[paste0("lv_", order, "_1")]], multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                        ),
+                                        column(width = 4,
+                                               selectizeInput(paste0("sel", order, "_2"), "", choices = NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                        ),
+                                        column(width = 4,
+                                               selectizeInput(paste0("sel", order, "_3"), "", choices =  NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                        )
+                                      )
+                                      # )
+                                    )
+
+                            ),
+                            column(width = 6,
+                                   fluidRow(
+                                     column(width = 6,
+                                            fluidRow(id=paste0("fl_title_factor_aux_", order))
+                                     ),
+                                     column(width = 6,
+                                            numericInput(paste0("numLevels_", order), HTML("#levels"), max = 5, min = 2, value = 2)
+                                     )
+                                   ),
+                                   fluidRow(id= paste0("levelSelection_", order))
+                            )
+                          )
+                   )#end column12
+                )
+          ))
+    )
+
+  }
+
+
+  observeEvent(input$nfactors_hdafims_n, {
+    iter <- as.integer(input$nfactors_hdafims_n)
+
+    if(is.na(iter)  || iter < 1 ) return()
+
+    if(numFactors$numNotFull < iter ){
+      start <- numFactors$numNotFull + 1
+      for(i in start:iter){
+        drawNotFullFactorialFactor(i)
+      }
+    }
+    else if(numFactors$numNotFull > iter){
+      start <- iter+1
+      end <- numFactors$numNotFull
+      for(i in start:end){
+        removeUI(
+          selector = paste0("#not_full_factor_box_", i),
+          immediate = T
+        )
+
+        convertListToHTMLSelect("-", "", i, paste0("FACTOR ", i))
+      }
+
+    }
+    numFactors$numNotFull <- iter
+  })
+
+  drawNotFullFactorialFactor <- function(order){
+    insertUI(
+
+      selector = "#not_full_factor_input",
+      # selector = "#fluid_factor_input",
+      where = "beforeBegin",
+      ui =
+        fluidRow(id = paste0("not_full_factor_box_", order),
+            column(width = 12,
+
+              box(
+                    title = paste0("#", order, " Agronomic Operations/Practices"),
+                    width = 12,
+                    solidHeader = TRUE, status = "warning",
+
+                    column(width = 12,
+
+                             fluidRow(
+                               # column(width = 12,
+                               fluidRow(
+                                 column(width = 4,
+                                        selectizeInput(paste0("sel", order, "_1"), "", choices = lvl[[paste0("lv_", order, "_1")]], multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                 ),
+                                 column(width = 4,
+                                        selectizeInput(paste0("sel", order, "_2"), "", choices = NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                 ),
+                                 column(width = 4,
+                                        selectizeInput(paste0("sel", order, "_3"), "", choices =  NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                 )
+                               )
+                               # )
+                             )
+
+                    )#end column12
+            )
+          )
+        )
+    )
+
+  }
+
+  output$Table_treatments <-renderDataTable({
+    DT=treatmentValues$data
+    datatable(DT,
+              escape=F,
+              selection = list(mode = 'none'),
+              options = list(
+                # colnames = c('FACTOR 1', 'FACTOR 2', 'FACTOR 3',   'FACTOR 4','FACTOR 5'),
+                scrollX = TRUE,
+                pageLength = 10,
+                columnDefs = list(list(className = 'dt-center', width = '18%', targets =1:5))
+              )
+
+              )}
+  )
+
+
+
+  observeEvent(input$designFieldbook_agrofims_t_n, {
+      rep <- as.numeric(input$designFieldbook_agrofims_t_n)
+      if(num$currNumReplications > rep  && !is.na(rep)){
+        start<- rep +1
+        for(i in num$currNumReplications:start){
+          treatmentValues$data <- treatmentValues$data[-i,]
+        }
+        num$currNumReplications <- rep
+      }
+      else if(num$currNumReplications < rep && !is.na(rep)){
+        start  <- num$currNumReplications +1
+        for(i in start:rep){
+          if(nrow(treatmentValues$data) >=1){
+            treatmentValues$data <-  rbind(treatmentValues$data, treatmentValues$data[1,])
+          }
+          else{
+            treatmentValues$data <-  rbind(treatmentValues$data, as.list(rep("-", 5)))
+          }
+        }
+        num$currNumReplications <- rep
+      }
+
 
   })
+
+
+
+
+  convertListToHTMLSelect <- function(myList, form, mindex, colname){
+    numTreatments <- isolate(input$designFieldbook_agrofims_t_n)
+    ans <- c()
+    opt <- NULL
+
+    str <- ""
+    if(form == "combo box"){ ## is a list separated by semicolons
+      opts <- strsplit(myList, ";")[[1]]
+
+      for(index in 1:numTreatments){
+        str <- ""
+        str <- paste0('<select id="select_factor_treatment_', index, '" class ="select_treatment" style="width:150px;">')
+        for(opt in opts){
+          str <- paste0(str, '<option value="', opt,'">', opt, '</option>')
+        }
+        str <- paste0(str, "</select>")
+        ans <- c(ans, str)
+      }
+
+
+    }
+    else{ ## is a single value
+      str <- myList
+      for(index in 1:numTreatments){
+        ans <- c(ans, str)
+      }
+    }
+    treatmentValues$data[mindex] <- ans
+    colnames(treatmentValues$data)[mindex] <- colname
+  }
 
 
   featNames <- names(Agronomic_features$`Agronomic features`)
@@ -102,34 +445,13 @@ server_design_agrofims <- function(input, output, session, values){
 
   ## Agronomic Features Shiny Tree ###############################################
 
-  # observeEvent( input$selectFeatures, {
-  #   flist <- input$selectFeatures
-  #   i <- 1
-  #   n <- length(flist)
-  #   mfeatList <- vector("list", n)
-  #   names(mfeatList) <- flist
-  #   tree <- Agronomic_features[["Agronomic features"]]
-  #   total<- list()
-  #
-  #   for (feat in flist) {
-  #     total<- c(total, tree[feat])
-  #     #names(mfeatList[[feat]]) <- feat
-  #     # i <- i+1
-  #   }
-  #   total<- total
-  #    #saveRDS(total, "total.rds")
-
     output$treeFeatures <- shinyTree::renderTree({
 
       #total <- readRDS("total.rds")
       total <- Agronomic_features
 
     })
-    # output$treeFeatures <- shinyTree::renderTree({
-    #
-    #   Agronomic_features
-    #
-    #   })
+
 
   # }) End agronomic trait shinyTree  ####################################
 
@@ -369,61 +691,45 @@ server_design_agrofims <- function(input, output, session, values){
 
   #### factors ####################################################################################
 
-  path <- fbglobal::get_base_dir()
-  fp <- file.path(path, "listFactors.rds") # field operations agro features as list of factors
-
-  lvl <- reactiveValues()
-  factors <- as.data.frame(readRDS(fp))
-  lvl$lv_1_1 <- unique(factors$GROUP)
-  lvl$lv_1_2 <- NULL
-  lvl$lv_1_3 <- NULL
-
-  lvl$lv_2_1 <- unique(factors$GROUP)
-  lvl$lv_2_2 <- NULL
-  lvl$lv_2_3 <- NULL
-
-  lvl$lv_3_1 <- unique(factors$GROUP)
-  lvl$lv_3_2 <- NULL
-  lvl$lv_3_3 <- NULL
-
-  lvl$lv_4_1 <- unique(factors$GROUP)
-  lvl$lv_4_2 <- NULL
-  lvl$lv_4_3 <- NULL
-
-  lvl$lv_5_1 <- unique(factors$GROUP)
-  lvl$lv_5_2 <- NULL
-  lvl$lv_5_3 <- NULL
 
   observe({
     if(!is.null(input$sel1_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel1_1)
       lvl$lv_1_2 <- unique(aux$SUBGROUP)
+      updateSelectInput(session, "sel1_2", choices = lvl$lv_1_2)
     }
     else{
       lvl$lv_1_2 <- NULL
+      updateSelectInput(session, "sel1_2", choices = NULL)
+
     }
+
     removeUI(selector = "#fluid_levels_1", immediate = T)
     lvl$lv_1_3 <- NULL
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1, "FACTOR 1"))
+    # if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1)
+    updateSelectInput(session, "sel1_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_1", immediate = T )
 
   })
   observe( {
-
     if(!is.null(input$sel1_2)){
       aux <- dplyr::filter(factors,GROUP==input$sel1_1 & SUBGROUP==input$sel1_2)
-
       lvl$lv_1_3 <- unique(aux$FACTOR)
+      updateSelectInput(session, "sel1_3", choices = lvl$lv_1_3)
     }
     else{
       lvl$lv1_3 <- NULL
+      updateSelectInput(session, "sel1_3", choices = NULL)
     }
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1, "FACTOR 1"))
+    # if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1)
     removeUI(selector = "#fluid_levels_1", immediate = T)
     removeUI( selector ="#fl_title_factor_1", immediate = T )
   })
-
-  observe({
+  observeEvent(input$sel1_3, {
     removeUI( selector ="#fl_title_factor_1", immediate = T )
-    if(!is.null(input$sel1_3) && is.numeric(input$numLevels_1)){
+    if(!is.null(input$sel1_3)){
       aux <- dplyr::filter(factors,GROUP==input$sel1_1 & SUBGROUP==input$sel1_2 & FACTOR==input$sel1_3)
       if(nrow(aux) > 0){
         insertUI(
@@ -432,20 +738,35 @@ server_design_agrofims <- function(input, output, session, values){
           ui = fluidRow(id="fl_title_factor_1", column(width = 12, br(), h4(HTML(paste0("<b>", input$sel1_3, "</b>")))))
 
         )
+        if(isolate(input$fullFactorialRB == "No")){
+          if(aux$FORM == "combo box"){
+            convertListToHTMLSelect(aux$LEVEL, "combo box",1,input$sel1_3)
+          }
+          else{
+            convertListToHTMLSelect(input$sel1_3, "",1, input$sel1_3)
+          }
 
-        if(aux$FORM == "combo box"){
-          drawComboboxLevel(1,input$numLevels_1, aux$LEVEL)
-        }
-        else if(aux$FORM == "text input"){
-          drawTextInputLevel(1,input$numLevels_1, aux$UNIT)
-        }
-        else if(aux$FORM == "numeric input"){
-          drawNumericInputLevel(1,input$numLevels_1)
         }
 
-        else if(aux$FORM == "date"){
-          drawDateLevel(1,input$numLevels_1)
+        if(isolate(is.numeric(input$numLevels_1))){
+          if(aux$FORM == "combo box"){
+            drawComboboxLevel(1,input$numLevels_1, aux$LEVEL)
+
+          }
+          else if(aux$FORM == "text input"){
+            drawTextInputLevel(1,input$numLevels_1, aux$UNIT)
+
+          }
+          else if(aux$FORM == "numeric input"){
+            drawNumericInputLevel(1,input$numLevels_1)
+          }
+
+          else if(aux$FORM == "date"){
+            drawDateLevel(1,input$numLevels_1)
+          }
+
         }
+
       }
       else{
         removeUI(selector = "#fluid_levels_1", immediate = T)
@@ -453,6 +774,7 @@ server_design_agrofims <- function(input, output, session, values){
 
     }
     else{
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1, "FACTOR 1"))
       removeUI(selector = "#fluid_levels_1", immediate = T)
     }
   })
@@ -462,31 +784,36 @@ server_design_agrofims <- function(input, output, session, values){
     if(!is.null(input$sel2_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel2_1)
       lvl$lv_2_2 <- unique(aux$SUBGROUP)
+      updateSelectInput(session, "sel2_2", choices = lvl$lv_2_2)
     }
     else{
       lvl$lv_2_2 <- NULL
+      updateSelectInput(session, "sel2_2", choices = NULL)
     }
     removeUI(selector = "#fluid_levels_2", immediate = T)
     lvl$lv_2_3 <- NULL
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",2, "FACTOR 2"))
+    updateSelectInput(session, "sel2_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_2", immediate = T )
 
   })
-
   observe( {
     if(!is.null(input$sel2_2)){
       aux <- dplyr::filter(factors,GROUP==input$sel2_1 & SUBGROUP==input$sel2_2)
       lvl$lv_2_3 <- unique(aux$FACTOR)
+      updateSelectInput(session, "sel2_3", choices = lvl$lv_2_3)
     }
     else{
       lvl$lv_2_3 <- NULL
+      updateSelectInput(session, "sel2_3", choices = NULL)
     }
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",2, "FACTOR 2"))
     removeUI(selector = "#fluid_levels_2", immediate = T)
     removeUI( selector ="#fl_title_factor_2", immediate = T )
   })
-
-  observe({
+  observeEvent(input$sel2_3,{
     removeUI( selector ="#fl_title_factor_2", immediate = T )
-    if(!is.null(input$sel2_3) && is.numeric(input$numLevels_2)){
+    if(!is.null(input$sel2_3)){
       aux <- dplyr::filter(factors,GROUP==input$sel2_1 & SUBGROUP==input$sel2_2 & FACTOR==input$sel2_3)
 
       if(nrow(aux) > 0){
@@ -497,19 +824,36 @@ server_design_agrofims <- function(input, output, session, values){
 
         )
 
-        if(aux$FORM == "combo box"){
-          drawComboboxLevel(2,input$numLevels_2, aux$LEVEL)
-        }
-        else if(aux$FORM == "text input"){
-          drawTextInputLevel(2,input$numLevels_2, aux$UNIT)
-        }
-        else if(aux$FORM == "numeric input"){
-          drawNumericInputLevel(2,input$numLevels_2)
+
+        if(isolate(input$fullFactorialRB == "No")){
+
+          if(aux$FORM == "combo box"){
+            convertListToHTMLSelect(aux$LEVEL, "combo box",2, input$sel2_3)
+          }
+          else{
+            convertListToHTMLSelect(input$sel2_3, "",2, input$sel2_3)
+          }
+
         }
 
-        else if(aux$FORM == "date"){
-          drawDateLevel(2,input$numLevels_2)
+        if(is.numeric(input$numLevels_2)){
+          if(aux$FORM == "combo box"){
+            drawComboboxLevel(2,input$numLevels_2, aux$LEVEL)
+          }
+          else if(aux$FORM == "text input"){
+            drawTextInputLevel(2,input$numLevels_2, aux$UNIT)
+          }
+          else if(aux$FORM == "numeric input"){
+            drawNumericInputLevel(2,input$numLevels_2)
+          }
+
+          else if(aux$FORM == "date"){
+            drawDateLevel(2,input$numLevels_2)
+          }
+
         }
+
+
       }
       else{
         removeUI(selector = "#fluid_levels_2", immediate = T)
@@ -517,6 +861,7 @@ server_design_agrofims <- function(input, output, session, values){
 
     }
     else{
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",2, "FACTOR 2"))
       removeUI(selector = "#fluid_levels_2", immediate = T)
     }
   })
@@ -526,31 +871,36 @@ server_design_agrofims <- function(input, output, session, values){
     if(!is.null(input$sel3_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel3_1)
       lvl$lv_3_2 <- unique(aux$SUBGROUP)
+      updateSelectInput(session, "sel3_2", choices = lvl$lv_3_2)
     }
     else{
       lvl$lv_3_2 <- NULL
+      updateSelectInput(session, "sel3_2", choices = NULL)
     }
     removeUI(selector = "#fluid_levels_3", immediate = T)
     lvl$lv_3_3 <- NULL
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",3, "FACTOR 3"))
+    updateSelectInput(session, "sel3_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_3", immediate = T )
 
   })
-
   observe( {
     if(!is.null(input$sel3_2)){
       aux <- dplyr::filter(factors,GROUP==input$sel3_1 & SUBGROUP==input$sel3_2)
       lvl$lv_3_3 <- unique(aux$FACTOR)
+      updateSelectInput(session, "sel3_3", choices = lvl$lv_3_3)
     }
     else{
       lvl$lv_3_3 <- NULL
+      updateSelectInput(session, "sel3_3", choices = NULL)
     }
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",3, "FACTOR 3"))
     removeUI(selector = "#fluid_levels_3", immediate = T)
     removeUI( selector ="#fl_title_factor_3", immediate = T )
   })
-
-  observe({
+  observeEvent(input$sel3_3,{
     removeUI( selector ="#fl_title_factor_3", immediate = T )
-    if(!is.null(input$sel3_3) && is.numeric(input$numLevels_3)){
+    if(!is.null(input$sel3_3)){
       aux <- dplyr::filter(factors,GROUP==input$sel3_1 & SUBGROUP==input$sel3_2 & FACTOR==input$sel3_3)
 
       if(nrow(aux) > 0){
@@ -560,25 +910,41 @@ server_design_agrofims <- function(input, output, session, values){
           ui = fluidRow(id="fl_title_factor_3", column(width = 12, br(), h4(HTML(paste0("<b>", input$sel3_3, "</b>")))))
 
         )
-        if(aux$FORM == "combo box"){
-          drawComboboxLevel(3,input$numLevels_3, aux$LEVEL)
-        }
-        else if(aux$FORM == "text input"){
-          drawTextInputLevel(3,input$numLevels_3, aux$UNIT)
-        }
-        else if(aux$FORM == "numeric input"){
-          drawNumericInputLevel(3,input$numLevels_3)
+
+        if(isolate(input$fullFactorialRB == "No")){
+          if(aux$FORM == "combo box"){
+            convertListToHTMLSelect(aux$LEVEL, "combo box",3, input$sel3_3)
+          }
+          else{
+            convertListToHTMLSelect(input$sel3_3, "",3, input$sel3_3)
+          }
+
         }
 
-        else if(aux$FORM == "date"){
-          drawDateLevel(3,input$numLevels_3)
+        if(is.numeric(input$numLevels_3)){
+
+          if(aux$FORM == "combo box"){
+            drawComboboxLevel(3,input$numLevels_3, aux$LEVEL)
+          }
+          else if(aux$FORM == "text input"){
+            drawTextInputLevel(3,input$numLevels_3, aux$UNIT)
+          }
+          else if(aux$FORM == "numeric input"){
+            drawNumericInputLevel(3,input$numLevels_3)
+          }
+
+          else if(aux$FORM == "date"){
+            drawDateLevel(3,input$numLevels_3)
+          }
         }
+
       }
       else{
         removeUI(selector = "#fluid_levels_3", immediate = T)
       }
     }
     else{
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",3, "FACTOR 3"))
       removeUI(selector = "#fluid_levels_3", immediate = T)
     }
   })
@@ -588,31 +954,36 @@ server_design_agrofims <- function(input, output, session, values){
     if(!is.null(input$sel4_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel4_1)
       lvl$lv_4_2 <- unique(aux$SUBGROUP)
+      updateSelectInput(session, "sel4_2", choices = lvl$lv_4_2)
     }
     else{
       lvl$lv_4_2 <- NULL
+      updateSelectInput(session, "sel4_2", choices = NULL)
     }
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",4, "FACTOR 4"))
     removeUI(selector = "#fluid_levels_4", immediate = T)
     lvl$lv_4_3 <- NULL
+    updateSelectInput(session, "sel4_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_4", immediate = T )
 
   })
-
   observe({
     if(!is.null(input$sel4_2)){
       aux <- dplyr::filter(factors,GROUP==input$sel4_1 & SUBGROUP==input$sel4_2)
       lvl$lv_4_3 <- unique(aux$FACTOR)
+      updateSelectInput(session, "sel4_3", choices = lvl$lv_4_3)
     }
     else{
       lvl$lv_4_3 <- NULL
+      updateSelectInput(session, "sel4_3", choices = NULL)
     }
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",4, "FACTOR 4"))
     removeUI(selector = "#fluid_levels_4", immediate = T)
     removeUI( selector ="#fl_title_factor_4", immediate = T )
   })
-
-  observe({
+  observeEvent(input$sel4_3,{
     removeUI( selector ="#fl_title_factor_4", immediate = T )
-    if(!is.null(input$sel4_3) && is.numeric(input$numLevels_4)){
+    if(!is.null(input$sel4_3)){
       aux <- dplyr::filter(factors,GROUP==input$sel4_1 & SUBGROUP==input$sel4_2 & FACTOR==input$sel4_3)
 
       if(nrow(aux) > 0){
@@ -622,25 +993,40 @@ server_design_agrofims <- function(input, output, session, values){
           ui = fluidRow(id="fl_title_factor_4", column(width = 12, br(), h4(HTML(paste0("<b>", input$sel4_3, "</b>")))))
 
         )
-        if(aux$FORM == "combo box"){
-          drawComboboxLevel(4,input$numLevels_4, aux$LEVEL)
-        }
-        else if(aux$FORM == "text input"){
-          drawTextInputLevel(4,input$numLevels_4, aux$UNIT)
-        }
-        else if(aux$FORM == "numeric input"){
-          drawNumericInputLevel(4,input$numLevels_4)
+
+        if(isolate(input$fullFactorialRB == "No")){
+          if(aux$FORM == "combo box"){
+            convertListToHTMLSelect(aux$LEVEL, "combo box",4, input$sel1_4)
+          }
+          else{
+            convertListToHTMLSelect(input$sel1_4, "",4, input$sel1_4)
+          }
+
         }
 
-        else if(aux$FORM == "date"){
-          drawDateLevel(4,input$numLevels_4)
+        if(is.numeric(input$numLevels_4)){
+          if(aux$FORM == "combo box"){
+            drawComboboxLevel(4,input$numLevels_4, aux$LEVEL)
+          }
+          else if(aux$FORM == "text input"){
+            drawTextInputLevel(4,input$numLevels_4, aux$UNIT)
+          }
+          else if(aux$FORM == "numeric input"){
+            drawNumericInputLevel(4,input$numLevels_4)
+          }
+
+          else if(aux$FORM == "date"){
+            drawDateLevel(4,input$numLevels_4)
+          }
         }
+
       }
       else{
         removeUI(selector = "#fluid_levels_4", immediate = T)
       }
     }
     else{
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",4, "FACTOR 4"))
       removeUI(selector = "#fluid_levels_4", immediate = T)
     }
   })
@@ -650,31 +1036,36 @@ server_design_agrofims <- function(input, output, session, values){
     if(!is.null(input$sel5_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel5_1)
       lvl$lv_5_2 <- unique(aux$SUBGROUP)
+      updateSelectInput(session, "sel5_2", choices = lvl$lv_5_2)
     }
     else{
       lvl$lv_5_2 <- NULL
+      updateSelectInput(session, "sel5_2", choices = NULL)
     }
     removeUI(selector = "#fluid_levels_5", immediate = T)
     lvl$lv_5_3 <- NULL
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",5, "FACTOR 5"))
+    updateSelectInput(session, "sel5_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_5", immediate = T )
 
   })
-
   observe( {
     if(!is.null(input$sel5_2)){
       aux <- dplyr::filter(factors, GROUP==input$sel5_1 & SUBGROUP==input$sel5_2)
       lvl$lv_5_3 <- unique(aux$FACTOR)
+      updateSelectInput(session, "sel5_3", choices = lvl$lv_5_3)
     }
     else{
       lvl$lv_5_3 <- NULL
+      updateSelectInput(session, "sel5_3", choices = NULL)
     }
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",5, "FACTOR 5"))
     removeUI(selector = "#fluid_levels_5", immediate = T)
     removeUI( selector ="#fl_title_factor_5", immediate = T )
   })
-
-  observe({
+  observeEvent(input$sel5_3,{
     removeUI( selector ="#fl_title_factor_5", immediate = T )
-    if(!is.null(input$sel5_3) && is.numeric(input$numLevels_5)){
+    if(!is.null(input$sel5_3)){
       aux <- dplyr::filter(factors,GROUP==input$sel5_1 & SUBGROUP==input$sel5_2 & FACTOR==input$sel5_3)
 
       if(nrow(aux) > 0){
@@ -684,25 +1075,40 @@ server_design_agrofims <- function(input, output, session, values){
           ui = fluidRow(id="fl_title_factor_5", column(width = 12, br(), h4(HTML(paste0("<b>", input$sel5_3, "</b>")))))
 
         )
-        if(aux$FORM == "combo box"){
-          drawComboboxLevel(5,input$numLevels_5, aux$LEVEL)
-        }
-        else if(aux$FORM == "text input"){
-          drawTextInputLevel(5,input$numLevels_5, aux$UNIT)
-        }
-        else if(aux$FORM == "numeric input"){
-          drawNumericInputLevel(5,input$numLevels_5)
+
+        if(isolate(input$fullFactorialRB == "No")){
+          if(aux$FORM == "combo box"){
+            convertListToHTMLSelect(aux$LEVEL, "combo box",5, input$sel5_3)
+          }
+          else{
+            convertListToHTMLSelect(input$sel5_3, "",5, input$sel5_3)
+          }
+
         }
 
-        else if(aux$FORM == "date"){
-          drawDateLevel(5,input$numLevels_5)
+        if(is.numeric(input$numLevels_5)){
+          if(aux$FORM == "combo box"){
+            drawComboboxLevel(5,input$numLevels_5, aux$LEVEL)
+          }
+          else if(aux$FORM == "text input"){
+            drawTextInputLevel(5,input$numLevels_5, aux$UNIT)
+          }
+          else if(aux$FORM == "numeric input"){
+            drawNumericInputLevel(5,input$numLevels_5)
+          }
+
+          else if(aux$FORM == "date"){
+            drawDateLevel(5,input$numLevels_5)
+          }
         }
+
       }
       else{
         removeUI(selector = "#fluid_levels_5", immediate = T)
       }
     }
     else{
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",5, "FACTOR 5"))
       removeUI(selector = "#fluid_levels_5", immediate = T)
     }
   })
@@ -811,83 +1217,6 @@ server_design_agrofims <- function(input, output, session, values){
       }}
   }
 
-  output$ui_sel1_1 <- renderUI({
-    selectizeInput("sel1_1", "", choices = lvl$lv_1_1, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-  })
-  output$ui_sel1_2 <- renderUI({
-    selectizeInput("sel1_2", HTML(""), choices =lvl$lv_1_2, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-
-  })
-
-  output$ui_sel1_3 <- renderUI({
-    selectizeInput("sel1_3", HTML(""),choices =lvl$lv_1_3, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-
-  })
-  output$ui_numIn_1 <- renderUI({
-    numericInput("numLevels_1", HTML("#levels"), max = 5, min = 2, value = 2)
-  })
-
-  output$ui_sel2_1 <- renderUI({
-    selectizeInput("sel2_1", "", choices = lvl$lv_2_1, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-  })
-  output$ui_sel2_2 <- renderUI({
-    selectizeInput("sel2_2", "", choices =lvl$lv_2_2, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-
-  })
-
-  output$ui_sel2_3 <- renderUI({
-    selectizeInput("sel2_3", "", choices =lvl$lv_2_3, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-
-  })
-  output$ui_numIn_2 <- renderUI({
-    numericInput("numLevels_2", "#levels", max = 5, min = 2, value = 2)
-  })
-
-  output$ui_sel3_1 <- renderUI({
-    selectizeInput("sel3_1","", choices = lvl$lv_3_1, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-  })
-  output$ui_sel3_2 <- renderUI({
-    selectizeInput("sel3_2", "", choices =lvl$lv_3_2, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-  })
-
-  output$ui_sel3_3 <- renderUI({
-    selectizeInput("sel3_3", "",choices =lvl$lv_3_3, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-  })
-  output$ui_numIn_3 <- renderUI({
-    numericInput("numLevels_3", "#levels", max = 5, min = 2, value = 2)
-  })
-
-  output$ui_sel4_1 <- renderUI({
-    selectizeInput("sel4_1", "", choices = lvl$lv_4_1, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-  })
-  output$ui_sel4_2 <- renderUI({
-    selectizeInput("sel4_2","", choices =lvl$lv_4_2, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-
-  })
-
-  output$ui_sel4_3 <- renderUI({
-    selectizeInput("sel4_3", "",choices =lvl$lv_4_3, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-
-  })
-  output$ui_numIn_4 <- renderUI({
-    numericInput("numLevels_4", "#levels", max = 5, min = 2, value = 2)
-  })
-
-  output$ui_sel5_1 <- renderUI({
-    selectizeInput("sel5_1", "", choices = lvl$lv_5_1, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-  })
-  output$ui_sel5_2 <- renderUI({
-    selectizeInput("sel5_2","", choices =lvl$lv_5_2, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-
-  })
-
-  output$ui_sel5_3 <- renderUI({
-    selectizeInput("sel5_3", "",choices =lvl$lv_5_3, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-
-  })
-  output$ui_numIn_5 <- renderUI({
-    numericInput("numLevels_5", "#levels", max = 5, min = 2, value = 2)
-  })
 
   #### end factors ####################################################################################
 
@@ -936,7 +1265,8 @@ server_design_agrofims <- function(input, output, session, values){
 
 
 
-  nutTabs = list ("Land preparation" = "tabLandPr",
+  nutTabs = list ("Crop" = "tabCrop",
+                  "Land preparation" = "tabLandPr",
                   "Mulching and residue management" ="tabMulching",
                   "Planting, transplanting" ="tabPlanting",
                   "Harvest" = "tabHarvest" ,
@@ -945,6 +1275,7 @@ server_design_agrofims <- function(input, output, session, values){
                   "Pest & disease" = "tabPestNDisease" ,
                   "Nutrient management" = "tabNutrient")
   observe({
+    hideTab("nutrienTabPanels", "tabCrop")
     hideTab("nutrienTabPanels", "tabLandPr")
     hideTab("nutrienTabPanels", "tabMulching")
     hideTab("nutrienTabPanels", "tabPlanting")
