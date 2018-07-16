@@ -15,7 +15,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   path <- fbglobal::get_base_dir()
   fp <- file.path(path, "listFactors.rds") # field operations agro features as list of factors
-  print(path)
+
   lvl <- reactiveValues()
   factors <- as.data.frame(readRDS(fp))
   lvl$lv_1_1 <- unique(factors$GROUP)
@@ -95,6 +95,9 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
+
+  #######  begin treatment description #######################
+
   treatmentValues <- reactiveValues()
   ## init the datable to be used for the table ouptut of treatment
   # treatmentValues$data <- data.table(as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)))
@@ -144,8 +147,22 @@ server_design_agrofims <- function(input, output, session, values){
 
       )
 
-      treatmentValues$data <- data.table(as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)))
-      colnames(treatmentValues$data) <-  c('FACTOR 1', 'FACTOR 2', 'FACTOR 3',   'FACTOR 4','FACTOR 5')
+      treatmentValues$data <- data.table(c("", ""), # treatment
+                                         c("", ""), # factor 1
+                                         c("", ""), # factor 2
+                                         c("", ""), # factor 3
+                                         c("", ""), # factor 4
+                                         c("", ""), # factor 5
+                                         c("", ""), # factor 1 seleted/wirtten value
+                                         c("", ""), # factor 2 seleted/wirtten value
+                                         c("", ""), # factor 3 seleted/wirtten value
+                                         c("", ""), # factor 4 seleted/wirtten value
+                                         c("", "")  # factor 5 seleted/wirtten value
+      )
+
+      treatmentValues$baseRow <- c("-", "", "", "", "", "", "", "", "", "", "") ## base row when adding one to treatment table
+
+      colnames(treatmentValues$data) <-  c('TREATMENT', 'FACTOR 1', 'FACTOR 2', 'FACTOR 3', 'FACTOR 4','FACTOR 5', "val1", "val2", "val3", "val4","val5")
 
     }
     else if(input$fullFactorialRB == "No"){
@@ -182,10 +199,29 @@ server_design_agrofims <- function(input, output, session, values){
                              # selectInput(inputId = "nfactors_hdafims_n", label = "Number of factors", choices = 1:5)
                        ),
                        fluidRow(id="not_full_factor_input"),
+                       br(),
 
-                       # uiOutput("uiTraitsList"),
-                       # actionButton("generateTreatmentTable", "Generate table"),
-                       column(12,dataTableOutput("Table_treatments"))
+                       column(12,h2("Level Selection"),
+                           dataTableOutput("Table_treatments"),
+                           tags$head(
+                                tags$script("$(document).on('change', '.select_treatment', function () {
+                                  Shiny.onInputChange('treatmentValueClickId',this.id);
+                                  Shiny.onInputChange('treatmentValueSelected',this.value);
+                                  Shiny.onInputChange('treatmentValueClick', Math.random())
+                                  });"
+                                ),
+
+                                tags$script("$(document).on('keypress', '.input_treatment', function (e) {
+                                    if(e.which === 13 ){
+                                        Shiny.onInputChange('treatmentValueButttonClickId',this.id);
+                                        Shiny.onInputChange('treatmentValueButttonEntered',this.value);
+                                        Shiny.onInputChange('treatmentValueButttonClick', Math.random())
+                                        this.blur();
+                                    }
+                                  });"
+                                )
+                           )
+                       )
 
 
                 )
@@ -288,11 +324,10 @@ server_design_agrofims <- function(input, output, session, values){
           selector = paste0("#not_full_factor_box_", i),
           immediate = T
         )
-
-        convertListToHTMLSelect("-", "", i, paste0("FACTOR ", i))
+        convertListToHTMLSelect("", "", i, paste0("FACTOR ", i))
       }
-
     }
+    generateTreatmentStringColumn()
     numFactors$numNotFull <- iter
   })
 
@@ -343,14 +378,67 @@ server_design_agrofims <- function(input, output, session, values){
               escape=F,
               selection = list(mode = 'none'),
               options = list(
-                # colnames = c('FACTOR 1', 'FACTOR 2', 'FACTOR 3',   'FACTOR 4','FACTOR 5'),
+                searching = F,
+                ordering=F,
                 scrollX = TRUE,
                 pageLength = 10,
-                columnDefs = list(list(className = 'dt-center', width = '18%', targets =1:5))
+                columnDefs = list(list(className = 'dt-center', width = '15%', targets = 1:6),list(visible=FALSE, targets=7:11) )
               )
 
               )}
   )
+
+  observeEvent(input$treatmentValueClick, {
+
+    var <- input$treatmentValueSelected
+    coords <- gsub("select_factor_treatment_","",input$treatmentValueClickId)
+    coords <- strsplit(coords, "_")[[1]]
+    sel <- gsub(paste0('<option value="', var,'">'), paste0('<option value="', var,'" selected>'), treatmentValues$data[[as.numeric(coords[1])+1]][as.numeric(coords[2])])
+    treatmentValues$data[[as.numeric(coords[1])+6]][as.numeric(coords[2])] <- var
+    treatmentValues$data[[as.numeric(coords[1])+1]][as.numeric(coords[2])] <- sel
+    treatmentValues$data[[1]][as.numeric(coords[2])] <-  generateTreatmentString(coords[2])
+  })
+
+  observeEvent(input$treatmentValueButttonClick, {
+    var <- input$treatmentValueButttonEntered
+    coords <- gsub("input_factor_treatment_","",input$treatmentValueButttonClickId)
+    coords <- strsplit(coords, "_")[[1]]
+    # treatmentValues$data[[1]][as.numeric(coords[2])] <- var
+    var2 <-paste0('<input id="input_factor_treatment_', coords[1], '_', coords[2], '" class ="input_treatment"  value = "', var, '" style="width:150px;"/>')
+    treatmentValues$data[[as.numeric(coords[1])+1]][as.numeric(coords[2])] <- var2
+    treatmentValues$data[[as.numeric(coords[1])+6]][as.numeric(coords[2])] <- var
+    treatmentValues$data[[1]][as.numeric(coords[2])] <-  generateTreatmentString(coords[2])
+  })
+
+  generateTreatmentString <- function(row_index){
+    nfactors <- as.numeric(input$nfactors_hdafims_n)
+    index <- as.numeric(row_index)
+    str <- c()
+
+    for(i in 1:nfactors){
+      if(treatmentValues$data[[i+6]][index] == ""){
+        str <- c(str, "-")
+      }
+      else{
+        str <- c(str,  treatmentValues$data[[i+6]][index])
+      }
+    }
+
+    return(paste(str, collapse = "/"))
+  }
+
+  generateTreatmentStringColumn <- function(){
+    numTreatments <- as.numeric(input$designFieldbook_agrofims_t_n)
+
+    vals <- c()
+    for( i in 1:numTreatments){
+      vals <- c(vals, generateTreatmentString(i))
+    }
+    treatmentValues$data[1] <- vals
+
+  }
+
+
 
 
 
@@ -366,12 +454,7 @@ server_design_agrofims <- function(input, output, session, values){
       else if(num$currNumReplications < rep && !is.na(rep)){
         start  <- num$currNumReplications +1
         for(i in start:rep){
-          if(nrow(treatmentValues$data) >=1){
-            treatmentValues$data <-  rbind(treatmentValues$data, treatmentValues$data[1,])
-          }
-          else{
-            treatmentValues$data <-  rbind(treatmentValues$data, as.list(rep("-", 5)))
-          }
+            treatmentValues$data <-  rbind(treatmentValues$data, as.list(lapply(treatmentValues$baseRow, function(x) gsub("_NUM", paste0("_", i), x))))
         }
         num$currNumReplications <- rep
       }
@@ -379,40 +462,80 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-
-
-
   convertListToHTMLSelect <- function(myList, form, mindex, colname){
     numTreatments <- isolate(input$designFieldbook_agrofims_t_n)
     ans <- c()
+    ans2 <- c()
     opt <- NULL
 
     str <- ""
+    base <- ""
+    base_2 <-""
+
+
+    for(index in 1:numTreatments){
+      ans2 <- c(ans2, "")
+    }
+
+
     if(form == "combo box"){ ## is a list separated by semicolons
       opts <- strsplit(myList, ";")[[1]]
+      ans2 <- c()
+      base <- paste0('<select id="select_factor_treatment_', mindex, '_NUM" class ="select_treatment" style="width:150px;">')
+      base_2 <- opts[1]
 
-      for(index in 1:numTreatments){
-        str <- ""
-        str <- paste0('<select id="select_factor_treatment_', index, '" class ="select_treatment" style="width:150px;">')
-        for(opt in opts){
-          str <- paste0(str, '<option value="', opt,'">', opt, '</option>')
-        }
-        str <- paste0(str, "</select>")
-        ans <- c(ans, str)
+      options_str <- ""
+      for(opt in opts){
+        options_str <- paste0(options_str, '<option value="', opt,'">', opt, '</option>')
       }
 
+      base <- paste0(base, options_str,"</select>" )
 
+      for(index in 1:numTreatments){
+        str <- paste0('<select id="select_factor_treatment_', mindex, '_', index,  '" class ="select_treatment" style="width:150px;">')
+        str <- paste0(str, options_str,"</select>" )
+        ans <- c(ans, str)
+        ans2 <- c(ans2, opts[1])
+      }
+    }
+    else if( form=="text input"){
+      base <- paste0('<input id="input_factor_treatment_', mindex, '_NUM" class ="input_treatment"  value = "" style="width:150px;"/>')
+      for(index in 1:numTreatments){
+        str <- paste0('<input id="input_factor_treatment_', mindex, '_', index, '" class ="input_treatment"  value = "" style="width:150px;"/>')
+        # str <- paste0(str, '<button type="button" class="button_treatment" id="button_factor_treatment_', index, '"><i class="fa fa-check" aria-hidden="true"></i></button>')
+        ans <- c(ans, str)
+      }
     }
     else{ ## is a single value
       str <- myList
       for(index in 1:numTreatments){
         ans <- c(ans, str)
       }
+      ans2 <- ans
+      base <- str
+      base_2 <- str
     }
-    treatmentValues$data[mindex] <- ans
-    colnames(treatmentValues$data)[mindex] <- colname
+
+
+    treatmentValues$data[mindex+1] <- ans
+    treatmentValues$data[mindex+6] <- ans2  ##  reseting hidden values selected
+    colnames(treatmentValues$data)[mindex+1] <- colname
+
+    treatmentValues$baseRow[mindex+1] <- base
+    treatmentValues$baseRow[mindex+6] <- base_2
+
+    ## changing base
+    numFactors <- as.numeric(input$nfactors_hdafims_n)
+    end <- numFactors + 6
+    aux <- treatmentValues$baseRow[7:end]
+    treatmentValues$baseRow[1] <- paste(replace(aux, aux == "", "-"), collapse = "/")
+
+    generateTreatmentStringColumn()
   }
 
+
+  ######### end treatment description ##################
+  ###########################################################
 
   featNames <- names(Agronomic_features$`Agronomic features`)
 
@@ -706,7 +829,7 @@ server_design_agrofims <- function(input, output, session, values){
 
     removeUI(selector = "#fluid_levels_1", immediate = T)
     lvl$lv_1_3 <- NULL
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1, "FACTOR 1"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",1, "FACTOR 1"))
     # if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1)
     updateSelectInput(session, "sel1_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_1", immediate = T )
@@ -722,7 +845,7 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv1_3 <- NULL
       updateSelectInput(session, "sel1_3", choices = NULL)
     }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1, "FACTOR 1"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",1, "FACTOR 1"))
     # if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1)
     removeUI(selector = "#fluid_levels_1", immediate = T)
     removeUI( selector ="#fl_title_factor_1", immediate = T )
@@ -740,10 +863,10 @@ server_design_agrofims <- function(input, output, session, values){
         )
         if(isolate(input$fullFactorialRB == "No")){
           if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, "combo box",1,input$sel1_3)
+            convertListToHTMLSelect(aux$LEVEL, aux$FORM, 1, input$sel1_3)
           }
           else{
-            convertListToHTMLSelect(input$sel1_3, "",1, input$sel1_3)
+            convertListToHTMLSelect(input$sel1_3, aux$FORM, 1, input$sel1_3)
           }
 
         }
@@ -774,7 +897,7 @@ server_design_agrofims <- function(input, output, session, values){
 
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1, "FACTOR 1"))
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",1, "FACTOR 1"))
       removeUI(selector = "#fluid_levels_1", immediate = T)
     }
   })
@@ -792,7 +915,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
     removeUI(selector = "#fluid_levels_2", immediate = T)
     lvl$lv_2_3 <- NULL
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",2, "FACTOR 2"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",2, "FACTOR 2"))
     updateSelectInput(session, "sel2_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_2", immediate = T )
 
@@ -807,7 +930,7 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_2_3 <- NULL
       updateSelectInput(session, "sel2_3", choices = NULL)
     }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",2, "FACTOR 2"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",2, "FACTOR 2"))
     removeUI(selector = "#fluid_levels_2", immediate = T)
     removeUI( selector ="#fl_title_factor_2", immediate = T )
   })
@@ -828,10 +951,10 @@ server_design_agrofims <- function(input, output, session, values){
         if(isolate(input$fullFactorialRB == "No")){
 
           if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, "combo box",2, input$sel2_3)
+            convertListToHTMLSelect(aux$LEVEL, aux$FORM, 2, input$sel2_3)
           }
           else{
-            convertListToHTMLSelect(input$sel2_3, "",2, input$sel2_3)
+            convertListToHTMLSelect(input$sel2_3, aux$FORM, 2, input$sel2_3)
           }
 
         }
@@ -861,7 +984,7 @@ server_design_agrofims <- function(input, output, session, values){
 
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",2, "FACTOR 2"))
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",2, "FACTOR 2"))
       removeUI(selector = "#fluid_levels_2", immediate = T)
     }
   })
@@ -879,7 +1002,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
     removeUI(selector = "#fluid_levels_3", immediate = T)
     lvl$lv_3_3 <- NULL
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",3, "FACTOR 3"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",3, "FACTOR 3"))
     updateSelectInput(session, "sel3_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_3", immediate = T )
 
@@ -894,7 +1017,7 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_3_3 <- NULL
       updateSelectInput(session, "sel3_3", choices = NULL)
     }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",3, "FACTOR 3"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",3, "FACTOR 3"))
     removeUI(selector = "#fluid_levels_3", immediate = T)
     removeUI( selector ="#fl_title_factor_3", immediate = T )
   })
@@ -913,10 +1036,10 @@ server_design_agrofims <- function(input, output, session, values){
 
         if(isolate(input$fullFactorialRB == "No")){
           if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, "combo box",3, input$sel3_3)
+            convertListToHTMLSelect(aux$LEVEL, aux$FORM,3, input$sel3_3)
           }
           else{
-            convertListToHTMLSelect(input$sel3_3, "",3, input$sel3_3)
+            convertListToHTMLSelect(input$sel3_3, aux$FORM, 3, input$sel3_3)
           }
 
         }
@@ -944,7 +1067,7 @@ server_design_agrofims <- function(input, output, session, values){
       }
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",3, "FACTOR 3"))
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",3, "FACTOR 3"))
       removeUI(selector = "#fluid_levels_3", immediate = T)
     }
   })
@@ -960,7 +1083,7 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_4_2 <- NULL
       updateSelectInput(session, "sel4_2", choices = NULL)
     }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",4, "FACTOR 4"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",4, "FACTOR 4"))
     removeUI(selector = "#fluid_levels_4", immediate = T)
     lvl$lv_4_3 <- NULL
     updateSelectInput(session, "sel4_3", choices = NULL)
@@ -977,7 +1100,7 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_4_3 <- NULL
       updateSelectInput(session, "sel4_3", choices = NULL)
     }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",4, "FACTOR 4"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",4, "FACTOR 4"))
     removeUI(selector = "#fluid_levels_4", immediate = T)
     removeUI( selector ="#fl_title_factor_4", immediate = T )
   })
@@ -996,10 +1119,10 @@ server_design_agrofims <- function(input, output, session, values){
 
         if(isolate(input$fullFactorialRB == "No")){
           if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, "combo box",4, input$sel1_4)
+            convertListToHTMLSelect(aux$LEVEL, aux$FORM, 4, input$sel4_3)
           }
           else{
-            convertListToHTMLSelect(input$sel1_4, "",4, input$sel1_4)
+            convertListToHTMLSelect(input$sel4_3, aux$FORM, 4, input$sel4_3)
           }
 
         }
@@ -1026,7 +1149,7 @@ server_design_agrofims <- function(input, output, session, values){
       }
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",4, "FACTOR 4"))
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",4, "FACTOR 4"))
       removeUI(selector = "#fluid_levels_4", immediate = T)
     }
   })
@@ -1044,7 +1167,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
     removeUI(selector = "#fluid_levels_5", immediate = T)
     lvl$lv_5_3 <- NULL
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",5, "FACTOR 5"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",5, "FACTOR 5"))
     updateSelectInput(session, "sel5_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_5", immediate = T )
 
@@ -1059,7 +1182,7 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_5_3 <- NULL
       updateSelectInput(session, "sel5_3", choices = NULL)
     }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",5, "FACTOR 5"))
+    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",5, "FACTOR 5"))
     removeUI(selector = "#fluid_levels_5", immediate = T)
     removeUI( selector ="#fl_title_factor_5", immediate = T )
   })
@@ -1078,10 +1201,10 @@ server_design_agrofims <- function(input, output, session, values){
 
         if(isolate(input$fullFactorialRB == "No")){
           if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, "combo box",5, input$sel5_3)
+            convertListToHTMLSelect(aux$LEVEL, aux$FORM, 5, input$sel5_3)
           }
           else{
-            convertListToHTMLSelect(input$sel5_3, "",5, input$sel5_3)
+            convertListToHTMLSelect(input$sel5_3, aux$FORM, 5, input$sel5_3)
           }
 
         }
@@ -1108,7 +1231,7 @@ server_design_agrofims <- function(input, output, session, values){
       }
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",5, "FACTOR 5"))
+      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",5, "FACTOR 5"))
       removeUI(selector = "#fluid_levels_5", immediate = T)
     }
   })
