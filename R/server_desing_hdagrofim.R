@@ -110,12 +110,19 @@ server_design_agrofims <- function(input, output, session, values){
   num <- reactiveValues()
   num$currNumReplications <- 2
 
+  # observe({
+  #   print(paste0("stored num full factor yes: ", numFactors$numFull))
+  # })
+  # observe({
+  #   print(paste0("stored num full factor no: ", numFactors$numNotFull))
+  # })
+
   observeEvent(input$fullFactorialRB, {
     if(input$fullFactorialRB == "Yes"){
 
-
-
       end <- numFactors$numNotFull
+
+
       for(num in 1:end){
         removeUI(
           selector = paste0("#not_full_factor_box_", num),
@@ -135,10 +142,10 @@ server_design_agrofims <- function(input, output, session, values){
         ui = fluidRow( id= "fluid_full_factor",
               column(width = 12,
                    column(width = 6,
-                         shiny::selectInput("designFieldbook_agrofims_r_y", "Replications", 2:100, 2 )
+                          selectInput(inputId = "nfactors_hdafims_y", label = "Number of factors", choices = 1:5, 1)
                    ),
                    column(width = 6,
-                         selectInput(inputId = "nfactors_hdafims_y", label = "Number of factors", choices = 1:5)
+                          shiny::selectInput("designFieldbook_agrofims_r_y", "Replications", 2:100, 2 )
                    ),
 
                    fluidRow(id="full_factor_input")
@@ -167,15 +174,24 @@ server_design_agrofims <- function(input, output, session, values){
     }
     else if(input$fullFactorialRB == "No"){
 
+      aux <- numFactors$numFull +1
+
+      updateSelectInput(session, "nfactors_hdafims_y", selected = aux)
+
 
       end <- numFactors$numFull
+
+      end <- end+1
+
       for(num in 1:end){
         removeUI(
           selector = paste0("#full_factor_box_", num),
           immediate = T
         )
       }
+
       numFactors$numFull <- 0
+
 
       removeUI(
         selector="#fluid_full_factor",
@@ -189,13 +205,13 @@ server_design_agrofims <- function(input, output, session, values){
         ui = fluidRow( id= "not_fluid_full_factor",
                 column(width = 12,
                        column(width = 4,
-                           shiny::selectInput("designFieldbook_agrofims_t_n", "Number of treatment", 2:100, 1 )
+                              selectizeInput(inputId = "nfactors_hdafims_n", label = "Number of factors",  choices = 1:5, 1)
                        ),
                        column(width = 4,
-                             shiny::selectInput("designFieldbook_agrofims_r_n", "Replication or block", 2:100, 2 )
+                              shiny::selectInput("designFieldbook_agrofims_t_n", "Number of treatment", 1:100, 1 )
                        ),
                        column(width = 4,
-                              selectizeInput(inputId = "nfactors_hdafims_n", label = "Number of factors", selected =NULL, choices = 1:5)
+                              shiny::selectInput("designFieldbook_agrofims_r_n", "Replication or block", 1:100, 1 )
                              # selectInput(inputId = "nfactors_hdafims_n", label = "Number of factors", choices = 1:5)
                        ),
                        fluidRow(id="not_full_factor_input"),
@@ -232,7 +248,10 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
   observeEvent(input$nfactors_hdafims_y, {
+
+    # print(paste0("num full factors changed: ", input$nfactors_hdafims_y))
     iter <- as.numeric(input$nfactors_hdafims_y)
+
 
 
     if(numFactors$numFull < iter){
@@ -262,7 +281,7 @@ server_design_agrofims <- function(input, output, session, values){
       where = "beforeBegin",
       ui =fluidRow(id = paste0("full_factor_box_", order),
             column(width = 12,
-                box(title = paste0("#", order, " Agronomic Operations/Practices"),
+                box(title = paste0("#", order, " Factor"),
                    width = 12,
                    solidHeader = TRUE, status = "warning",
                    column(width = 12,
@@ -306,7 +325,9 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   observeEvent(input$nfactors_hdafims_n, {
+    print(paste0("num not full factors changed: ", input$nfactors_hdafims_n))
     iter <- as.integer(input$nfactors_hdafims_n)
+
 
     if(is.na(iter)  || iter < 1 ) return()
 
@@ -342,7 +363,7 @@ server_design_agrofims <- function(input, output, session, values){
             column(width = 12,
 
               box(
-                    title = paste0("#", order, " Agronomic Operations/Practices"),
+                    title = paste0("#", order, " Factor"),
                     width = 12,
                     solidHeader = TRUE, status = "warning",
 
@@ -1508,10 +1529,10 @@ server_design_agrofims <- function(input, output, session, values){
                                 textInput(paste0("rhizobium_name_", order),"",value="")),
                fluidRow(
                  column(width = 6,
-                        textInput(paste0("biofertilizer_quantity_inoculated_", order), value = "", label="Biofertilizer quantity inoculated")
+                        textInput(paste0("biofertilizer_quantity_applied_", order), value = "", label="Biofertilizer quantity applied")
                  ),
                  column(width = 6, #IMPLEMENTAR EN EXCEl
-                        selectizeInput(paste0("biofertilizer_quantity_inoculated_unit_", order), label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices=c("kg/m2", "kg/ha", "t/ha"))
+                        selectizeInput(paste0("biofertilizer_quantity_applied_unit_", order), label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices=c("g/m2", "kg/ha", "lb/ac"))
                  )
 
                )
@@ -1856,58 +1877,68 @@ server_design_agrofims <- function(input, output, session, values){
 
                                                  textInput(paste0("irrigation_water_source_", order,  "_other"), "")
 
-                                          ),
-                         fluidRow(
-                            column(width = 6,
-                              textInput(paste0("irrigation_water_source_distance_", order), value="", label = "Water source distance")
-                            ),
-                            column(width = 6,
-                                   selectizeInput(paste0("irrigation_water_source_distance_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
-                                                  choices = c("m", "km")
-                                   )
-                            )
-                         ),
-                         fluidRow(
-                           column(width = 6,
-                                  textInput(paste0("irrigation_bund_height_", order), value="", label = "Bund height")
-                           ),
-                           column(width = 6,
-                                  selectizeInput(paste0("irrigation_bund_height_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
-                                                 choices = c("cm", "in", "m")
-                                  )
-                           )
-                         )
+                                          )#,
+                         # fluidRow(
+                         #    column(width = 6,
+                         #      textInput(paste0("irrigation_water_source_distance_", order), value="", label = "Water source distance")
+                         #    ),
+                         #    column(width = 6,
+                         #           selectizeInput(paste0("irrigation_water_source_distance_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
+                         #                          choices = c("m", "km")
+                         #           )
+                         #    )
+                         # )#,
+                         # fluidRow(
+                         #   column(width = 6,
+                         #          textInput(paste0("irrigation_bund_height_", order), value="", label = "Bund height")
+                         #   ),
+                         #   column(width = 6,
+                         #          selectizeInput(paste0("irrigation_bund_height_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
+                         #                         choices = c("cm", "in", "m")
+                         #          )
+                         #   )
+                         # )
 
                   ),
                   column(width = 6,
 
-                         fluidRow(
-                             column(width = 6,
-                                textInput(paste0("irrigation_percolation_rate_", order), value="", label = "Percolation rate")
-                             ),
-                            column(width = 6,
-                                   selectizeInput(paste0("irrigation_percolation_rate_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
-                                                  choices = c("mm per day")
-                                   )
-                            )
-                          ),
+                         # fluidRow(
+                         #     column(width = 6,
+                         #        textInput(paste0("irrigation_percolation_rate_", order), value="", label = "Percolation rate")
+                         #     ),
+                         #    column(width = 6,
+                         #           selectizeInput(paste0("irrigation_percolation_rate_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
+                         #                          choices = c("mm per day")
+                         #           )
+                         #    )
+                         #  ),
+                         # fluidRow(
+                         #   column(width = 6,
+                         #        textInput(paste0("irrigation_equipment_depth_", order), value="", label = "Irrigation equipment depth")
+                         #   ),
+                         #   column(width = 6,
+                         #          selectizeInput(paste0("irrigation_equipment_depth_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
+                         #                         choices = c("cm", "in", "m")
+                         #          )
+                         #   )
+                         # ),
+                         # fluidRow(
+                         #   column(width = 6,
+                         #      textInput(paste0("irrigation_well_depth_", order), value="", label = "Well depth")
+                         #   ),
+                         #   column(width = 6,
+                         #          selectizeInput(paste0("irrigation_well_depth_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
+                         #                         choices = c("m")
+                         #          )
+                         #   )
+                         # ),
                          fluidRow(
                            column(width = 6,
-                                textInput(paste0("irrigation_equipment_depth_", order), value="", label = "Irrigation equipment depth")
+                                  textInput(paste0("irrigation_water_source_distance_", order), value="", label = "Water source distance")
                            ),
                            column(width = 6,
-                                  selectizeInput(paste0("irrigation_equipment_depth_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
-                                                 choices = c("cm", "in", "m")
-                                  )
-                           )
-                         ),
-                         fluidRow(
-                           column(width = 6,
-                              textInput(paste0("irrigation_well_depth_", order), value="", label = "Well depth")
-                           ),
-                           column(width = 6,
-                                  selectizeInput(paste0("irrigation_well_depth_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
-                                                 choices = c("m")
+                                  selectizeInput(paste0("irrigation_water_source_distance_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
+                                                 choices = c("m", "km")
                                   )
                            )
                          ),
@@ -1917,21 +1948,21 @@ server_design_agrofims <- function(input, output, session, values){
                            ),
                            column(width = 6,
                                   selectizeInput(paste0("irrigation_amount_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
-                                                 choices = c("mm", "cm", "m", "in", "ft", "ml", "L", "gal", "cu m", "cu in", "cu ft")
+                                                 choices = c("mm")#, "cm", "m", "in", "ft", "ml", "L", "gal", "cu m", "cu in", "cu ft")
                                   )
                            )
-                         ),
+                         )#,
 
-                         fluidRow(
-                           column(width = 6,
-                                  textInput(paste0("irrigation_area_covered_irrigation_system_", order), value="", label = "Area covered by the irrigation system")
-                           ),
-                            column(width = 6,
-                                  selectizeInput(paste0("irrigation_area_covered_irrigation_system_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
-                                                 choices = c("m2", "ha")
-                                  )
-                            )
-                         )
+                         # fluidRow(
+                         #   column(width = 6,
+                         #          textInput(paste0("irrigation_area_covered_irrigation_system_", order), value="", label = "Area covered by the irrigation system")
+                         #   ),
+                         #    column(width = 6,
+                         #          selectizeInput(paste0("irrigation_area_covered_irrigation_system_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
+                         #                         choices = c("m2", "ha")
+                         #          )
+                         #    )
+                         # )
 
                   )
              ))
@@ -3754,6 +3785,16 @@ server_design_agrofims <- function(input, output, session, values){
   }
 
   ###################### end nutrients #####################################
+
+  ###################### start Other focus #################################
+
+  ### Project management entity
+  # observeEvent(input$paste0("projEntity_", count),{
+  #   if(input$paste0("projEntity_", count) == "Other"){
+  #     session$sendCustomMessage(type="focus",message=paste0("contOtherCenter_", count))
+  #   }
+  #
+  # })
 
 
   observeEvent(input$land_impl_type,{

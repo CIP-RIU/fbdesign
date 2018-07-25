@@ -1,3 +1,4 @@
+shiny::HTML("<a name ='top'></a>")
 # choices for statistical design input for HIDAP-AGROFIMS
 listCountries <- c('Aruba','Afghanistan','Angola','Anguilla','Albania','Andorra','United Arab Emirates','Argentina','Armenia','American Samoa','Antarctica','French Southern Territories','Antigua and Barbuda','Australia','Austria','Azerbaijan','Burundi','Belgium','Benin','Bonaire','Burkina Faso','Bangladesh','Bulgaria','Bahrain','Bahamas','Bosnia and Herzegowina','Belarus','Belize','Bermuda','Bolivia','Brazil','Barbados','Brunei','Bhutan','Burma','Bouvet Island','Botswana','Byelorusian SSR (Former)','Central African Republic','Canada','Cocos (Keeling) Islands','Switzerland','Chile','China','CIPHQ','Cote dIvoire','Cameroon','Congo','Congo','Cook Islands','Colombia','Comoros','Cape Verde','Costa Rica','Czechoslovakia (Former)','Cuba','Curacao','Christmas Island (Australia)','Cayman Islands','Cyprus','Czech Republic','German Democratic Republic','Germany','Djibouti','Dominica','Denmark','Dominican Republic','Algeria','Ecuador','Egypt','Eritrea','Western Sahara','Spain','Estonia','Ethiopia','Finland','Fiji','Falkland Islands (Malvinas)','France','Faroe Islands','Micronesia','Gabon','United Kingdom','Georgia','Ghana','Gibraltar','Guinea','Guadeloupe','Gambia','Guinea-Bissau','Equatorial Guinea','Greece','Grenada','Greenland','Guatemala','French Guiana','Guam','Guyana','Hong Kong','Heard and Mc Donald Islands','Honduras','Croatia','Haiti','Hungary','Indonesia','India','British Indian Ocean Territory','Ireland','Iran','Iraq','Iceland','Israel','Italy','Jamaica','Jordan','Japan','Kazakhstan','Kenya','Kyrgyzstan','Cambodia','Kiribati','Saint Kitts and Nevis','Korea','Kuwait','Lao People s Democratic Republic','Lebanon','Liberia','Libyan Arab Jamahiriya','Saint Lucia','Liechtenstein','Sri Lanka','Lesotho','Lithuania','Luxemburg','Latvia','Macau','Saint Martin (French part)','Macedonia','Morocco','Monaco','Moldova','Madagascar','Maldives','Mexico','Marshall Islands','Mali','Malta','Myanmar','Mongolia','Northern Mariana Islands','Mozambique','Mauritania','Montserrat','Martinique','Mauritius','Malawi','Malaysia','Mayotte','Namibia','New Caledonia','Niger','Norfolk Island','Nigeria','Nicaragua','Niue','Netherlands','Norway','Nepal','Nauru','Neutral Zone (Former)','New Zealand','Oman','Pakistan','Palestine','Panama','Pitcairn Islands','Peru','Philippines','Palau','Papua New Guinea','Poland','Puerto Rico','Korea','Portugal','Paraguay','French Polynesia','Qatar','Reunion','Romania','Russian Federation','Rwanda','Saudi Arabia','Serbia and Montenegro','Scotland','Sudan','Senegal','Singapore','Saint Helena','Svalbard and Jan Mayen Islands','Solomon Islands','Sierra Leone','El Salvador','San Marino','Somalia','Saint Pierre and Miquelon','Serbia','Sao Tome e Principe','Union of Soviet Socialist Republics (Former)','Surinam','Slovakia','Slovenia','Sweden','Swaziland','Seychelles','Syrian Arab Republic','Turks and Caicos Islands','Chad','Togo','Thailand','Tajikistan','Tokelau','Turkmenistan','East Timor','Tonga','Trinidad and Tobago','Tunisia','Turkey','Tuvalu','Taiwan','Tanzania','Uganda','Ukraine','United States Misc. Pacific Islands','unknown','Uruguay','United States of America','Uzbekistan','Vatican City State','Saint Vincent and the Grenadines','Venezuela','British Virgin Islands','Virgin Islands (US)','Viet Nam','Vanuatu','Wallis and Fortuna Islands_','Samoa','Yemen','Yugoslavia (Former)','South Africa','Zaire','Zambia','Zimbabwe'
 )
@@ -455,7 +456,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                   #),
                                                   #fluidRow(
                                                     sidebarPanel(id="sidebar", width = 12,
-                                                                 actionButton("btnNextPersonnelInfo", "Next", class = "btn-primary",style="color: #fff;")
+                                                                 actionButton("btnNextPersonnelInfo", "Next", class = "btn-primary",style="color: #fff;",href="#top")
                                                     )
                                                   #)
                                               ),
@@ -1112,12 +1113,12 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                          box(
                                                                            title = "Implement", solidHeader = TRUE, status = "warning", width=12,
 
-                                                                             selectizeInput("land_impl_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Drag bucket",
+                                                                             selectizeInput("land_impl_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Disk harrow",
+                                                                                                                                    "Drag bucket",
                                                                                                                                     "Harrow",
                                                                                                                                     "Laser-controlled",
                                                                                                                                     "Leveling board",
                                                                                                                                     "Tractor blade",
-                                                                                                                                    "Disk harrow",
                                                                                                                                     "Other")
                                                                              ),
                                                                              conditionalPanel("input.land_impl_type == 'Other'",
@@ -1184,12 +1185,12 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                              box(
                                                                                title = "Implement", solidHeader = TRUE, status = "warning", width=12,
                                                                                selectizeInput("pud_impl_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),
-                                                                                              choices = c("Drag bucket",
+                                                                                              choices = c("Disk harrow",
+                                                                                                          "Drag bucket",
                                                                                                           "Harrow",
                                                                                                           "Laser-controlled",
                                                                                                           "Leveling board",
                                                                                                           "Tractor blade",
-                                                                                                          "Disk harrow",
                                                                                                           "Other")
                                                                                ),
                                                                                conditionalPanel("input.pud_impl_type == 'Other'",
@@ -1239,11 +1240,11 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             ),
                                                                             selectizeInput("till_technique",  label = "Technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                                         c("Conventional tillage",
-                                                                                                                          "Ridge-till",
+                                                                                                                          "Deep till",
                                                                                                                           "No-till",
                                                                                                                           "Reduced till",
+                                                                                                                          "Ridge-till",
                                                                                                                           "Strip-till",
-                                                                                                                          "Deep till",
                                                                                                                           "Other"
                                                                                                                         )
                                                                                           ),
@@ -1271,10 +1272,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                          box(
                                                                            title = "Implement", solidHeader = TRUE, status = "warning", width=12,
                                                                            selectizeInput("till_impl_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Chisel plough",
-                                                                                                                                                                                                                   "Mouldboard/ridging plough",
                                                                                                                                                                                                                    "Cultivator",
                                                                                                                                                                                                                    "Disc plough",
                                                                                                                                                                                                                    "Hand-held hoe",
+                                                                                                                                                                                                                   "Mouldboard/ridging plough",
                                                                                                                                                                                                                    "Paraplow",
                                                                                                                                                                                                                    "Spade plough",
                                                                                                                                                                                                                    "Subsoiler",
@@ -1341,10 +1342,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                              box(
                                                                                title = "Implement", solidHeader = TRUE, status = "warning", width=12,
                                                                                selectizeInput("liming_impl_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Chisel plough",
-                                                                                                                                                                                                                        "Mouldboard/ridging plough",
                                                                                                                                                                                                                         "Cultivator",
                                                                                                                                                                                                                         "Disc plough",
                                                                                                                                                                                                                         "Hand-held hoe",
+                                                                                                                                                                                                                        "Mouldboard/ridging plough",
                                                                                                                                                                                                                         "Paraplow",
                                                                                                                                                                                                                         "Spade plough",
                                                                                                                                                                                                                         "Subsoiler",
@@ -1385,19 +1386,19 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                               )
                                                                             ),
                                                                             selectizeInput("mulch_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Bark chips",
-                                                                                                                                  "Compost",
-                                                                                                                                  "Foil (Landscape fabric)",
-                                                                                                                                  "Grass clippings",
-                                                                                                                                  "Leaves",
-                                                                                                                                  "Paper",
-                                                                                                                                  "Pine needles (pine straw)",
-                                                                                                                                  "Plastic",
-                                                                                                                                  "Gravel",
-                                                                                                                                  "Straw",
-                                                                                                                                  "Saw dust",
-                                                                                                                                  "Cacao husk",
-                                                                                                                                  "Wood chips",
-                                                                                                                                  "Other")
+                                                                                                                                                                                                                 "Cacao husk",
+                                                                                                                                                                                                                 "Compost",
+                                                                                                                                                                                                                 "Foil (Landscape fabric)",
+                                                                                                                                                                                                                 "Grass clippings",
+                                                                                                                                                                                                                 "Gravel",
+                                                                                                                                                                                                                 "Leaves",
+                                                                                                                                                                                                                 "Paper",
+                                                                                                                                                                                                                 "Pine needles (pine straw)",
+                                                                                                                                                                                                                 "Plastic",
+                                                                                                                                                                                                                 "Saw dust",
+                                                                                                                                                                                                                 "Straw",
+                                                                                                                                                                                                                 "Wood chips",
+                                                                                                                                                                                                                 "Other")
 
                                                                             ),
                                                                             conditionalPanel("input.mulch_type == 'Other'",
@@ -1487,11 +1488,11 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                               )
                                                                             ),
                                                                             selectizeInput("residue_cropType", label = "Crop type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                             c("Stubble",
-                                                                                               "Stem/Leaf",
-                                                                                               "Seed Pod - Cob - Fruit",
-                                                                                               "Husk",
+                                                                                             c("Husk",
                                                                                                "Roots",
+                                                                                               "Seed Pod - Cob - Fruit",
+                                                                                               "Stem/Leaf",
+                                                                                               "Stubble",
                                                                                                "Other")
                                                                             ),
                                                                             conditionalPanel("input.residue_cropType == 'Other'",
@@ -1602,13 +1603,18 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                            "On ridge")
                                                                                         ),
                                                                                             selectizeInput("seeding_technique", label = "Seeding technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                                                                                c("Hand broadcasting",
-                                                                                                                                                  "Mechanical broadcasting",
-                                                                                                                                                  "Line sowing by hand",
+                                                                                                                                                c("Dibbling stick",
+                                                                                                                                                  "Drum seeding",
+                                                                                                                                                  "Hand broadcasting",
                                                                                                                                                   "Jab planting",
-                                                                                                                                                  "Dibbling stick",
-                                                                                                                                                  "Drum seeding")
+                                                                                                                                                  "Line sowing by hand",
+                                                                                                                                                  "Mechanical broadcasting",
+                                                                                                                                                  "Other")
                                                                                             ),
+                                                                                        conditionalPanel("input.seeding_technique == 'Other'",
+                                                                                                         textInput("technique_name", "", value="")
+
+                                                                                        ),
                                                                                             textInput("seed_treatment", value="", label = "Seed treatment")
 
                                                                                       ))
@@ -1636,9 +1642,9 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                             column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
                                                                                                    selectizeInput("seeding_rate_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                                     c("kg/ha",
-                                                                                                                      "plants/row",
+                                                                                                                      "plants/hill",
                                                                                                                       "plants/pot",
-                                                                                                                      "plants/hill")
+                                                                                                                      "plants/row")
                                                                                                    )
                                                                                             )
                                                                                           ),
@@ -1763,10 +1769,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                     ),
                                                                                     column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
                                                                                            selectizeInput("trans_seeding_density_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                                            c("plants/sq m",
-                                                                                                              "plants/row",
+                                                                                                            c("plants/hill",
                                                                                                               "plants/pot",
-                                                                                                              "plants/hill")
+                                                                                                              "plants/sq m",
+                                                                                                              "plants/row")
                                                                                            )
                                                                                     )
                                                                                   ),
