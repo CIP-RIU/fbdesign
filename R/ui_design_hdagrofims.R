@@ -456,7 +456,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                   #),
                                                   #fluidRow(
                                                     sidebarPanel(id="sidebar", width = 12,
-                                                                 actionButton("btnNextPersonnelInfo", "Next", class = "btn-primary",style="color: #fff;",href="#top")
+                                                                 actionButton("btnNextPersonnelInfo", "Next", class = "btn-primary",style="color: #fff;", href="#top")
                                                     )
                                                   #)
                                               ),
@@ -731,7 +731,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
 
                                                   sidebarPanel(id="sidebar", width = 12,
-                                                               actionButton("btnNextSite", "Next", class = "btn-primary",style="color: #fff;")
+                                                               actionButton("btnNextSite", "Next", class = "btn-primary",style="color: #fff;", href="#top")
                                                   )
 
                                               ),
@@ -758,10 +758,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                 textAreaInput("inSiteDescNotes", label="Site description notes", value="")),
                                                        # sidebarPanel(id="sidebar", width = 12,
-                                                       #              actionButton("btnNextCropInfo", "Next", class = "btn-primary",style="color: #fff;")
+                                                       #              actionButton("btnNextCropInfo", "Next", class = "btn-primary",style="color: #fff;", href="#top")
                                                        # )
                                                        sidebarPanel(id="sidebar", width = 12,
-                                                                    actionButton("btnDesign", "Next", class = "btn-primary",style="color: #fff;")
+                                                                    actionButton("btnNextCropInfo", "Next", class = "btn-primary",style="color: #fff;", href="#top")
                                                        )
                                                        #)
 
@@ -769,6 +769,187 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                               ),
 
 
+
+
+                                         tabPanel("Crop" , value="tabCrop", icon = shiny::icon("pagelines"),
+                                                      column( width = 6,
+                                                              h2("Description of crops sown"),
+
+                                                              shiny::selectInput("croppingType", "Cropping type", choices = c("Monocrop", "Intercrop"))
+                                                      ),
+                                                      column(width = 12,
+
+                                                             conditionalPanel("input.croppingType == 'Monocrop'",
+                                                                              fluidRow(
+                                                                                column(width = 12,
+
+                                                                                       h2("Crop information"),
+
+                                                                                       fluidRow(
+
+
+                                                                                         column(width = 6,
+
+                                                                                                selectizeInput("cropCommonNameMono", "Crop common name", multiple = TRUE, options = list(maxItems =1, placeholder="Select one..."), choices = c("Cassava","Common bean", "Maize","Potato", "Sweetpotato", "Soybean", "Wheat", "Other")),
+                                                                                                conditionalPanel("input.cropCommonNameMono == 'Other'",
+                                                                                                                 textInput("cropCommonNameMono_other", "")
+                                                                                                                 )
+                                                                                                # textInput(inputId = "cropLatinNameMono", label = "Crop latin name", value = ""),
+                                                                                                # fluidRow(
+                                                                                                #   column(width = 10,
+                                                                                                #          #textInput(inputId = "cropVarietyNameMono", label = "Crop variety name", value = "")
+                                                                                                #          selectizeInput("cropVarietyNameMono", "Crop variety name", c(), multiple = TRUE, options = list(
+                                                                                                #            placeholder = "ex.  variety1   variety2    ",
+                                                                                                #            'create' = TRUE,
+                                                                                                #            'persist' = FALSE)
+                                                                                                #          )#,
+                                                                                                #
+                                                                                                #
+                                                                                                #   ),
+
+                                                                                                  # column(width = 2, br(),
+                                                                                                  #        checkboxInput("setCropFactor", "Factor", FALSE)
+                                                                                                  # )
+                                                                                                # )
+
+                                                                                         ),
+                                                                                         column(width = 6,
+                                                                                                textInput(inputId = "cultivarNameMono", label = "Variety name", value = "")
+                                                                                                # textInput(inputId = "monoCropLocalName", label = "Crop local name", value = "")
+                                                                                         )
+                                                                                       )
+                                                                                )
+                                                                              )
+
+                                                             ),
+
+
+                                                             conditionalPanel("input.croppingType == 'Intercrop'",
+                                                                              fluidRow(
+                                                                                column( width = 6,
+                                                                                        selectizeInput("cropsSelected",label="Select crops", selected=NULL, multiple = TRUE, choices=c("Cassava","Common bean", "Maize","Potato", "Sweetpotato", "Soybean", "Wheat", "Other"))
+                                                                                )
+                                                                              ),
+
+                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 0",
+                                                                                               h2("Crop information"),
+
+                                                                                               box(title = "Crop #1", solidHeader = TRUE, status = "warning", width=12,
+                                                                                                   fluidRow(
+                                                                                                     column(width = 6,
+                                                                                                            disabled(textInput(inputId = "cropCommonName1", label = "Crop common name", value = ""))
+                                                                                                     ),
+                                                                                                     column(width = 6,
+                                                                                                            textInput(inputId = "cropVarietyName2", label = "Crop variety name", value = "")
+
+                                                                                                     )
+                                                                                                   )
+                                                                                               )
+                                                                              ),
+
+                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 1",
+                                                                                               box(title = "Crop #2", solidHeader = TRUE, status = "warning", width=12,
+                                                                                                   column(width = 6,
+                                                                                                          disabled(textInput(inputId = "cropCommonName2", label = "Crop common name", value = ""))
+                                                                                                          # textInput(inputId = "cropLatinName2", label = "Crop latin name", value = "")
+
+                                                                                                   ),
+                                                                                                   column(width = 6,
+                                                                                                          textInput(inputId = "cropVarietyName2", label = "Crop variety name", value = "")
+
+                                                                                                   )
+
+                                                                                               )
+                                                                              ),
+
+                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >2",
+                                                                                               box(title = "Crop #3", solidHeader = TRUE, status = "warning", width=12,
+                                                                                                   column(width = 6,
+                                                                                                          disabled(textInput(inputId = "cropCommonName3", label = "Crop common name", value = ""))
+                                                                                                   ),
+                                                                                                   column(width = 6,
+                                                                                                          textInput(inputId = "cropVarietyName3", label = "Crop variety name", value = "")
+
+                                                                                                   )
+                                                                                               )
+                                                                              ),
+                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >3",
+                                                                                               box(title = "Crop #4", solidHeader = TRUE, status = "warning", width=12,
+                                                                                                   column(width = 6,
+                                                                                                          disabled(textInput(inputId = "cropCommonName4", label = "Crop common name", value = ""))
+                                                                                                   ),
+                                                                                                   column(width = 6,
+                                                                                                          textInput(inputId = "cropVarietyName4", label = "Crop variety name", value = "")
+
+                                                                                                   )
+                                                                                               )
+                                                                              ),
+                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >4",
+                                                                                               box(title = "Crop #5", solidHeader = TRUE, status = "warning", width=12,
+                                                                                                   column(width = 6,
+                                                                                                          disabled(textInput(inputId = "cropCommonName5", label = "Crop common name", value = ""))
+                                                                                                   ),
+                                                                                                   column(width = 6,
+                                                                                                          textInput(inputId = "cropVarietyName5", label = "Crop variety name", value = "")
+
+                                                                                                   )
+                                                                                               )
+                                                                              ),
+                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >5",
+                                                                                               box(title = "Crop #6", solidHeader = TRUE, status = "warning", width=12,
+                                                                                                   column(width = 6,
+                                                                                                          disabled(textInput(inputId = "cropCommonName6", label = "Crop common name", value = ""))
+                                                                                                   ),
+                                                                                                   column(width = 6,
+                                                                                                          textInput(inputId = "cropVarietyName6", label = "Crop variety name", value = "")
+
+                                                                                                   )
+                                                                                               )
+                                                                              ),
+                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 6",
+                                                                                               box(title = "Crop #7", solidHeader = TRUE, status = "warning", width=12,
+                                                                                                   column(width = 6,
+                                                                                                          disabled(textInput(inputId = "cropCommonName7", label = "Crop common name", value = ""))
+                                                                                                   ),
+                                                                                                   column(width = 6,
+                                                                                                          textInput(inputId = "cropVarietyName7", label = "Crop variety name", value = "")
+
+                                                                                                   )
+                                                                                               )
+                                                                              ),
+                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >7",
+                                                                                               box(title = "Crop #8", solidHeader = TRUE, status = "warning", width=12,
+                                                                                                   column(width = 6,
+                                                                                                          disabled(textInput(inputId = "cropCommonName8", label = "Crop common name", value = ""))
+                                                                                                   ),
+                                                                                                   column(width = 6,
+                                                                                                          textInput(inputId = "cropVarietyName8", label = "Crop variety name", value = "")
+
+                                                                                                   )
+                                                                                               )
+                                                                              )
+                                                             ),
+                                                             br(),
+                                                             h2("Previous crop"),
+                                                             fluidRow(
+                                                               column( width = 6,
+                                                                       #textInput(inputId = "numPreviousCrop", label = "Number of previous crop", value = ""),
+                                                                       # numericInput(inputId = "numPreviousCrop", label = "Number of previous crop", value = "1", min = 1, max = 10),
+
+                                                                       selectInput("prevCropName", "Previous crop name", c("Cassava","Common bean", "Maize","Potato", "Sweetpotato", "Soybean", "Wheat", "Other")
+                                                                       ),
+                                                                       conditionalPanel("input.prevCropName == 'Other'",
+                                                                                        textInput("prevCropName_other", "")
+                                                                       )
+                                                                       # uiOutput("uiPreviousCrop2")
+                                                               )
+                                                             )
+
+                                                      ),
+                                                  sidebarPanel(id="sidebar", width = 12,
+                                                               actionButton("btnDesign", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+                                                  )
+                                         ),
 
                                               #BEGIN (STATISTICAL DESGIGN)
                                               shiny::tabPanel("Design", value = "tabDesign", icon = shiny::icon("th-list"),
@@ -924,7 +1105,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
 
                                                       sidebarPanel(id="sidebar", width = 12,
-                                                                   actionButton("btnNextAgro", "Next", class = "btn-primary",style="color: #fff;")
+                                                                   actionButton("btnNextAgro", "Next", class = "btn-primary",style="color: #fff;" , href="#top")
                                                       )
 
                                              ), #END DESIGN (STATISTICAL DESIGN)
@@ -933,10 +1114,11 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                         column(width = 6,
                                                                h2("Field operations"),
                                                                selectizeInput("selectAgroFeature", "Field operations", c(), multiple = TRUE, choices=c(
-                                                                  "Crop",
+                                                                  # "Crop",
                                                                   "Land preparation",
                                                                   "Mulching and residue management",
                                                                   "Planting, transplanting",
+                                                                  "Weeding",
                                                                   "Nutrient management",
                                                                   "Biofertilizer",
                                                                   "Irrigation",
@@ -954,132 +1136,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                       br(),
 
                                                         tabsetPanel(id= "nutrienTabPanels",
-                                                        tabPanel("Crop" , value="tabCrop",
-                                                           br(),
-                                                              box(id="crop_boxid",
-                                                                  title = actionLink("crop_titleId", "Crop"),
-                                                                  status = "primary",
-                                                                  solidHeader = TRUE,
-                                                                  width = 12, collapsible = TRUE, collapsed = TRUE,
 
-                                                                           column( width = 6,
-                                                                                   h2("Description of crops sown"),
-
-                                                                                   shiny::selectInput("croppingType", "Cropping type", choices = c("Monocrop", "Intercrop"))
-                                                                           ),
-                                                                           column(width = 12,
-
-                                                                                  conditionalPanel("input.croppingType == 'Monocrop'",
-                                                                                                   fluidRow(
-                                                                                                     column(width = 12,
-
-                                                                                                            h2("Crop information"),
-
-                                                                                                            fluidRow(
-
-
-                                                                                                              column(width = 6,
-                                                                                                                     # textInput(inputId = "cropCommonNameMono", label = "Crop common name", value = "")
-                                                                                                                     selectizeInput("cropCommonNameMono", "Crop common name", multiple = TRUE, options = list(maxItems =1, placeholder="Select one..."), choices = c("Potato", "Cassava", "Wheat", "Maize","Sweetpotato", "Soybean")),
-                                                                                                                     textInput(inputId = "cropLatinNameMono", label = "Crop latin name", value = ""),
-                                                                                                                     fluidRow(
-                                                                                                                       column(width = 10,
-                                                                                                                              #textInput(inputId = "cropVarietyNameMono", label = "Crop variety name", value = "")
-                                                                                                                              selectizeInput("cropVarietyNameMono", "Crop variety name", c(), multiple = TRUE, options = list(
-                                                                                                                                placeholder = "ex.  variety1   variety2    ",
-                                                                                                                                'create' = TRUE,
-                                                                                                                                'persist' = FALSE)
-                                                                                                                              )#,
-
-
-                                                                                                                       ),
-
-                                                                                                                       column(width = 2, br(),
-                                                                                                                              checkboxInput("setCropFactor", "Factor", FALSE)
-                                                                                                                       )
-                                                                                                                     )
-
-                                                                                                              ),
-                                                                                                              column(width = 6,
-                                                                                                                     textInput(inputId = "cultivarNameMono", label = "Cultivar name", value = ""),
-                                                                                                                     textInput(inputId = "monoCropLocalName", label = "Crop local name", value = "")
-                                                                                                              )
-                                                                                                            )
-                                                                                                     )
-                                                                                                   ),
-                                                                                                   br(),
-                                                                                                   h2("Previous crop"),
-                                                                                                   fluidRow(
-                                                                                                     column( width = 6,
-                                                                                                             #textInput(inputId = "numPreviousCrop", label = "Number of previous crop", value = ""),
-                                                                                                             numericInput(inputId = "numPreviousCrop", label = "Number of previous crop", value = "1", min = 1, max = 10),
-                                                                                                             uiOutput("uiPreviousCrop1"),
-                                                                                                             uiOutput("uiPreviousCrop2")
-                                                                                                     )
-                                                                                                   )
-
-                                                                                  ),
-
-
-                                                                                  conditionalPanel("input.croppingType == 'Intercrop'",
-                                                                                                   fluidRow(
-                                                                                                     column( width = 6,
-                                                                                                             selectizeInput("cropsSelected",label="Select crops (Max. 3)", selected=NULL, multiple = TRUE, choices=c("Maize", "Soybean", "Potato", "Cassava"), options = list(maxItems = 3))
-                                                                                                     )
-
-                                                                                                   ),
-
-                                                                                                   conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 0",
-                                                                                                                    h2("Crop information"),
-                                                                                                                    # print(input.cropsSelected),
-                                                                                                                    box(title = "Crop #1", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                                        fluidRow(
-                                                                                                                          column(width = 6,
-                                                                                                                                 disabled(textInput(inputId = "cropCommonName1", label = "Crop common name", value = "")),
-                                                                                                                                 textInput(inputId = "cropLatinName", label = "Crop latin name", value = "")
-
-                                                                                                                          ),
-                                                                                                                          column(width = 6,
-                                                                                                                                 textInput(inputId = "cropVarietyName", label = "Crop variety name", value = ""),
-                                                                                                                                 textInput(inputId = "cultivarName", label = "Cultivar name", value = "")
-                                                                                                                          )
-                                                                                                                        )
-                                                                                                                    )
-                                                                                                   ),
-
-                                                                                                   conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 1",
-                                                                                                                    box(title = "Crop #2", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                                        column(width = 6,
-                                                                                                                               disabled(textInput(inputId = "cropCommonName2", label = "Crop common name", value = "")),
-                                                                                                                               textInput(inputId = "cropLatinName2", label = "Crop latin name", value = "")
-
-                                                                                                                        ),
-                                                                                                                        column(width = 6,
-                                                                                                                               textInput(inputId = "cropVarietyName2", label = "Crop variety name", value = ""),
-                                                                                                                               textInput(inputId = "cultivarName2", label = "Cultivar name", value = "")
-                                                                                                                        )
-                                                                                                                    )
-                                                                                                   ),
-
-                                                                                                   conditionalPanel("input.cropsSelected != null && input.cropsSelected.length == 3",
-                                                                                                                    box(title = "Crop #3", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                                        column(width = 6,
-                                                                                                                               disabled(textInput(inputId = "cropCommonName3", label = "Crop common name", value = "")),
-                                                                                                                               textInput(inputId = "cropLatinName3", label = "Crop latin name", value = "")
-
-                                                                                                                        ),
-                                                                                                                        column(width = 6,
-                                                                                                                               textInput(inputId = "cropVarietyName3", label = "Crop variety name", value = ""),
-                                                                                                                               textInput(inputId = "cultivarName3", label = "Cultivar name", value = "")
-                                                                                                                        )
-                                                                                                                    )
-                                                                                                   )
-                                                                                  )
-
-                                                                           )
-
-                                                            )
-                                                        ),
                                                         tabPanel("Land preparation", value="tabLandPr",
                                                                  #fluidRow(
                                                                    column(width = 12,
@@ -1802,6 +1859,22 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  )
                                                         )),#),#end tab planting
 
+
+                                                        tabPanel("Weeding", value="tabWeeding",
+
+                                                               column(width = 12,
+                                                                  h2("Weeding"),
+                                                                    fluidRow(
+                                                                             column(width = 6,
+                                                                                    numericInput("numWeeding", label  = "Weeding number", value = 1, min = 1, max = 10)
+
+                                                                             )
+                                                                    ),
+                                                                  fluidRow(id = "weeding_description")
+
+                                                        )),#),#end tab weeding
+
+
                                                         tabPanel("Irrigation", value="tabIrrigation",
                                                                  #br(),
                                                                  #fluidRow(
@@ -1989,13 +2062,139 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                     #),
                                                     #fluidRow(
                                                       sidebarPanel(id="sidebar", width = 12,
-                                                                   actionButton("btnNextTraits", "Next", class = "btn-primary",style="color: #fff;")
+                                                                   actionButton("btnNextCropPheno", "Next", class = "btn-primary",style="color: #fff;", href="#top")
                                                       )
                                                     #)
 
 
 
                                              ),
+
+                                         shiny::tabPanel("Crop phenology", value = "tabCropPheno", icon = shiny::icon("envira"),
+
+                                                         br(),
+                                                         box( title ="Sowing and emergence", solidHeader = TRUE, status = "warning", width=12,
+                                                              fluidRow(
+                                                                column(6,
+                                                                    fluidRow(
+                                                                       column(6,
+                                                                              dateInput("cropPheno_sowing_date", label ="Sowing date", format = "yyyy/mm/dd")
+                                                                       ),
+                                                                       column(6,
+                                                                              dateInput("cropPheno_emergence_date", label ="Emergence date", format = "yyyy/mm/dd")
+                                                                       )
+                                                                    )
+
+                                                                ),
+
+                                                                column(6, textAreaInput("cropPheno_sowEmerg_notes", "Notes", width = '100%'))
+                                                              )
+
+                                                          ),
+
+                                                         box( title ="Flowering", solidHeader = TRUE, status = "warning", width=12,
+                                                              fluidRow(
+                                                                column(6,
+                                                                       fluidRow(
+                                                                         column(4,
+                                                                                dateInput("cropPheno_flowering_sdate", label ="Start date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(4,
+                                                                                dateInput("cropPheno_flowering_50date", label ="50% flowering date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(4,
+                                                                                dateInput("cropPheno_flowering_edate", label ="End date", format = "yyyy/mm/dd")
+                                                                         )
+                                                                       )
+
+                                                                ),
+
+                                                                column(6, textAreaInput("cropPheno_flowering_notes", "Notes", width = '100%'))
+                                                              )
+
+                                                         ),
+
+                                                         box( title ="Grain filling", solidHeader = TRUE, status = "warning", width=12,
+                                                              fluidRow(
+                                                                column(6,
+                                                                       fluidRow(
+                                                                         column(6,
+                                                                                dateInput("cropPheno_grainFilling_sdate", label ="Start date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(6,
+                                                                                dateInput("cropPheno_grainFilling_edate", label ="End date", format = "yyyy/mm/dd")
+                                                                         )
+                                                                       )
+
+                                                                ),
+
+                                                                column(6, textAreaInput("cropPheno_grainFilling_notes", "Notes"))
+                                                              )
+
+                                                         ),
+
+                                                         box( title ="Fruit development", solidHeader = TRUE, status = "warning", width=12,
+                                                              fluidRow(
+                                                                column(6,
+                                                                       fluidRow(
+                                                                         column(6,
+                                                                                dateInput("cropPheno_fruitDev_date", label ="Fruit development date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(6,
+                                                                                dateInput("cropPheno_fruitRip_date", label ="Fruit ripening date", format = "yyyy/mm/dd")
+                                                                         )
+                                                                       )
+
+                                                                ),
+
+                                                                column(6, textAreaInput("cropPheno_fruitDev_notes", "Notes"))
+                                                              )
+
+                                                         ),
+
+                                                         box( title ="Maturity and development", solidHeader = TRUE, status = "warning", width=12,
+                                                              fluidRow(
+                                                                column(6,
+                                                                       fluidRow(
+                                                                         column(6,
+                                                                                dateInput("cropPheno_maturity_date", label ="Maturity date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(6,
+                                                                                dateInput("cropPheno_senescence_date", label ="Senescence date", format = "yyyy/mm/dd")
+                                                                         )
+                                                                       )
+
+                                                                ),
+
+                                                                column(6, textAreaInput("cropPheno_maturity_notes", "Notes"))
+                                                              )
+
+                                                         ),
+                                                         box( title ="Other phenological stage", solidHeader = TRUE, status = "warning", width=12,
+                                                              fluidRow(
+                                                                column(6,
+                                                                       fluidRow(
+                                                                         column(6,
+                                                                                textInput("cropPheno_otherPheno_name", "Name")
+                                                                         ),
+                                                                         column(6,
+                                                                                dateInput("cropPheno_otherPheno_date", label ="Date", format = "yyyy/mm/dd")
+                                                                         )
+
+                                                                       )
+
+                                                                ),
+
+                                                                column(6, textAreaInput("cropPheno_otherPheno_notes", "Notes"))
+                                                              )
+
+                                                         ),
+
+                                                         sidebarPanel(id="sidebar", width = 12,
+                                                                      actionButton("btnNextTraits", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+                                                         )
+
+                                              ),
 
                                               shiny::tabPanel("Crop measurement", value = "tabTraits", icon = shiny::icon("leaf"),
 
@@ -2007,7 +2206,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                   uiOutput("uiTraitsList"),
 
                                                     sidebarPanel(id="sidebar", width = 12,
-                                                                 actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;")
+                                                                 actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;", href="#top")
                                                     )
                                                   #)
                                               ),

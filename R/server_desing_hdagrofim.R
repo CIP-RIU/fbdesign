@@ -1,4 +1,3 @@
-#' server_design
 #'
 #' Design field book for HIDAP-AGROFIMS
 #'
@@ -90,10 +89,10 @@ server_design_agrofims <- function(input, output, session, values){
     js$collapse("pest_control_boxid")
   })
 
-  observeEvent(input$crop_titleId, {
-    js$collapse("crop_boxid")
-  })
-
+  # observeEvent(input$crop_titleId, {
+  #   js$collapse("crop_boxid")
+  # })
+  #
 
 
   #######  begin treatment description #######################
@@ -118,10 +117,20 @@ server_design_agrofims <- function(input, output, session, values){
   # })
 
   observeEvent(input$fullFactorialRB, {
+
+    rep_title <- ""
+
+    if(input$designFieldbook_agrofims =="CRD"){
+      rep_title <- "Replications"
+    }
+    else if(input$designFieldbook_agrofims =="RCBD"){
+      rep_title <- "Blocks"
+    }
+
+
     if(input$fullFactorialRB == "Yes"){
 
       end <- numFactors$numNotFull
-
 
       for(num in 1:end){
         removeUI(
@@ -145,7 +154,7 @@ server_design_agrofims <- function(input, output, session, values){
                           selectInput(inputId = "nfactors_hdafims_y", label = "Number of factors", choices = 1:5, 1)
                    ),
                    column(width = 6,
-                          shiny::selectInput("designFieldbook_agrofims_r_y", "Replications", 2:100, 2 )
+                          shiny::selectInput("designFieldbook_agrofims_r_y", rep_title , 2:100, 2 )
                    ),
 
                    fluidRow(id="full_factor_input")
@@ -211,7 +220,7 @@ server_design_agrofims <- function(input, output, session, values){
                               shiny::selectInput("designFieldbook_agrofims_t_n", "Number of treatment", 1:100, 1 )
                        ),
                        column(width = 4,
-                              shiny::selectInput("designFieldbook_agrofims_r_n", "Replication or block", 1:100, 1 )
+                              shiny::selectInput("designFieldbook_agrofims_r_n", rep_title, 1:100, 1 )
                              # selectInput(inputId = "nfactors_hdafims_n", label = "Number of factors", choices = 1:5)
                        ),
                        fluidRow(id="not_full_factor_input"),
@@ -564,28 +573,42 @@ server_design_agrofims <- function(input, output, session, values){
   # TO BE OPTIMIZED
   observeEvent(input$btnNextPersonnelInfo, {
       updateTabsetPanel(session, "fbDesignNav", selected = "tabPersonnel")
+      shinyjs::runjs("window.scrollTo(0, 50)")
   })
   observeEvent(input$btnNextSite, {
     updateTabsetPanel(session, "fbDesignNav", selected = "tabSite")
+    shinyjs::runjs("window.scrollTo(0, 50)")
   })
   observeEvent(input$btnNextCropInfo, {
     updateTabsetPanel(session, "fbDesignNav", selected = "tabCropInfo")
+    shinyjs::runjs("window.scrollTo(0, 50)")
   })
   observeEvent(input$btnDesign, {
     updateTabsetPanel(session, "fbDesignNav", selected = "tabDesign")
+    shinyjs::runjs("window.scrollTo(0, 50)")
   })
   observeEvent(input$btnNextPlotInfo, {
     updateTabsetPanel(session, "fbDesignNav", selected = "tabPlotInfo")
+    shinyjs::runjs("window.scrollTo(0, 50)")
   })
   observeEvent(input$btnNextAgro, {
     updateTabsetPanel(session, "fbDesignNav", selected = "tabAgroFeat")
+    shinyjs::runjs("window.scrollTo(0, 50)")
   })
+  observeEvent(input$btnNextCropPheno, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabCropPheno")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+
   observeEvent(input$btnNextTraits, {
     updateTabsetPanel(session, "fbDesignNav", selected = "tabTraits")
+    shinyjs::runjs("window.scrollTo(0, 50)")
   })
   observeEvent(input$btnNextEnv, {
     updateTabsetPanel(session, "fbDesignNav", selected = "tabEnvironment")
+    shinyjs::runjs("window.scrollTo(0, 50)")
   })
+
 
   ## Agronomic Features Shiny Tree ###############################################
 
@@ -832,6 +855,18 @@ server_design_agrofims <- function(input, output, session, values){
 
   ###### end experiment detials ###########################################################
 
+
+  observeEvent(input$designFieldbook_agrofims, {
+    if(input$designFieldbook_agrofims =="CRD"){
+      updateSelectInput(session,"designFieldbook_agrofims_r_y", label ="Replications")
+      updateSelectInput(session,"designFieldbook_agrofims_r_n", label ="Replications")
+    }
+    else if(input$designFieldbook_agrofims =="RCBD"){
+      updateSelectInput(session,"designFieldbook_agrofims_r_y", label ="Blocks")
+      updateSelectInput(session,"designFieldbook_agrofims_r_n", label ="Blocks")
+    }
+
+  })
 
   #### factors ####################################################################################
 
@@ -1366,16 +1401,18 @@ server_design_agrofims <- function(input, output, session, values){
 
 
 
-  output$uiPreviousCrop1 <- renderUI({
-    selectizeInput("prevCropName", "Previous crop name", c(), multiple = TRUE, options = list(
-      placeholder = "ex.  crop1  crop2", maxItems = input$numPreviousCrop,
-      'create' = TRUE,
-      'persist' = FALSE)
-    )
-
-
-
-  })
+  # output$uiPreviousCrop1 <- renderUI({
+  #   # selectizeInput("prevCropName", "Previous crop name", c(), multiple = TRUE, options = list(
+  #   #   placeholder = "ex.  crop1  crop2", maxItems = input$numPreviousCrop,
+  #   #   'create' = TRUE,
+  #   #   'persist' = FALSE)
+  #   # )
+  #   fluidRow(
+  #
+  # )
+  #
+  #
+  # })
   output$uiPreviousCrop2 <- renderUI({
            selectizeInput("prevCropVar", "Previous crop variety", c(), multiple = TRUE, options = list(
              placeholder = "ex.  var1  var2", maxItems = input$numPreviousCrop,
@@ -1395,35 +1432,42 @@ server_design_agrofims <- function(input, output, session, values){
     if(!is.null(input$cropsSelected)){
       l <- input$cropsSelected
       n <- length(input$cropsSelected)
-      if(n>0){
-        updateTextInput(session, "cropCommonName1",  value = l[[1]])
+
+      for (i in  1:n) {
+
+        if(l[[i]] == "Other"){
+          enable(paste0("cropCommonName", i))
+          updateTextInput(session,  paste0("cropCommonName", i),  value ="")
+        }
+        else {
+          disable(paste0("cropCommonName", i))
+          updateTextInput(session,  paste0("cropCommonName", i),  value = l[[i]])
+        }
+
       }
-      if(n>1){
-        updateTextInput(session, "cropCommonName2",  value = l[[2]])
-      }
-      if(n>2){
-        updateTextInput(session, "cropCommonName3",  value = l[[3]])
-      }
+
     }
   })
 
 
 
-  nutTabs = list ("Crop" = "tabCrop",
+  nutTabs = list (#"Crop" = "tabCrop",
                   "Land preparation" = "tabLandPr",
                   "Mulching and residue management" ="tabMulching",
                   "Planting, transplanting" ="tabPlanting",
+                  "Weeding" = "tabWeeding",
                   "Harvest" = "tabHarvest" ,
                   "Irrigation" = "tabIrrigation",
                   "Biofertilizer" = "tabBiofertilizer",
                   "Pest & disease" = "tabPestNDisease" ,
                   "Nutrient management" = "tabNutrient")
   observe({
-    hideTab("nutrienTabPanels", "tabCrop")
+    # hideTab("nutrienTabPanels", "tabCrop")
     hideTab("nutrienTabPanels", "tabLandPr")
     hideTab("nutrienTabPanels", "tabMulching")
     hideTab("nutrienTabPanels", "tabPlanting")
     hideTab("nutrienTabPanels", "tabHarvest")
+    hideTab("nutrienTabPanels", "tabWeeding")
     hideTab("nutrienTabPanels", "tabIrrigation")
     hideTab("nutrienTabPanels", "tabBiofertilizer")
     hideTab("nutrienTabPanels", "tabPestNDisease")
@@ -1728,7 +1772,104 @@ server_design_agrofims <- function(input, output, session, values){
   ####################################################################
 
 
+  ########### weeding ###############################################
+  weedingVar <- reactiveValues()
+  weedingVar$nApps <- 0
 
+
+  observeEvent(input$numWeeding, {
+
+    num <- input$numWeeding
+
+    if(!is.numeric(num) || num < 1) return()
+
+
+    if(weedingVar$nApps < num){
+      start <- weedingVar$nApps +1
+      for (i in start:num){
+        insertUI(selector ="#weeding_description",
+                 where = "beforeBegin",
+                 ui = drawBoxWeeding(i))
+      }
+
+    }
+
+    else if(weedingVar$nApps > num){
+      removeBoxesWeeding(num + 1, weedingVar$nApps)
+    }
+
+    weedingVar$nApps <- num
+
+  })
+
+  drawBoxWeeding <- function(index){
+    fluidRow(id= paste0("box_weeding_", index),
+       box( title = paste0("Weeding number ", index),
+            width = 12,
+            solidHeader = TRUE, status = "warning",
+            column(width = 6,
+                   h4(HTML(" ")),
+                   fluidRow(
+                     column(6, dateInput(paste0("weeding_start_date_", index), "Start date", format = "yyyy/mm/dd")),
+                     column(6, dateInput(paste0("weeding_end_date_", index), "End date", format = "yyyy/mm/dd"))
+                   ),
+                   selectInput(paste0("weeding_technique_", index), "Technique", c("Manual", "Mechanized"))
+            ),
+            column(6,
+                   h4("Implement"),
+                   selectizeInput(paste0("weeding_type_",index ), "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),
+                               choices =  c("Backpack sprayer (Airblast sprayer",
+                                  "Boom sprayer",
+                                  "Broadcast spreader",
+                                  "Cultivator",
+                                  "Hand sprayer",
+                                  "Harrow",
+                                  "Hoe",
+                                  "Rake",
+                                  "Shovel",
+                                  "Trowel",
+                                  "Weed cutter",
+                                  "Weed puller",
+                                  "Other")
+                              ),
+                   conditionalPanel(paste0("input.weeding_type_", index, " == 'Other'"),
+                                    textInput(paste0("weeding_type_other",index ), "")
+                                    # session$sendCustomMessage(type="focus",message=paste0("weeding_type_other",index ))
+
+                  ),
+                  selectizeInput(paste0("weeding_traction_", index), "Traction",multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),
+                              choices= c("Buffalo",
+                                "Camel",
+                                "Donkey",
+                                "Elephant",
+                                "Horse",
+                                "Mule",
+                                "Ox,/Bullock/Steer",
+                                "Human",
+                                "2 wheel tractor",
+                                "4 wheel tractor")
+                  )
+
+
+              )
+        )
+
+    )
+
+  }
+
+
+  removeBoxesWeeding <- function(begin, end){
+    for(i in begin:end){
+      removeUI(
+        selector = paste0("#box_weeding_", i),
+        immediate = T
+      )
+    }
+
+  }
+
+  #################### end weeding #############################################
 
 
 
