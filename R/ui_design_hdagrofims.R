@@ -274,7 +274,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
   #############
   shinydashboard::tabItem(tabName = name,
-                          h1("Experiment information"),
+                          h1("Experiment conditions"),
 
                           shinyjs::useShinyjs(), #to reset panels and UI
                           tags$script(
@@ -1117,13 +1117,13 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                   # "Crop",
                                                                   "Land preparation",
                                                                   "Mulching and residue management",
-                                                                  "Planting, transplanting",
+                                                                  # "Biofertilizer",
+                                                                  "Planting, seeding and transplanting",
                                                                   "Weeding",
-                                                                  "Nutrient management",
-                                                                  "Biofertilizer",
+                                                                  "Soil fertility management",
                                                                   "Irrigation",
-                                                                  "Harvest",
-                                                                  "Pest & disease"
+                                                                  "Pest observation and control",
+                                                                  "Harvest"
                                                                   ),
                                                                   options = list(maxItems = 8, placeholder = "Select some...")
                                                                 )
@@ -1161,7 +1161,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                      dateInput("landLeveling_end_date", label ="End date", format = "yyyy/dd/mm")
                                                                               )
                                                                             ),
-                                                                            textInput("numPasses", value="", label = "Total number of levelling passes")#,
+                                                                            #textInput("numPasses", value="", label = "Total number of levelling passes")#,
+                                                                            numericInput("numPasses", label = "Total number of levelling passes", value="", min = 1, max = 20, step = 1)
                                                                             #textInput("operationsOrder", value="", label = "Operations order")
                                                                           ),
                                                                      column(width = 6,
@@ -1229,7 +1230,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                       textInput("Penetrometer_in_field", value="", label = "Penetrometer in field"),
                                                                                       fluidRow(
                                                                                         column(width = 6,
-                                                                                               textInput("puddling_depth_val", label="Puddling depth", value="")
+                                                                                               #textInput("puddling_depth_val", label="Puddling depth", value="")
+                                                                                               numericInput("puddling_depth_val", label = "Puddling depth", value="", min = 1, max = NA, step = 0.1)
                                                                                         ),
                                                                                         column(width = 6,##IMPLEMENTAR EN EL EXCEL
                                                                                               selectizeInput("puddling_depth_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("cm", "mm", "ft", "in"))
@@ -1622,12 +1624,12 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      )
                                                                  )) #end box residue
                                                         )),#),#end tab mulching
-                                                        tabPanel("Planting, transplanting", value="tabPlanting",
+                                                        tabPanel("Planting, seeding and transplanting", value="tabPlanting",
                                                                  #br(),
                                                                  #fluidRow(
                                                                    column(width = 12,
                                                                           #br(),
-                                                                          h2("Planting, transplanting"),
+                                                                          h2("Planting, seeding and transplanting"),
                                                                  fluidRow(
                                                                        box(id="direct_seeding_boxid",
                                                                            title = actionLink("direct_seeding_titleId", "Direct seeding"),
@@ -1874,6 +1876,26 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                         )),#),#end tab weeding
 
+                                                        tabPanel("Soil fertility management", value="tabNutrient",
+                                                                 #fluidRow(
+                                                                 column(width = 12,
+                                                                        #br(),
+                                                                        h2("Soil fertility management"),
+                                                                        #fluidRow(
+                                                                        ## here goes the nutrients prototype panel
+
+                                                                        fluidRow(id="typeFertilizerUsed",
+                                                                                 column(width = 6,
+                                                                                        selectizeInput("appfTypeFertilizer", "Type of fertilizer used", multiple = TRUE, options = list(placeholder = "Select one..."),
+                                                                                                       choices=c("Inorganic", "Organic", "Green manure")
+                                                                                        )
+                                                                                 )
+                                                                        ),
+                                                                        fluidRow(id="fert123")
+
+
+                                                                        #)
+                                                                 )),#)#end tab nutrient management event
 
                                                         tabPanel("Irrigation", value="tabIrrigation",
                                                                  #br(),
@@ -1914,10 +1936,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      )
                                                                  ))#end box description biofertilizer
                                                         )),#),#end tab biofertilizer
-                                                        tabPanel("Pest & disease", value="tabPestNDisease",
+                                                        tabPanel("Pest observation and control", value="tabPestNDisease",
 
                                                             column(width = 12,
-                                                                h2("Pest & disease"),
+                                                                h2("Pest observation and control"),
                                                                  box(id="pest_control_boxid",
                                                                      title = actionLink("pest_control_titleId", "Pest control"),
                                                                      status = "primary",
@@ -1933,26 +1955,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                   )#end box pest control
                                                         )
                                                       ),#end tab pest&disease
-                                                      tabPanel("Nutrient management", value="tabNutrient",
-                                                               #fluidRow(
-                                                                 column(width = 12,
-                                                                        #br(),
-                                                                        h2("Nutrient management"),
-                                                                        #fluidRow(
-                                                                          ## here goes the nutrients prototype panel
 
-                                                                        fluidRow(id="typeFertilizerUsed",
-                                                                          column(width = 6,
-                                                                                 selectizeInput("appfTypeFertilizer", "Type of fertilizer used", multiple = TRUE, options = list(placeholder = "Select one..."),
-                                                                                                choices=c("Inorganic", "Organic", "Green manure")
-                                                                                 )
-                                                                          )
-                                                                        ),
-                                                                        fluidRow(id="fert123")
-
-
-                                                                        #)
-                                                                 )),#)#end tab nutrient management event
                                                       tabPanel("Harvest", value="tabHarvest",
                                                                #br(),
                                                                #fluidRow(

@@ -1454,13 +1454,13 @@ server_design_agrofims <- function(input, output, session, values){
   nutTabs = list (#"Crop" = "tabCrop",
                   "Land preparation" = "tabLandPr",
                   "Mulching and residue management" ="tabMulching",
-                  "Planting, transplanting" ="tabPlanting",
+                  "Planting, seeding and transplanting" ="tabPlanting",
                   "Weeding" = "tabWeeding",
                   "Harvest" = "tabHarvest" ,
                   "Irrigation" = "tabIrrigation",
                   "Biofertilizer" = "tabBiofertilizer",
-                  "Pest & disease" = "tabPestNDisease" ,
-                  "Nutrient management" = "tabNutrient")
+                  "Pest observation and control" = "tabPestNDisease" ,
+                  "Soil fertility management" = "tabNutrient")
   observe({
     # hideTab("nutrienTabPanels", "tabCrop")
     hideTab("nutrienTabPanels", "tabLandPr")
