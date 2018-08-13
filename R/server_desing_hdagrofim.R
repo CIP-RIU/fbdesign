@@ -12,35 +12,12 @@
 
 server_design_agrofims <- function(input, output, session, values){
 
-  path <- fbglobal::get_base_dir()
-  fp <- file.path(path, "listFactors.rds") # field operations agro features as list of factors
-
-  lvl <- reactiveValues()
-  factors <- as.data.frame(readRDS(fp))
-  lvl$lv_1_1 <- unique(factors$GROUP)
-  lvl$lv_1_2 <- NULL
-  lvl$lv_1_3 <- NULL
-
-  lvl$lv_2_1 <- unique(factors$GROUP)
-  lvl$lv_2_2 <- NULL
-  lvl$lv_2_3 <- NULL
-
-  lvl$lv_3_1 <- unique(factors$GROUP)
-  lvl$lv_3_2 <- NULL
-  lvl$lv_3_3 <- NULL
-
-  lvl$lv_4_1 <- unique(factors$GROUP)
-  lvl$lv_4_2 <- NULL
-  lvl$lv_4_3 <- NULL
-
-  lvl$lv_5_1 <- unique(factors$GROUP)
-  lvl$lv_5_2 <- NULL
-  lvl$lv_5_3 <- NULL
 
 
-  # makeReactiveBinding("pkg.globals")
+  #### Others
 
-  # titulos para abrir boxes
+  ########## abrir boxes ###############################################################
+
   observeEvent(input$land_levelling_titleId, {
     js$collapse("land_levelling_boxid")
   })
@@ -89,37 +66,435 @@ server_design_agrofims <- function(input, output, session, values){
     js$collapse("pest_control_boxid")
   })
 
-  # observeEvent(input$crop_titleId, {
-  #   js$collapse("crop_boxid")
-  # })
-  #
+  observeEvent(input$weeding_titleId, {
+    js$collapse("weeding_boxid")
+  })
+
+  ############ fin abrir boxes ##########################################################
 
 
-  #######  begin treatment description #######################
 
+  ############ botones 'NEXT' ##########################################################
+  observeEvent(input$btnNextPersonnelInfo, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabPersonnel")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+  observeEvent(input$btnNextSite, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabSite")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+  observeEvent(input$btnNextCropInfo, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabCrop")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+  observeEvent(input$btnDesign, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabDesign")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+  observeEvent(input$btnNextPlotInfo, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabPlotInfo")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+  observeEvent(input$btnNextAgro, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabAgroFeat")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+  observeEvent(input$btnNextCropPheno, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabCropPheno")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+
+  observeEvent(input$btnNextTraits, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabTraits")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+  observeEvent(input$btnNextEnv, {
+    updateTabsetPanel(session, "fbDesignNav", selected = "tabEnvironment")
+    shinyjs::runjs("window.scrollTo(0, 50)")
+  })
+
+  ############ fin botones 'NEXT' ##########################################################
+
+
+
+  ################ Experiment ###########################################################
+
+  observe({
+    removeUI(
+      selector = "#fl_agencies_assoc_exp_aux", immediate = T
+    )
+    if(!is.null(input$designFieldbook_fundAgencyType)){
+      l <- input$designFieldbook_fundAgencyType
+      insertUI(
+        selector = "#fl_agencies_assoc_exp",
+        where ="afterBegin",
+        ui = column(id = "fl_agencies_assoc_exp_aux", width = 12)
+      )
+      count <- 1
+      for (ag in l){
+        insertUI(
+          selector = "#fl_agencies_assoc_exp_aux",
+          where = "beforeEnd",
+          ui = textInput(paste0("fundName_", count), paste0(ag, "  name"))
+        )
+        count <- count+1
+      }
+    }
+  })
+
+  projectEntities <- reactiveValues()
+  projectEntities$num <- 0
+  projectEntities$numLeads <- 0
+
+  observe({
+    if(is.numeric(input$numProjEntity)){
+      n <- input$numProjEntity
+      if(projectEntities$num == 0){
+
+        insertUI(
+          selector = "#fl_entities_exp",
+          where ="afterBegin",
+          ui = column(id = "fl_entites_exp_aux", width = 12)
+        )
+      }
+
+      if(projectEntities$num < n){
+        start <-  projectEntities$num + 1
+        count <- start
+        for (num in start:n) {
+          insertUI(
+            selector = "#fl_entites_exp_aux",
+            where = "beforeEnd",
+            ui =fluidRow(id = paste0("fl_box_exp_ent_", count),
+                         box(title = paste0("Project management entity #", count), solidHeader = TRUE, status = "warning", width=12,
+                             column(width = 4,
+                                    selectizeInput(paste0("projEntity_", count), "Project management entity", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
+                                                     c("CGIAR center",
+                                                       "Other"
+                                                     )
+                                    )
+                             ),
+
+                             conditionalPanel(paste0("input.projEntity_", count, " == 'CGIAR center'"),
+                                              column(width = 4,
+                                                     selectizeInput(paste0("contCenter_", count), "Choose CGIAR center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = sort(c(
+                                                       "Africa Rice Center",
+                                                       "Bioversity International",
+                                                       "Center for International Forestry Research (CIFOR)",
+                                                       "International Center for Agricultural Research (ICARDA)",
+                                                       "International Center for Tropical Agriculture (CIAT)",
+                                                       "International Crops Research Institute for the Semi-Arid (ICRISAT)",
+                                                       "International Food Policy Research Institute (IFPRI)",
+                                                       "International Institute of Tropical Agriculture (IITA)",
+                                                       "International Livestock Research Institure (ILRI)",
+                                                       "International Maize and Wheat Improvement Center (CIMMYT)",
+                                                       "International Potato Center (CIP)",
+                                                       "International Rice Research Institute (IRRI)",
+                                                       "International Water Management Institute (IWMI)",
+                                                       "World Agroforestry Centre (ICRAF)",
+                                                       "WorldFish",
+                                                       "None"))
+                                                     )
+                                              ),
+                                              column(width = 4,
+                                                     selectizeInput(paste0("contCRP_", count), "Contributor CRP", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = sort(c(
+                                                       "CGIAR Research Program on Fish",
+                                                       "CGIAR Research Program on Forests, Trees and Agroforestry",
+                                                       "CGIAR Research Program on Grain Legumes and Dryland Cereals",
+                                                       "CGIAR Research Program on Wheat",
+                                                       "CGIAR Research Program on Livestock",
+                                                       "CGIAR Research Program on Maize",
+                                                       "CGIAR Research Program on Rice",
+                                                       "CGIAR Research Program on Roots, Tubers and Bananas",
+                                                       "CGIAR Research Program on Agriculture for Nutrition and Health",
+                                                       "CGIAR Research Program on Climate Change, Agriculture and Food Security",
+                                                       "CGIAR Research Program on Policies, Institutions, and Markets",
+                                                       "CGIAR Research Program on Water, Land and Ecosystems",
+                                                       "None"))
+                                                     )
+                                              )
+
+                             ),
+                             column(width =4,style="padding-top: 5px;",
+                                    hidden(textInput(paste0("projEntity_", count, "_other"), "", value = ""))
+                             )
+
+
+
+
+
+                         ) #end box
+            )
+
+          )
+          count <- count + 1
+        }
+      }
+      else if(projectEntities$num > n){
+        start <- n+1
+        end <- projectEntities$num
+        count <- start
+        for(num in start:end){
+          removeUI(
+            selector = paste0("#fl_box_exp_ent_", count),
+            immediate = T
+          )
+          count <- count +1
+        }
+
+      }
+      projectEntities$num <- n
+    }
+    else{
+      removeUI(selector = "#fl_entites_exp_aux", immediate = T)
+      projectEntities$num <- 0
+    }
+  })
+
+
+  observe({
+    if(is.numeric(input$numLeads)){
+      n <- input$numLeads
+      if(projectEntities$numLeads == 0){
+
+        insertUI(
+          selector = "#fl_exp_leads",
+          where ="afterBegin",
+          ui = column(id = "fl_exp_leads_aux", width = 12)
+        )
+      }
+
+      if(projectEntities$numLeads < n){
+        start <-  projectEntities$numLeads + 1
+        count <- start
+        for (num in start:n) {
+          insertUI(
+            selector = "#fl_exp_leads_aux",
+            where = "beforeEnd",
+            ui =fluidRow(id = paste0("fl_box_exp_lead_", count),
+                         box(title = paste0("#", count, ". Experiment lead organization, if diffrent from project management entity"), solidHeader = TRUE, status = "warning", width=12,
+                             column(width = 6,
+
+                                    selectizeInput(paste0("projLeadEnt_", count), "Experiment, lead organization type", multiple =T, options = list(maxItems =1, placeholder="Select one..."), choices=
+                                                     c("CGIAR center",
+                                                       "Other"
+                                                     )
+                                    ),
+
+                                    conditionalPanel(paste0("input.projLeadEnt_", count, " == 'CGIAR center'"),
+
+                                                     selectizeInput(paste0("tLeadCenter_", count), "Choose CGIAR center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
+                                                       "Africa Rice Center",
+                                                       "Bioversity International",
+                                                       "Center for International Forestry Research (CIFOR)",
+                                                       "International Center for Agricultural Research (ICARDA)",
+                                                       "International Center for Tropical Agriculture (CIAT)",
+                                                       "International Crops Research Institute for the Semi-Arid (ICRISAT)",
+                                                       "International Food Policy Research Institute (IFPRI)",
+                                                       "International Institute of Tropical Agriculture (IITA)",
+                                                       "International Livestock Research Institure (ILRI)",
+                                                       "International Maize and Wheat Improvement Center (CIMMYT)",
+                                                       "International Potato Center (CIP)",
+                                                       "International Rice Research Institute (IRRI)",
+                                                       "International Water Management Institute (IWMI)",
+                                                       "World Agroforestry Centre (ICRAF)",
+                                                       "WorldFish",
+                                                       "None")
+                                                     )
+
+                                    ),
+                                    conditionalPanel(paste0("input.projLeadEnt_", count, " == 'Other'"),
+                                                     selectizeInput(paste0("lead_org_type_1_", count), "",multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),  choices = c("University","University, main campus","Agricultural experimental extension", "Government research institution (NARS)","Government research institution, designated laboratory or center", "Private company", "Farm", "Farmer association or cooperative", "Non-governmental organization", "Extension organization", "CGIAR center", "Other" )),
+                                                                      hidden(textInput(paste0("lead_org_type_1_", count, "_other"), "")),
+                                                     textInput(paste0("leadNameOther_", count), "Experiment, lead organization name", value = "")
+                                    ),
+                                    textInput(inputId = paste0("expLead_", count), label = "Experiment lead person / Primary Investigator", value = "")
+                             )
+                         ) #end box
+            )
+          )
+          count <- count + 1
+        }
+      }
+      else if(projectEntities$numLeads > n){
+        start <- n+1
+        end <- projectEntities$numLeads
+        count <- start
+        for(num in start:end){
+          removeUI(
+            selector = paste0("#fl_box_exp_lead_", count),
+            immediate = T
+          )
+          count <- count +1
+        }
+
+      }
+      projectEntities$numLeads <- n
+    }
+    else{
+      removeUI(selector = "#fl_exp_leads_aux", immediate = T)
+      projectEntities$numLeads <- 0
+    }
+  })
+
+  ################# fin experiment ######################################################
+
+
+
+  ################# personnel ######################################################
+
+   ### to add when maikig it dynamic
+
+  ################# fin personnel ######################################################
+
+
+
+  ################# site ######################################################
+
+  ### to add when making it dynamic
+
+  ################# fin site ######################################################
+
+
+
+  ################# Crop ######################################################
+
+  ### observe for selectize of crops for intercropping
+
+  cropsVar <- reactiveValues()
+  cropsVar$selectedIntercrop <- list()
+
+  observe({
+    if(!is.null(input$cropsSelected)){
+
+      l <- input$cropsSelected
+      n <- length(input$cropsSelected)
+
+      currLen <- length(cropsVar$selectedIntercrop)
+      if(currLen == n) return() ## observe has been triggered not by select change
+
+
+      if(currLen > n){
+        start <- n +1
+        for(i in start:currLen){
+          removeUI(selector = paste0("#intercrop_rows_crop_", i), immediate = T)
+          cropsVar$selectedIntercrop[[paste0("c", i)]] <- NULL
+        }
+      }
+      else if(currLen < n){
+        start <- currLen +1
+        for(i in start:n){
+          mselector = paste0("#intercrop_rows_crop_", i-1 )
+          if(i == 1){  mselector = "#fr_intercrop_rows"}
+          insertUI(
+            selector = mselector,
+            where = "afterEnd",
+            ui =
+              column(3, id= paste0("intercrop_rows_crop_", i), style='padding:0px;',
+                     column(5, offset = 0, style='padding:25px 2px 0px 0px; text-align:center; word-wrap: break-word;', uiOutput(paste0("intercropName_row_crop_", i))),
+                     column(4, offset = 0, style='padding:0px; text-align:left; ', textInput(paste0("intercropValue_row_crop_", i), "")),
+                     column(3, offset = 0, style='padding:25px 0px 0px 20px; text-align:center; word-wrap: break-word;',
+                            fluidRow(
+                              column(9, offset = 0, style='padding:0px; text-align:center;', "row(s)"),
+                              column(3, offset = 0, style='padding:0px; text-align:center;',uiOutput(paste0("intercropX_row_crop_", i)))
+                            )
+                      )
+              )
+
+          )
+          cropsVar$selectedIntercrop[[paste0("c", i)]] <- "newcrop" ### this will be updated lines below
+        }
+      }
+
+      for (i in  1:n) {
+
+        if(l[[i]] == "Other"){
+          enable(paste0("cropCommonName", i))
+          updateTextInput(session,  paste0("cropCommonName", i),  value ="")
+        }
+        else {
+          disable(paste0("cropCommonName", i))
+          updateTextInput(session,  paste0("cropCommonName", i),  value = l[[i]])
+        }
+        cropsVar$selectedIntercrop[[paste0("c", i)]] <- l[[i]]
+        output[[paste0("intercropX_row_crop_", i)]] <- renderText("X")
+      }
+
+      if(n>=1) output[[paste0("intercropName_row_crop_", 1)]] <- renderText(paste0(cropsVar$selectedIntercrop[[paste0("c", 1)]], ":"))
+      if(n>=2) output[[paste0("intercropName_row_crop_", 2)]] <- renderText(paste0(cropsVar$selectedIntercrop[[paste0("c", 2)]], ":"))
+      if(n>=3) output[[paste0("intercropName_row_crop_", 3)]] <- renderText(paste0(cropsVar$selectedIntercrop[[paste0("c", 3)]], ":"))
+      if(n>=4) output[[paste0("intercropName_row_crop_", 4)]] <- renderText(paste0(cropsVar$selectedIntercrop[[paste0("c", 4)]], ":"))
+      if(n>=5) output[[paste0("intercropName_row_crop_", 5)]] <- renderText(paste0(cropsVar$selectedIntercrop[[paste0("c", 5)]], ":"))
+      if(n>=6) output[[paste0("intercropName_row_crop_", 6)]] <- renderText(paste0(cropsVar$selectedIntercrop[[paste0("c", 6)]], ":"))
+      if(n>=7) output[[paste0("intercropName_row_crop_", 7)]] <- renderText(paste0(cropsVar$selectedIntercrop[[paste0("c", 7)]], ":"))
+
+      output[[paste0("intercropX_row_crop_", n)]] <- renderText("")
+    }
+    else{
+        removeUI(selector = paste0("#intercrop_rows_crop_", 1), immediate = T)
+        cropsVar$selectedIntercrop[[paste0("c", 1)]] <- NULL
+    }
+
+  })
+
+
+  ################# fin crop ######################################################
+
+
+
+  ################# Design ######################################################
+
+  path <- fbglobal::get_base_dir()
+  # field operations as list of factors
+  fp <- file.path(path, "listFactors.rds")
+
+  # para guardar lista de comboboxes para la tabla en treatment description
+  lvl <- reactiveValues()
+  factors <- as.data.frame(readRDS(fp))
+  lvl$lv_1_1 <- unique(factors$GROUP)
+  lvl$lv_1_2 <- NULL
+  lvl$lv_1_3 <- NULL
+
+  lvl$lv_2_1 <- unique(factors$GROUP)
+  lvl$lv_2_2 <- NULL
+  lvl$lv_2_3 <- NULL
+
+  lvl$lv_3_1 <- unique(factors$GROUP)
+  lvl$lv_3_2 <- NULL
+  lvl$lv_3_3 <- NULL
+
+  lvl$lv_4_1 <- unique(factors$GROUP)
+  lvl$lv_4_2 <- NULL
+  lvl$lv_4_3 <- NULL
+
+  lvl$lv_5_1 <- unique(factors$GROUP)
+  lvl$lv_5_2 <- NULL
+  lvl$lv_5_3 <- NULL
+
+
+  ### para la tabla del treatment description cuando
+  ### no es full factorial
   treatmentValues <- reactiveValues()
-  ## init the datable to be used for the table ouptut of treatment
-  # treatmentValues$data <- data.table(as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)), as.list(rep("-", 2)))
 
+  ## cambia de titulo de bloques a repliacaciones y viceversa cuando se escoge CRD o RCBD
+  observeEvent(input$designFieldbook_agrofims, {
+    if(input$designFieldbook_agrofims =="CRD"){
+      updateSelectInput(session,"designFieldbook_agrofims_r_y", label ="Replications")
+      updateSelectInput(session,"designFieldbook_agrofims_r_n", label ="Replications")
+    }
+    else if(input$designFieldbook_agrofims =="RCBD"){
+      updateSelectInput(session,"designFieldbook_agrofims_r_y", label ="Blocks")
+      updateSelectInput(session,"designFieldbook_agrofims_r_n", label ="Blocks")
+    }
 
-  numFactors <- reactiveValues()
-  numFactors$numFull <- 0
-  numFactors$numNotFull <- 0
+  })
 
-  num <- reactiveValues()
-  num$currNumReplications <- 2
-
-  # observe({
-  #   print(paste0("stored num full factor yes: ", numFactors$numFull))
-  # })
-  # observe({
-  #   print(paste0("stored num full factor no: ", numFactors$numNotFull))
-  # })
-
+  ### reactivo cuando se selecciona si es full factorial o no
   observeEvent(input$fullFactorialRB, {
 
-    rep_title <- ""
 
+    ## titulo de blocks segun el diseno estadistico
+    rep_title <- ""
     if(input$designFieldbook_agrofims =="CRD"){
       rep_title <- "Replications"
     }
@@ -127,7 +502,7 @@ server_design_agrofims <- function(input, output, session, values){
       rep_title <- "Blocks"
     }
 
-
+    ## verificando si es o no full factorial
     if(input$fullFactorialRB == "Yes"){
 
       end <- numFactors$numNotFull
@@ -149,17 +524,17 @@ server_design_agrofims <- function(input, output, session, values){
         selector = "#fluid_treatment_description",
         where = "afterBegin",
         ui = fluidRow( id= "fluid_full_factor",
-              column(width = 12,
-                   column(width = 6,
-                          selectInput(inputId = "nfactors_hdafims_y", label = "Number of factors", choices = 1:5, 1)
-                   ),
-                   column(width = 6,
-                          shiny::selectInput("designFieldbook_agrofims_r_y", rep_title , 2:100, 2 )
-                   ),
+                       column(width = 12,
+                              column(width = 6,
+                                     selectInput(inputId = "nfactors_hdafims_y", label = "Number of factors", choices = 1:5, 1)
+                              ),
+                              column(width = 6,
+                                     shiny::selectInput("designFieldbook_agrofims_r_y", rep_title , 2:100, 2 )
+                              ),
 
-                   fluidRow(id="full_factor_input")
-              )
-            )
+                              fluidRow(id="full_factor_input")
+                       )
+        )
 
       )
 
@@ -212,31 +587,31 @@ server_design_agrofims <- function(input, output, session, values){
         selector = "#fluid_treatment_description",
         where = "afterBegin",
         ui = fluidRow( id= "not_fluid_full_factor",
-                column(width = 12,
-                       column(width = 4,
-                              selectizeInput(inputId = "nfactors_hdafims_n", label = "Number of factors",  choices = 1:5, 1)
-                       ),
-                       column(width = 4,
-                              shiny::selectInput("designFieldbook_agrofims_t_n", "Number of treatment", 1:100, 1 )
-                       ),
-                       column(width = 4,
-                              shiny::selectInput("designFieldbook_agrofims_r_n", rep_title, 1:100, 1 )
-                             # selectInput(inputId = "nfactors_hdafims_n", label = "Number of factors", choices = 1:5)
-                       ),
-                       fluidRow(id="not_full_factor_input"),
-                       br(),
+                       column(width = 12,
+                              column(width = 4,
+                                     selectizeInput(inputId = "nfactors_hdafims_n", label = "Number of factors",  choices = 1:5, 1)
+                              ),
+                              column(width = 4,
+                                     shiny::selectInput("designFieldbook_agrofims_t_n", "Number of treatment", 1:100, 2 )
+                              ),
+                              column(width = 4,
+                                     shiny::selectInput("designFieldbook_agrofims_r_n", rep_title, 1:100, 1 )
+                                     # selectInput(inputId = "nfactors_hdafims_n", label = "Number of factors", choices = 1:5)
+                              ),
+                              fluidRow(id="not_full_factor_input"),
+                              br(),
 
-                       column(12,h2("Level Selection"),
-                           dataTableOutput("Table_treatments"),
-                           tags$head(
-                                tags$script("$(document).on('change', '.select_treatment', function () {
+                              column(12,h2("Level Selection"),
+                                     dataTableOutput("Table_treatments"),
+                                     tags$head(
+                                       tags$script("$(document).on('change', '.select_treatment', function () {
                                   Shiny.onInputChange('treatmentValueClickId',this.id);
                                   Shiny.onInputChange('treatmentValueSelected',this.value);
                                   Shiny.onInputChange('treatmentValueClick', Math.random())
                                   });"
-                                ),
+                                       ),
 
-                                tags$script("$(document).on('keypress', '.input_treatment', function (e) {
+                                       tags$script("$(document).on('keypress', '.input_treatment', function (e) {
                                     if(e.which === 13 ){
                                         Shiny.onInputChange('treatmentValueButttonClickId',this.id);
                                         Shiny.onInputChange('treatmentValueButttonEntered',this.value);
@@ -244,24 +619,36 @@ server_design_agrofims <- function(input, output, session, values){
                                         this.blur();
                                     }
                                   });"
-                                )
-                           )
+                                       )
+                                     )
+                              )
+
+
                        )
-
-
-                )
         )
       )
 
     }
+
+    deleteAllTabsSoilFertility() ## cleaning all soil fertility tabs
+
   })
 
+
+  ### variables para manejo de el numero de factores seleccionados
+  numFactors <- reactiveValues()
+  numFactors$numFull <- 0
+  numFactors$numNotFull <- 0
+
+  ## variables para numero de treatments seleccionados en NOT FULL FACTORIAL
+  num <- reactiveValues()
+  num$currNumReplications <- 2 ## valor por defecto
+
+
+  ### cuando se cambia el numero de factores a YES FULL FACTORIAL
   observeEvent(input$nfactors_hdafims_y, {
 
-    # print(paste0("num full factors changed: ", input$nfactors_hdafims_y))
     iter <- as.numeric(input$nfactors_hdafims_y)
-
-
 
     if(numFactors$numFull < iter){
       start <- numFactors$numFull + 1
@@ -277,66 +664,64 @@ server_design_agrofims <- function(input, output, session, values){
           selector = paste0("#full_factor_box_", num),
           immediate = T
         )
+        removeTabSoilFertility(num) ## deleting soil fertility tab if exists
       }
 
     }
     numFactors$numFull <- iter
   })
 
+  ### function para dibujar  box con los select cuando es YES FULL FACTORIAL
   drawFullFactorialFactor <- function(order){
     insertUI(
       selector = "#full_factor_input",
-      # selector = "#fluid_factor_input",
       where = "beforeBegin",
       ui =fluidRow(id = paste0("full_factor_box_", order),
-            column(width = 12,
-                box(title = paste0("#", order, " Factor"),
-                   width = 12,
-                   solidHeader = TRUE, status = "warning",
                    column(width = 12,
-                          fluidRow(
-                            column( width = 6,
-                                    fluidRow(
-                                      # column(width = 12,
-                                      fluidRow(
-                                        column(width = 4,
-                                               selectizeInput(paste0("sel", order, "_1"), "", choices = lvl[[paste0("lv_", order, "_1")]], multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-                                        ),
-                                        column(width = 4,
-                                               selectizeInput(paste0("sel", order, "_2"), "", choices = NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-                                        ),
-                                        column(width = 4,
-                                               selectizeInput(paste0("sel", order, "_3"), "", choices =  NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-                                        )
-                                      )
-                                      # )
-                                    )
+                          box(title = paste0("#", order, " Factor"),
+                              width = 12,
+                              solidHeader = TRUE, status = "warning",
+                              column(width = 12,
+                                     fluidRow(
+                                       column( width = 6,
+                                               fluidRow(
+                                                 fluidRow(
+                                                   column(width = 4,
+                                                          selectizeInput(paste0("sel", order, "_1"), "", choices = lvl[[paste0("lv_", order, "_1")]], multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                                   ),
+                                                   column(width = 4,
+                                                          selectizeInput(paste0("sel", order, "_2"), "", choices = NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                                   ),
+                                                   column(width = 4,
+                                                          selectizeInput(paste0("sel", order, "_3"), "", choices =  NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                                   )
+                                                 )
+                                               )
 
-                            ),
-                            column(width = 6,
-                                   fluidRow(
-                                     column(width = 6,
-                                            fluidRow(id=paste0("fl_title_factor_aux_", order))
-                                     ),
-                                     column(width = 6,
-                                            numericInput(paste0("numLevels_", order), HTML("#levels"), max = 5, min = 2, value = 2)
+                                       ),
+                                       column(width = 6,
+                                              fluidRow(
+                                                column(width = 6,
+                                                       fluidRow(id=paste0("fl_title_factor_aux_", order))
+                                                ),
+                                                column(width = 6,
+                                                       numericInput(paste0("numLevels_", order), HTML("Number of levels"), max = 5, min = 2, value = 2)
+                                                )
+                                              ),
+                                              fluidRow(id= paste0("levelSelection_", order))
+                                       )
                                      )
-                                   ),
-                                   fluidRow(id= paste0("levelSelection_", order))
-                            )
+                              )
                           )
-                   )#end column12
-                )
-          ))
+                   ))
     )
 
   }
 
 
+  ### cuando se cambia el numero de factores a NO FULL FACTORIAL
   observeEvent(input$nfactors_hdafims_n, {
-    print(paste0("num not full factors changed: ", input$nfactors_hdafims_n))
     iter <- as.integer(input$nfactors_hdafims_n)
-
 
     if(is.na(iter)  || iter < 1 ) return()
 
@@ -354,54 +739,54 @@ server_design_agrofims <- function(input, output, session, values){
           selector = paste0("#not_full_factor_box_", i),
           immediate = T
         )
-        convertListToHTMLSelect("", "", i, paste0("FACTOR ", i))
+
+        convertListToHTMLSelect(i)
+        removeTabSoilFertility(i) ## deleting soil fertility tab if exists
       }
     }
     generateTreatmentStringColumn()
     numFactors$numNotFull <- iter
   })
 
+
+  ### function para dibujar  box con los select cuando es NO FULL FACTORIAL
   drawNotFullFactorialFactor <- function(order){
     insertUI(
-
       selector = "#not_full_factor_input",
-      # selector = "#fluid_factor_input",
       where = "beforeBegin",
       ui =
         fluidRow(id = paste0("not_full_factor_box_", order),
-            column(width = 12,
+                 column(width = 12,
 
-              box(
-                    title = paste0("#", order, " Factor"),
-                    width = 12,
-                    solidHeader = TRUE, status = "warning",
+                        box(
+                          title = paste0("#", order, " Factor"),
+                          width = 12,
+                          solidHeader = TRUE, status = "warning",
 
-                    column(width = 12,
+                          column(width = 12,
 
-                             fluidRow(
-                               # column(width = 12,
-                               fluidRow(
-                                 column(width = 4,
-                                        selectizeInput(paste0("sel", order, "_1"), "", choices = lvl[[paste0("lv_", order, "_1")]], multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-                                 ),
-                                 column(width = 4,
-                                        selectizeInput(paste0("sel", order, "_2"), "", choices = NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
-                                 ),
-                                 column(width = 4,
-                                        selectizeInput(paste0("sel", order, "_3"), "", choices =  NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                 fluidRow(
+                                   fluidRow(
+                                     column(width = 4,
+                                            selectizeInput(paste0("sel", order, "_1"), "", choices = lvl[[paste0("lv_", order, "_1")]], multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                     ),
+                                     column(width = 4,
+                                            selectizeInput(paste0("sel", order, "_2"), "", choices = NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                     ),
+                                     column(width = 4,
+                                            selectizeInput(paste0("sel", order, "_3"), "", choices =  NULL, multiple =T, options = list(maxItems =1, placeholder ="Select..."))
+                                     )
+                                   )
                                  )
-                               )
-                               # )
-                             )
-
-                    )#end column12
-            )
-          )
+                          )
+                        )
+                 )
         )
     )
 
   }
 
+  ### dibujando tabla de treatments cuando es NO FULL FACTORIAL
   output$Table_treatments <-renderDataTable({
     DT=treatmentValues$data
     datatable(DT,
@@ -414,32 +799,41 @@ server_design_agrofims <- function(input, output, session, values){
                 pageLength = 10,
                 columnDefs = list(list(className = 'dt-center', width = '15%', targets = 1:6),list(visible=FALSE, targets=7:11) )
               )
-
-              )}
+    )}
   )
 
+
+  ### event when a option is selected in list inside treatment table in NO FULL FACTORIAL
   observeEvent(input$treatmentValueClick, {
 
     var <- input$treatmentValueSelected
+
     coords <- gsub("select_factor_treatment_","",input$treatmentValueClickId)
     coords <- strsplit(coords, "_")[[1]]
-    sel <- gsub(paste0('<option value="', var,'">'), paste0('<option value="', var,'" selected>'), treatmentValues$data[[as.numeric(coords[1])+1]][as.numeric(coords[2])])
+
+    ## deselecting whichever was selected first
+    sel <- gsub(' selected', "", treatmentValues$data[[as.numeric(coords[1])+1]][as.numeric(coords[2])])
+    ## the update with the selected value
+    sel <- gsub(paste0('<option value="', var,'"'), paste0('<option value="', var,'" selected'), sel)
     treatmentValues$data[[as.numeric(coords[1])+6]][as.numeric(coords[2])] <- var
     treatmentValues$data[[as.numeric(coords[1])+1]][as.numeric(coords[2])] <- sel
     treatmentValues$data[[1]][as.numeric(coords[2])] <-  generateTreatmentString(coords[2])
   })
 
+  ### event when a textbox is written and enter is pressed inside treatment table in NO FULL FACTORIAL
   observeEvent(input$treatmentValueButttonClick, {
     var <- input$treatmentValueButttonEntered
     coords <- gsub("input_factor_treatment_","",input$treatmentValueButttonClickId)
     coords <- strsplit(coords, "_")[[1]]
-    # treatmentValues$data[[1]][as.numeric(coords[2])] <- var
+
     var2 <-paste0('<input id="input_factor_treatment_', coords[1], '_', coords[2], '" class ="input_treatment"  value = "', var, '" style="width:150px;"/>')
     treatmentValues$data[[as.numeric(coords[1])+1]][as.numeric(coords[2])] <- var2
     treatmentValues$data[[as.numeric(coords[1])+6]][as.numeric(coords[2])] <- var
     treatmentValues$data[[1]][as.numeric(coords[2])] <-  generateTreatmentString(coords[2])
   })
 
+
+  ### funcion que concantena los seleccionados de los factores en la tabla treatment en NO FULL FACTORIAL
   generateTreatmentString <- function(row_index){
     nfactors <- as.numeric(input$nfactors_hdafims_n)
     index <- as.numeric(row_index)
@@ -457,6 +851,8 @@ server_design_agrofims <- function(input, output, session, values){
     return(paste(str, collapse = "/"))
   }
 
+
+  ### funcion que genera la columna 'treatment' en la tabla de treatments en NO FULL FACTORIAL
   generateTreatmentStringColumn <- function(){
     numTreatments <- as.numeric(input$designFieldbook_agrofims_t_n)
 
@@ -468,91 +864,119 @@ server_design_agrofims <- function(input, output, session, values){
 
   }
 
-
-
-
-
+  ### evento cuando se cambia el numero de tratamientos en NO FULL FACTORIAL
   observeEvent(input$designFieldbook_agrofims_t_n, {
-      rep <- as.numeric(input$designFieldbook_agrofims_t_n)
-      if(num$currNumReplications > rep  && !is.na(rep)){
-        start<- rep +1
-        for(i in num$currNumReplications:start){
-          treatmentValues$data <- treatmentValues$data[-i,]
-        }
-        num$currNumReplications <- rep
+    rep <- as.numeric(input$designFieldbook_agrofims_t_n)
+    if(num$currNumReplications > rep  && !is.na(rep)){
+      start<- rep +1
+      for(i in num$currNumReplications:start){
+        treatmentValues$data <- treatmentValues$data[-i,]
       }
-      else if(num$currNumReplications < rep && !is.na(rep)){
-        start  <- num$currNumReplications +1
-        for(i in start:rep){
-            treatmentValues$data <-  rbind(treatmentValues$data, as.list(lapply(treatmentValues$baseRow, function(x) gsub("_NUM", paste0("_", i), x))))
-        }
-        num$currNumReplications <- rep
+      num$currNumReplications <- rep
+    }
+    else if(num$currNumReplications < rep && !is.na(rep)){
+      start  <- num$currNumReplications +1
+      for(i in start:rep){
+        treatmentValues$data <-  rbind(treatmentValues$data, as.list(lapply(treatmentValues$baseRow, function(x) gsub("_NUM", paste0("_", i), x))))
       }
-
+      num$currNumReplications <- rep
+    }
 
   })
 
-  convertListToHTMLSelect <- function(myList, form, mindex, colname){
+
+  ### genera lista desplegable que se usara en el treatment table en NO FULL FACTORIAL
+  convertListToHTMLSelect <- function(index, myList="", form="", colname = ""){
+
+    if(is.null(input[["fullFactorialRB"]]) || input[["fullFactorialRB"]] == "Yes" ) return()
+
     numTreatments <- isolate(input$designFieldbook_agrofims_t_n)
-    ans <- c()
-    ans2 <- c()
+    numTreatments <-  as.integer(numTreatments)
+
+    factor_sel_1 <- input[[paste0("sel", index, "_1")]]
+
+    if(is.null(factor_sel_1) || !is.integer(numTreatments) || numTreatments  < 1 ) return()
+    if(!is.null(input[[paste0("sel", index, "_3")]])) colname <- input[[paste0("sel", index, "_3")]]
+
+    ans <- c() ## list for the factor column in table
+    ans2 <- c() ## for selected values - hidden column
     opt <- NULL
 
     str <- ""
     base <- ""
     base_2 <-""
 
-
-    for(index in 1:numTreatments){
+    for(i in 1:numTreatments){
       ans2 <- c(ans2, "")
     }
 
-
-    if(form == "combo box"){ ## is a list separated by semicolons
-      opts <- strsplit(myList, ";")[[1]]
+    if(factor_sel_1 == "Soil fertility management"){
       ans2 <- c()
-      base <- paste0('<select id="select_factor_treatment_', mindex, '_NUM" class ="select_treatment" style="width:150px;">')
-      base_2 <- opts[1]
+      nLevels <- input[[paste0("numLevels_tabSoil_", index)]]
+      base <- paste0('<select id="select_factor_treatment_', index, '_NUM" class ="select_treatment" style="width:150px;">')
 
+      if(is.null(nLevels)) nLevels <- 1
       options_str <- ""
-      for(opt in opts){
-        options_str <- paste0(options_str, '<option value="', opt,'">', opt, '</option>')
+
+      for(i in 1:nLevels){
+        options_str <- paste0(options_str, '<option value="Level ', i,'">Level ', i, '</option>')
       }
 
-      base <- paste0(base, options_str,"</select>" )
-
-      for(index in 1:numTreatments){
-        str <- paste0('<select id="select_factor_treatment_', mindex, '_', index,  '" class ="select_treatment" style="width:150px;">')
+      for(i in 1:numTreatments){
+        str <- paste0('<select id="select_factor_treatment_', index, '_', i,  '" class ="select_treatment" style="width:150px;">')
         str <- paste0(str, options_str,"</select>" )
         ans <- c(ans, str)
-        ans2 <- c(ans2, opts[1])
+        ans2 <- c(ans2, "Level 1")
+      }
+
+    }
+    else{
+      if(form == "combo box"){ ## is a list separated by semicolons
+        opts <- strsplit(myList, ";")[[1]]
+        ans2 <- c()
+        base <- paste0('<select id="select_factor_treatment_', index, '_NUM" class ="select_treatment" style="width:150px;">')
+        base_2 <- opts[1]
+
+        options_str <- ""
+        for(opt in opts){
+          options_str <- paste0(options_str, '<option value="', opt,'">', opt, '</option>')
+        }
+
+        base <- paste0(base, options_str,"</select>" )
+
+        for(i in 1:numTreatments){
+          str <- paste0('<select id="select_factor_treatment_', index, '_', i ,  '" class ="select_treatment" style="width:150px;">')
+          str <- paste0(str, options_str,"</select>" )
+          ans <- c(ans, str)
+          ans2 <- c(ans2, opts[1])
+        }
+      }
+      else if( form=="text input"){
+        base <- paste0('<input id="input_factor_treatment_', index, '_NUM" class ="input_treatment"  value = "" style="width:150px;"/>')
+        for(i in 1:numTreatments){
+          str <- paste0('<input id="input_factor_treatment_', index, '_', i, '" class ="input_treatment"  value = "" style="width:150px;"/>')
+          ans <- c(ans, str)
+        }
+      }
+      else{ ## is a single value
+        str <- myList
+        for(i in 1:numTreatments){
+          ans <- c(ans, str)
+        }
+        ans2 <- ans
+        base <- str
+        base_2 <- str
       }
     }
-    else if( form=="text input"){
-      base <- paste0('<input id="input_factor_treatment_', mindex, '_NUM" class ="input_treatment"  value = "" style="width:150px;"/>')
-      for(index in 1:numTreatments){
-        str <- paste0('<input id="input_factor_treatment_', mindex, '_', index, '" class ="input_treatment"  value = "" style="width:150px;"/>')
-        # str <- paste0(str, '<button type="button" class="button_treatment" id="button_factor_treatment_', index, '"><i class="fa fa-check" aria-hidden="true"></i></button>')
-        ans <- c(ans, str)
-      }
-    }
-    else{ ## is a single value
-      str <- myList
-      for(index in 1:numTreatments){
-        ans <- c(ans, str)
-      }
-      ans2 <- ans
-      base <- str
-      base_2 <- str
-    }
 
+    if(colname == "") colname <- paste0("FACTOR ", index)
 
-    treatmentValues$data[mindex+1] <- ans
-    treatmentValues$data[mindex+6] <- ans2  ##  reseting hidden values selected
-    colnames(treatmentValues$data)[mindex+1] <- colname
+    treatmentValues$data[index+1] <- ans
+    treatmentValues$data[index+6] <- ans2  ##  reseting hidden values selected
+    colnames(treatmentValues$data)[index+1] <- colname
 
-    treatmentValues$baseRow[mindex+1] <- base
-    treatmentValues$baseRow[mindex+6] <- base_2
+    treatmentValues$baseRow[index+1] <- base
+    treatmentValues$baseRow[index+6] <- base_2
 
     ## changing base
     numFactors <- as.numeric(input$nfactors_hdafims_n)
@@ -564,50 +988,387 @@ server_design_agrofims <- function(input, output, session, values){
   }
 
 
-  ######### end treatment description ##################
+
+  ### variable to keep track of soils tabs
+  numSoilPanels <- reactiveValues()
+  numSoilPanels$current <- c()
+  numSoilPanels$levels <- c() ## to control how many levels each tab has
+  numSoilPanels$appList <-list() ## to control the list inside comboboxes for applications in soil fertility tabs
+
+  ### function to add tabs for soil fertility
+  addTabSoilFertility <- function(index){
+
+    ind <- match(index, numSoilPanels$current)
+    if(!is.na(ind)) return()
+
+    len <- length(numSoilPanels$current)
+    mtarget <- "tabTreatmentFactors" ## default if list is empty or the tab goes first
+
+
+    numSoilPanels$current <- c(numSoilPanels$current, index)
+    numSoilPanels$levels <- c(numSoilPanels$levels, 0)
+    numSoilPanels$appList[[paste0("f", index)]] <- list("void", c()) ## user has not chosen factor yet
+
+    aux_sort <- sort(numSoilPanels$current)
+
+    ind <- match(index, aux_sort)
+
+
+    if(is.numeric(ind) && ind != 1){
+      aux <- aux_sort[ind-1]
+      mtarget <- paste0("panelTreatment_soilFertility_",  aux)
+    }
+
+    insertTab(inputId = "treatmentSetPanel",
+              tabPanel(paste0("Soil fertility detail - factor ", index),  value = paste0("panelTreatment_soilFertility_", index),
+                       column(12, br(),
+                              fluidRow(
+                                column(6,
+                                  uiOutput(paste0("uiFactorName_tabSoil_", index))
+                                ),
+                                column(6,
+                                       column(4,
+                                          numericInput(paste0("numLevels_tabSoil_", index), "Levels", min =1, max=100, value=1)
+                                       )
+                                )
+                              ),
+                              fluidRow(id=paste0("fluidRow_levelsTabSoil_", index))
+                        )
+              ),
+              position = "after",
+              target = mtarget
+    )
+
+  }
+
+  ## observe when changing levels at tab soil fertility for factor 1
+  observeEvent(input$numLevels_tabSoil_1, {
+    if(!is.null(input$numLevels_tabSoil_1)){
+      print(input$numLevels_tabSoil_1)
+      isolate(
+        drawLevelsSoilTab(1,input$numLevels_tabSoil_1))
+      convertListToHTMLSelect(1)
+    }
+  })
+
+  ## observe when changing levels at tab soil fertility for factor 2
+  observeEvent(input$numLevels_tabSoil_2, {
+    if(!is.null(input$numLevels_tabSoil_2)){
+      isolate(
+        drawLevelsSoilTab(2,input$numLevels_tabSoil_2))
+      convertListToHTMLSelect(2)
+    }
+
+  })
+
+  ## observe when changing levels at tab soil fertility for factor 3
+  observeEvent(input$numLevels_tabSoil_3, {
+    if(!is.null(input$numLevels_tabSoil_3)){
+      isolate(
+        drawLevelsSoilTab(3,input$numLevels_tabSoil_3))
+      convertListToHTMLSelect(3)
+    }
+  })
+
+  ## observe when changing levels at tab soil fertility for factor 4
+  observeEvent(input$numLevels_tabSoil_4, {
+    if(!is.null(input$numLevels_tabSoil_4)){
+      isolate(
+        drawLevelsSoilTab(4,input$numLevels_tabSoil_4))
+        convertListToHTMLSelect(4)
+    }
+  })
+
+  ## observe when changing levels at tab soil fertility for factor 5
+  observeEvent(input$numLevels_tabSoil_5, {
+    if(!is.null(input$numLevels_tabSoil_5)){
+      isolate(
+        drawLevelsSoilTab(5,input$numLevels_tabSoil_5))
+      convertListToHTMLSelect(5)
+    }
+  })
+
+  ## function to draw and remove box levels in soil fertility tabs
+  drawLevelsSoilTab <- function(index, levels){
+    if(!is.numeric(levels) || levels < 1) return()
+
+    ind <- match(index, numSoilPanels$current)
+    mlevels <- numSoilPanels$levels[ind]
+    if(!is.numeric(mlevels)) return()
+
+    if(mlevels < levels){
+      start <- mlevels + 1
+      for(i in start:levels){
+          drawBoxLevelTabSoil(index, i)
+      }
+    }
+    else if(mlevels > levels){
+      removeBoxeLevelTabSoil(index, levels + 1, mlevels)
+    }
+    numSoilPanels$levels[ind] <- levels
+  }
+
+  ## ui of box levels for soil fertility tabs
+  drawBoxLevelTabSoil <- function(index, level){
+    box_id <- paste0("box_level_soilTab_", index, "_", level)
+    insertUI(selector =paste0("#fluidRow_levelsTabSoil_", index),
+             where = "beforeBegin",
+             ui =
+                fluidRow(id= box_id,
+                         box( title = paste0("Level ", level),
+                              width = 12,
+                              solidHeader = TRUE, status = "warning",
+                              fluidRow(
+                                column(2),
+                                column(10,
+                                  column(4),
+                                  column(4),
+                                  column(4,
+                                         selectInput(paste0("numApps_tabSoil_factor_", index, "_box_", level), "# of applications", choices = 1:6, selected = 3)
+                                  )
+                                )
+                              ),
+                              fluidRow(
+                                column(2, HTML("<center>"), h4(" "), HTML("</center>")),
+                                column(10,
+                                    column(3, HTML("<center>"),
+                                           fluidRow(
+                                           column(6,h4("Product"), style = "padding: 0px; text-align:right;"),
+                                           column(6, style="padding-left:5px; text-align:left;" ,checkboxInput(paste0("checkb_product_", index, "_level_", level), ""))
+                                           ),
+                                           HTML("</center>")
+                                    ),
+                                    column(3, HTML("<center>"), h4("Product rate (kg/ha)"), HTML("</center>")),
+                                    column(3, HTML("<center>"),
+                                           fluidRow(
+                                             column(6,h4("Element"), style = "padding: 0px; text-align:right;"),
+                                             column(6, style="padding-left:5px; text-align:left;" ,checkboxInput(paste0("checkb_element_", index, "_level_", level), ""))
+                                           ),
+                                           HTML("</center>")
+                                    ),
+                                    column(3, HTML("<center>"), h4("Element rate (kg/ha)"), HTML("</center>"))
+                                )
+                              ),
+                              conditionalPanel(paste0("parseInt(input.numApps_tabSoil_factor_", index, "_box_", level, ")  >=1 ") ,
+                                                      drawApplicationRowSoilTab(1, index, level)
+                              ),
+                              conditionalPanel(paste0("parseInt(input.numApps_tabSoil_factor_", index, "_box_", level, ") >= 2 ") ,
+                                                      drawApplicationRowSoilTab(2, index, level)
+                              ),
+                              conditionalPanel(paste0("parseInt(input.numApps_tabSoil_factor_", index, "_box_", level, ") >= 3 "),
+                                                      drawApplicationRowSoilTab(3, index, level)
+                              ),
+                              conditionalPanel(paste0("parseInt(input.numApps_tabSoil_factor_", index, "_box_", level, ") >= 4 ") ,
+                                                      drawApplicationRowSoilTab(4, index, level)
+                              ),
+                              conditionalPanel(paste0("parseInt(input.numApps_tabSoil_factor_", index, "_box_", level, ") >= 5"),
+                                                      drawApplicationRowSoilTab(5, index, level)
+                              ),
+                              conditionalPanel(paste0("parseInt(input.numApps_tabSoil_factor_", index, "_box_", level, ") >= 6"),
+                                               drawApplicationRowSoilTab(6, index, level)
+                              ),
+
+
+                              fluidRow(id= paste0("fluidRow_soilTab_factor_", index, "_level_", level)),
+                              fluidRow(
+                                column(2),
+                                column(10,
+
+                                  column(3,br(),HTML("<div style='text-align:center;'>"), h5("Total calculated application:"), HTML("</div>")),
+                                  column(3, textInput(paste0("input_product_RateTotal_factor_", index, "_level_", level), "")),
+                                  # column(3,
+                                  #        fluidRow(
+                                  #          column(9,
+                                  #                 textInput(paste0("input_product_RateTotal_factor_", index, "_level_", level), "")
+                                  #          ),
+                                  #          column(3,style=" text-align:left; padding-left:2px;",br(),
+                                  #                 actionButton(paste0("buttonSoilTab_product_RateTotal_factor_", index, "_level_", level), "", icon =icon("calculator"))
+                                  #                 )
+                                  #        )
+                                  # ),
+                                  column(3),
+                                  column(3,textInput(paste0("input_element_RateTotal_factor_", index, "_level_", level), ""))
+
+                                  # column(3,
+                                  #        fluidRow(
+                                  #          column(9,
+                                  #                 textInput(paste0("input_element_RateTotal_factor_", index, "_level_", level), "")
+                                  #          ),
+                                  #          column(3,style=" text-align:left; padding-left:2px;",br(),
+                                  #                 actionButton(paste0("buttonSoilTab_element_RateTotal_factor_", index, "_level_", level), "", icon =icon("calculator"))
+                                  #          )
+                                  #        )
+                                  # )
+                                )
+                              )
+                          )
+                )
+    )
+  }
+
+  drawApplicationRowSoilTab <- function(napp,index, level){
+    fluidRow(
+      column(2, br(),HTML("<center>"), h5(paste0("Application ", napp)), HTML("</center>")),
+      column(10,
+             column(3,
+                    fluidRow(id = paste0("fr_selectProductRef_factor_", index, "_level_", level, "_app_", napp)),
+                    fluidRow( id = paste0("fr_selectProduct_factor_", index, "_level_", level, "_app_", napp), column(12,
+                              selectizeInput(paste0("select_product_factor_", index, "_level_", level, "_app_", napp), "",
+                                             getList(numSoilPanels$appList[[paste0("f", index)]][[2]]),  multiple = T, options = list(placeholder ="Select..."))
+                    ))
+             ),
+             column(3,
+                    textInput(paste0("input_tabSoil_rate_product_", index, "_level_", level, "_app_", napp), "")
+             ),
+             column(3,
+                    textInput(paste0("input_element_factor_", index, "_level_", level, "_app_", napp), "")
+             ),
+             column(3,
+                    textInput(paste0("input_tabSoil_rate_element_", index, "_level_", level, "_app_", napp), "")
+             )
+      )
+    )
+  }
+
+  observeEvent(input$calculateTabSoil,{
+    aux_vals <- strsplit(input$calculateTabSoilButtonId ,"_")[[1]]
+    index  <- aux_vals[5]
+    level <- aux_vals[7]
+    type <- aux_vals[4]
+
+    napps = as.numeric(input[[paste0("numApps_tabSoil_factor_" , index,"_box_" , level)]])
+    values = list()
+    lens = list()
+    results = list()
+    max_len = 0
+    sum <- ""
+
+    if(napps >0){
+      for(i  in 1:napps){
+        in_id = paste0("input_tabSoil_rate_", type ,"_" , index , "_level_" , level , "_app_" , i)
+        inp <- input[[in_id]]
+        if(inp != ""){
+          values[[paste0("v", i)]] <- strsplit(inp, ":")
+          lens[[paste0("v", i)]] <- length(values[[paste0("v", i)]][[1]] )
+        }
+        else{
+          values[[paste0("v", i)]] = ""
+          lens[[paste0("v", i)]] = 0
+        }
+        if(max_len < lens[[paste0("v", i)]]) max_len = lens[[paste0("v", i)]]
+      }
+
+      if(max_len != 0 ){
+
+        for(i in 1:max_len){
+
+          results[[paste0("v", i)]] <- 0
+          for(j in 1:napps){
+            if(lens[[j]] >= i){
+              num <- as.integer(values[[paste0("v",j)]][[1]][i])
+              if(!is.na(num))  results[[paste0("v", i)]] <- num + results[[paste0("v", i)]]
+            }
+          }
+        }
+        sum <- paste(results, collapse = ":")
+      }
+
+      updateTextInput(session, paste0("input_", type, "_RateTotal_factor_", index, "_level_", level), value= sum)
+    }
+
+
+  })
+
+
+
+  ### function to remove box levels for soil fertility tab
+  removeBoxeLevelTabSoil <- function(index, start, end){
+    for(i in start:end){
+      box_id <- paste0("#box_level_soilTab_", index, "_", i)
+      removeUI(
+        selector = box_id,
+        immediate = T,
+        session = getDefaultReactiveDomain()
+      )
+    }
+  }
+
+  ### function to remove tabs for soil fertility
+  removeTabSoilFertility <- function(index){
+
+    ind <- match(index, numSoilPanels$current)
+
+    if(is.na(ind) || ind < 0){ return() }
+
+    removeTab(inputId = "treatmentSetPanel",
+              target= paste0("panelTreatment_soilFertility_", index)
+    )
+
+    numSoilPanels$current <- numSoilPanels$current[-ind]
+    numSoilPanels$levels <- numSoilPanels$levels[-ind]
+    numSoilPanels$appList[[paste0("f", index)]] <- NULL
+  }
+
+  ### function to delete all soil fertility detail tabs
+  deleteAllTabsSoilFertility <- function(){
+    mlist <- numSoilPanels$current
+    for(val in mlist){
+      removeTabSoilFertility(val)
+    }
+
+  }
+
+  generateListLevelsSoilTab <- function(index, form ="void", values = NULL, factorName = ""){
+
+    numSoilPanels$appList[[paste0("f", index)]] <- list(form, values)
+    output[[paste0("uiFactorName_tabSoil_", index)]] <- renderUI(h3(paste0("Factor: ", factorName)))
+
+    numLevels <- input[[paste0("numLevels_tabSoil_",index)]]
+
+    if(is.numeric(numLevels) && numLevels > 0){
+      for(i in 1:numLevels){
+        ## number of applications static for now
+        numApps <- 6
+        for(j in 1:numApps){
+          select_id <-  paste0("fr_selectProduct_factor_", index, "_level_", i, "_app_", j)
+
+          ## removing and inserting ui bc  updateSelectizeInput when updating choices to null is not working
+          ## must look for better options
+            removeUI(
+              selector =  paste0("#", select_id),
+              immediate = T,
+              session = getDefaultReactiveDomain()
+            )
+
+            insertUI(
+              selector = paste0("#fr_selectProductRef_factor_", index, "_level_", i , "_app_", j),
+              where = "afterEnd",
+              ui = fluidRow( id = select_id,
+                             selectizeInput(paste0("select_product_factor_", index, "_level_", i, "_app_", j), "",
+                                            getList(values), multiple = T, options = list(placeholder ="Select..."))
+              )
+            )
+
+        }
+
+      }
+    }
+
+  }
+  getList <- function(str){
+    if(is.character(str)) return(unlist(strsplit( str, ";")))
+    else{ return(c())}
+  }
+
+
+  ################# fin design ######################################################
+
+
   ###########################################################
 
-  featNames <- names(Agronomic_features$`Agronomic features`)
+  # featNames <- names(Agronomic_features$`Agronomic features`)
 
-  #events for buttons next in tabs for fieldbook creation
-  # TO BE OPTIMIZED
-  observeEvent(input$btnNextPersonnelInfo, {
-      updateTabsetPanel(session, "fbDesignNav", selected = "tabPersonnel")
-      shinyjs::runjs("window.scrollTo(0, 50)")
-  })
-  observeEvent(input$btnNextSite, {
-    updateTabsetPanel(session, "fbDesignNav", selected = "tabSite")
-    shinyjs::runjs("window.scrollTo(0, 50)")
-  })
-  observeEvent(input$btnNextCropInfo, {
-    updateTabsetPanel(session, "fbDesignNav", selected = "tabCropInfo")
-    shinyjs::runjs("window.scrollTo(0, 50)")
-  })
-  observeEvent(input$btnDesign, {
-    updateTabsetPanel(session, "fbDesignNav", selected = "tabDesign")
-    shinyjs::runjs("window.scrollTo(0, 50)")
-  })
-  observeEvent(input$btnNextPlotInfo, {
-    updateTabsetPanel(session, "fbDesignNav", selected = "tabPlotInfo")
-    shinyjs::runjs("window.scrollTo(0, 50)")
-  })
-  observeEvent(input$btnNextAgro, {
-    updateTabsetPanel(session, "fbDesignNav", selected = "tabAgroFeat")
-    shinyjs::runjs("window.scrollTo(0, 50)")
-  })
-  observeEvent(input$btnNextCropPheno, {
-    updateTabsetPanel(session, "fbDesignNav", selected = "tabCropPheno")
-    shinyjs::runjs("window.scrollTo(0, 50)")
-  })
 
-  observeEvent(input$btnNextTraits, {
-    updateTabsetPanel(session, "fbDesignNav", selected = "tabTraits")
-    shinyjs::runjs("window.scrollTo(0, 50)")
-  })
-  observeEvent(input$btnNextEnv, {
-    updateTabsetPanel(session, "fbDesignNav", selected = "tabEnvironment")
-    shinyjs::runjs("window.scrollTo(0, 50)")
-  })
 
 
   ## Agronomic Features Shiny Tree ###############################################
@@ -622,676 +1383,390 @@ server_design_agrofims <- function(input, output, session, values){
 
   # }) End agronomic trait shinyTree  ####################################
 
-  ###### experiment details ###############################################################\
-
-  observe({
-    removeUI(
-      selector = "#fl_agencies_assoc_exp_aux", immediate = T
-    )
-    if(!is.null(input$designFieldbook_fundAgencyType)){
-        l <- input$designFieldbook_fundAgencyType
-        insertUI(
-          selector = "#fl_agencies_assoc_exp",
-          where ="afterBegin",
-          ui = column(id = "fl_agencies_assoc_exp_aux", width = 12)
-        )
-        count <- 1
-        for (ag in l){
-          insertUI(
-            selector = "#fl_agencies_assoc_exp_aux",
-            where = "beforeEnd",
-            ui = textInput(paste0("fundName_", count), paste0(ag, "  name"))
-          )
-          count <- count+1
-        }
-    }
-  })
-
-  projectEntities <- reactiveValues()
-  projectEntities$num <- 0
-  projectEntities$numLeads <- 0
-
-  observe({
-    if(is.numeric(input$numProjEntity)){
-      n <- input$numProjEntity
-      if(projectEntities$num == 0){
-
-        insertUI(
-          selector = "#fl_entities_exp",
-          where ="afterBegin",
-          ui = column(id = "fl_entites_exp_aux", width = 12)
-        )
-      }
-
-        if(projectEntities$num < n){
-          start <-  projectEntities$num + 1
-          count <- start
-          for (num in start:n) {
-                insertUI(
-                  selector = "#fl_entites_exp_aux",
-                  where = "beforeEnd",
-                  ui =fluidRow(id = paste0("fl_box_exp_ent_", count),
-                        box(title = paste0("Project management entity #", count), solidHeader = TRUE, status = "warning", width=12,
-                            column(width = 4,
-                                selectizeInput(paste0("projEntity_", count), "Project management entity", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
-                                                 c("CGIAR center",
-                                                   "Other"
-                                                 )
-                                )
-                        ),
-                        conditionalPanel(paste0("input.projEntity_", count, " == 'CGIAR center'"),
-                                         column(width = 4,
-                                           selectizeInput(paste0("contCenter_", count), "Choose CGIAR center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
-                                             "Africa Rice Center",
-                                             "Bioversity International",
-                                             "Center for International Forestry Research (CIFOR)",
-                                             "International Center for Agricultural Research (ICARDA)",
-                                             "International Center for Tropical Agriculture (CIAT)",
-                                             "International Crops Research Institute for the Semi-Arid (ICRISAT)",
-                                             "International Food Policy Research Institute (IFPRI)",
-                                             "International Institute of Tropical Agriculture (IITA)",
-                                             "International Livestock Research Institure (ILRI)",
-                                             "International Maize and Wheat Improvement Center (CIMMYT)",
-                                             "International Potato Center (CIP)",
-                                             "International Rice Research Institute (IRRI)",
-                                             "International Water Management Institute (IWMI)",
-                                             "World Agroforestry Centre (ICRAF)",
-                                             "WorldFish",
-                                             "None")
-                                           )
-                                          ),
-                                         column(width = 4,
-                                           selectizeInput(paste0("contCRP_", count), "Contributor CRP", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
-                                             "CGIAR Research Program on Fish",
-                                             "CGIAR Research Program on Forests, Trees and Agroforestry",
-                                             "CGIAR Research Program on Grain Legumes and Dryland Cereals",
-                                             "CGIAR Research Program on Wheat",
-                                             "CGIAR Research Program on Livestock",
-                                             "CGIAR Research Program on Maize",
-                                             "CGIAR Research Program on Rice",
-                                             "CGIAR Research Program on Roots, Tubers and Bananas",
-                                             "CGIAR Research Program on Agriculture for Nutrition and Health",
-                                             "CGIAR Research Program on Climate Change, Agriculture and Food Security",
-                                             "CGIAR Research Program on Policies, Institutions, and Markets",
-                                             "CGIAR Research Program on Water, Land and Ecosystems",
-                                             "None")
-                                           )
-                                         )
-
-                        ),
-                        conditionalPanel(paste0("input.projEntity_", count, " == 'Other'"),
-                                         column(width = 12,
-                                                fluidRow(
-                                                    column(width =4,
-                                                          textInput(paste0("contOtherCenter_", count), "", value = "")
-
-                                                   )
-                                                )
-                                         )
-                        )
-
-                  ) #end box
-                  )
-
-                )
-            count <- count + 1
-          }
-        }
-        else if(projectEntities$num > n){
-          start <- n+1
-          end <- projectEntities$num
-          count <- start
-          for(num in start:end){
-            removeUI(
-              selector = paste0("#fl_box_exp_ent_", count),
-              immediate = T
-            )
-            count <- count +1
-          }
-
-        }
-        projectEntities$num <- n
-    }
-    else{
-      removeUI(selector = "#fl_entites_exp_aux", immediate = T)
-      projectEntities$num <- 0
-    }
-  })
-
-
-  observe({
-    if(is.numeric(input$numLeads)){
-      n <- input$numLeads
-      if(projectEntities$numLeads == 0){
-
-        insertUI(
-          selector = "#fl_exp_leads",
-          where ="afterBegin",
-          ui = column(id = "fl_exp_leads_aux", width = 12)
-        )
-      }
-
-      if(projectEntities$numLeads < n){
-        start <-  projectEntities$numLeads + 1
-        count <- start
-        for (num in start:n) {
-          insertUI(
-            selector = "#fl_exp_leads_aux",
-            where = "beforeEnd",
-            ui =fluidRow(id = paste0("fl_box_exp_lead_", count),
-                         box(title = paste0("Experiment, lead organization #", count), solidHeader = TRUE, status = "warning", width=12,
-                             column(width = 6,
-
-                                    selectizeInput(paste0("projLeadEnt_", count), "Experiment, lead organization type", multiple =T, options = list(maxItems =1, placeholder="Select one..."), choices=
-                                                     c("CGIAR center",
-                                                       "Other"
-                                                     )
-                                    ),
-
-                             conditionalPanel(paste0("input.projLeadEnt_", count, " == 'CGIAR center'"),
-
-                                                     selectizeInput(paste0("tLeadCenter_", count), "Choose CGIAR center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
-                                                       "Africa Rice Center",
-                                                       "Bioversity International",
-                                                       "Center for International Forestry Research (CIFOR)",
-                                                       "International Center for Agricultural Research (ICARDA)",
-                                                       "International Center for Tropical Agriculture (CIAT)",
-                                                       "International Crops Research Institute for the Semi-Arid (ICRISAT)",
-                                                       "International Food Policy Research Institute (IFPRI)",
-                                                       "International Institute of Tropical Agriculture (IITA)",
-                                                       "International Livestock Research Institure (ILRI)",
-                                                       "International Maize and Wheat Improvement Center (CIMMYT)",
-                                                       "International Potato Center (CIP)",
-                                                       "International Rice Research Institute (IRRI)",
-                                                       "International Water Management Institute (IWMI)",
-                                                       "World Agroforestry Centre (ICRAF)",
-                                                       "WorldFish",
-                                                       "None")
-                                                     )
-
-                             ),
-                             conditionalPanel(paste0("input.projLeadEnt_", count, " == 'Other'"),
-
-
-                                              selectizeInput(paste0("lead_org_type_1_", count), "",multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),  choices = c("University","University, main campus","Agricultural experimental extension", "Government research institution (NARS)","Government research institution, designated laboratory or center", "Private company", "Farm", "Farmer association or cooperative", "Non-governmental organization", "Extension organization", "CGIAR center", "Other" )),
-                                              conditionalPanel(paste0("input.lead_org_type_1_", count, " == 'Other'"),
-                                                               textInput(paste0("lead_org_type_1_other_", count), "")),
-
-                                              textInput(paste0("leadNameOther_", count), "Experiment, lead organization name", value = "")
-
-                             ),
-
-
-                              textInput(inputId = paste0("expLead_", count), label = "Experiment lead person / Primary Investigator", value = "")
-                             )
-
-                         ) #end box
-            )
-
-          )
-          count <- count + 1
-        }
-      }
-      else if(projectEntities$numLeads > n){
-        start <- n+1
-        end <- projectEntities$numLeads
-        count <- start
-        for(num in start:end){
-          removeUI(
-            selector = paste0("#fl_box_exp_lead_", count),
-            immediate = T
-          )
-          count <- count +1
-        }
-
-      }
-      projectEntities$numLeads <- n
-    }
-    else{
-      removeUI(selector = "#fl_exp_leads_aux", immediate = T)
-      projectEntities$numLeads <- 0
-    }
-  })
-
-  ###### end experiment detials ###########################################################
-
-
-  observeEvent(input$designFieldbook_agrofims, {
-    if(input$designFieldbook_agrofims =="CRD"){
-      updateSelectInput(session,"designFieldbook_agrofims_r_y", label ="Replications")
-      updateSelectInput(session,"designFieldbook_agrofims_r_n", label ="Replications")
-    }
-    else if(input$designFieldbook_agrofims =="RCBD"){
-      updateSelectInput(session,"designFieldbook_agrofims_r_y", label ="Blocks")
-      updateSelectInput(session,"designFieldbook_agrofims_r_n", label ="Blocks")
-    }
-
-  })
 
   #### factors ####################################################################################
 
 
+  ## observe when comboboxes of factors are changed
+  observe({
+    updateSelectInput(session, "sel1_3", choices = lvl$lv_1_3)
+  })
+  observe({
+    updateSelectInput(session, "sel1_2", choices = lvl$lv_1_2)
+  })
+  observe({
+    updateSelectInput(session, "sel2_3", choices = lvl$lv_2_3)
+  })
+  observe({
+    updateSelectInput(session, "sel2_2", choices = lvl$lv_2_2)
+  })
+  observe({
+    updateSelectInput(session, "sel3_3", choices = lvl$lv_3_3)
+  })
+  observe({
+    updateSelectInput(session, "sel3_2", choices = lvl$lv_3_2)
+  })
+  observe({
+    updateSelectInput(session, "sel4_3", choices = lvl$lv_4_3)
+  })
+  observe({
+    updateSelectInput(session, "sel4_2", choices = lvl$lv_4_2)
+  })
+  observe({
+    updateSelectInput(session, "sel5_3", choices = lvl$lv_5_3)
+  })
+  observe({
+    updateSelectInput(session, "sel5_2", choices = lvl$lv_5_2)
+  })
+
+  ## when number of levels are changed for a factor
+  observe({
+    if(is.numeric(input$numLevels_1) && input$numLevels_1 > 0){
+      isolate(updateLevelSelection(1))
+    }
+  })
+  observe({
+    if(is.numeric(input$numLevels_2) && input$numLevels_2 > 0){
+      isolate(updateLevelSelection(2))
+    }
+  })
+  observe({
+    if(is.numeric(input$numLevels_3) && input$numLevels_3 > 0){
+      isolate(updateLevelSelection(3))
+    }
+  })
+  observe({
+    if(is.numeric(input$numLevels_4) && input$numLevels_4 > 0){
+      isolate(updateLevelSelection(4))
+    }
+  })
+  observe({
+    if(is.numeric(input$numLevels_5) && input$numLevels_5 > 0){
+      isolate(updateLevelSelection(5))
+    }
+  })
+
+
+  ## function to draw level selection when is full factorial
+  updateLevelSelection <- function(index){
+
+    sel_1 <- input[[paste0("sel", index, "_1")]]
+    sel_2 <- input[[paste0("sel", index, "_2")]]
+    sel_3 <- input[[paste0("sel", index, "_3")]]
+
+    if(is.null(sel_1) || is.null(sel_2) || is.null(sel_3)) return()
+
+    aux <- dplyr::filter(factors,GROUP==sel_1 & SUBGROUP==sel_2 & FACTOR==sel_3)
+
+    removeUI(selector = paste0("#fl_title_factor_", index), immediate = T)
+
+    if(nrow(aux) > 0){
+      insertUI(
+        selector = paste0("#fl_title_factor_aux_", index),
+        where = "beforeBegin",
+        ui = fluidRow(id=paste0("fl_title_factor_", index), column(width = 12, br(), h4(HTML(paste0("<b>", sel_3, "</b>")))))
+      )
+
+      if(isolate(input$fullFactorialRB == "No" )){
+        if(aux$FORM == "combo box"){
+          convertListToHTMLSelect(index, aux$LEVEL, aux$FORM, sel_3)
+        }
+        else{
+          convertListToHTMLSelect(index, sel_3, aux$FORM, sel_3)
+        }
+
+      }
+
+      if(isolate(is.numeric(input[[paste0("numLevels_", index)]]))){
+        if(aux$FORM == "combo box"){
+          drawComboboxLevel(index, input[[paste0("numLevels_", index)]], aux$LEVEL)
+        }
+        else if(aux$FORM == "text input"){
+          drawTextInputLevel(index, input[[paste0("numLevels_", index)]], aux$UNIT)
+        }
+        else if(aux$FORM == "numeric input"){
+          drawNumericInputLevel(index, input[[paste0("numLevels_", index)]])
+        }
+
+        else if(aux$FORM == "date"){
+          drawDateLevel(index, input[[paste0("numLevels_", index)]])
+        }
+
+      }
+
+      isolate(if(sel_1 == "Soil fertility management"){generateListLevelsSoilTab(index, aux$FORM, aux$LEVEL, sel_3)})
+
+    }
+    else{
+      removeUI(selector = paste0("#fluid_levels_", index), immediate = T)
+      isolate(if(sel_1 == "Soil fertility management") {generateListLevelsSoilTab(index)})
+    }
+
+  }
+
+  auxfunction <- function(index){
+
+  }
+
+  ## cuando se cambia el primer select del primer factor
   observe({
     if(!is.null(input$sel1_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel1_1)
       lvl$lv_1_2 <- unique(aux$SUBGROUP)
-      updateSelectInput(session, "sel1_2", choices = lvl$lv_1_2)
+      isolate(
+        if(input$sel1_1 == "Soil fertility management"){
+          addTabSoilFertility(1)
+          }
+        else{
+            removeTabSoilFertility(1)
+        }
+      )
     }
     else{
+      removeTabSoilFertility(1)
       lvl$lv_1_2 <- NULL
-      updateSelectInput(session, "sel1_2", choices = NULL)
-
     }
 
-    removeUI(selector = "#fluid_levels_1", immediate = T)
     lvl$lv_1_3 <- NULL
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",1, "FACTOR 1"))
-    # if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1)
-    updateSelectInput(session, "sel1_3", choices = NULL)
+    removeUI(selector = "#fluid_levels_1", immediate = T)
+    isolate(convertListToHTMLSelect(1))
     removeUI( selector ="#fl_title_factor_1", immediate = T )
 
   })
+  ## cuando se cambia el segundo select del primer factor
   observe( {
     if(!is.null(input$sel1_2)){
       aux <- dplyr::filter(factors,GROUP==input$sel1_1 & SUBGROUP==input$sel1_2)
       lvl$lv_1_3 <- unique(aux$FACTOR)
-      updateSelectInput(session, "sel1_3", choices = lvl$lv_1_3)
     }
     else{
       lvl$lv1_3 <- NULL
-      updateSelectInput(session, "sel1_3", choices = NULL)
     }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",1, "FACTOR 1"))
-    # if(input$fullFactorialRB == "No") convertListToHTMLSelect("-", "",1)
+
+    isolate(convertListToHTMLSelect(1))
+    isolate(if(!is.null(input$sel1_1) && input$sel1_1 == "Soil fertility management") generateListLevelsSoilTab(1))
     removeUI(selector = "#fluid_levels_1", immediate = T)
     removeUI( selector ="#fl_title_factor_1", immediate = T )
   })
+  ## cuando se cambia el tercer select del primer factor
   observeEvent(input$sel1_3, {
     removeUI( selector ="#fl_title_factor_1", immediate = T )
     if(!is.null(input$sel1_3)){
-      aux <- dplyr::filter(factors,GROUP==input$sel1_1 & SUBGROUP==input$sel1_2 & FACTOR==input$sel1_3)
-      if(nrow(aux) > 0){
-        insertUI(
-          selector = "#fl_title_factor_aux_1",
-          where = "beforeBegin",
-          ui = fluidRow(id="fl_title_factor_1", column(width = 12, br(), h4(HTML(paste0("<b>", input$sel1_3, "</b>")))))
-
-        )
-        if(isolate(input$fullFactorialRB == "No")){
-          if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, aux$FORM, 1, input$sel1_3)
-          }
-          else{
-            convertListToHTMLSelect(input$sel1_3, aux$FORM, 1, input$sel1_3)
-          }
-
-        }
-
-        if(isolate(is.numeric(input$numLevels_1))){
-          if(aux$FORM == "combo box"){
-            drawComboboxLevel(1,input$numLevels_1, aux$LEVEL)
-
-          }
-          else if(aux$FORM == "text input"){
-            drawTextInputLevel(1,input$numLevels_1, aux$UNIT)
-
-          }
-          else if(aux$FORM == "numeric input"){
-            drawNumericInputLevel(1,input$numLevels_1)
-          }
-
-          else if(aux$FORM == "date"){
-            drawDateLevel(1,input$numLevels_1)
-          }
-
-        }
-
-      }
-      else{
-        removeUI(selector = "#fluid_levels_1", immediate = T)
-      }
-
+      updateLevelSelection(1)
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",1, "FACTOR 1"))
+      isolate(convertListToHTMLSelect(1))
       removeUI(selector = "#fluid_levels_1", immediate = T)
+      isolate(if(input$sel1_1 == "Soil fertility management") {generateListLevelsSoilTab(1)})
     }
   })
 
 
+  ## cuando se cambia el primer select del segundo factor
   observe({
     if(!is.null(input$sel2_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel2_1)
       lvl$lv_2_2 <- unique(aux$SUBGROUP)
-      updateSelectInput(session, "sel2_2", choices = lvl$lv_2_2)
+
+      isolate(
+        if(input$sel2_1 == "Soil fertility management"){ addTabSoilFertility(2)}
+        else{removeTabSoilFertility(2)}
+      )
     }
     else{
       lvl$lv_2_2 <- NULL
+      removeTabSoilFertility(2)
       updateSelectInput(session, "sel2_2", choices = NULL)
     }
     removeUI(selector = "#fluid_levels_2", immediate = T)
     lvl$lv_2_3 <- NULL
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",2, "FACTOR 2"))
+    isolate(convertListToHTMLSelect(2))
     updateSelectInput(session, "sel2_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_2", immediate = T )
 
   })
+
+  ## cuando se cambia el segudo select del segundo factor
   observe( {
     if(!is.null(input$sel2_2)){
       aux <- dplyr::filter(factors,GROUP==input$sel2_1 & SUBGROUP==input$sel2_2)
       lvl$lv_2_3 <- unique(aux$FACTOR)
-      updateSelectInput(session, "sel2_3", choices = lvl$lv_2_3)
     }
     else{
       lvl$lv_2_3 <- NULL
-      updateSelectInput(session, "sel2_3", choices = NULL)
     }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",2, "FACTOR 2"))
+    isolate(convertListToHTMLSelect(2))
+    isolate(if(!is.null(input$sel2_1) && input$sel2_1 == "Soil fertility management") {generateListLevelsSoilTab(2)})
     removeUI(selector = "#fluid_levels_2", immediate = T)
     removeUI( selector ="#fl_title_factor_2", immediate = T )
   })
+
+  ## cuando se cambia el tercer select del segundo factor
   observeEvent(input$sel2_3,{
     removeUI( selector ="#fl_title_factor_2", immediate = T )
     if(!is.null(input$sel2_3)){
-      aux <- dplyr::filter(factors,GROUP==input$sel2_1 & SUBGROUP==input$sel2_2 & FACTOR==input$sel2_3)
-
-      if(nrow(aux) > 0){
-        insertUI(
-          selector = "#fl_title_factor_aux_2",
-          where = "beforeBegin",
-          ui = fluidRow(id="fl_title_factor_2", column(width = 12, br(), h4(HTML(paste0("<b>", input$sel2_3, "</b>")))))
-
-        )
-
-
-        if(isolate(input$fullFactorialRB == "No")){
-
-          if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, aux$FORM, 2, input$sel2_3)
-          }
-          else{
-            convertListToHTMLSelect(input$sel2_3, aux$FORM, 2, input$sel2_3)
-          }
-
-        }
-
-        if(is.numeric(input$numLevels_2)){
-          if(aux$FORM == "combo box"){
-            drawComboboxLevel(2,input$numLevels_2, aux$LEVEL)
-          }
-          else if(aux$FORM == "text input"){
-            drawTextInputLevel(2,input$numLevels_2, aux$UNIT)
-          }
-          else if(aux$FORM == "numeric input"){
-            drawNumericInputLevel(2,input$numLevels_2)
-          }
-
-          else if(aux$FORM == "date"){
-            drawDateLevel(2,input$numLevels_2)
-          }
-
-        }
-
-
-      }
-      else{
-        removeUI(selector = "#fluid_levels_2", immediate = T)
-      }
-
+      updateLevelSelection(2)
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",2, "FACTOR 2"))
+      isolate(convertListToHTMLSelect(2))
+      isolate(if(input$sel2_1 == "Soil fertility management"){generateListLevelsSoilTab(2)})
       removeUI(selector = "#fluid_levels_2", immediate = T)
     }
   })
 
-
+  ## cuando se cambia el primer select del tercer factor
   observe({
     if(!is.null(input$sel3_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel3_1)
       lvl$lv_3_2 <- unique(aux$SUBGROUP)
-      updateSelectInput(session, "sel3_2", choices = lvl$lv_3_2)
+      isolate(
+        if(input$sel3_1 == "Soil fertility management"){ addTabSoilFertility(3)}
+        else{removeTabSoilFertility(3)}
+      )
     }
     else{
       lvl$lv_3_2 <- NULL
+      removeTabSoilFertility(3)
       updateSelectInput(session, "sel3_2", choices = NULL)
     }
     removeUI(selector = "#fluid_levels_3", immediate = T)
     lvl$lv_3_3 <- NULL
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",3, "FACTOR 3"))
-    updateSelectInput(session, "sel3_3", choices = NULL)
+    isolate(convertListToHTMLSelect(3))
     removeUI( selector ="#fl_title_factor_3", immediate = T )
 
   })
+
+  ## cuando se cambia el segundo select del tercer factor
   observe( {
+    lvl$lv_3_3 <- NULL
     if(!is.null(input$sel3_2)){
       aux <- dplyr::filter(factors,GROUP==input$sel3_1 & SUBGROUP==input$sel3_2)
       lvl$lv_3_3 <- unique(aux$FACTOR)
-      updateSelectInput(session, "sel3_3", choices = lvl$lv_3_3)
     }
-    else{
-      lvl$lv_3_3 <- NULL
-      updateSelectInput(session, "sel3_3", choices = NULL)
-    }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",3, "FACTOR 3"))
+    # else{
+    #
+    #   updateSelectInput(session, "sel3_3", choices = NULL)
+    # }
+    isolate(convertListToHTMLSelect(3))
+    isolate(if(!is.null(input$sel3_1) && input$sel3_1 == "Soil fertility management") {generateListLevelsSoilTab(3)})
     removeUI(selector = "#fluid_levels_3", immediate = T)
     removeUI( selector ="#fl_title_factor_3", immediate = T )
   })
+
+  ## cuando se cambia el tercer select del tercer factor
   observeEvent(input$sel3_3,{
     removeUI( selector ="#fl_title_factor_3", immediate = T )
     if(!is.null(input$sel3_3)){
-      aux <- dplyr::filter(factors,GROUP==input$sel3_1 & SUBGROUP==input$sel3_2 & FACTOR==input$sel3_3)
-
-      if(nrow(aux) > 0){
-        insertUI(
-          selector = "#fl_title_factor_aux_3",
-          where = "beforeBegin",
-          ui = fluidRow(id="fl_title_factor_3", column(width = 12, br(), h4(HTML(paste0("<b>", input$sel3_3, "</b>")))))
-
-        )
-
-        if(isolate(input$fullFactorialRB == "No")){
-          if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, aux$FORM,3, input$sel3_3)
-          }
-          else{
-            convertListToHTMLSelect(input$sel3_3, aux$FORM, 3, input$sel3_3)
-          }
-
-        }
-
-        if(is.numeric(input$numLevels_3)){
-
-          if(aux$FORM == "combo box"){
-            drawComboboxLevel(3,input$numLevels_3, aux$LEVEL)
-          }
-          else if(aux$FORM == "text input"){
-            drawTextInputLevel(3,input$numLevels_3, aux$UNIT)
-          }
-          else if(aux$FORM == "numeric input"){
-            drawNumericInputLevel(3,input$numLevels_3)
-          }
-
-          else if(aux$FORM == "date"){
-            drawDateLevel(3,input$numLevels_3)
-          }
-        }
-
-      }
-      else{
-        removeUI(selector = "#fluid_levels_3", immediate = T)
-      }
+      updateLevelSelection(3)
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",3, "FACTOR 3"))
+      isolate(convertListToHTMLSelect(3))
+      isolate(if(input$sel3_1 == "Soil fertility management"){generateListLevelsSoilTab(3)})
       removeUI(selector = "#fluid_levels_3", immediate = T)
     }
   })
 
-
+  ## cuando se cambia el primer select del cuarto factor
   observe({
     if(!is.null(input$sel4_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel4_1)
       lvl$lv_4_2 <- unique(aux$SUBGROUP)
-      updateSelectInput(session, "sel4_2", choices = lvl$lv_4_2)
+
+      isolate(
+        if(input$sel4_1 == "Soil fertility management"){ addTabSoilFertility(4)}
+        else{removeTabSoilFertility(4)}
+      )
     }
     else{
       lvl$lv_4_2 <- NULL
-      updateSelectInput(session, "sel4_2", choices = NULL)
+      removeTabSoilFertility(4)
     }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",4, "FACTOR 4"))
+    isolate(convertListToHTMLSelect(4))
     removeUI(selector = "#fluid_levels_4", immediate = T)
     lvl$lv_4_3 <- NULL
-    updateSelectInput(session, "sel4_3", choices = NULL)
     removeUI( selector ="#fl_title_factor_4", immediate = T )
 
   })
+
+  ## cuando se cambia el segundo select del cuarto factor
   observe({
+    lvl$lv_4_3 <- NULL
     if(!is.null(input$sel4_2)){
       aux <- dplyr::filter(factors,GROUP==input$sel4_1 & SUBGROUP==input$sel4_2)
       lvl$lv_4_3 <- unique(aux$FACTOR)
-      updateSelectInput(session, "sel4_3", choices = lvl$lv_4_3)
     }
-    else{
-      lvl$lv_4_3 <- NULL
-      updateSelectInput(session, "sel4_3", choices = NULL)
-    }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",4, "FACTOR 4"))
+    # else{
+    #
+    #   updateSelectInput(session, "sel4_3", choices = NULL)
+    # }
+    isolate(convertListToHTMLSelect(4))
+    isolate(if(!is.null(input$sel4_1) && input$sel4_1 == "Soil fertility management") {generateListLevelsSoilTab(4)})
     removeUI(selector = "#fluid_levels_4", immediate = T)
     removeUI( selector ="#fl_title_factor_4", immediate = T )
   })
+
+  ## cuando se cambia el tercer select del cuarto factor
   observeEvent(input$sel4_3,{
     removeUI( selector ="#fl_title_factor_4", immediate = T )
     if(!is.null(input$sel4_3)){
-      aux <- dplyr::filter(factors,GROUP==input$sel4_1 & SUBGROUP==input$sel4_2 & FACTOR==input$sel4_3)
-
-      if(nrow(aux) > 0){
-        insertUI(
-          selector = "#fl_title_factor_aux_4",
-          where = "beforeBegin",
-          ui = fluidRow(id="fl_title_factor_4", column(width = 12, br(), h4(HTML(paste0("<b>", input$sel4_3, "</b>")))))
-
-        )
-
-        if(isolate(input$fullFactorialRB == "No")){
-          if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, aux$FORM, 4, input$sel4_3)
-          }
-          else{
-            convertListToHTMLSelect(input$sel4_3, aux$FORM, 4, input$sel4_3)
-          }
-
-        }
-
-        if(is.numeric(input$numLevels_4)){
-          if(aux$FORM == "combo box"){
-            drawComboboxLevel(4,input$numLevels_4, aux$LEVEL)
-          }
-          else if(aux$FORM == "text input"){
-            drawTextInputLevel(4,input$numLevels_4, aux$UNIT)
-          }
-          else if(aux$FORM == "numeric input"){
-            drawNumericInputLevel(4,input$numLevels_4)
-          }
-
-          else if(aux$FORM == "date"){
-            drawDateLevel(4,input$numLevels_4)
-          }
-        }
-
-      }
-      else{
-        removeUI(selector = "#fluid_levels_4", immediate = T)
-      }
+      updateLevelSelection(4)
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",4, "FACTOR 4"))
+      isolate(convertListToHTMLSelect(4))
+      isolate(if(input$sel4_1 == "Soil fertility management"){generateListLevelsSoilTab(4)})
       removeUI(selector = "#fluid_levels_4", immediate = T)
     }
   })
 
-
+  ## cuando se cambia el primer select del quinto factor
   observe({
     if(!is.null(input$sel5_1)){
       aux <- dplyr::filter(factors,GROUP==input$sel5_1)
       lvl$lv_5_2 <- unique(aux$SUBGROUP)
-      updateSelectInput(session, "sel5_2", choices = lvl$lv_5_2)
+      isolate(
+        if(input$sel5_1 == "Soil fertility management"){ addTabSoilFertility(5)}
+        else{removeTabSoilFertility(5)}
+      )
     }
     else{
       lvl$lv_5_2 <- NULL
-      updateSelectInput(session, "sel5_2", choices = NULL)
+      removeTabSoilFertility(5)
     }
     removeUI(selector = "#fluid_levels_5", immediate = T)
     lvl$lv_5_3 <- NULL
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",5, "FACTOR 5"))
-    updateSelectInput(session, "sel5_3", choices = NULL)
+    isolate(convertListToHTMLSelect(5))
     removeUI( selector ="#fl_title_factor_5", immediate = T )
-
   })
-  observe( {
+  ## cuando se cambia el segudo select del quinto factor
+  observe({
+    lvl$lv_5_3 <- NULL
     if(!is.null(input$sel5_2)){
       aux <- dplyr::filter(factors, GROUP==input$sel5_1 & SUBGROUP==input$sel5_2)
       lvl$lv_5_3 <- unique(aux$FACTOR)
-      updateSelectInput(session, "sel5_3", choices = lvl$lv_5_3)
     }
-    else{
-      lvl$lv_5_3 <- NULL
-      updateSelectInput(session, "sel5_3", choices = NULL)
-    }
-    isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",5, "FACTOR 5"))
+    # else{
+    #
+    #   updateSelectInput(session, "sel5_3", choices = NULL)
+    # }
+    isolate(convertListToHTMLSelect(5))
+    isolate(if(!is.null(input$sel5_1) && input$sel5_1 == "Soil fertility management") {generateListLevelsSoilTab(5)})
     removeUI(selector = "#fluid_levels_5", immediate = T)
     removeUI( selector ="#fl_title_factor_5", immediate = T )
   })
+  ## cuando se cambia el terccer select del quinto factor
   observeEvent(input$sel5_3,{
     removeUI( selector ="#fl_title_factor_5", immediate = T )
     if(!is.null(input$sel5_3)){
-      aux <- dplyr::filter(factors,GROUP==input$sel5_1 & SUBGROUP==input$sel5_2 & FACTOR==input$sel5_3)
-
-      if(nrow(aux) > 0){
-        insertUI(
-          selector = "#fl_title_factor_aux_5",
-          where = "beforeBegin",
-          ui = fluidRow(id="fl_title_factor_5", column(width = 12, br(), h4(HTML(paste0("<b>", input$sel5_3, "</b>")))))
-
-        )
-
-        if(isolate(input$fullFactorialRB == "No")){
-          if(aux$FORM == "combo box"){
-            convertListToHTMLSelect(aux$LEVEL, aux$FORM, 5, input$sel5_3)
-          }
-          else{
-            convertListToHTMLSelect(input$sel5_3, aux$FORM, 5, input$sel5_3)
-          }
-
-        }
-
-        if(is.numeric(input$numLevels_5)){
-          if(aux$FORM == "combo box"){
-            drawComboboxLevel(5,input$numLevels_5, aux$LEVEL)
-          }
-          else if(aux$FORM == "text input"){
-            drawTextInputLevel(5,input$numLevels_5, aux$UNIT)
-          }
-          else if(aux$FORM == "numeric input"){
-            drawNumericInputLevel(5,input$numLevels_5)
-          }
-
-          else if(aux$FORM == "date"){
-            drawDateLevel(5,input$numLevels_5)
-          }
-        }
-
-      }
-      else{
-        removeUI(selector = "#fluid_levels_5", immediate = T)
-      }
+      updateLevelSelection(5)
     }
     else{
-      isolate(if(input$fullFactorialRB == "No") convertListToHTMLSelect("", "",5, "FACTOR 5"))
+      isolate(convertListToHTMLSelect(5))
+      isolate(if(input$sel5_1 == "Soil fertility management"){generateListLevelsSoilTab(5)})
       removeUI(selector = "#fluid_levels_5", immediate = T)
     }
   })
 
+  ## dibuja selectizeInput en los factores cuando tercer select es del tipo lista
   drawComboboxLevel <- function(order, num, lev){
     opt <- strsplit(lev, ";")
     removeUI(selector = paste0("#fluid_levels_", order), immediate = T)
@@ -1309,6 +1784,7 @@ server_design_agrofims <- function(input, output, session, values){
     )
   }
 
+  ## dibuja selectizeInput para escribir en los factores cuando tercer select es del tipo text input
   drawTextInputLevel <- function(order, num, units){
     removeUI(selector = paste0("#fluid_levels_", order), immediate = T)
     if(is.na(units)){
@@ -1316,12 +1792,12 @@ server_design_agrofims <- function(input, output, session, values){
                where = "afterEnd",
                ui = fluidRow( id= paste0("fluid_levels_", order),
                               column(width = 12,
-                              selectizeInput(paste0("levels_", order), HTML("Enter levels"),
-                                             multiple =T, choices = c(),
-                                             options = list(maxItems = num, placeholder = "Write..." ,
-                                                            'create' = TRUE,
-                                                            'persist' = FALSE)
-                              )
+                                selectizeInput(paste0("levels_", order), HTML("Enter levels"),
+                                               multiple =T, choices = c(),
+                                               options = list(maxItems = num, placeholder = "Write..." ,
+                                                              'create' = TRUE,
+                                                              'persist' = FALSE)
+                                )
                               )
                )
       )
@@ -1350,6 +1826,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
   }
 
+  ## dibuja numericInput en los factores cuando tercer select es del tipo numeric input
   drawNumericInputLevel <- function(order, num){
     removeUI(selector = paste0("#fluid_levels_", order), immediate = T)
     insertUI(selector = paste0("#levelSelection_", order),
@@ -1362,6 +1839,7 @@ server_design_agrofims <- function(input, output, session, values){
     )
   }
 
+  ## dibuja dateInput en los factores cuando tercer select es del tipo date
   drawDateLevel <- function(order, num){
     removeUI(selector = paste0("#fluid_levels_", order), immediate = T)
     insertUI(selector = paste0("#levelSelection_", order),
@@ -1399,79 +1877,30 @@ server_design_agrofims <- function(input, output, session, values){
 
   #### end factors ####################################################################################
 
-
-
-  # output$uiPreviousCrop1 <- renderUI({
-  #   # selectizeInput("prevCropName", "Previous crop name", c(), multiple = TRUE, options = list(
-  #   #   placeholder = "ex.  crop1  crop2", maxItems = input$numPreviousCrop,
-  #   #   'create' = TRUE,
-  #   #   'persist' = FALSE)
-  #   # )
-  #   fluidRow(
-  #
-  # )
-  #
-  #
-  # })
-  output$uiPreviousCrop2 <- renderUI({
-           selectizeInput("prevCropVar", "Previous crop variety", c(), multiple = TRUE, options = list(
-             placeholder = "ex.  var1  var2", maxItems = input$numPreviousCrop,
-             'create' = TRUE,
-             'persist' = FALSE)
-           )#
-
-  })
-#
-#   observeEvent(input$numPreviousCrop, {
-#
-#   })
-
-
-  #observe for selectize of crops for intercropping ####################################
-  observe({
-    if(!is.null(input$cropsSelected)){
-      l <- input$cropsSelected
-      n <- length(input$cropsSelected)
-
-      for (i in  1:n) {
-
-        if(l[[i]] == "Other"){
-          enable(paste0("cropCommonName", i))
-          updateTextInput(session,  paste0("cropCommonName", i),  value ="")
-        }
-        else {
-          disable(paste0("cropCommonName", i))
-          updateTextInput(session,  paste0("cropCommonName", i),  value = l[[i]])
-        }
-
-      }
-
-    }
-  })
-
-
-
+  ################# tabs en field operations ######################################################
   nutTabs = list (#"Crop" = "tabCrop",
-                  "Land preparation" = "tabLandPr",
-                  "Mulching and residue management" ="tabMulching",
-                  "Planting, seeding and transplanting" ="tabPlanting",
-                  "Weeding" = "tabWeeding",
-                  "Harvest" = "tabHarvest" ,
+                  "Harvest" = "tabHarvest",
                   "Irrigation" = "tabIrrigation",
-                  "Biofertilizer" = "tabBiofertilizer",
-                  "Pest observation and control" = "tabPestNDisease" ,
-                  "Soil fertility management" = "tabNutrient")
+                  "Land preparation" = "tabLandPr",
+                  "Mulching and residue" ="tabMulching",
+                  "Planting and transplanting" ="tabPlanting",
+                  "Soil fertility" = "tabNutrient",
+                  "Weeding" = "tabWeeding"
+                  #"Biofertilizer" = "tabBiofertilizer",
+                  #"Pest observation and control" = "tabPestNDisease" ,
+                  )
   observe({
     # hideTab("nutrienTabPanels", "tabCrop")
+    hideTab("nutrienTabPanels", "tabHarvest")
+    hideTab("nutrienTabPanels", "tabIrrigation")
     hideTab("nutrienTabPanels", "tabLandPr")
     hideTab("nutrienTabPanels", "tabMulching")
     hideTab("nutrienTabPanels", "tabPlanting")
-    hideTab("nutrienTabPanels", "tabHarvest")
-    hideTab("nutrienTabPanels", "tabWeeding")
-    hideTab("nutrienTabPanels", "tabIrrigation")
-    hideTab("nutrienTabPanels", "tabBiofertilizer")
-    hideTab("nutrienTabPanels", "tabPestNDisease")
     hideTab("nutrienTabPanels", "tabNutrient")
+    hideTab("nutrienTabPanels", "tabWeeding")
+    #hideTab("nutrienTabPanels", "tabBiofertilizer")
+    #hideTab("nutrienTabPanels", "tabPestNDisease")
+
 
     if(!is.null(input$selectAgroFeature)){
       l <- input$selectAgroFeature
@@ -1485,8 +1914,14 @@ server_design_agrofims <- function(input, output, session, values){
     }
   })
 
+  ################# fin de tabs en field operations ######################################################
+
+
+
+
   ###########  biofertilizer ##########################################
 
+  ## valor pra guardar cuantos boxes hay actualmente dibujados
   bioferVar <- reactiveValues()
   bioferVar$nApps <-1
 
@@ -1604,14 +2039,14 @@ server_design_agrofims <- function(input, output, session, values){
 
   }
 
-  ####################################################################
+  ############ end biofertilizer ########################################################
 
 
 
 
 
   ###########  Pest and Disease ##########################################
-
+  ## valor pra guardar cuantos boxes hay actualmente dibujados
   pestVar <- reactiveValues()
   pestVar$nApps <-1
 
@@ -1769,10 +2204,11 @@ server_design_agrofims <- function(input, output, session, values){
 
   }
 
-  ####################################################################
+  ############# end Pest and Disease #######################################################
 
 
   ########### weeding ###############################################
+  ## valor pra guardar cuantos boxes hay actualmente dibujados
   weedingVar <- reactiveValues()
   weedingVar$nApps <- 0
 
@@ -1832,8 +2268,7 @@ server_design_agrofims <- function(input, output, session, values){
                                   "Weed puller",
                                   "Other")
                               ),
-                   conditionalPanel(paste0("input.weeding_type_", index, " == 'Other'"),
-                                    textInput(paste0("weeding_type_other",index ), "")
+                   hidden(textInput(paste0("weeding_type_",index, "_other" ), "")
                                     # session$sendCustomMessage(type="focus",message=paste0("weeding_type_other",index ))
 
                   ),
@@ -1871,10 +2306,8 @@ server_design_agrofims <- function(input, output, session, values){
 
   #################### end weeding #############################################
 
-
-
   ###########  irrigation ##########################################
-
+  ## valor pra guardar cuantos boxes hay actualmente dibujados
   irrigVar <- reactiveValues()
   irrigVar$nApps <-3
 
@@ -1967,58 +2400,62 @@ server_design_agrofims <- function(input, output, session, values){
                            )
                          ),
                          selectizeInput(paste0("irrigation_technique_", order), label = "Irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                          c("Surface",
+                                          c("Irrigation sprinker",
+                                            "Surface",
                                             "Localized",
-                                            "Irrigation sprinker",
-                                            "Sub-irrigation")
+                                            #"Sub-irrigation",
+                                            "Other")
                          ),
+                         hidden(textInput(paste0("irrigation_technique_", order, "_other"), "")),
                          conditionalPanel(paste0("input.irrigation_technique_", order, "== 'Surface'"),
                                           selectizeInput(paste0("surface_irrigation_technique_", order), label = "Surface irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                           c("Furrow irrigation",
-                                                             "Uncontrolled flooding",
-                                                             "Basin irrigation",
+                                                           c("Basin irrigation",
                                                              "Border irrigation",
-                                                             "Continuous flood")
-                                          )
+                                                             "Continuous flood",
+                                                             "Furrow irrigation",
+                                                             "Uncontrolled flooding",
+                                                             "Other")
+                                          ),
+                                          hidden(textInput(paste0("surface_irrigation_technique_", order, "_other"), ""))
                          ),
                          conditionalPanel(paste0("input.irrigation_technique_", order, "== 'Localized'"),
 
                                           selectizeInput(paste0("localized_irrigation_technique", order), label = "Localized irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                           c("Drip irrigation",
-                                                             "Subsurface textile irrigation",
+                                                           c("Bubbler irrigation",
+                                                             "Drip irrigation",
                                                              "Mist irrigation",
+                                                             "Pitcher irrigation",
                                                              "Subsurface drip irrigation",
-                                                             "Bubbler irrigation",
-                                                             "Pitcher irrigation")
-                                          )
+                                                             "Subsurface textile irrigation",
+                                                             "Other")
+                                          ),
+                                          hidden(textInput(paste0("localized_irrigation_technique", order, "_other"), ""))
                          ),
                          conditionalPanel(paste0("input.irrigation_technique_", order, "== 'Irrigation sprinker'"),
 
-                                          selectizeInput(paste0("irrigation_using_sprinkler_systems_", order), label = "Irrigation using sprinkler systems", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                          selectizeInput(paste0("irrigation_using_sprinkler_systems_", order), label = "Irrigation sprinkler system", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                            c("Center pivot irrigation",
                                                              "Irrigation by lateral move",
-                                                             "Irrigation by side move")
-                                          )
+                                                             "Irrigation by side move",
+                                                             "Other")
+                                          ),
+                                          hidden(textInput(paste0("irrigation_using_sprinkler_systems_", order, "_other"), ""))
                          ),
 
 
                          #Sacar myFile upload
                          # fileInput(paste0("myFile", "Irrigation system picture_", order), accept = c('image/png', 'image/jpeg')),
                          # textInput(paste0("irrigation_water_source_", order), value="", label = "Water source"),
-                         selectizeInput(paste0("irrigation_water_source_", order), label = "Water source", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                          c("River",
+                         selectizeInput(paste0("irrigation_source_", order), label = "Irrigation source", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                          c("Drainage",
+                                            "Groundwater",
                                             "Lake",
                                             "Reservoir",
+                                            "River",
                                             "Spring",
-                                            "Drainage",
-                                            "Groundwater",
                                             "Other")
                          ),
-                         conditionalPanel(paste0("input.irrigation_water_source_", order ," == 'Other'"),
-
-                                                 textInput(paste0("irrigation_water_source_", order,  "_other"), "")
-
-                                          )#,
+                         hidden(textInput(paste0("irrigation_source_", order,  "_other"), ""))#,
                          # fluidRow(
                          #    column(width = 6,
                          #      textInput(paste0("irrigation_water_source_distance_", order), value="", label = "Water source distance")
@@ -2075,24 +2512,27 @@ server_design_agrofims <- function(input, output, session, values){
                          # ),
                          fluidRow(
                            column(width = 6,
-                                  textInput(paste0("irrigation_water_source_distance_", order), value="", label = "Water source distance")
+                                  #textInput(paste0("irrigation_source_distance_", order), value="", label = "Irrigation source distance")
+                                  numericInput(paste0("irrigation_source_distance_", order), label = "Irrigation source distance", value = "", min = 0, step = 0.1)
                            ),
                            column(width = 6,
-                                  selectizeInput(paste0("irrigation_water_source_distance_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
-                                                 choices = c("m", "km")
+                                  selectizeInput(paste0("irrigation_source_distance_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
+                                                 choices = c("ft", "km", "m", "mi")
                                   )
                            )
                          ),
                          fluidRow(
                            column(width = 6,
-                                  textInput(paste0("irrigation_amount_", order), value="", label = "Irrigation amount")
+                                  #textInput(paste0("irrigation_amount_", order), value="", label = "Irrigation amount")
+                                  numericInput(paste0("irrigation_amount_", order), label = "Irrigation amount", value = "", min = 0, step = 0.1)
                            ),
                            column(width = 6,
                                   selectizeInput(paste0("irrigation_amount_", order, "unit"), "Unit", multiple=T, options=list(maxItems=1, placeholder="Select one..."),
-                                                 choices = c("mm")#, "cm", "m", "in", "ft", "ml", "L", "gal", "cu m", "cu in", "cu ft")
+                                                 choices = c("in", "mm")#, "cm", "m", "in", "ft", "ml", "L", "gal", "cu m", "cu in", "cu ft")
                                   )
                            )
-                         )#,
+                         ),
+                         textAreaInput(paste0("irrigation_notes_", order), label = "Notes", value = "")
 
                          # fluidRow(
                          #   column(width = 6,
@@ -2115,7 +2555,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   ###########  nutrients ######################################################
-
+  ## valor pra guardar cuantos boxes hay actualmente dibujados
   nutVar <- reactiveValues()
   nutVar$types <- list()
 
@@ -2305,8 +2745,6 @@ server_design_agrofims <- function(input, output, session, values){
 
   }
 
-
-
   drawBoxNutrients <- function(order, type){
     fluidRow(id= paste0("box_nut_", type, "_", order),
              box( title = paste0("Application #", order),
@@ -2485,11 +2923,10 @@ server_design_agrofims <- function(input, output, session, values){
                                                      c("g/sq m","kg/ha","lb/ac"))
 
                                ),
-                               conditionalPanel(paste0("input.fert_nit_type1_", type, "_", order, " == 'Other'"),
-                                                column(width=12,
-                                                textInput(paste0("fert_nit_type1_other_", type, "_", order), "")
-                                                )
-                               )
+
+                                  column(width=12,
+                                  hidden(textInput(paste0("fert_nit_type1_", type, "_", order, "_other"), ""))
+                                  )
 
                              )
 
@@ -2518,11 +2955,15 @@ server_design_agrofims <- function(input, output, session, values){
                                       selectizeInput(paste0("fert_nit_type1_unit_", type, "_", order), multiple =T, options = list(maxItems=1, placeholder=""), label= "",
                                                      c("g/sq m","kg/ha","lb/ac"))
                                ),
-                               conditionalPanel(paste0("input.fert_nit_type1_", type, "_", order, " == 'Other'"),
-                                                column(width=12,
-                                                textInput(paste0("fert_nit_type1_other_", type, "_", order), "")
-                                                )
+                               # conditionalPanel(paste0("input.fert_nit_type1_", type, "_", order, " == 'Other'"),
+                               #                  column(width=12,
+                               #                  textInput(paste0("fert_nit_type1_other_", type, "_", order), "")
+                               #                  )
+                               # )
+                               column(width=12,
+                                      hidden(textInput(paste0("fert_nit_type1_", type, "_", order, "_other"), ""))
                                )
+
                              )
                             }
                     ),
@@ -3952,30 +4393,8 @@ server_design_agrofims <- function(input, output, session, values){
   traitsVals$aux <- data.frame()
   traitsVals$selectedRows <- list()
   traitsVals$Data <- data.table()
-#   dict <- data.frame(stringsAsFactors = FALSE,
-#          # c("<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>","<font color='black' > Not selected </font>"
-#          c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"
-# ),
-# # ),
-#          c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean'),
-#          c('Number of tubers planted','Number of emerged plants','Percentage plants emerged','Number of harvested plants','Percentage of plants harvested','Non-marketable tuber number','Total number of tubers','Number marketable tubers','Non-marketable tuber weight','Total tuber weight','Total tuber yield no adjusted','Total tuber yield adjusted','Marketable tuber weight','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield in fresh weight','Root Yield in dry weight','Root Yield in Fresh Aerial','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Number of germinated stakes','Root Yield','Storage root weight ','Storage root weight Peel','Number of stakes','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','Grain row number','Grain weight','Grain yield adjusted','Grain yield in dry weight','Grain yield in fresh weight','Grain yield rank number','Grain yield relative to check','Grain yield relative','Shelled cob in fresh weight','Grain test weight ','Grain weight adjusted','Grain weight in fresh weight','Grain yield in fresh weight','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots ','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots ','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Seed yield','Seed weight'),
-#          c('CO_330:0000265-/plot','CO_330:0000268-/plot','CO_330:0000283- ','CO_330:0000287-/plot','CO_330:0000290- ','CO_330:0000300-/plot','CO_330:0000304-/plot,CO_330:0000305-/plant','CO_330:0000293-/plot,CO_330:0000297-/plant','CO_330:0000314-kg/plot','CO_330:0000317-kg/plot,CO_330:0000321-kg/plant','CO_330:0000324-t/ha','CO_330:0000323-t/ha','CO_330:0000308- ','CO_330:0000330-t/ha','CO_330:0000327-t/ha','CO_330:0000333-g','CO_330:0000336-g','CO_334:0000008-ratio','CO_334:0000009- ','CO_334:0000010-/plant','CO_334:0000011- ','CO_334:0000012- kg/plot','CO_334:0000013-t/ha','CO_334:0000014-t/ha','CO_334:0000017-t/ha','CO_334:0000127-kg/pl','CO_334:0000129-Stem','CO_334:0000131-kg/plot','CO_334:0000132-/plot','CO_334:0000133- ','CO_334:0000157-kg/pl,CO_334:0000158-kg/plot','CO_334:0000159- ','CO_334:0000166- ','CO_334:0000168-/plot','CO_334:0000169-/plot','CO_334:0000170-/kg','CO_334:0000171-/kg','CO_334:0000213-1 month,CO_334:0000214-3 months,CO_334:0000215-6 months,CO_334:0000216-9 months,CO_334:0000217-12 months','CO_334:0000230-kg/plant,CO_334:0000231-t/ha','CO_334:0000247-kg','CO_334:0000248-kg','CO_334:0000250- ','CO_321:0001034-m2/kg,CO_321:0001035-kg/ha,CO_321:0001036-t/ha,CO_321:0001037-g/plant,CO_321:0001038-g/plot,CO_321:0001039-kg/plot','CO_321:0001213-g/1000 grain,CO_321:0001214-g/100 grain,CO_321:0001215-g/200 grain','CO_321:0001217-g/m2,CO_321:0001218-kg/ha,CO_321:0001219-t/ha,CO_321:0001220-g/plant,CO_321:0001221-g/plot,CO_321:0001222-kg/plot,CO_321:0001223-%','CO_321:0001224- ','CO_321:0001231- ,CO_321:0001232-%','CO_321:0001246-m2/kg,CO_321:0001247-kg/ha,CO_321:0001248-t/ha,CO_321:0001249-g/plot,CO_321:0001250-kg/plot,CO_321:0001651- ','CO_322:0000694- ','CO_322:0000723-g/1000grain,CO_322:0000725-g/100grain,CO_322:0000727-g/200grain','CO_322:0000730-kg/ha,CO_322:0000731-t/ha','CO_322:0000734-g/plot,CO_322:0000737-kg/ha,CO_322:0000740-kg/plot,CO_322:0000742-t/ha','CO_322:0000744-g/plot,CO_322:0000747-kg/ha,CO_322:0000749-kg/plot,CO_322:0000751-t/ha','CO_322:0000754- ','CO_322:0000756-%','CO_322:0000757-%','CO_322:0000928-g/plot,CO_322:0000931-kg/plot','CO_322:0001008-lb/bsh','CO_322:0001009-g/1000grain,CO_322:0001010-g/100grain,CO_322:0001011-g/200grain','CO_322:0001012-g/200grain,CO_322:0001013-g/1000grain,CO_322:0001014-g/100grain','CO_322:0001016-lb/plot','CO_331:0000192-/plot','CO_331:0000678-/plot','CO_331:0000679-/plot','CO_331:0000211-/plot','CO_331:0000214-/plot','CO_331:0000217-/plot','CO_331:0000233-/plot,CO_331:0000230-/plant','CO_331:0000220-kg/plot','CO_331:0000223-kg/plot','CO_331:0000227-kg/plot','CO_331:0000237-kg/plot','CO_331:0000218-t/ha','CO_331:0000680-t/ha','CO_331:0000681-kg/plot,CO_331:0000296-t/ha','CO_331:0000682-%','CO_331:0000683-t/ha','CO_331:0000791- ','CO_331:0000792- ','CO_336:0000262-g/plot,CO_336:0000340-kg/ha','CO_336:0000261-g/plot,CO_336:0000337-kg/ha','CO_336:0000333-g'),
-#          # c('', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '','','','','','','','','','','','','','','','','','', '','','',''),
-#          # c('', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '', '','', '','', '','', '','', '','', '','', '','', '','','','','','','','','','','','','','','','','','', '','','','')
-#          c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000293','CO_330:0000314','CO_330:0000317','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001213','CO_321:0001217','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_322:0000694','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000744','CO_322:0000754','CO_322:0000756','CO_322:0000757','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000261','CO_336:0000333'),
-#          c('/plot','/plot','','/plot','','/plot','/plot','/plot','kg/plot','kg/plot','t/ha','t/ha','','t/ha','t/ha','g','g','ratio','','/plant','',' kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','/plot','','kg/pl','','','/plot','/plot','/kg','/kg','1 month','kg/plant','kg','kg','','m2/kg','g/1000 grain','g/m2','','','m2/kg','','g/1000grain','kg/ha','g/plot','g/plot','','%','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','/plot','/plot','/plot','/plot','/plot','/plot','/plot','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','kg/plot','%','t/ha','','','g/plot','g/plot','g')
-#
-#   )
-#   colnames(dict) <- c("Status","Crop", "Crop trait management", "traitCode", "VariableId", "Scale")
 
   dict <- data.frame(stringsAsFactors = FALSE,
-      # c("Not selected",'"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"','"Not selected"'),
-      # c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean','Soybean','Soybean'),
-      # c('Number of tubers planted','Number of emerged plants','Plant emergence proportion','Number of harvested plants','Proportion of plants harvested','Non-marketable tuber number','Tuber number','Tuber number per plant','Number of marketable tubers','Number of marketable tubers per plant','Non-marketable tuber weight','Tuber weight','Tuber weight per plant','Tuber yield no adjusted','Tuber yield adjusted','Marketable tuber weight','Marketable tuber weight per plant','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield','Root Yield','Root Yield','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Sprout count','Root Yield','Root Yield','Storage root weight','Storage root weight','Number of stakes','Aboveground biomass at maturity','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','In-season aboveground biomass','In-season aboveground biomass','Grain row number','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Shelled cob weight','Grain test weight','Grain weight','Grain weight','Grain yield','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots','Total number of root','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Fodder Yield','Seed yield','Seed yield','Seed weight'),
-      # c('Number of tubers planted - method','Number of emerged plants - method','Plant emergence proportion - method','Number of harvested plants - method','Proportion of plants harvested - method','Non-marketable tuber number - method','Tuber number - method','Tuber number per plant - method','Number of marketable tubers - method','Number of marketable tubers per plant - method','Non-marketable tuber weight - method','Tuber weight - method','Tuber weight per plant - method','Tuber yield no adjusted - method','Tuber yield adjusted - method','Marketable tuber weight - method','Marketable tuber weight per plant - method','Marketable tuber yield no adjusted - method','Marketable tuber yield adjusted - method','Average of tuber weight - method','Average of marketable tuber weight - method','Counting:Sprouting_method','Visual Rating:Initial Vigor_method','Counting:Plant Stands Harvested_method','Counting: Root number_method','Measurement :Fresh Weight of Storage Root_method','Calculation :Fresh Root Yield_method','Calculation :Dry Yield_method','Calculation :Top Yield_method','Measurement :Stem weight_method','Counting:stem number_method','Measurement :marketable root weight_method','Measurement : Non marketable root weight_method','Counting:Stem rot_method','Measurement :root weight in air_method','Measurement :root weight in water_method','Counting:number of planted stakes_method','Counting:germination count_method','Counting:non marketable root number_method','Counting:marketable root number_method','Measurement :stock weight_method','Counting:stem yield_method','Counting:sprout count at month_method','Estimation :plant yield_method','Estimation :yield per year_method','Measurement: root weight after washing_method','Measurement :root weight after peel_method','Counting:number of stakes_method','BM Computation','BM Measurement','GW Measurement','GY Computation','GY Measurement','GY Relative to check Computation','GYFac Computation','HI Computation','ISBM Computation','ISBM Measurement','ISBM Estimation','GCol - Estimation','GW DW - Measurement','Adjusted GY - Computation','DW GY - Measurement','DW GY - Computation','FW GY - Measurement','FW GY - Computation','RGY - Computation','GYRank - Computation','Relative to check - Computation','ShellCobW - Measurement (duplicate)','GTW - Computation','GW Adjusted - Computation','GW FW - Measurement','FW GY - Measurement','Evaluation of plant vine establishment','Recording planting materials','Evaluation of plants','Evaluation of plants','Evaluation of roots','Evaluation of roots','Estimated number per plot - Method','Estimated number per plant - Method','Measurements of root mass','Measurements of root mass','Measurements of vine mass','Estimated weight per plot - Method','Estimated marketable yield per hectare - Method','Estimated marketable yield per hectare - Method','Estimated yield of total roots per hectare - No adjusted, Method','Estimated yield per hectare - Adjusted, Method','Percentage of marketable - Method','Biomass yield','Observation of an average or all storage roots within a single plant or plot','Relative to check - Computation','Weighing of fodder per plot','Calculation of fodder yield','Weighing of grain per plot','grain yield calculation','100 weight'),
-      # c('tuber/plot-CO_330:0000265','tuber/plot-CO_330:0000268','%-CO_330:0000283','plants/plot-CO_330:0000287','%-CO_330:0000290','tuber/plot-CO_330:0000300','tuber/ plot-CO_330:0000304','tuber /plant-CO_330:0000305','tuber/plot-CO_330:0000293','tuber/plant-CO_330:0000297','kg/plot-CO_330:0000314','kg/plot-CO_330:0000317','kg/plant-CO_330:0000321','t/ha-CO_330:0000324','t/ha-CO_330:0000323','kg/plot-CO_330:0000308','kg/plant-CO_330:0000311','t/ha-CO_330:0000330','t/ha-CO_330:0000327','g-CO_330:0000333','g-CO_330:0000336','ratio-CO_334:0000008','7 pt scale-CO_334:0000009','Plant-CO_334:0000010','Count-CO_334:0000011','kg/plot-CO_334:0000012','t/ha-CO_334:0000013','t/ha-CO_334:0000014','t/ha-CO_334:0000017','kg/pl-CO_334:0000127','Stem-CO_334:0000129','kg/plot-CO_334:0000131','kg/plot-CO_334:0000132','Number-CO_334:0000133','kg/pl-CO_334:0000157','kg/plot-CO_334:0000158','Number-CO_334:0000159','Seedling-CO_334:0000166','plot-CO_334:0000168','plot-CO_334:0000169','kg-CO_334:0000170','kg-CO_334:0000171','1 month-CO_334:0000213,3 months-CO_334:0000214,6 months-CO_334:0000215,9 months-CO_334:0000216','kg/plant-CO_334:0000230','t/ha-CO_334:0000231','kg-CO_334:0000247','kg-CO_334:0000248','Count-CO_334:0000250','m2/kg-CO_321:0001034,kg/ha-CO_321:0001035,t/ha-CO_321:0001036','g/plant-CO_321:0001037,g/plot-CO_321:0001038,kg/plot-CO_321:0001039','g/1000 grain-CO_321:0001213,g/100 grain-CO_321:0001214,g/200 grain-CO_321:0001215','g/m2-CO_321:0001217,kg/ha-CO_321:0001218,t/ha-CO_321:0001219','/plant-CO_321:0001220,g/plot-CO_321:0001221,kg/plot-CO_321:0001222','%-CO_321:0001223','num-CO_321:0001224','index-CO_321:0001231,%-CO_321:0001232','m2/kg-CO_321:0001246,kg/ha-CO_321:0001247,t/ha-CO_321:0001248','g/plot-CO_321:0001249,kg/plot-CO_321:0001250','1-5 scoring scale-CO_321:0001651','row/ear-CO_322:0000694','g/1000grain-CO_322:0000723,g/100grain-CO_322:0000725,g/200grain-CO_322:0000727','kg/ha-CO_322:0000730,t/ha-CO_322:0000731','g/plot-CO_322:0000734,kg/plot-CO_322:0000740','t/ha-CO_322:0000742,kg/ha-CO_322:0000737','g/plot-CO_322:0000744,kg/plot-CO_322:0000749','kg/ha-CO_322:0000747,t/ha-CO_322:0000751','%-CO_322:0000757','Rank number-CO_322:0000754','%-CO_322:0000756','/plot-CO_322:0000928,kg/plot-CO_322:0000931','lb/bsh-CO_322:0001008','g/1000grain-CO_322:0001009,g/100grain-CO_322:0001010,g/200grain-CO_322:0001011','g/200grain-CO_322:0001012,g/1000grain-CO_322:0001013,g/100grain-CO_322:0001014','lb/plot-CO_322:0001016','plants/plot-CO_331:0000192','plants/plot-CO_331:0000678','plants/plot-CO_331:0000679','plants/plot-CO_331:0000211','roots/plot-CO_331:0000214','roots/plot-CO_331:0000217','roots/ plot-CO_331:0000233','roots/ plant-CO_331:0000230','kg/plot-CO_331:0000220','kg/plot-CO_331:0000223','kg/plot-CO_331:0000227','kg/plot-CO_331:0000237','t/ha-CO_331:0000218','t/ha-CO_331:0000680','t/ha-CO_331:0000681','t/ha-CO_331:0000296','%-CO_331:0000682','t/ha-CO_331:0000683','RtYldR 5 pt. scale-CO_331:0000791','%-CO_331:0000792','g/plot-CO_336:0000262','kg/ha-CO_336:0000340','g/plot-CO_336:0000261','kg/ha-CO_336:0000337','g-CO_336:0000333'),
-      # c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000305','CO_330:0000293','CO_330:0000297','CO_330:0000314','CO_330:0000317','CO_330:0000321','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000311','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000158','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000231','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001037','CO_321:0001213','CO_321:0001217','CO_321:0001220','CO_321:0001223','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_321:0001249','CO_321:0001651','CO_322:0000694','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000742','CO_322:0000744','CO_322:0000747','CO_322:0000757','CO_322:0000754','CO_322:0000756','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000230','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000296','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000340','CO_336:0000261','CO_336:0000337','CO_336:0000333'),
-      # c('tuber/plot','tuber/plot','%','plants/plot','%','tuber/plot','tuber/ plot','tuber /plant','tuber/plot','tuber/plant','kg/plot','kg/plot','kg/plant','t/ha','t/ha','kg/plot','kg/plant','t/ha','t/ha','g','g','ratio','7 pt scale','Plant','Count','kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','kg/plot','Number','kg/pl','kg/plot','Number','Seedling','plot','plot','kg','kg','1 month','kg/plant','t/ha','kg','kg','Count','m2/kg','g/plant','g/1000 grain','g/m2','g/plant','%','num','index','m2/kg','g/plot','1-5 scoring scale','row/ear','g/1000grain','kg/ha','g/plot','t/ha','g/plot','kg/ha','%','Rank number','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','plants/plot','plants/plot','plants/plot','plants/plot','roots/plot','roots/plot','roots/ plot','roots/ plant','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','t/ha','t/ha','%','t/ha','RtYldR 5 pt. scale','%','g/plot','kg/ha','g/plot','kg/ha','g')
       c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"),
       c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean','Soybean','Soybean'),
       c('Number of tubers planted','Number of emerged plants','Plant emergence proportion','Number of harvested plants','Proportion of plants harvested','Non-marketable tuber number','Tuber number','Tuber number per plant','Number of marketable tubers','Number of marketable tubers per plant','Non-marketable tuber weight','Tuber weight','Tuber weight per plant','Tuber yield no adjusted','Tuber yield adjusted','Marketable tuber weight','Marketable tuber weight per plant','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield','Root Yield','Root Yield','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Sprout count','Root Yield','Root Yield','Storage root weight','Storage root weight','Number of stakes','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','In-season aboveground biomass','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Shelled cob weight','Grain test weight','Grain weight','Grain weight','Grain yield','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots','Total number of root','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Fodder Yield','Seed yield','Seed yield','Seed weight'),
@@ -3983,8 +4402,6 @@ server_design_agrofims <- function(input, output, session, values){
       c('tuber/plot-CO_330:0000265','tuber/plot-CO_330:0000268','%-CO_330:0000283','plants/plot-CO_330:0000287','%-CO_330:0000290','tuber/plot-CO_330:0000300','tuber/ plot-CO_330:0000304','tuber /plant-CO_330:0000305','tuber/plot-CO_330:0000293','tuber/plant-CO_330:0000297','kg/plot-CO_330:0000314','kg/plot-CO_330:0000317','kg/plant-CO_330:0000321','t/ha-CO_330:0000324','t/ha-CO_330:0000323','kg/plot-CO_330:0000308','kg/plant-CO_330:0000311','t/ha-CO_330:0000330','t/ha-CO_330:0000327','g-CO_330:0000333','g-CO_330:0000336','ratio-CO_334:0000008','7 pt scale-CO_334:0000009','Plant-CO_334:0000010','Count-CO_334:0000011','kg/plot-CO_334:0000012','t/ha-CO_334:0000013','t/ha-CO_334:0000014','t/ha-CO_334:0000017','kg/pl-CO_334:0000127','Stem-CO_334:0000129','kg/plot-CO_334:0000131','kg/plot-CO_334:0000132','Number-CO_334:0000133','kg/pl-CO_334:0000157','kg/plot-CO_334:0000158','Number-CO_334:0000159','Seedling-CO_334:0000166','plot-CO_334:0000168','plot-CO_334:0000169','kg-CO_334:0000170','kg-CO_334:0000171','1 month-CO_334:0000213,3 months-CO_334:0000214,6 months-CO_334:0000215,9 months-CO_334:0000216','kg/plant-CO_334:0000230','t/ha-CO_334:0000231','kg-CO_334:0000247','kg-CO_334:0000248','Count-CO_334:0000250','m2/kg-CO_321:0001034,kg/ha-CO_321:0001035,t/ha-CO_321:0001036,g/plant-CO_321:0001037,g/plot-CO_321:0001038,kg/plot-CO_321:0001039','g/1000 grain-CO_321:0001213,g/100 grain-CO_321:0001214,g/200 grain-CO_321:0001215','g/m2-CO_321:0001217,kg/ha-CO_321:0001218,t/ha-CO_321:0001219','g/plant-CO_321:0001220,g/plot-CO_321:0001221,kg/plot-CO_321:0001222','%-CO_321:0001223','num-CO_321:0001224','index-CO_321:0001231,%-CO_321:0001232','m2/kg-CO_321:0001246,kg/ha-CO_321:0001247,t/ha-CO_321:0001248,g/plot-CO_321:0001249,kg/plot-CO_321:0001250','1-5 scoring scale-CO_321:0001651','g/1000grain-CO_322:0000723,g/100grain-CO_322:0000725,g/200grain-CO_322:0000727','kg/ha-CO_322:0000730,t/ha-CO_322:0000731','g/plot-CO_322:0000734,kg/plot-CO_322:0000740,t/ha-CO_322:0000742,kg/ha-CO_322:0000737','g/plot-CO_322:0000744,kg/plot-CO_322:0000749,kg/ha-CO_322:0000747,t/ha-CO_322:0000751','%-CO_322:0000757','Rank number-CO_322:0000754','%-CO_322:0000756','g/plot-CO_322:0000928,kg/plot-CO_322:0000931','lb/bsh-CO_322:0001008','g/1000grain-CO_322:0001009,g/100grain-CO_322:0001010,g/200grain-CO_322:0001011','g/200grain-CO_322:0001012,g/1000grain-CO_322:0001013,g/100grain-CO_322:0001014','lb/plot-CO_322:0001016','plants/plot-CO_331:0000192','plants/plot-CO_331:0000678','plants/plot-CO_331:0000679','plants/plot-CO_331:0000211','roots/plot-CO_331:0000214','roots/plot-CO_331:0000217','roots/ plot-CO_331:0000233','roots/ plant-CO_331:0000230','kg/plot-CO_331:0000220','kg/plot-CO_331:0000223','kg/plot-CO_331:0000227','kg/plot-CO_331:0000237','t/ha-CO_331:0000218','t/ha-CO_331:0000680','t/ha-CO_331:0000681','t/ha-CO_331:0000296','%-CO_331:0000682','t/ha-CO_331:0000683','RtYldR 5 pt. scale-CO_331:0000791','%-CO_331:0000792','g/plot-CO_336:0000262','kg/ha-CO_336:0000340','g/plot-CO_336:0000261','kg/ha-CO_336:0000337','g-CO_336:0000333'),
       c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000305','CO_330:0000293','CO_330:0000297','CO_330:0000314','CO_330:0000317','CO_330:0000321','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000311','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000158','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000231','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001213','CO_321:0001217','CO_321:0001220','CO_321:0001223','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_321:0001651','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000744','CO_322:0000757','CO_322:0000754','CO_322:0000756','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000230','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000296','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000340','CO_336:0000261','CO_336:0000337','CO_336:0000333'),
       c('tuber/plot','tuber/plot','%','plants/plot','%','tuber/plot','tuber/ plot','tuber /plant','tuber/plot','tuber/plant','kg/plot','kg/plot','kg/plant','t/ha','t/ha','kg/plot','kg/plant','t/ha','t/ha','g','g','ratio','7 pt scale','Plant','Count','kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','kg/plot','Number','kg/pl','kg/plot','Number','Seedling','plot','plot','kg','kg','1 month','kg/plant','t/ha','kg','kg','Count','m2/kg','g/1000 grain','g/m2','g/plant','%','num','index','m2/kg','1-5 scoring scale','g/1000grain','kg/ha','g/plot','g/plot','%','Rank number','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','plants/plot','plants/plot','plants/plot','plants/plot','roots/plot','roots/plot','roots/ plot','roots/ plant','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','t/ha','t/ha','%','t/ha','RtYldR 5 pt. scale','%','g/plot','kg/ha','g/plot','kg/ha','g')
-
-
   )
   colnames(dict) <- c("Status","Crop", "Crop measurement", "Measurement method", "traitCode", "VariableId", "Scale")
 
@@ -3996,22 +4413,7 @@ server_design_agrofims <- function(input, output, session, values){
       output$uiTraitsList <- renderUI({
           #column(width=12,
               column(12,dataTableOutput("Main_table"),
-                    #  tags$script(HTML("$(document).on('change', '#select_scale', function () {
-                    #    var mod_value
-                    #    mod_value =  $('.new_input' ).val()
-                    #    Shiny.onInputChange('scaleChange', mod_value)
-                    # });")),
-                  #    tags$script("$(document).on('click', '#Main_table button', function () {
-                  # Shiny.onInputChange('selectScaleClickId',this.id);
-                  # Shiny.onInputChange('selectScaleClick', Math.random())
-                  #     });"
-                  #    )
 
-                  # tags$script("$(document).on('click', '.selectRow', function () {
-                  #     Shiny.onInputChange('selectRowClickId',this.id);
-                  #     Shiny.onInputChange('selectRowClick', Math.random())
-                  #     });"
-                  # ),
                   tags$script("$(document).on('change', '.selectRow', function () {
                       Shiny.onInputChange('selectRowClickId',this.id);
                       Shiny.onInputChange('selectRowClickChecked',this.checked);
@@ -4024,19 +4426,8 @@ server_design_agrofims <- function(input, output, session, values){
                           Shiny.onInputChange('selectScaleClick', Math.random())
                       });"
                   )
-
-                     )#,
-#
-#               tags$script("$(document).on('click', '#Main_table button', function () {
-#                   Shiny.onInputChange('selectScaleClickId',this.id);
-#                   Shiny.onInputChange('selectScaleClick', Math.random())
-#                       });"
-#               )
-
-          #)
-
+                     )
       })
-
 
     }
     else{
@@ -4074,20 +4465,7 @@ server_design_agrofims <- function(input, output, session, values){
                 pageLength = 25,
                 columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
               )
-    )}
-  )
-
-  # observeEvent(input$selectRowClick, {
-  #   selectedRow  <- as.numeric(gsub("selectRow_","",input$selectRowClickId))
-  #   row <- traitsVals$Data[selectedRow,]
-  #   if(row[[1]] %like% "Not selected"){
-  #     traitsVals$Data[[1]][selectedRow] <- "<font color='red'><b>Selected</b></font>"
-  #   }
-  #   else{
-  #     traitsVals$Data[[1]][selectedRow] <- "<font color='black'>Not selected</font>"
-  #
-  #   }
-  # })
+    )})
 
   observeEvent(input$selectRowClick, {
     selectedRow  <- as.numeric(gsub("selectRow_","",input$selectRowClickId))
@@ -4119,31 +4497,6 @@ server_design_agrofims <- function(input, output, session, values){
     traitsVals$Data[[7]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[2]]
   })
 
-  # drawButtonSelect <- function(index){
-  #   old_row <- traitsVals$Data[index,]
-  #   # str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
-  #   #   <button style="width:100px; background-color:green; color:white;" type="button" class="btn btn-secondary selectRow" id=selectRow_',index ,'>Select</button>
-  #   #   </div>')
-  #
-  #   ckecked <-  ""
-  #   # str <-  paste0('<button style="width:100px; background-color:green; color:white;" type="button" class="btn btn-secondary selectRow" id=selectRow_',index ,'>Select</button>')
-  #   if(old_row[[1]] %like% "Selected"){
-  #     # str <- gsub("green", "red", str)
-  #     # str <- gsub("Select", "Deselect", str)
-  #     ckecked <- "checked"
-  #   }
-  #
-  #
-  #   str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
-  #     <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
-  #     </div>')
-  #
-  #
-  #
-  #   return(str)
-  #
-  # }
-
   drawButtonSelect <- function(){
     n<- nrow(traitsVals$Data)
     l <- c()
@@ -4163,34 +4516,6 @@ server_design_agrofims <- function(input, output, session, values){
     }
     return(l)
   }
-
-  # drawComboInTable <- function(index){
-  #   old_row = traitsVals$Data[index,]
-  #   options = old_row[[4]]
-  #
-  #   row_change=list()
-  #
-  #   str  <- paste0('<select id="select_scale_' , index, '" class="select_scale" style="width:150px;">')
-  #   arrOpt <- strsplit(options, ",")[[1]]
-  #
-  #   if(length(arrOpt) == 1){
-  #     mval1  <- strsplit(arrOpt[1], "-")[[1]]
-  #     if(mval1[[2]] == " ")
-  #       return(" ")
-  #   }
-  #
-  #   for(val in arrOpt){
-  #
-  #     mval  <- strsplit(val, "-")[[1]]
-  #     # print("aaaa")
-  #     # print(mval)
-  #     if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
-  #     str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
-  #   }
-  #   str <- paste0(str, "</select>")
-  #
-  #   return(str)
-  # }
 
   drawComboInTable <- function(){
     n<- nrow(traitsVals$Data)
@@ -4518,8 +4843,7 @@ server_design_agrofims <- function(input, output, session, values){
     fbdesign_id()
   })
 
-
-  #output$designFieldbook_traits_agrofims <- shinyTree::renderTree({
+  ## Reactive expression for reactive object with agrofims
   trait_agrofims <- reactive({
 
     trait_index <-  input$Main_table_rows_selected  #data from fbdesign for hidap-agrofims
@@ -4533,7 +4857,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-
+  ## Agrofims Tree of traits
   output$designFieldbook_traits_hdagrofims <- shinyTree::renderTree({
     list(
       # root1 = "",
@@ -4625,6 +4949,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
+
   # Sites ##################################################################################################
   fbdesign_sites <- reactive({
 
@@ -4657,8 +4982,8 @@ server_design_agrofims <- function(input, output, session, values){
     }
   })
 
-
   # Create an object with the list of file #####################################################################
+
   #Button for selecting material list
   output$fbDesign_selmlist <- shiny::renderUI({
 
@@ -4705,7 +5030,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  #Shiny UI for number of plants per plot #################################################################
+  ### Shiny UI for number of plants per plot #################################################################
   output$fbPlant_plot <- shiny::renderUI({
 
     rpplot <- react_plantxplot()
@@ -4714,7 +5039,8 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  # Plot Size Values ########################################################################################
+
+  ### Plot Size Values ########################################################################################
   react_psize <- reactive({
     plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot*input$fbDesign_distRows
     print(plot_size)
@@ -4722,7 +5048,8 @@ server_design_agrofims <- function(input, output, session, values){
     plot_size
   })
 
-  # Plot Size ###################################################################################
+
+  ### Plot Size ###################################################################################
   output$fbPlanting_psize <- shiny::renderUI({
     #plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot*input$fbDesign_distRows
     plot_size <- react_psize()
@@ -4732,7 +5059,8 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  # Reactive Plant densisty #####################################################################
+
+  ### Reactive Plant densisty #####################################################################
   react_pdensity <-  shiny::reactive({
 
     #plant_density <- (input$fbDesign_nplants/input$fbDesign_psize)*10000
@@ -4745,7 +5073,8 @@ server_design_agrofims <- function(input, output, session, values){
     plant_density
   })
 
-  #Select Plant density #########################################################################
+
+  ### Select Plant density #########################################################################
   output$fbPlanting_pdensity <- shiny::renderUI({
     plant_density <- react_pdensity()
     #if(length(plant_density)==0) plant_density <- 37037.037
@@ -4754,7 +5083,8 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  # Message for Alpha Design ####################################################################
+
+  ### Message for Alpha Design ####################################################################
   output$alphaMessage <- shiny::renderText({
 
     germoplasm <-material_table()$Accession_Number
@@ -4796,7 +5126,8 @@ server_design_agrofims <- function(input, output, session, values){
 
 
 
-  # Book preview #############################################################
+
+  ### Book preview #############################################################
   shiny::observeEvent(input$fbDesign_draft_agrofims, {
 
     # print(f1())
@@ -4913,10 +5244,7 @@ server_design_agrofims <- function(input, output, session, values){
       fb <- fb_agrofims_traits()
       output$fbDesign_table_agrofims <- rhandsontable::renderRHandsontable({
         rhandsontable::rhandsontable(fb , readOnly = T)})
-
     }
-
-
 
       incProgress(9/10,message = "...")
       incProgress(10/10,message = "...")
@@ -4927,7 +5255,8 @@ server_design_agrofims <- function(input, output, session, values){
 
 
 
-  # Material List Export, #######################################################################
+
+  ### Material List Export, #######################################################################
 
   output$fbDesign_mlistExport <- downloadHandler(
     filename = function() {
@@ -4945,7 +5274,8 @@ server_design_agrofims <- function(input, output, session, values){
     }
   )
 
-   # Reactive Factor and Levels #############################################################
+
+   ### Reactive Factor and Levels #############################################################
 
    ### Factor 1  ############################################################
    factor1StartDateInputs <- reactive({
@@ -5151,6 +5481,7 @@ server_design_agrofims <- function(input, output, session, values){
    ##########################################################################
 
    ### Factor 4  ############################################################
+
    factor4StartDateInputs  <- reactive({
 
      nfactors<- input$nfactors_hdafims
@@ -5287,8 +5618,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
 
-
-  ###fieldbook design ################################################
+  ### Fieldbook design #####################################################
 
   fb_agrofims <- shiny::reactive({
 
@@ -5858,7 +6188,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  ###fieldbook with traits ################################################
+  ###fieldbook with traits #################################################
 
   fb_agrofims_traits <- reactive({
 
@@ -5999,7 +6329,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  ##reactive table for installation info ########################################################
+  ### reactive table for installation info ########################################################
   dt_installation_agrofims <- reactive({
 
 
@@ -6064,7 +6394,8 @@ server_design_agrofims <- function(input, output, session, values){
 
   ###############################Agrofeatures #############################################################
 
-  ### Land description
+
+  ### Land description  ################################################################
   dt_land_description <- reactive({
 
     out <- fb_agrofims()
@@ -6277,7 +6608,8 @@ server_design_agrofims <- function(input, output, session, values){
      # out <- dt
   })
 
-  ### Mulching
+
+  ### Mulching   ########################################################################
   dt_mulching <- reactive({
 
 
@@ -6451,7 +6783,8 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  ### Planting
+
+  ### Planting   ########################################################################
   dt_planting <- reactive({
 
     out <- fb_agrofims()
@@ -6632,7 +6965,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  ### Harvest
+  ### Harvest  ##########################################################################
   dt_harvest <- reactive({
 
     out <- fb_agrofims()
@@ -6741,7 +7074,8 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  #irrigation
+
+  #irrigation  ##########################################################################
   dt_irrigation <- reactive({
 
     out <- fb_agrofims()
@@ -6894,7 +7228,8 @@ server_design_agrofims <- function(input, output, session, values){
 
 })
 
-  ##biofertilization
+
+  ##biofertilization   ##################################################################
   dt_bioferti <- reactive({
 
     out <- fb_agrofims()
@@ -6957,8 +7292,8 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  ### nutrient
 
+  ### nutrient   ########################################################################
   dt_nutrient <- reactive ({
 
       out <- fb_agrofims()
@@ -7167,7 +7502,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  ### pest and disease
+  ### pest and disease   ################################################################
   dt_pestdis <- reactive({
 
 
@@ -7237,14 +7572,11 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  ################################End agrofeatures #############################################################
+  ################################End agrofeatures ######################################
 
 
 
-
-
-
-  ##reactive weather
+  ##reactive weather   #################################################################
   dt_weather_agrofims <- shiny::reactive({
 
     weather_vars <- unlist(shinyTree::get_selected(input$designFieldbook_weatherVar_agrofims))
@@ -7263,7 +7595,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-  ##reactive soil
+  ##reactive soil  #####################################################################
   dt_soil_agrofims <- shiny::reactive({
 
     soil_vars <- unlist(shinyTree::get_selected(input$designFieldbook_soilVar_agrofims))
@@ -7279,7 +7611,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-
+  #############  metadata_dt2 ###################################################################
   metadata_dt2 <- reactive({
 
     c1 <- c('Experiment ID', input$experimentId)
@@ -7557,6 +7889,8 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
+
+  #############  factor_dt2 ######################################################################
   factor_dt2 <- reactive({
 
 
@@ -7777,29 +8111,19 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-  # traits_dt2 <- reactive({
-  #
-  #   print("trait dt")
-  #   print(traits_dt())
-  #
-  #   a<- traitsVals$Data
-  #   if(nrow(traitsVals$Data) >0){
-  #     aux_dt <- dplyr::filter(traitsVals$Data, Status=="Selected")
-  #     a<- aux_dt
-  #   }
-  #   a
-  #
-  # })
 
-
-
-
-  ### donwload fieldbook ########################################################################
+  ############# donwload fieldbook ###############################################################
   output$downloadData <- downloadHandler(
     filename = "fileNameBook.xlsx",
     content = function(file) {
 
       withProgress(message = 'Downloading fieldbook', value = 0, {
+
+      #print(input$Table_treatments)
+
+      fb <- treatmentValues$data
+      treatment <- fb$TREATMENT
+      print(treatment)
 
       incProgress(1/10, message = "...")
 
@@ -7809,8 +8133,6 @@ server_design_agrofims <- function(input, output, session, values){
           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to enter more than 1 variety."), styleclass = "danger")
         }
 
-
-
       print(input$cropCommonNameMono)
 
       design <- input$designFieldbook_agrofims
@@ -7818,15 +8140,11 @@ server_design_agrofims <- function(input, output, session, values){
       weather_vars <- unlist(shinyTree::get_selected(input$designFieldbook_weatherVar_agrofims))
       print(weather_vars)
 
-      print("trait dt")
-      print(traits_dt())
-
+      # print("trait dt")
+      # print(traits_dt())
 
       fb_traits <- fb_agrofims_traits()
-      #print(fb_traits)
 
-      # agrofeatures <- dt_agrofeatures()
-      #metadata <- dt_metadata_agrofims()
       metadata <- as.data.frame(metadata_dt2())
       names(metadata) <- c("Variable", "Value")
       installation <- as.data.frame(factor_dt2())
@@ -7837,17 +8155,19 @@ server_design_agrofims <- function(input, output, session, values){
       trait_agrofims_dt <- trait_agrofims()
       trait_agrofims_dt<- trait_agrofims_dt[,-3]
 
+      print(trait_agrofims_dt)
+
       weather <- dt_weather_agrofims()
       print(weather)
       soil_vars <- dt_soil_agrofims()
-       print(soil_vars)
+      print(soil_vars)
 
       fname <- paste(file,"xlsx",sep=".")
       #wb <- openxlsx::loadWorkbook(file = fname, create = TRUE)
 
       wb <- createWorkbook()
 
-        incProgress(2/20,message = "Adding fieldbook data...")
+      incProgress(2/20,message = "Downloading data...")
 
       incProgress(6/20,message = "Metadata metadata sheet...")
 
@@ -7862,7 +8182,7 @@ server_design_agrofims <- function(input, output, session, values){
       openxlsx::writeDataTable(wb, "Variables", x = installation,
                                colNames = TRUE, withFilter = FALSE)
 
-
+      incProgress(7/20,message = "Adding fieldbook data...")
       openxlsx::addWorksheet(wb, "Fieldbook", gridLines = TRUE)
       openxlsx::writeDataTable(wb, "Fieldbook", x = fb_traits,
                                colNames = TRUE, withFilter = FALSE)
@@ -7870,7 +8190,7 @@ server_design_agrofims <- function(input, output, session, values){
 
       #write agrofeatures sheet
       agroFeaSelected <- input$selectAgroFeature
-      agrofea_sheets <- c("Land preparation", "Mulching", "Planting","Irrigation event", "Biofertilizer", "Pest & disease", "Nutrient management event","Harvest")
+      agrofea_sheets <- c("Harvest", "Irrigation", "Land preparation", "Mulching and residue", "Planting and transplanting", "Soil fertility", "Weeding")
 
       if(is.element("Land preparation", agroFeaSelected)) {
 
@@ -7889,7 +8209,7 @@ server_design_agrofims <- function(input, output, session, values){
       incProgress(11/20,message = "Adding mulching data...")
 
       dt_mulch <- dt_mulching()
-
+      print(dt_mulch)
       openxlsx::addWorksheet(wb, "Mulching and residue management", gridLines = TRUE)
       openxlsx::writeDataTable(wb, "Mulching and residue management", x = dt_mulch,
                                colNames = TRUE, withFilter = FALSE)
@@ -7911,7 +8231,7 @@ server_design_agrofims <- function(input, output, session, values){
 
       if(is.element("Nutrient management", agroFeaSelected)) {
         dt_nut<-  dt_nutrient()
-        #print(dt_nut)
+
         openxlsx::addWorksheet(wb, "Nutrient management", gridLines = TRUE)
         openxlsx::writeDataTable(wb, "Nutrient management", x = dt_nut,
                                  colNames = TRUE, withFilter = FALSE)
@@ -7935,7 +8255,7 @@ server_design_agrofims <- function(input, output, session, values){
         incProgress(14/20,message = "Adding irrigation data...")
 
         dt_irri <- dt_irrigation()
-        #print(dt_irri)
+        print(dt_irri)
         openxlsx::addWorksheet(wb, "Irrigation", gridLines = TRUE)
         openxlsx::writeDataTable(wb, "Irrigation", x = dt_irri,
                                  colNames = TRUE, withFilter = FALSE)
@@ -8013,7 +8333,7 @@ server_design_agrofims <- function(input, output, session, values){
   )
 
 
-
+  #############  metadata_dt ##########################################################
   metadata_dt <- function(){
 
     c1 <- c('Experiment ID', input$experimentId)
@@ -8291,6 +8611,8 @@ server_design_agrofims <- function(input, output, session, values){
 
   }
 
+
+  #############  factor_dt ##########################################################
   factor_dt <- function(){
 
 
@@ -8438,9 +8760,8 @@ server_design_agrofims <- function(input, output, session, values){
 
   }
 
-  # observeEvent(input$btTest,{
-  # })
 
+  #############  traits_dt ##########################################################
   traits_dt <- function(){
     a<- traitsVals$Data
     if(nrow(traitsVals$Data) >0){
@@ -8451,7 +8772,4 @@ server_design_agrofims <- function(input, output, session, values){
     return(a)
   }
 
-
-
 }
-
