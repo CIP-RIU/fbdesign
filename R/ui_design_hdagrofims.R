@@ -304,12 +304,32 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                       '
                           ),
 
+                          ## script listening when fertilizer type is changed in soil fertility in experiment conditions
+                          tags$script('$(document).on("change", "select[id^=\'select_fertilizerType_soil_table_row\']",  function(){
+                                            Shiny.onInputChange("soilFertility_typeFertilizer", Math.random());
+                                            Shiny.onInputChange("soilFertility_typeFertilizer_id", this.id);
+                                            Shiny.onInputChange("soilFertility_typeFertilizer_value", this.value);
+
+                                        })
+                                      '
+                          ),
+                          ## script listening when product is changed in soil fertility in experiment conditions
+                          tags$script('$(document).on("change", "select[id^=\'select_product_soil_table_row_\']",  function(){
+                                            Shiny.onInputChange("soilFertility_product", Math.random());
+                                            Shiny.onInputChange("soilFertility_product_id", this.id);
+                                        })
+                                      '
+                          ),
+
                           tags$script(
                             'Shiny.addCustomMessageHandler("focus",
                                     function(a) {
                                     document.getElementById(a).focus();
                                     });'
                           ),
+
+
+                          # select_product_soil_table_row_
                    #        tags$style(HTML("
                    #          #landLeveling_start_date .form-control {
                    #          background-color: #cce5ff;
@@ -750,10 +770,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                 h2("Site information"),
 
                                                                 uiOutput("uiTest"),
-
+                                                                actionButton("refreshSiteList", "Look for sites"),
                                                                 shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),
                                                                 shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
-                                                                actionButton("refreshSiteList", "Refresh sites"),
+
                                                                 br(),
                                                                 h2("Site surrounding description"),
                                                                 selectizeInput("fbDesign_inHighLevel", label="Higher-level landform", multiple = TRUE,
@@ -935,7 +955,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                               )
                                                              ),
                                                              br(),
-                                                             h2("Previous crop"),
+                                                             h2("Previous crop or farllow"),
                                                              fluidRow(
                                                                column( width = 6,
                                                                        #textInput(inputId = "numPreviousCrop", label = "Number of previous crop", value = ""),
@@ -1073,6 +1093,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                            h2("Treatment description"),
                                                            HTML("<center>"),
                                                            h3(radioButtons(inputId = "fullFactorialRB", "Is full factorial?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
+
+                                                           # h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB",
+                                                           #                   label = "Is full factorial?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
+
                                                            HTML("</center>")
                                                     ),
                                                     column(12,
@@ -1294,7 +1318,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  #h2("Land preparation"),
                                                                  fluidRow(
                                                                  box(id="land_levelling_boxid",
-                                                                     title = checkboxInput("landLevelling_checkbox" , actionLink("land_levelling_titleId", "Land Levelling")),
+                                                                     title = checkboxInput("landLevelling_checkbox" , actionLink("land_levelling_titleId", "Land Levelling"), T),
                                                                      #title = "Land Levelling",
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
@@ -1344,7 +1368,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                 )),
                                                                 fluidRow(
                                                                  box(id="puddling_boxid",
-                                                                     title = checkboxInput("puddling_checkbox", actionLink("puddling_titleId", "Puddling")),
+                                                                     title = checkboxInput("puddling_checkbox", actionLink("puddling_titleId", "Puddling"), T),
                                                                      solidHeader = TRUE,
                                                                      status = "primary",
                                                                      width = 12, collapsible = TRUE,  collapsed = TRUE,
@@ -1426,7 +1450,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  )),
                                                                 fluidRow(
                                                                  box(id="tillage_boxid",
-                                                                     title = checkboxInput("puddling_checkbox", actionLink("tillage_titleId", "Tillage")),
+                                                                     title = checkboxInput("puddling_checkbox", actionLink("tillage_titleId", "Tillage"), T),
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE,  collapsed = TRUE,
@@ -1464,7 +1488,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             ),
                                                                             #textInput("till_depth", value="", label = "Depth"),
                                                                             #textInput("total_number_tillage_passes", value="", label = "Total number of tillage passes")
-                                                                            numericInput("total_number_tillage_passes", "Total number of tillage passes", value = "", min = 0, step = 1)
+                                                                            numericInput("total_number_tillage_passes", "Total number of tillage passes", value = "", min = 0, step = 1),
+                                                                            textAreaInput("tillage_notes", label="Notes", value="")
 
                                                                      ),
                                                                      column(width = 6,
@@ -1476,22 +1501,16 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                                                                                                                                                    "Cultivator",
                                                                                                                                                                                                                    "Disc plough",
                                                                                                                                                                                                                    "Hand-held hoe",
-                                                                                                                                                                                                                   "Mouldboard/ridging plough",
-                                                                                                                                                                                                                   "Paraplow",
+                                                                                                                                                                                                                   "Mouldboard/Ridging plough",
+                                                                                                                                                                                                                   "Paraplough",
                                                                                                                                                                                                                    "Spade plough",
                                                                                                                                                                                                                    "Subsoiler",
                                                                                                                                                                                                                    "Other")
                                                                            ),
                                                                            hidden(textInput("till_impl_type_other", "", value = "")),
                                                                            selectizeInput("till_traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), label = "Traction", choices =
-                                                                                            c("Buffalo",
-                                                                                              "Camel",
-                                                                                              "Donkey",
-                                                                                              "Elephant",
-                                                                                              "Horse",
-                                                                                              "Mule",
-                                                                                              "Ox / Bullock / Steer",
-                                                                                              "Human",
+                                                                                            c("Animal",
+                                                                                              "Manual",
                                                                                               "2 wheel tractor",
                                                                                               "4 wheel tractor",
                                                                                               "Other"
@@ -1563,7 +1582,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  #br(),
                                                                  fluidRow(
                                                                  box(id="mulch_management_boxid",
-                                                                     title = checkboxInput("mulchManag_checkbox", actionLink("mulch_management_titleId", "Mulch management")),
+                                                                     title = checkboxInput("mulchManag_checkbox", actionLink("mulch_management_titleId", "Mulch management"), T),
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE, collapsed = TRUE,
@@ -1571,56 +1590,61 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      column(width = 6,
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                     dateInput("mulch_start_date", label ="Start date", format = "yyyy/mm/dd")
+                                                                                     dateInput("mulch_start_date", label ="Mulching start date", format = "yyyy/mm/dd")
                                                                               ),
                                                                               column(width = 6,
-                                                                                     dateInput("mulch_end_date", label ="End date", format = "yyyy/mm/dd")
+                                                                                     dateInput("mulch_end_date", label ="Mulching end date", format = "yyyy/mm/dd")
                                                                               )
                                                                             ),
-                                                                            selectizeInput("mulch_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Bark chips",
-                                                                                                                                                                                                                 "Cacao husk",
-                                                                                                                                                                                                                 "Compost",
-                                                                                                                                                                                                                 "Foil (Landscape fabric)",
-                                                                                                                                                                                                                 "Grass clippings",
-                                                                                                                                                                                                                 "Gravel",
-                                                                                                                                                                                                                 "Leaves",
-                                                                                                                                                                                                                 "Paper",
-                                                                                                                                                                                                                 "Pine needles (pine straw)",
-                                                                                                                                                                                                                 "Plastic",
-                                                                                                                                                                                                                 "Saw dust",
-                                                                                                                                                                                                                 "Straw",
-                                                                                                                                                                                                                 "Wood chips",
-                                                                                                                                                                                                                 "Other")
+                                                                            selectizeInput("mulch_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),
+                                                                                           choices = c("Bark/Wood chips",
+                                                                                                       "Compost",
+                                                                                                       "Foil (landscape fabric)",
+                                                                                                       "Grass/Straw",
+                                                                                                       "Gravel",
+                                                                                                       "Hush/Chaff",
+                                                                                                       "Leaves",
+                                                                                                       "Plastic",
+                                                                                                       "Saw dust",
+                                                                                                       "Other")
 
                                                                             ),
                                                                             hidden(textInput("mulch_type_other", "", value = "")),
                                                                             fluidRow(
                                                                               column(width = 6,
-                                                                                textInput("mulch_thickness", value="", label = "Mulch thickness")
+                                                                                numericInput("mulch_thickness", value="", label = "Mulch thickness", min=0, max=100, step=0.1)
                                                                               ),
                                                                               column(width = 6,
                                                                                 selectizeInput("mulch_thickness_unit","Unit", multiple=T, options=list(maxItems=1, placeholder="Selecte one..."),
-                                                                                               choices = c("cm", "in", "m"))
+                                                                                               choices = c("cm","ft", "in", "m"))
                                                                               )
                                                                             ),
                                                                             fluidRow(
                                                                               column(width = 6,
 
-                                                                                  textInput("mulch_amountPerSq", value="", label = "Amount per sq. m")
+                                                                                  numericInput("mulch_amountPerSq", value="", label = "Mulch amount", min=0, max=100, step = 0.1)
                                                                               ),
                                                                               column(width = 6,
                                                                                 selectizeInput("mulch_amountPerSq_unit", "Unit",multiple=T, options=list(maxItems=1, placeholder="Selecte one..."),
-                                                                                               choices = c("g", "kg"))
+                                                                                               choices = c("g/ft2", "g/m2","kg/ha", "kg/m2", "lb/ac"))
                                                                               )
                                                                             ),
-                                                                            selectizeInput("mulch_color", label = "Mulch color", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Black",
-                                                                                                                                          "Brown",
-                                                                                                                                          "Gray",
-                                                                                                                                          "Transparent",
-                                                                                                                                          "White",
-                                                                                                                                          "Yellow")
+                                                                            # selectizeInput("mulch_color", label = "Mulch color", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Black",
+                                                                            #                                                               "Brown",
+                                                                            #                                                               "Gray",
+                                                                            #                                                               "Transparent",
+                                                                            #                                                               "White",
+                                                                            #                                                               "Yellow")
+                                                                            # ),
+                                                                            textInput("mulch_color","Mulch color"),
+                                                                            fluidRow(
+                                                                              column(6,
+                                                                                     textInput("mulch_percCoverage", value="", label = "Percentage of coverage")
+                                                                                     ),
+                                                                              column(6,
+                                                                                     selectInput("mulch_percCoverage_unit", "Unit", c("%"), selected="%")
+                                                                                     )
                                                                             ),
-                                                                            textInput("mulch_percCoverage", value="", label = "Percentage of coverage"),
                                                                             fluidRow(
                                                                               column(width = 6,
                                                                                      dateInput("mulch_remove_start_date", label ="Mulch removal start date", format = "yyyy/mm/dd")
@@ -1628,7 +1652,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                               column(width = 6,
                                                                                      dateInput("mulch_remove_end_date", label ="Mulch removal end date", format = "yyyy/mm/dd")
                                                                               )
-                                                                            )
+                                                                            ),
+                                                                            textAreaInput("mulching_management_notes", label="Notes", value="")
                                                                           ),
                                                                      column(width = 6,
                                                                             br(),
@@ -1637,15 +1662,14 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                          title = "Implement", solidHeader = TRUE, status = "warning", width=12,
                                                                          # textInput("mulch_make", value="", label = "Implement make"),
                                                                          # textInput("mulch_model", value="", label = "Implement model"),
+                                                                               selectizeInput("mulch_implement_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                                c("Manual",
+                                                                                                  "Mechanized"
+                                                                                                )
+                                                                               ),
                                                                                 selectizeInput("mulch_traction", label = "Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                              c("Buffalo",
-                                                                                                "Camel",
-                                                                                                "Donkey",
-                                                                                                "Elephant",
-                                                                                                "Horse",
-                                                                                                "Mule",
-                                                                                                "Ox / Bullock / Steer",
-                                                                                                "Human",
+                                                                                              c("Animal",
+                                                                                                "Manual",
                                                                                                 "2 wheel tractor",
                                                                                                 "4 wheel tractor",
                                                                                                 "Other"
@@ -1659,7 +1683,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  )),
                                                                  fluidRow(
                                                                  box(id="residue_management_boxid",
-                                                                     title = checkboxInput("residueManag_checkbox", actionLink("residue_management_titleId", "Residue management")),
+                                                                     title = checkboxInput("residueManag_checkbox", actionLink("residue_management_titleId", "Residue management"), T),
                                                                      status = "primary",
                                                                      solidHeader = TRUE,
                                                                      width = 12, collapsible = TRUE,  collapsed = TRUE,
@@ -1673,33 +1697,28 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                      dateInput("residure_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                               )
                                                                             ),
-                                                                            selectizeInput("residue_cropType", label = "Crop type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                            selectizeInput("residue_plantPart", label = "Plant part", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                              c("Husk",
-                                                                                               "Roots",
-                                                                                               "Seed Pod - Cob - Fruit",
-                                                                                               "Stem/Leaf",
+                                                                                               "Leaf",
+                                                                                               "Root",
+                                                                                               "Seed Pod/Cob/Fruit",
+                                                                                               "Stem",
                                                                                                "Stubble",
                                                                                                "Other")
                                                                             ),
-                                                                            hidden(textInput("residue_cropType_other", "", value = "")),
+                                                                            hidden(textInput("residue_plantPart_other", "", value = "")),
 
                                                                             selectizeInput("residue_technique", label = "Technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                              c("Burning of previous crop residue",
-                                                                                               "No-till, previous crop residue",
-                                                                                               "No-till, spreading of residue",
-                                                                                               "Tillage, previous crop residue",
-                                                                                               "Tillage, spreading of residue"
+                                                                                               "Previous crop residue",
+                                                                                               "Spreading of residue",
+                                                                                               "Other"
                                                                                              )
                                                                             ),
+                                                                            hidden(textInput("residue_technique_other", "", value = "")),
                                                                             selectizeInput("residue_traction", label = "Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                             c("Buffalo",
-                                                                                               "Camel",
-                                                                                               "Donkey",
-                                                                                               "Elephant",
-                                                                                               "Horse",
-                                                                                               "Mule",
-                                                                                               "Ox / Bullock / Steer",
-                                                                                               "Human",
+                                                                                             c("Animal",
+                                                                                               "Manual",
                                                                                                "2 wheel tractor",
                                                                                                "4 wheel tractor",
                                                                                                "Other"
@@ -1708,38 +1727,48 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                             hidden(textInput("residue_traction_other", "", value = "")),
                                                                             fluidRow(
                                                                               column(width = 6,
-
-                                                                                     textInput("crop_residue_thick", value="", label = "Crop residue thickness")
+                                                                                     numericInput("crop_residue_thick", value="", label = "Crop residue thickness", min=0, max=100, step = 0.1)
                                                                               ),
                                                                               column(width = 6,
                                                                                      selectizeInput("crop_residue_thick_unit", "Unit",multiple=T, options=list(maxItems=1, placeholder="Selecte one..."),
-                                                                                                    choices = c("cm", "in", "m"))
+                                                                                                    choices = c("cm", "ft", "in", "m"))
                                                                               )
                                                                             ),
                                                                             fluidRow(
                                                                               column(width = 6,
-
-                                                                                     textInput("crop_residue_amount_sqm", value="", label = "Crop residue amount per sq. m")
+                                                                                     numericInput("crop_residue_amount_sqm", value="", label = "Crop residue amount", min=0, max=100, step = 0.1)
                                                                               ),
                                                                               column(width = 6,
                                                                                      selectizeInput("crop_residue_amount_sqm_unit", "Unit",multiple=T, options=list(maxItems=1, placeholder="Selecte one..."),
-                                                                                                    choices = c("g", "kg"))
+                                                                                                    choices = c("g/ft2", "g/m2", "kg/ha", "kg/m2", "lb/ac"))
                                                                               )
                                                                             ),
-                                                                            textInput("crop_residue_perc_cov","Crop residue percentage of coverage", value=""),
-                                                                            textInput("residue_inc_depth", "Residue incorporation depth", value=""),
-                                                                            selectizeInput("above_ground_res_moisture", "Above ground residue moisture", multiple=T, options = list(maxItems=1, placeholder="Select one..."),
-                                                                                           choices = c("Dry", "Moist", "Wet")),
                                                                             fluidRow(
-                                                                              column(width = 6,
+                                                                              column(6, numericInput("crop_residue_perc_cov","Crop residue percent of coverage", value="", min=0, max=100)),
+                                                                              column(6, selectInput("crop_residue_perc_cov_unit", "Unit", c("%"), selected="%"))
+                                                                            ),
+                                                                            fluidRow(
+                                                                              column(6,textInput("residue_inc_depth", "Residue incorporation depth", value="")),
+                                                                              column(6, selectizeInput("residue_inc_depth_unit", "Unit",multiple=T, options=list(maxItems=1, placeholder="Selecte one..."),
+                                                                                                      choices = c("ft", "in", "m"))
+                                                                                     )
+                                                                            ),
 
-                                                                                     textInput("above_ground_res_amount", value="", label = "Above ground residue (amount)")
-                                                                              ),
-                                                                              column(width = 6,
-                                                                                     selectizeInput("above_ground_res_amount_unit", "Unit",multiple=T, options=list(maxItems=1, placeholder="Selecte one..."),
-                                                                                                    choices = c("g", "kg"))
-                                                                              )
-                                                                            )
+
+                                                                            selectizeInput("crop_residue_moisture", "Crop residue moisture", multiple=T, options = list(maxItems=1, placeholder="Select one..."),
+                                                                                           choices = c("Dry", "Moist", "Wet")),
+                                                                            # fluidRow(
+                                                                            #   column(width = 6,
+                                                                            #
+                                                                            #          textInput("above_ground_res_amount", value="", label = "Above ground residue (amount)")
+                                                                            #   ),
+                                                                            #   column(width = 6,
+                                                                            #          selectizeInput("above_ground_res_amount_unit", "Unit",multiple=T, options=list(maxItems=1, placeholder="Selecte one..."),
+                                                                            #                         choices = c("g", "kg"))
+                                                                            #   )
+                                                                            # )
+
+                                                                            textAreaInput("residue_management_notes", label="Notes", value="")
 
                                                                         )
                                                                      )
@@ -1753,7 +1782,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                           #h2("Planting, seeding and transplanting"),
                                                                  fluidRow(
                                                                        box(id="direct_seeding_boxid",
-                                                                           title = checkboxInput("directSeeding_checkbox", actionLink("direct_seeding_titleId", "Direct seeding")),
+                                                                           title = checkboxInput("directSeeding_checkbox", actionLink("direct_seeding_titleId", "Direct seeding"), T),
                                                                            status = "primary",
                                                                            solidHeader = TRUE,
                                                                            width = 12, collapsible = TRUE,  collapsed = TRUE,
@@ -1779,22 +1808,46 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                             # textInput("planting_directSeeding", value="", label = "Direct seeding"),
                                                                                         selectizeInput("seeding_environment", label = "Seeding environment", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                          c("Flat seed bed",
-                                                                                                           "On hill",
-                                                                                                           "On ridge")
+                                                                                                           "Hill",
+                                                                                                           "Ridge")
                                                                                         ),
                                                                                             selectizeInput("seeding_technique", label = "Seeding technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                                                                                c("Dibbling stick",
-                                                                                                                                                  "Drum seeding",
-                                                                                                                                                  "Hand broadcasting",
-                                                                                                                                                  "Jab planting",
+                                                                                                                                                c("Broadcasting by hand",
                                                                                                                                                   "Line sowing by hand",
                                                                                                                                                   "Mechanical broadcasting",
-                                                                                                                                                  "Other")
+                                                                                                                                                  "Mechanical line sowing")
                                                                                             ),
                                                                                         hidden(textInput("seeding_technique_other", "", value="")),
                                                                                             textInput("seed_treatment", value="", label = "Seed treatment")
 
-                                                                                      ))
+                                                                                      )),
+
+                                                                                      # column(width = 6,
+                                                                                             fluidRow(
+                                                                                               box(
+                                                                                                 title = "Implement", solidHeader = TRUE, status = "warning", width=12,
+                                                                                                 selectizeInput("seeding_implement_type", label = "Type", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                                                  c("Bucket broadcaster",
+                                                                                                                    "Dibbling stick",
+                                                                                                                    "Drum seeder",
+                                                                                                                    "Jab planter",
+                                                                                                                    "Seed drill",
+                                                                                                                    "Other"
+                                                                                                                  )
+                                                                                                 ),
+                                                                                                 hidden(textInput("seeding_implement_type_other", "", value="")),
+                                                                                                 selectizeInput("seeding_traction", label = "Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                                                  c("Animal",
+                                                                                                                    "Manual",
+                                                                                                                    "2 wheel tractor",
+                                                                                                                    "4 wheel tractor",
+                                                                                                                    "Other"
+                                                                                                                  )
+                                                                                                 ),
+                                                                                                 hidden(textInput("seeding_traction_other", "", value=""))
+                                                                                               )
+                                                                                             )
+                                                                                      # )
                                                                                ),
                                                                                column(width = 6,
                                                                                       fluidRow(
@@ -1802,11 +1855,12 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                           title = "Seeding density", solidHeader = TRUE, status = "warning", width=12,
                                                                                           fluidRow(
                                                                                             column(width = 6,
-                                                                                                   textInput("distance_rows",  label = "Distance between rows", value="")
+                                                                                                   numericInput("distance_rows",  label = "Distance between rows", min=0, max=100, step=0.1,value=NULL)
                                                                                             ),
                                                                                             column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
                                                                                                    selectizeInput("distance_rows_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                                     c("cm",
+                                                                                                                      "ft",
                                                                                                                       "in",
                                                                                                                       "m")
                                                                                                    )
@@ -1814,58 +1868,49 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                           ),
                                                                                           fluidRow(
                                                                                             column(width = 6,
-                                                                                                   textInput("seeding_rate",  label = "Seeding rate", value="")
+                                                                                                   numericInput("seeding_rate",  label = "Seeding rate", min=0, max=100, step=1,value=NULL)
                                                                                             ),
                                                                                             column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
                                                                                                    selectizeInput("seeding_rate_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                                     c("kg/ha",
-                                                                                                                      "plants/hill",
+                                                                                                                      "lb/ac",
+                                                                                                                      "plants/pot")
+                                                                                                   )
+                                                                                            )
+                                                                                          ),
+                                                                                          # textInput("seeds_per_hil", "Seeds/seedlings per hill", value =""),
+                                                                                          fluidRow(
+                                                                                            column(width = 6,
+                                                                                                   numericInput("distance_plants",  label = "Distance between plants", min=0, max=100, step=0.1,value=NULL)
+                                                                                            ),
+                                                                                            column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
+                                                                                                   selectizeInput("distance_plants_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                                                    c("cm",
+                                                                                                                      "ft",
+                                                                                                                      "in",
+                                                                                                                      "m")
+                                                                                                   )
+                                                                                            )
+                                                                                          ),
+                                                                                          numericInput("seeding_density_number_rows",  label = "Number of rows", min=0, max=100, step=1, value=NULL),
+                                                                                          fluidRow(
+                                                                                            column(width = 6,
+                                                                                                   numericInput("seeding_plant_density",  label = "Plant density", min=0, max=100, step=0.1, value=NULL)
+                                                                                            ),
+                                                                                            column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
+                                                                                                   selectizeInput("seeding_plant_density_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                                                                                                    c("plants/hill",
+                                                                                                                      "plants/m2",
                                                                                                                       "plants/pot",
                                                                                                                       "plants/row")
                                                                                                    )
                                                                                             )
                                                                                           ),
-                                                                                          textInput("seeds_per_hil", "Seeds/seedlings per hill", value =""),
-                                                                                          fluidRow(
-                                                                                            column(width = 6,
-                                                                                                   textInput("distance_plants",  label = "Distance between plants", value="")
-                                                                                            ),
-                                                                                            column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
-                                                                                                   selectizeInput("distance_plants_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                                                    c("cm",
-                                                                                                                      "in",
-                                                                                                                      "m")
-                                                                                                   )
-                                                                                            )
-                                                                                          )
+                                                                                          textAreaInput("direct_seeding_notes", label="Notes", value="")
 
                                                                                         )
                                                                                       )
-                                                                               ),
-                                                                               column(width = 6,
-                                                                                      fluidRow(
-                                                                                        box(
-                                                                                          title = "Traction", solidHeader = TRUE, status = "warning", width=12,
-                                                                                          selectizeInput("seeding_traction", label = "Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                                        c("Buffalo",
-                                                                                                          "Camel",
-                                                                                                          "Donkey",
-                                                                                                          "Elephant",
-                                                                                                          "Horse",
-                                                                                                          "Mule",
-                                                                                                          "Ox / Bullock / Steer",
-                                                                                                          "Human",
-                                                                                                          "2 wheel tractor",
-                                                                                                          "4 wheel tractor",
-                                                                                                          "Other"
-                                                                                                          )
-                                                                                          ),
-                                                                                          hidden(textInput("seeding_traction_other", "", value=""))
-                                                                                        )
-                                                                                      )
                                                                                )
-                                                                           # ),
-                                                                               # fluidRow(
                                                                            )
 
 
@@ -1873,7 +1918,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  ),
                                                                  fluidRow(
                                                                    box(id="transplanting_boxid",
-                                                                       title = checkboxInput("transplanting_checkbox", actionLink("transplanting_titleId", "Transplanting")),
+                                                                       title = checkboxInput("transplanting_checkbox", actionLink("transplanting_titleId", "Transplanting"), T),
                                                                        status = "primary",
                                                                        solidHeader = TRUE,
                                                                        width = 12, collapsible = TRUE, collapsed = TRUE,
@@ -1887,28 +1932,24 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                 column(width = 6,
                                                                                        dateInput("transplanting_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                                 )),
-                                                                              textInput("age_seedling", value="", label = "Age of seeding (days)"),
+                                                                              numericInput("age_seedling", value="", label = "Age of seedling (days)", min=0, max=100, step=1),
                                                                               selectizeInput("transplanting_environment", label = "Seedling environment", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                c("Flat seed bed",
-                                                                                                 "On hill",
-                                                                                                 "On ridge")
+                                                                                                 "Hill",
+                                                                                                 "Ridge",
+                                                                                                 "Other")
                                                                               ),
+                                                                              hidden(textInput("transplanting_environment_other", "", value="")),
                                                                               selectizeInput("transplanting_technique", label = "Technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                               c("Line sowing by hand",
-                                                                                                 # "Drum seeding",
-                                                                                                 # "Direct seeding by machine",
-                                                                                                 "Mechanical transplanting")
+                                                                                               c("Manual",
+                                                                                                 "Mechanical",
+                                                                                                 "Other")
                                                                               ),
+                                                                              hidden(textInput("transplanting_technique_other", "", value="")),
                                                                               textInput("transplanting_treatment", value="", label = "Seed treatment"),
                                                                               selectizeInput("trans_traction", label = "Traction", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                               c("Buffalo",
-                                                                                                 "Camel",
-                                                                                                 "Donkey",
-                                                                                                 "Elephant",
-                                                                                                 "Horse",
-                                                                                                 "Mule",
-                                                                                                 "Ox / Bullock / Steer",
-                                                                                                 "Human",
+                                                                                               c("Animal",
+                                                                                                 "Traction",
                                                                                                  "2 wheel tractor",
                                                                                                  "4 wheel tractor",
                                                                                                  "Other"
@@ -1925,11 +1966,12 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                   br(),
                                                                                   fluidRow(
                                                                                     column(width = 6,
-                                                                                           textInput("trans_distance_rows",  label = "Distance between rows", value="")
+                                                                                           numericInput("trans_distance_rows",  label = "Distance between rows", value="", min=0, max=100, step=0.1)
                                                                                     ),
                                                                                     column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
                                                                                            selectizeInput("trans_distance_rows_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                             c("cm",
+                                                                                                              "ft",
                                                                                                               "in",
                                                                                                               "m")
                                                                                            )
@@ -1937,30 +1979,29 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                   ),
                                                                                   fluidRow(
                                                                                     column(width = 6,
-                                                                                           textInput("trans_seeding_density",  label = "Seeding density", value="")
+                                                                                           numericInput("trans_seeding_density",  label = "Seeding density", value="", min=0, max=100, step=1)
                                                                                     ),
                                                                                     column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
                                                                                            selectizeInput("trans_seeding_density_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                                                                             c("plants/hill",
+                                                                                                              "plants/m2",
                                                                                                               "plants/pot",
-                                                                                                              "plants/sq m",
                                                                                                               "plants/row")
                                                                                            )
                                                                                     )
                                                                                   ),
-                                                                                  textInput("trans_num_rows", "Number of rows", value =""),
+                                                                                  numericInput("trans_num_rows", "Number of rows", value ="", min=0, max=100, step=1),
                                                                                   fluidRow(
                                                                                     column(width = 6,
-                                                                                           textInput("trans_distance_plants",  label = "Distance between plants", value="")
+                                                                                           numericInput("trans_distance_plants",  label = "Distance between plants", value="", min=0, max=100, step=0.1)
                                                                                     ),
                                                                                     column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
-                                                                                           selectizeInput("trans_distance_plants_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                                                                                            c("cm",
-                                                                                                              "in",
-                                                                                                              "m")
+                                                                                           selectizeInput("trans_distance_plants_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), selected="m", choices =
+                                                                                                            c("m")
                                                                                            )
                                                                                     )
-                                                                                  )
+                                                                                  ),
+                                                                                  textAreaInput("transplanting_density_notes", label="Notes", value="")
 
                                                                                 )
                                                                               )
@@ -1974,26 +2015,84 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                  )
                                                         )),#),#end tab planting
                                                         tabPanel("Soil fertility", value="tabNutrient",
-                                                                 #fluidRow(
-                                                                 column(width = 12,
-                                                                        #br(),
-                                                                        #h2("Soil fertility management"),
-                                                                        br(),
-                                                                        #fluidRow(
-                                                                        ## here goes the nutrients prototype panel
+                                                                 br(),
 
-                                                                        fluidRow(id="typeFertilizerUsed",
-                                                                                 column(width = 6,
-                                                                                        selectizeInput("appfTypeFertilizer", "Type of fertilizer used", multiple = TRUE, options = list(placeholder = "Select one..."),
-                                                                                                       choices=c("Inorganic", "Organic", "Green manure")
-                                                                                        )
-                                                                                 )
-                                                                        ),
-                                                                        fluidRow(id="fert123")
+                                                                 box(id="fertilizer_application_details_boxid",
+                                                                     title = actionLink("fertilizer_application_titleId", "Fertilizer application details"),
+                                                                     status = "primary",
+                                                                     solidHeader = TRUE,
+                                                                     width = 12, collapsible = TRUE,  collapsed = TRUE,
+                                                                     fluidRow(
+                                                                        column(3,
+                                                                          numericInput("soil_fertilizer_num_apps", "Number of applications", min=1, max = 10, value=3)
+                                                                        )
+                                                                     ),
+                                                                     fluidRow(
+                                                                       column(12,
+                                                                         column(1, style="padding:5px; text-align:center; word-wrap: break-word;", h4("# app")),
+                                                                         column(10, style="padding:0px;",
+                                                                                column(6,style="padding:0px;",
+                                                                                       column(3, style="padding:5px; text-align:center; word-wrap: break-word;", h4("Fertilizer type") ),
+                                                                                       column(5, style="padding:5px; text-align:center; word-wrap: break-word;", h4("Product")),
+                                                                                       column(2, style="padding:5px; text-align:center; word-wrap: break-word;", h4("Product rate (kg/ha)")),
+                                                                                       column(2, style="padding:5px; text-align:center; word-wrap: break-word;", h4("Element"))
+                                                                                ),
+                                                                               column(6, style="padding:0px;",
+                                                                                      column(2, style="padding:5px; text-align:center; word-wrap: break-word;", h4("Element rate (kg/ha)") ),
+                                                                                      column(3, style="padding:5px; text-align:center; word-wrap: break-word;",h4("Implement")),
+                                                                                      column(3, style="padding:5px; text-align:center; word-wrap: break-word;",h4("Traction")),
+                                                                                      column(4, style="padding:5px; text-align:center; word-wrap: break-word;",h4("Technique"))
+                                                                               )
+                                                                         ),
+                                                                         column(1,  style="padding:5px; text-align:center; word-wrap: break-word;",
+                                                                                h4("Notes")
+                                                                         )
+                                                                       )
+                                                                     ),
+                                                                     fluidRow(id="fr_fertilizer_application"),
+                                                                     fluidRow(
+                                                                       column(4,
+                                                                              textInput("soil_fertilizer_totalAppRate", "Total application rate"),
+                                                                              textInput("soil_fertilizer_fractionTotalAppRate", "Fraction of total application rate")
+                                                                       )
+                                                                     ),
+                                                                     fluidRow(
+                                                                       fluidRow(
+                                                                         column(12,
+                                                                          h4("Nutrient content"),
+                                                                          actionButton("addproducts_soil", "", icon=icon("plus")),
+                                                                          actionButton("delproducts_soil", "", icon=icon("minus"))
+                                                                         )
+                                                                       ),
+                                                                       fluidRow(
+                                                                         column(12,
+                                                                             column(3,
+                                                                                    HTML("<center>"), h3("Fertilizer product"), HTML("</center>"),
+                                                                                    br(),
+                                                                                    fluidRow(id = "fr_aux_soil_fertProduct")
+                                                                             ),
+                                                                             column(1,
+                                                                                    HTML("<center>"),h3("N (%)"),HTML("</center>"),
+                                                                                    br(),
+                                                                                    fluidRow(id = "fr_aux_soil_N")
+                                                                             ),
+                                                                             column(1,
+                                                                                    HTML("<center>"),h3("P (%)"),HTML("</center>"),
+                                                                                    br(),
+                                                                                    fluidRow(id = "fr_aux_soil_P")
+                                                                             ),
+                                                                             column(1,
+                                                                                    HTML("<center>"),h3("K (%)"),HTML("</center>"),
+                                                                                    br(),
+                                                                                    fluidRow(id = "fr_aux_soil_K")
+                                                                             ),
+                                                                             fluidRow(id="fr_fertilizer_application_nutrient")
+                                                                         )
+                                                                       )
+                                                                     )
 
-
-                                                                        #)
-                                                                 )),#)#end tab nutrient management event
+                                                              )
+                                                        ),#)#end tab nutrient management event
 
 
                                                         tabPanel("Weeding", value="tabWeeding", br(),
@@ -2008,7 +2107,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                   br(),
                                                                     fluidRow(
                                                                              column(width = 6,
-                                                                                    numericInput("numWeeding", label  = "Weeding number", value = 1, min = 1, max = 10)
+                                                                                    numericInput("numWeeding", label  = "Number of weedings", value = 1, min = 1, max = 10)
 
                                                                              )
                                                                     ),
@@ -2080,9 +2179,32 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                          shiny::tabPanel("Crop phenology", value = "tabCropPheno", icon = shiny::icon("envira"),
 
                                                          br(),
+                                                         box( title ="Planting, transplanting", solidHeader = TRUE, status = "warning", width=12,
+                                                              fluidRow(
+                                                                column(8,
+                                                                       fluidRow(
+                                                                         column(4,
+                                                                                dateInput("cropPheno_planting_date", label ="Planting date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(4,
+                                                                                dateInput("cropPheno_transpanting_date", label ="Transplanting date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(4,
+                                                                                dateInput("cropPhen_plantingEmergence_date", label ="Emergence date", format = "yyyy/mm/dd")
+                                                                         )
+                                                                       )
+
+
+                                                                ),
+
+                                                                column(4, textAreaInput("cropPheno_sowEmerg_notes", "Notes", width = '100%'))
+                                                              )
+
+                                                         ),
+
                                                          box( title ="Sowing and emergence", solidHeader = TRUE, status = "warning", width=12,
                                                               fluidRow(
-                                                                column(6,
+                                                                column(8,
                                                                     fluidRow(
                                                                        column(6,
                                                                               dateInput("cropPheno_sowing_date", label ="Sowing date", format = "yyyy/mm/dd")
@@ -2094,14 +2216,14 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                 ),
 
-                                                                column(6, textAreaInput("cropPheno_sowEmerg_notes", "Notes", width = '100%'))
+                                                                column(4, textAreaInput("cropPheno_sowEmerg_notes", "Notes", width = '100%'))
                                                               )
 
                                                           ),
 
                                                          box( title ="Flowering", solidHeader = TRUE, status = "warning", width=12,
                                                               fluidRow(
-                                                                column(6,
+                                                                column(8,
                                                                        fluidRow(
                                                                          column(4,
                                                                                 dateInput("cropPheno_flowering_sdate", label ="Start date", format = "yyyy/mm/dd")
@@ -2116,14 +2238,14 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                 ),
 
-                                                                column(6, textAreaInput("cropPheno_flowering_notes", "Notes", width = '100%'))
+                                                                column(4, textAreaInput("cropPheno_flowering_notes", "Notes", width = '100%'))
                                                               )
 
                                                          ),
 
                                                          box( title ="Grain filling", solidHeader = TRUE, status = "warning", width=12,
                                                               fluidRow(
-                                                                column(6,
+                                                                column(8,
                                                                        fluidRow(
                                                                          column(6,
                                                                                 dateInput("cropPheno_grainFilling_sdate", label ="Start date", format = "yyyy/mm/dd")
@@ -2135,64 +2257,85 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                 ),
 
-                                                                column(6, textAreaInput("cropPheno_grainFilling_notes", "Notes"))
+                                                                column(4, textAreaInput("cropPheno_grainFilling_notes", "Notes"))
                                                               )
 
                                                          ),
 
                                                          box( title ="Fruit development", solidHeader = TRUE, status = "warning", width=12,
                                                               fluidRow(
-                                                                column(6,
+                                                                column(8,
                                                                        fluidRow(
-                                                                         column(6,
+                                                                         column(3,
                                                                                 dateInput("cropPheno_fruitDev_date", label ="Fruit development date", format = "yyyy/mm/dd")
                                                                          ),
-                                                                         column(6,
+                                                                         column(3,
+                                                                                dateInput("cropPheno_fruit50dev_date", label ="50% fruit development date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(3,
+                                                                                dateInput("cropPheno_fruitDevEnd_date", label ="Fruit development end date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(3,
                                                                                 dateInput("cropPheno_fruitRip_date", label ="Fruit ripening date", format = "yyyy/mm/dd")
                                                                          )
                                                                        )
 
                                                                 ),
 
-                                                                column(6, textAreaInput("cropPheno_fruitDev_notes", "Notes"))
+                                                                column(4, textAreaInput("cropPheno_fruitDev_notes", "Notes"))
                                                               )
 
                                                          ),
 
-                                                         box( title ="Maturity and development", solidHeader = TRUE, status = "warning", width=12,
+                                                         box( title ="Maturity and senescence", solidHeader = TRUE, status = "warning", width=12,
                                                               fluidRow(
-                                                                column(6,
+                                                                column(8,
                                                                        fluidRow(
-                                                                         column(6,
-                                                                                dateInput("cropPheno_maturity_date", label ="Maturity date", format = "yyyy/mm/dd")
+                                                                         column(4,
+                                                                                dateInput("cropPheno_maturity_start_date", label ="Maturity start date", format = "yyyy/mm/dd")
                                                                          ),
-                                                                         column(6,
-                                                                                dateInput("cropPheno_senescence_date", label ="Senescence date", format = "yyyy/mm/dd")
+                                                                         column(4,
+                                                                                dateInput("cropPheno_maturity_50_date", label ="50% maturity date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(4,
+                                                                                dateInput("cropPheno_maturity_end_date", label ="Maturity end date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(4,
+                                                                                dateInput("cropPheno_senescence_start_date", label ="Senescence start date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(4,
+                                                                                dateInput("cropPheno_senescence_50_date", label ="50% senescence date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(4,
+                                                                                dateInput("cropPheno_senescence_end_date", label ="Senescence end date", format = "yyyy/mm/dd")
                                                                          )
                                                                        )
 
                                                                 ),
 
-                                                                column(6, textAreaInput("cropPheno_maturity_notes", "Notes"))
+                                                                column(4, textAreaInput("cropPheno_maturity_notes", "Notes"))
                                                               )
 
                                                          ),
                                                          box( title ="Other phenological stage", solidHeader = TRUE, status = "warning", width=12,
                                                               fluidRow(
-                                                                column(6,
+                                                                column(8,
                                                                        fluidRow(
-                                                                         column(6,
+                                                                         column(4,
                                                                                 textInput("cropPheno_otherPheno_name", "Name")
                                                                          ),
-                                                                         column(6,
-                                                                                dateInput("cropPheno_otherPheno_date", label ="Date", format = "yyyy/mm/dd")
+                                                                         column(4,
+                                                                                dateInput("cropPheno_otherPheno_start_date", label ="Start date", format = "yyyy/mm/dd")
+                                                                         ),
+                                                                         column(4,
+                                                                                dateInput("cropPheno_otherPheno_end_date", label ="End date", format = "yyyy/mm/dd")
                                                                          )
 
                                                                        )
 
                                                                 ),
 
-                                                                column(6, textAreaInput("cropPheno_otherPheno_notes", "Notes"))
+                                                                column(4, textAreaInput("cropPheno_otherPheno_notes", "Notes"))
                                                               )
 
                                                          ),
@@ -2242,8 +2385,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                        downloadButton("downloadData", "Download", class = "color: #fff; background-color: #51a351; border-color: #51a351"),
                                        #shinysky::actionButton2("fbDesign_create_agrofims", label = "Download", icon ="file-excel-o", icon.library = "bootstrap", styleclass= "color: #fff; background-color: #51a351; border-color: #51a351"),
                                        #shiny::actionButton("fbDesign_create", "Download", icon("file-excel-o"), style="color: #fff; background-color: #51a351; border-color: #51a351"),
-                                       #shinyBS::bsAlert("alert_fb_done"),
-                                       shinysky::shinyalert("alert_fb_done", FALSE, auto.close.after = 4),
+                                       #shinyBS::bsAlert(anchorId = "alert_fb_done"),
+                                       shinysky::shinyalert("alert_fb_done", FALSE, auto.close.after = 2),
                                        HTML('</div>')
                                      ),
                           #rHandsontableOutput("hot", width = 1000),

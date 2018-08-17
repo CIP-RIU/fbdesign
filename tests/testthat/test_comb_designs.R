@@ -54,7 +54,7 @@ test_that("add level as a column in Latin square design (LSD) in field trials", 
 
 test_that("add level as a column in Wescott design (WD) in field trials", {
 
-  out <- st4gi::cd.w(1:100, "A", "B", 100)
+  out <- st4gi::cr.w(1:100, "A", "B", 100)
   fb <- out$book
   names(fb) <-  c("plot", "row", "col" , "trt")
   lvl <- "irrigado"

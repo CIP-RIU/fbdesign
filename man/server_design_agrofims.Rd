@@ -2,7 +2,7 @@
 % Please edit documentation in R/server_desing_hdagrofim.R
 \name{server_design_agrofims}
 \alias{server_design_agrofims}
-\title{server_design}
+\title{Design field book for HIDAP-AGROFIMS}
 \usage{
 server_design_agrofims(input, output, session, values)
 }

@@ -147,3 +147,39 @@ append_col <- function(x, cols, after=length(x)) {
 }
 
 
+
+#' Get treatment and factor inputs from design of experiments
+#'
+#'@description Insert column between columns based on positions.
+#'@param group group
+#'@param subgroup subgroup
+#'@param fct factor
+#'@param dfr data frame with the inputs
+#'@export
+#'
+
+getTrtInputs <- function(group, subgroup, fct, dfr){
+
+  gp <-	  group #group
+  sgp <-	subgroup #subgroup
+  fct <-	fct #factor
+  lblFct <- paste(gp, fct, sep = "_")
+
+  if( !is.null(gp) ||  !is.null(sgp) || !is.null(fct) ){
+
+    dfTrt <- dfr
+    if(fct == "Start date" ){
+      lvl <- dfTrt[[fct]]
+    } else if( fct == "End date"){
+      lvl <- dfTrt[[fct]]
+    } else{
+      lvl<- dfTrt[["text"]]
+    }
+  } else {
+    lblFct <- ""
+    lvl <- ""
+  }
+  out <- list(label = lblFct, level= lvl)
+
+}
+
