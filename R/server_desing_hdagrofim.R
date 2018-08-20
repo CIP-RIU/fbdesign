@@ -70,6 +70,10 @@ server_design_agrofims <- function(input, output, session, values){
     js$collapse("weeding_boxid")
   })
 
+  observeEvent(input$fertilizer_application_titleId, {
+    js$collapse("fertilizer_application_details_boxid")
+  })
+
   ############ fin abrir boxes ##########################################################
 
 
@@ -1384,16 +1388,6 @@ server_design_agrofims <- function(input, output, session, values){
 
 
 
-  ## Agronomic Features Shiny Tree ###############################################
-
-    output$treeFeatures <- shinyTree::renderTree({
-
-      #total <- readRDS("total.rds")
-      total <- Agronomic_features
-
-    })
-
-
   # }) End agronomic trait shinyTree  ####################################
 
 
@@ -2313,7 +2307,6 @@ server_design_agrofims <- function(input, output, session, values){
   irrigVar <- reactiveValues()
   irrigVar$nApps <-3
 
-
   observeEvent(input$numApplicationsIrrigation, {
     num <- input$numApplicationsIrrigation
 
@@ -2372,7 +2365,6 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-
   removeBoxesIrrigation <- function(begin, end){
     for(i in begin:end){
       removeUI(
@@ -2382,8 +2374,6 @@ server_design_agrofims <- function(input, output, session, values){
     }
 
   }
-
-
 
   drawBoxIrrigation <- function(order){
     fluidRow(id= paste0("box_irrig_", order),
@@ -2789,13 +2779,23 @@ server_design_agrofims <- function(input, output, session, values){
     if(num_others > 6) return()
 
     insertUI(
-      selector= "#fr_fertilizer_application_nutrient",
+      selector= "#fr_fertilizer_application_nutrient_title",
       where = "beforeBegin",
-      ui =  column(1, id= paste0("col_input_soilProduct_other_", num_others ),
-                   textInput(paste0("input_soilProduct_other_", num_others ), "", placeholder = "Other (%)"),
-                   fluidRow(id = paste0("fr_aux_soil_other_", num_others))
+      ui =  column(1, id= paste0("col_input_soilProduct_other_", num_others, "_title" ), style = "padding:10px;",
+                   textInput(paste0("input_soilProduct_other_", num_others ), "", placeholder = "Other (%)")
+                   # fluidRow(id = paste0("fr_aux_soil_other_", num_others))
             )
     )
+
+    insertUI(
+      selector= "#fr_fertilizer_application_nutrient",
+      where = "beforeBegin",
+      ui =  column(1, id= paste0("col_input_soilProduct_other_", num_others ), style = "padding:10px;",
+                   # textInput(paste0("input_soilProduct_other_", num_others ), "", placeholder = "Other (%)"),
+                   fluidRow(id = paste0("fr_aux_soil_other_", num_others))
+      )
+    )
+
     soilFertilityVar$productsOther <- num_others
     len <- length(soilFertilityVar$products)
     if(len < 1) return()
@@ -2810,7 +2810,6 @@ server_design_agrofims <- function(input, output, session, values){
 
       if(i ==1) selector <- paste0("#fr_aux_soil_other_", num_others)
 
-      print(selector)
       insertUI(
         selector = selector,
         where = "afterEnd",
@@ -2827,19 +2826,12 @@ server_design_agrofims <- function(input, output, session, values){
   observeEvent(input$delproducts_soil, {
     n_others <- soilFertilityVar$productsOther
     if(n_others  < 1) return()
-
-    # mlist <- soilFertilityVar$products
-    # for(item in mlist){
-    #   mid <- paste0("#fr_input_soil_nutrient_product_other_", n_others, "_", gsub("\\.", "", gsub(" ", "_", item)))
-    #   removeUI(
-    #     selector = mid,
-    #     immediate = T
-    #   )
-    #
-    # }
-
     removeUI(
       selector =  paste0("#col_input_soilProduct_other_", n_others),
+      immediate = T
+    )
+    removeUI(
+      selector =  paste0("#col_input_soilProduct_other_", n_others, "_title"),
       immediate = T
     )
 
@@ -5992,8 +5984,9 @@ server_design_agrofims <- function(input, output, session, values){
 
 
 
+
   # Fieldbook with traits #######################################################################
-   fb_agrofims_traits <- reactive({
+  fb_agrofims_traits <- reactive({
 
 
      fb <- fb_agrofims()
@@ -6760,265 +6753,151 @@ server_design_agrofims <- function(input, output, session, values){
   ### Harvest  ##########################################################################
   dt_harvest <- reactive({
 
-    out <- fb_agrofims()
+     #out <- fb_agrofims()
+     h_start_date	<-	input$harvest_start_date
+     h_end_date	<-	input$harvest_end_date
+     h_cut_height	<-	input$harvest_cut_height
+     h_cut_height_unit <- getAgrOper(input$harvest_cut_height_unit) #get units
+     h_method <- getAgrOper(feature=input$harvest_method, other = input$harvest_method_value_other)
+     h_method_value <- getAgrOper(feature=input$harvest_method_value)
+     h_component_harvested <- getAgrOper(input$crop_component_harvested, input$crop_component_harvested_other)
+     h_space_rows <- input$space_rows_harvested
+     h_space_rows_unit <- getAgrOper(input$space_rows_harvested_unit) #get units
+     h_totarea <- input$area_harvested
+     h_totarea_unit <- getAgrOper(input$area_harvested_unit) #get units
+     h_plants_area <- input$num_plants_area_harvested
+     h_notes <- input$harvest_notes
+     h_technique <- getAgrOper(input$harvest_technique)
+     h_implement	<-	getAgrOper(input$harvest_implement,input$harvest_implement_other)
+     h_traction	<-	getAgrOper(input$harvest_traction,input$harvest_traction_other)
+     h_amount<- input$amount_harvested
+     h_amount_unit <- getAgrOper(input$amount_harvested_unit) #get units
 
-    harvest_start_date	<-	input$harvest_start_date
-    harvest_end_date	<-	input$harvest_end_date
-    harvest_cut_height	<-	input$harvest_cut_height
-    num_rows_harvested	<-	input$num_rows_harvested
-    len_row_harvested	<-	input$len_row_harvested
+     harvNames <- c('Start date',
+                    'End date',
+                    paste('Harvest cut height', h_cut_height_unit ,sep="_"),
+                    paste('Harvest method',  h_method_value, sep="_"),
+                    'Harvest method value',
+                    'Crop component harvested',
+                    paste('Space between rows harvested', h_space_rows_unit, sep="_"),
+                    paste('Total area harvested', h_totarea_unit , sep="_"),
+                    'Number of plants in area harvested',
+                    'Notes',
+                    'Technique',
+                    'Harvest implement',
+                    'Traction',
+                    paste('Amount harvested', h_amount_unit, sep= "_")
+     )
 
-    len_row_harvested_unit	<-	input$len_row_harvested_unit
-    if(is.null(len_row_harvested_unit )){
-      len_row_harvested_unit	<-	""
-    }
+     dtHarv <- data.frame( h_start_date,
+                           h_end_date,
+                           h_cut_height,
+                           h_method,
+                           h_method_value,
+                           h_component_harvested,
+                           h_space_rows,
+                           h_totarea,
+                           h_plants_area,
+                           h_notes ,
+                           h_technique ,
+                           h_implement	,
+                           h_traction,
+                           h_amount
+     )
+     names(dtHarv) <- harvNames
+     #out <- merge(out, dtHarv, by = 0, all = TRUE)[-1]
+     out <- dtHarv
 
+   })
 
-    space_rows_harvested	<-	input$space_rows_harvested
-    space_rows_harvested_unit	<-	input$space_rows_harvested_unit
-    if(is.null(space_rows_harvested_unit )){
-      space_rows_harvested_unit	<-	""
-    }
-
-
-    area_harvested	<-	input$area_harvested
-    area_harvested_unit	<-	input$area_harvested_unit
-    if(is.null(area_harvested_unit )){
-      area_harvested_unit	<-	""
-    }
-
-    num_plants_area_harvested	<-	input$num_plants_area_harvested
-    crop_component_harvested	<-	input$crop_component_harvested
-    if(is.null(crop_component_harvested )){
-      crop_component_harvested	<-	""
-    }
-
-    harvest_implement	<-	input$harvest_implement
-    if(is.null(harvest_implement )){
-      harvest_implement	<-	""
-    }
-    if(harvest_implement== "Other"){
-      harvest_implement	<-	input$harvest_implement_other
-    }
-
-
-    harvest_make	<-	input$harvest_make
-    harvest_model	<-	input$harvest_model
-
-    harvest_traction	<-	input$harvest_traction
-    if(is.null(harvest_traction )){
-      harvest_traction	<-	""
-    }
-    if(harvest_traction== "Other"){
-      harvest_traction	<-	input$harvest_traction_other
-    }
-
-    harvNames <- c('Harvest start date',
-                  'Harvest end date',
-                  'Harvest cut height',
-                  'Number of rows harvested',
-                  'Length of rows harvested',
-                  'Length of rows harvested unit',
-                  'Space between rows harvested',
-                  'Space between rows harvested unit',
-                  'Area harvested',
-                  'Area harvested unit',
-                  'Number of plants in area harvested',
-                  'Crop component harvested',
-                  'Harvest implement',
-                  'Harvest implement make',
-                  'Harvest implement model',
-                  'Harvest implement traction'
-    )
-
-    dtHarv <- data.frame( harvest_start_date,
-                          harvest_end_date,
-                          harvest_cut_height,
-                          num_rows_harvested,
-                          len_row_harvested,
-                          len_row_harvested_unit,
-                          space_rows_harvested,
-                          space_rows_harvested_unit,
-                          area_harvested,
-                          area_harvested_unit,
-                          num_plants_area_harvested,
-                          crop_component_harvested,
-                          harvest_implement,
-
-                          harvest_make,
-                          harvest_model,
-                          harvest_traction
-    )
-
-    names(dtHarv) <- harvNames
-    out <- merge(out, dtHarv, by = 0, all = TRUE)[-1]
-
-    out
-
-
-
-    # out<-harvest(input$harvest_start_date,
-    #         input$harvest_end_date,input$crop_component_harvested,
-    #         input$harvest_implement,input$harvest_make,input$harvest_model,
-    #         input$harvest_animal_traction,input$harvest_humanPowered,
-    #         input$harvest_motorized_traction)
-    # out
-
-  })
-
-
-  #irrigation  ##########################################################################
-  dt_irrigation <- reactive({
-
-    out <- fb_agrofims()
-
-    nirri <- input$numApplicationsIrrigation
-
-
-    sdate <- edate <-  tech <- vt <- vt_label <- list()
-    ws <-   wsdist <-    wsuni <-    wb <-    wbu <-    wpr <-    wpru <-    depth <-    depthu <-    iwdepth <-    iwdepthu <- list()
-    amount <- uamount <-  area <- uarea <- list()
-
-
-    nirri <- input$numApplicationsIrrigation
-
-    for(i in 1:nirri) {
-      sdate[[i]] <-  paste(input[[	paste0("irrigationevent_start_date_", i)	]])
-      if(length(sdate[[i]])==0){ sdate[[i]] <- ""   }
-
-      edate[[i]] <-  paste(input[[	paste0("irrigationevent_end_date_", i)	]])
-      if(length(edate[[i]])==0){ edate[[i]] <- ""   }
-
-      tech[[i]] <-  paste(input[[	paste0("irrigation_technique_", i)	]])
-      if(is.null( tech[[i]] ) || length(tech[[i]]) ==0) tech[[i]] <-  ""
-
-      #if( tech[[i]] == "Other" ) tech[[i]] <-   paste(input[[  paste0("irrigation_water_source_", i,  "_other")  ]])
-      if( tech[[i]] == "Surface" ) {
-            vt[[i]] <-  paste(input[[ paste0("surface_irrigation_technique_", i) ]])
-            vt_label[[i]] <-  "Surface irrigation technique"
-          } else if( tech[[i]] == "Localized" ) {
-            vt[[i]] <- "" #paste(input[[  paste0("localized_irrigation_technique", i) ]]){
-            vt_label <- paste("foo",i, sep ="")
-          } else if( tech[[i]]== "Irrigation sprinker" ) {
-            vt[[i]] <-  paste(input[[ paste0("irrigation_using_sprinkler_systems_", i) ]])
-            vt_label[[i]] <- "Irrigation using sprinkler systems"
-          } else {
-            vt[[i]] <- ""
-            vt_label <- paste("foo",i , sep ="")
-      }
-
-      #print(vt[[i]])
-
-        ws[[i]] <-  paste(input[[	paste0("irrigation_water_source_", i)	]])
-        if(is.null( ws[[i]] ) || length(ws[[i]]) ==0) ws[[i]] <-  ""
-        wsdist[[i]] <-  paste(input[[	paste0("irrigation_water_source_distance_", i)	]])
-        wsuni[[i]] <-  paste(input[[	paste0("irrigation_water_source_distance_", i, "unit")	]])
-        if(is.null( wsuni[[i]] ) || length(wsuni[[i]]) ==0) wsuni[[i]] <-  ""
-
-        wb[[i]] <-  paste(input[[	paste0("irrigation_bund_height_", i)	]])
-        wbu[[i]] <-  paste(input[[	paste0("irrigation_bund_height_", i, "unit")	]])
-        if(is.null( wbu[[i]] ) || length(wbu[[i]]) ==0) wbu[[i]] <-  ""
-
-        wpr[[i]] <-  paste(input[[	paste0("irrigation_percolation_rate_", i)	]])
-        wpru[[i]] <-  paste(input[[	paste0("irrigation_percolation_rate_", i, "unit")	]])
-        if(is.null(wpru[[i]] ) || length(wpru[[i]]) ==0) wpru[[i]] <-  ""
-
-        depth[[i]] <-  paste(input[[	paste0("irrigation_equipment_depth_", i)	]])
-        depthu[[i]] <-  paste(input[[	paste0("irrigation_equipment_depth_", i, "unit")	]])
-        if(is.null( depthu[[i]] ) || length(depthu[[i]]) ==0) depthu[[i]] <-  ""
-
-        iwdepth[[i]] <-  paste(input[[	paste0("irrigation_well_depth_", i)	]])
-        iwdepthu[[i]] <-  paste(input[[	paste0("irrigation_well_depth_", i, "unit")	]])
-        if(is.null( iwdepthu[[i]] ) || length(iwdepthu[[i]]) ==0) iwdepthu[[i]] <-  ""
-
-        amount[[i]] <-  paste(input[[	paste0("irrigation_amount_", i)	]])
-        uamount[[i]] <-  paste(input[[	paste0("irrigation_amount_", i, "unit")	]])
-        if(is.null( uamount[[i]] ) || length(uamount[[i]]) ==0) uamount[[i]] <-  ""
-
-        area[[i]] <-  paste(input[[	paste0("irrigation_area_covered_irrigation_system_", i)	]])
-        uarea[[i]] <-  paste(input[[	paste0("irrigation_area_covered_irrigation_system_", i, "unit")	]])
-        if(is.null( uarea[[i]] ) || length(uarea[[i]]) ==0) uarea[[i]] <-  ""
-
-    }
-
-
-      sdate <- unlist(sdate)
-      edate <- unlist(edate)
-      tech <- unlist(tech )
-      vt <- unlist(vt)
-      vt_label <- unlist(vt_label) #no considerar
-
-      ws <- unlist(ws )
-      wsdist <- unlist(wsdist )
-      wsuni <- unlist(wsuni )
-      wb <- unlist(wb )
-      wbu <- unlist(wbu )
-      wpr <-unlist(wpr )
-      wpru <-unlist(wpru)
-      depth <- unlist(depth )
-      depthu <- unlist(depthu)
-      iwdepth <- unlist(iwdepth )
-      iwdepthu <- unlist(iwdepthu )
-      amount <- unlist(amount)
-      uamount <- unlist(uamount )
-      area <- unlist(area )
-      uarea <- unlist(uarea )
-
-        #irri <- c( sdate , edate ,tech, vt,  ws, wsdist , wsuni,wb ,wbu ,wpr,wpru,depth ,depthu ,iwdepth ,iwdepthu ,amount ,uamount ,area ,uarea )
-        irri <- c(rbind(sdate , edate ,tech, vt,  ws, wsdist , wsuni,wb ,wbu ,wpr,wpru,depth ,depthu ,iwdepth ,iwdepthu ,amount ,uamount ,area ,uarea ))
-        print(irri)
-        temp <- t(irri)
-        irridt <- as.data.frame(temp, stringsAsFactors =FALSE)
-        print(irridt)
-
-        for(i in 1:nirri){
-          a2	<-paste(	'Start date'	, 1:i)
-          a3	<-paste(	'End date'	, 1:i)
-          a4	<-paste(	'Irrigation technique'	, 1:i)
-          a5	<-paste(	'Water source'	, 1:i)
-          a6	<-paste(	'Water source distance'	, 1:i)
-          a7	<-paste(	'Water source distance Unit'	, 1:i)
-          a8	<-paste(	'Bund height'	, 1:i)
-          a9	<-paste(	'Bund height unit'	, 1:i)
-          a10	<-paste(	'Percolation rate'	, 1:i)
-          a11	<-paste(	'Percolation rate unit'	, 1:i)
-          a12	<-paste(	'Irrigation equipment depth'	, 1:i)
-          a13	<-paste(	'Irrigation equipment depth unit'	, 1:i)
-          a14	<-paste(	'Well depth'	, 1:i)
-          a15	<-paste(	'Well depth unit'	, 1:i)
-          a16	<-paste(	'Irrigation amount'	, 1:i)
-          a17	<-paste(	'Irrigation amount unit'	, 1:i)
-          a18	<-paste(	'Area covered by the irrigation system'	, 1:i)
-          a19	<-paste(	'Area covered by the irrigation system unit'	, 1:i)
-        }
-
-  a67 <- c(rbind(a6,a7)) #intercalate values for water source distance
-  a89 <- c(rbind(a8,a9)) #intercalate values for bund height
-  a1011 <- c(rbind(a10,a11)) #intercalate values for bund height
-  a1213 <- c(rbind(a12,a13)) #intercalate values for irrigation equipment depth
-  a1415 <- c(rbind(a14,a15)) #intercalate values for well depth
-  a1617 <- c(rbind(a16,a17)) #intercalate values for irrigation amount
-  a1819 <- c(rbind(a18,a19)) #intercalate values for irrigation system
-
-  #irriNames <- c(a2, a3, a4, vt_label, a5, a6, a7, a8, a9, a10, a11, a12,a13, a14, a15, a16, a17, a18, a19)
-  irriNames <- c(rbind(a2,a3, a4, vt_label, a5, a6, a7, a8,a9,a10,a11,a12, a13, a14, a15, a16, a17, a18, a19))
-  #irriNames <- c(a2, a3, a4, vt_label, a5, a67, a89, a1011, a1213, a1415, a1617, a1819)
-
-  #print(irriNames)
-
-  names(irridt) <- irriNames
-  as <- grepl("foo", names(irridt)) #detec foo variables
-  irridt <- irridt[!as] #remove foo variables
-
-  out <- merge(out, irridt, by = 0, all = TRUE)[-1]
-
-  names(out) <- stringr::str_replace_na(names(out))
-  as2 <- grepl("NA", names(out)) #detec foo variables
-  out <- out[!as2]
-
- out
-
-})
+  ### Irrigation  ##########################################################################
+#   dt_irrigation <- reactive({
+#
+#    #Irrigation start date
+#    n <- as.numeric(input$numApplicationsIrrigation)
+#    irri_start_date <- get_loop_AgrOper("irrigationevent_start_date_", n=n)
+#    irri_start_date <- vector(mode="character", length = n)
+#    if(label!= "unit"){
+#      for(i in 1:n){
+#        irri_start_date[[i]] <-  paste(input[[paste0(feature, i)]])
+#        if(length(irri_start_date[[i]])==0){ irri_start_date[[i]] <- "" }
+#      }
+#    } else{
+#      irri_start_date[[i]] <-paste(input[[paste0(feature, i, "unit")]])
+#    }
+#
+#    #Irrigation end date
+#    irri_end_date <- vector(mode="character", length = n)
+#    if(label!= "unit"){
+#      for(i in 1:n){
+#        irri_end_date[[i]] <-  paste(input[[paste0(feature, i)]])
+#        if(length(irri_end_date[[i]])==0){ irri_end_date[[i]] <- "" }
+#      }
+#    } else{
+#      irri_end_date[[i]] <-paste(input[[paste0(feature, i, "unit")]])
+#    }
+#
+#
+#
+#
+#
+#    #Irrigation technique
+#    irri_technique <-  get_loop_AgrOper("irrigation_technique_",n=n)
+#
+#    out<- vector(mode = "character", length= length(irri_technique))
+#    for (i in 1:length(irri_technique)){
+#      if(irri_technique[i] == "Irrigation sprinker"){
+#          out[i] <- paste0("irrigation_using_sprinkler_systems_", i)
+#        if(out[i]=="Other"){
+#          out[i]<- paste0("irrigation_using_sprinkler_systems_", i, "_other") #other
+#        }
+#      }
+#      else if(irri_technique[i] == "Surface"){
+#          out[i] <- paste0("surface_irrigation_technique_", i)
+#        if(out[i]=="Other"){
+#          out[i] <- paste0("surface_irrigation_technique_", i, "_other") #other
+#        }
+#      }
+#      else if(irri_technique[i] == "Localized"){
+#          out[i] <- paste0("localized_irrigation_technique", i)
+#        if( out[i]=="Other"){
+#          out[i] <- paste0("localized_irrigation_technique", i, "_other") #other
+#        }
+#      }
+#      else if(irri_technique[i] == "Other"){
+#         out[i] <- paste0("irrigation_technique_", i, "_other") #other
+#      }
+#    }
+#
+#    irri_technique_subselection <- out
+#    irri_source <- get_loop_AgrOper("irrigation_source_", n=n)
+#    irri_source_dist <- get_loop_AgrOper("irrigation_source_distance_", n =n)
+#    irri_source_dist_unit <- get_loop_AgrOper("irrigation_source_distance_",n =n, label ="unit") #unit
+#    irri_amount <- get_loop_AgrOper("irrigation_amount_", n =n)
+#    irri_amount_unit <- get_loop_AgrOper("irrigation_amount_",n =n, label ="unit") #unit
+#    irri_notes <- get_loop_AgrOper("irrigation_notes_", n=n)
+#
+#
+#    irriNames <- c(paste('Start date',1:n),
+#                   paste('End date', 1:n) ,
+#                   paste('Irrigation technique', 1:n ),
+#                   paste('Sub selection technique', 1:n ),
+#                   paste('Irrigation source', 1:n),
+#                   paste(paste('Irrigation source distance', irri_source_dist_unit,sep = "_"), 1:n ),
+#                   paste(paste('Irrigation amount ', irri_amount_unit,sep = "_"), 1:n),
+#                   paste( 'Notes', 1:n )
+#    )
+#    dtIrri <- data.frame(irri_start_date,
+#                          irri_end_date,
+#                          irri_technique,
+#                          irri_technique_subselection,
+#                          irri_source,
+#                          irri_source_dist,
+#                          irri_amount,
+#                          irri_notes
+#    )
+#    names(dtIrri) <- irriNames
+# })
 
 
   ##biofertilization   ##################################################################
@@ -7083,6 +6962,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   })
+
 
 
   ### nutrient   ########################################################################
@@ -7294,6 +7174,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
+
   ### pest and disease   ################################################################
   dt_pestdis <- reactive({
 
@@ -7364,6 +7245,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
+
   ################################End agrofeatures ######################################
 
 
@@ -7387,6 +7269,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
+
   ##reactive soil  #####################################################################
   dt_soil_agrofims <- shiny::reactive({
 
@@ -7401,6 +7284,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
     dt
   })
+
 
 
   #############  metadata_dt2 ###################################################################
@@ -7682,6 +7566,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
+
   #############  factor_dt2 ######################################################################
   factor_dt2 <- reactive({
 
@@ -7904,7 +7789,8 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-   #############  metadata_dt ##########################################################
+
+  #############  metadata_dt ##########################################################
    metadata_dt <- function(){
 
      c1 <- c('Experiment ID', input$experimentId)
@@ -8183,7 +8069,8 @@ server_design_agrofims <- function(input, output, session, values){
    }
 
 
-   #############  factor_dt ##########################################################
+
+  #############  factor_dt ##########################################################
    factor_dt <- function(){
 
 
@@ -8332,7 +8219,8 @@ server_design_agrofims <- function(input, output, session, values){
    }
 
 
-   #############  traits_dt ##########################################################
+
+  #############  traits_dt ##########################################################
    traits_dt <- function(){
      a<- traitsVals$Data
      if(nrow(traitsVals$Data) >0){
@@ -8344,7 +8232,8 @@ server_design_agrofims <- function(input, output, session, values){
    }
 
 
-   ### Book preview #############################################################
+
+  ### Book preview #############################################################
    shiny::observeEvent(input$fbDesign_draft_agrofims, {
 
      withProgress(message = 'Fieldbook Preview', value = 0, {
@@ -8495,8 +8384,8 @@ server_design_agrofims <- function(input, output, session, values){
 
          # incProgress(7/20,message = "Adding installation sheet...")
          #
-         # openxlsx::addWorksheet(wb, "Variables", gridLines = TRUE)
-         # openxlsx::writeDataTable(wb, "Variables", x = installation,
+         #openxlsx::addWorksheet(wb, "Variables", gridLines = TRUE)
+         #openxlsx::writeDataTable(wb, "Variables", x = installation,
          #                          colNames = TRUE, withFilter = FALSE)
 
          incProgress(7/20,message = "Adding fieldbook data...")
@@ -8507,7 +8396,7 @@ server_design_agrofims <- function(input, output, session, values){
                                   colNames = TRUE, withFilter = FALSE)
 
          #write agrofeatures sheet
-         # agroFeaSelected <- input$selectAgroFeature
+          agroFeaSelected <- input$selectAgroFeature
          # agrofea_sheets <- c("Harvest", "Irrigation", "Land preparation", "Mulching and residue", "Planting and transplanting", "Soil fertility", "Weeding")
          #
          # if(is.element("Land preparation", agroFeaSelected)) {
@@ -8570,6 +8459,9 @@ server_design_agrofims <- function(input, output, session, values){
          #
          # if(is.element("Irrigation", agroFeaSelected)) {
          #
+         #
+         #
+         #
          #   incProgress(14/20,message = "Adding irrigation data...")
          #
          #   dt_irri <- dt_irrigation()
@@ -8580,17 +8472,17 @@ server_design_agrofims <- function(input, output, session, values){
          #
          # }
          #
-         # if(is.element("Harvest", agroFeaSelected)) {
-         #
-         #   incProgress(13/20,message = "Adding harvest data...")
-         #
-         #   dt_harv <- dt_harvest()
-         #
-         #   openxlsx::addWorksheet(wb, "Harvest", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Harvest", x = dt_harv,
-         #                            colNames = TRUE, withFilter = FALSE)
-         #
-         # }
+         if(is.element("Harvest", agroFeaSelected)) {
+
+           incProgress(13/20,message = "Adding harvest data...")
+
+           dt_harv <- dt_harvest()
+
+           openxlsx::addWorksheet(wb, "Harvest", gridLines = TRUE)
+           openxlsx::writeDataTable(wb, "Harvest", x = dt_harv,
+                                    colNames = TRUE, withFilter = FALSE)
+
+         }
          #
          # if(is.element("Pest & disease", agroFeaSelected)) {
          #

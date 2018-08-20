@@ -261,7 +261,7 @@ design_conditional_panels_agrofims <- function(){
 #'
 #' returns a re-usable user interface element
 #'
-#' @author Reinhard Simon
+#' @author Raul Arias, Omar Benites
 #' @param type type of ui element; default is a tab in a shiny dashboard
 #' @param title display title
 #' @param name a reference name
@@ -1092,10 +1092,9 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                            br(),
                                                            h2("Treatment description"),
                                                            HTML("<center>"),
-                                                           h3(radioButtons(inputId = "fullFactorialRB", "Is full factorial?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
-
-                                                           # h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB",
-                                                           #                   label = "Is full factorial?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
+                                                           #h3(radioButtons(inputId = "fullFactorialRB", "Is full factorial?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
+#
+                                                           h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB", label = "Is full factorial?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
 
                                                            HTML("</center>")
                                                     ),
@@ -2057,39 +2056,53 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                        )
                                                                      ),
                                                                      fluidRow(
-                                                                       fluidRow(
+
                                                                          column(12,
-                                                                          h4("Nutrient content"),
-                                                                          actionButton("addproducts_soil", "", icon=icon("plus")),
-                                                                          actionButton("delproducts_soil", "", icon=icon("minus"))
+                                                                                column(6,
+                                                                                  h2("Nutrient content")
+                                                                                ),
+                                                                                column(6,
+                                                                                       br(),
+                                                                                    actionButton("addproducts_soil", "", icon= icon("plus")),
+                                                                                    actionButton("delproducts_soil", "", icon= icon("minus"))
+                                                                                )
                                                                          )
                                                                        ),
                                                                        fluidRow(
                                                                          column(12,
-                                                                             column(3,
-                                                                                    HTML("<center>"), h3("Fertilizer product"), HTML("</center>"),
-                                                                                    br(),
-                                                                                    fluidRow(id = "fr_aux_soil_fertProduct")
+                                                                             column(3, style = "padding:10px;",
+                                                                                    HTML("<center>"), h3("Fertilizer product"), HTML("</center>")
                                                                              ),
-                                                                             column(1,
-                                                                                    HTML("<center>"),h3("N (%)"),HTML("</center>"),
-                                                                                    br(),
-                                                                                    fluidRow(id = "fr_aux_soil_N")
+                                                                             column(1, style = "padding:10px;",
+                                                                                    HTML("<center>"),h3("N (%)"),HTML("</center>")
                                                                              ),
-                                                                             column(1,
-                                                                                    HTML("<center>"),h3("P (%)"),HTML("</center>"),
-                                                                                    br(),
-                                                                                    fluidRow(id = "fr_aux_soil_P")
+                                                                             column(1, style = "padding:10px;",
+                                                                                    HTML("<center>"),h3("P (%)"),HTML("</center>")
                                                                              ),
-                                                                             column(1,
-                                                                                    HTML("<center>"),h3("K (%)"),HTML("</center>"),
-                                                                                    br(),
-                                                                                    fluidRow(id = "fr_aux_soil_K")
+                                                                             column(1, style = "padding:10px;",
+                                                                                    HTML("<center>"),h3("K (%)"),HTML("</center>")
                                                                              ),
-                                                                             fluidRow(id="fr_fertilizer_application_nutrient")
+                                                                             fluidRow(id="fr_fertilizer_application_nutrient_title")
                                                                          )
+                                                                       ),
+                                                                     fluidRow(
+                                                                       column(12,
+                                                                              column(3, style = "padding:10px;",
+                                                                                     fluidRow(id = "fr_aux_soil_fertProduct")
+                                                                              ),
+                                                                              column(1, style = "padding:10px;",
+                                                                                     fluidRow(id = "fr_aux_soil_N")
+                                                                              ),
+                                                                              column(1, style = "padding:10px;",
+                                                                                     fluidRow(id = "fr_aux_soil_P")
+                                                                              ),
+                                                                              column(1, style = "padding:10px;",
+                                                                                     fluidRow(id = "fr_aux_soil_K")
+                                                                              ),
+                                                                              fluidRow(id="fr_fertilizer_application_nutrient")
                                                                        )
                                                                      )
+
 
                                                               )
                                                         ),#)#end tab nutrient management event

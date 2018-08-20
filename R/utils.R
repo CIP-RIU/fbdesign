@@ -183,3 +183,47 @@ getTrtInputs <- function(group, subgroup, fct, dfr){
 
 }
 
+#' Get agronomic operations inputs from experiment conditions
+#'
+#'@description Insert column between columns based on positions.
+#'@param feature value of the feature
+#'@param other other value
+#'@export
+#'
+getAgrOper <- function(feature, other="") {
+
+  if(is.null(feature)){
+    out <- ""
+  } else if(feature!= 'Other'){
+    out <- feature   #ToDo: check value with R.Arias
+  } else if(feature == 'Other'){
+    out <- other  #ToDo: check value with R.Arias
+  }
+  out
+}
+
+
+# Get agronomic operations inputs from experiment conditions
+#
+#@description Insert column between columns based on positions.
+#@param feature value of the feature
+##@param n number of values
+#@export
+#
+# get_loop_AgrOper <- function(feature= "", n, label = "unit"){
+#
+#   out <- vector(mode="character", length = n)
+#
+#   if(label!= "unit"){
+#     for(i in 1:n){
+#       out[[i]] <-  paste(input[[paste0(feature, i)]])
+#       if(length(out[[i]])==0){ out[[i]] <- "" }
+#     }
+#   } else{
+#     out[[i]] <-paste(input[[paste0(feature, i, "unit")]])
+#   }
+#
+#   out
+# }
+
+

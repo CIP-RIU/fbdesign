@@ -258,7 +258,7 @@ design_conditional_panels <- function(){
 #'
 #' returns a re-usable user interface element
 #'
-#' @author Reinhard Simon
+#' @author Omar Benites
 #' @param type type of ui element; default is a tab in a shiny dashboard
 #' @param title display title
 #' @param name a reference name
