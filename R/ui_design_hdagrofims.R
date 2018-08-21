@@ -1092,9 +1092,9 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                            br(),
                                                            h2("Treatment description"),
                                                            HTML("<center>"),
-                                                           #h3(radioButtons(inputId = "fullFactorialRB", "Is full factorial?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
+                                                           h3(radioButtons(inputId = "fullFactorialRB", "Is full factorial?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
 #
-                                                           h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB", label = "Is full factorial?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
+                                                           #h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB", label = "Is full factorial?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
 
                                                            HTML("</center>")
                                                     ),

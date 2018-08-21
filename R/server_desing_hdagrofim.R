@@ -912,7 +912,7 @@ server_design_agrofims <- function(input, output, session, values){
       ans2 <- c(ans2, "")
     }
 
-    if(factor_sel_1 == "Soil fertility management"){
+    if(factor_sel_1 == "Soil fertility"){
       ans2 <- c()
       nLevels <- input[[paste0("numLevels_tabSoil_", index)]]
       base <- paste0('<select id="select_factor_treatment_', index, '_NUM" class ="select_treatment" style="width:150px;">')
@@ -1501,12 +1501,12 @@ server_design_agrofims <- function(input, output, session, values){
 
       }
 
-      isolate(if(sel_1 == "Soil fertility management"){generateListLevelsSoilTab(index, aux$FORM, aux$LEVEL, sel_3)})
+      isolate(if(sel_1 == "Soil fertility"){generateListLevelsSoilTab(index, aux$FORM, aux$LEVEL, sel_3)})
 
     }
     else{
       removeUI(selector = paste0("#fluid_levels_", index), immediate = T)
-      isolate(if(sel_1 == "Soil fertility management") {generateListLevelsSoilTab(index)})
+      isolate(if(sel_1 == "Soil fertility") {generateListLevelsSoilTab(index)})
     }
 
   }
@@ -1521,7 +1521,7 @@ server_design_agrofims <- function(input, output, session, values){
       aux <- dplyr::filter(factors,GROUP==input$sel1_1)
       lvl$lv_1_2 <- unique(aux$SUBGROUP)
       isolate(
-        if(input$sel1_1 == "Soil fertility management"){
+        if(input$sel1_1 == "Soil fertility"){
           addTabSoilFertility(1)
           }
         else{
@@ -1551,7 +1551,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
 
     isolate(convertListToHTMLSelect(1))
-    isolate(if(!is.null(input$sel1_1) && input$sel1_1 == "Soil fertility management") generateListLevelsSoilTab(1))
+    isolate(if(!is.null(input$sel1_1) && input$sel1_1 == "Soil fertility") generateListLevelsSoilTab(1))
     removeUI(selector = "#fluid_levels_1", immediate = T)
     removeUI( selector ="#fl_title_factor_1", immediate = T )
   })
@@ -1564,7 +1564,7 @@ server_design_agrofims <- function(input, output, session, values){
     else{
       isolate(convertListToHTMLSelect(1))
       removeUI(selector = "#fluid_levels_1", immediate = T)
-      isolate(if(input$sel1_1 == "Soil fertility management") {generateListLevelsSoilTab(1)})
+      isolate(if(input$sel1_1 == "Soil fertility") {generateListLevelsSoilTab(1)})
     }
   })
 
@@ -1576,7 +1576,7 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_2_2 <- unique(aux$SUBGROUP)
 
       isolate(
-        if(input$sel2_1 == "Soil fertility management"){ addTabSoilFertility(2)}
+        if(input$sel2_1 == "Soil fertility"){ addTabSoilFertility(2)}
         else{removeTabSoilFertility(2)}
       )
     }
@@ -1603,7 +1603,7 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_2_3 <- NULL
     }
     isolate(convertListToHTMLSelect(2))
-    isolate(if(!is.null(input$sel2_1) && input$sel2_1 == "Soil fertility management") {generateListLevelsSoilTab(2)})
+    isolate(if(!is.null(input$sel2_1) && input$sel2_1 == "Soil fertility") {generateListLevelsSoilTab(2)})
     removeUI(selector = "#fluid_levels_2", immediate = T)
     removeUI( selector ="#fl_title_factor_2", immediate = T )
   })
@@ -1616,7 +1616,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
     else{
       isolate(convertListToHTMLSelect(2))
-      isolate(if(input$sel2_1 == "Soil fertility management"){generateListLevelsSoilTab(2)})
+      isolate(if(input$sel2_1 == "Soil fertility"){generateListLevelsSoilTab(2)})
       removeUI(selector = "#fluid_levels_2", immediate = T)
     }
   })
@@ -1627,7 +1627,7 @@ server_design_agrofims <- function(input, output, session, values){
       aux <- dplyr::filter(factors,GROUP==input$sel3_1)
       lvl$lv_3_2 <- unique(aux$SUBGROUP)
       isolate(
-        if(input$sel3_1 == "Soil fertility management"){ addTabSoilFertility(3)}
+        if(input$sel3_1 == "Soil fertility"){ addTabSoilFertility(3)}
         else{removeTabSoilFertility(3)}
       )
     }
@@ -1655,7 +1655,7 @@ server_design_agrofims <- function(input, output, session, values){
     #   updateSelectInput(session, "sel3_3", choices = NULL)
     # }
     isolate(convertListToHTMLSelect(3))
-    isolate(if(!is.null(input$sel3_1) && input$sel3_1 == "Soil fertility management") {generateListLevelsSoilTab(3)})
+    isolate(if(!is.null(input$sel3_1) && input$sel3_1 == "Soil fertility") {generateListLevelsSoilTab(3)})
     removeUI(selector = "#fluid_levels_3", immediate = T)
     removeUI( selector ="#fl_title_factor_3", immediate = T )
   })
@@ -1668,7 +1668,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
     else{
       isolate(convertListToHTMLSelect(3))
-      isolate(if(input$sel3_1 == "Soil fertility management"){generateListLevelsSoilTab(3)})
+      isolate(if(input$sel3_1 == "Soil fertility"){generateListLevelsSoilTab(3)})
       removeUI(selector = "#fluid_levels_3", immediate = T)
     }
   })
@@ -1680,7 +1680,7 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_4_2 <- unique(aux$SUBGROUP)
 
       isolate(
-        if(input$sel4_1 == "Soil fertility management"){ addTabSoilFertility(4)}
+        if(input$sel4_1 == "Soil fertility"){ addTabSoilFertility(4)}
         else{removeTabSoilFertility(4)}
       )
     }
@@ -1707,7 +1707,7 @@ server_design_agrofims <- function(input, output, session, values){
     #   updateSelectInput(session, "sel4_3", choices = NULL)
     # }
     isolate(convertListToHTMLSelect(4))
-    isolate(if(!is.null(input$sel4_1) && input$sel4_1 == "Soil fertility management") {generateListLevelsSoilTab(4)})
+    isolate(if(!is.null(input$sel4_1) && input$sel4_1 == "Soil fertility") {generateListLevelsSoilTab(4)})
     removeUI(selector = "#fluid_levels_4", immediate = T)
     removeUI( selector ="#fl_title_factor_4", immediate = T )
   })
@@ -1720,7 +1720,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
     else{
       isolate(convertListToHTMLSelect(4))
-      isolate(if(input$sel4_1 == "Soil fertility management"){generateListLevelsSoilTab(4)})
+      isolate(if(input$sel4_1 == "Soil fertility"){generateListLevelsSoilTab(4)})
       removeUI(selector = "#fluid_levels_4", immediate = T)
     }
   })
@@ -1731,7 +1731,7 @@ server_design_agrofims <- function(input, output, session, values){
       aux <- dplyr::filter(factors,GROUP==input$sel5_1)
       lvl$lv_5_2 <- unique(aux$SUBGROUP)
       isolate(
-        if(input$sel5_1 == "Soil fertility management"){ addTabSoilFertility(5)}
+        if(input$sel5_1 == "Soil fertility"){ addTabSoilFertility(5)}
         else{removeTabSoilFertility(5)}
       )
     }
@@ -1756,7 +1756,7 @@ server_design_agrofims <- function(input, output, session, values){
     #   updateSelectInput(session, "sel5_3", choices = NULL)
     # }
     isolate(convertListToHTMLSelect(5))
-    isolate(if(!is.null(input$sel5_1) && input$sel5_1 == "Soil fertility management") {generateListLevelsSoilTab(5)})
+    isolate(if(!is.null(input$sel5_1) && input$sel5_1 == "Soil fertility") {generateListLevelsSoilTab(5)})
     removeUI(selector = "#fluid_levels_5", immediate = T)
     removeUI( selector ="#fl_title_factor_5", immediate = T )
   })
@@ -1768,7 +1768,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
     else{
       isolate(convertListToHTMLSelect(5))
-      isolate(if(input$sel5_1 == "Soil fertility management"){generateListLevelsSoilTab(5)})
+      isolate(if(input$sel5_1 == "Soil fertility"){generateListLevelsSoilTab(5)})
       removeUI(selector = "#fluid_levels_5", immediate = T)
     }
   })
