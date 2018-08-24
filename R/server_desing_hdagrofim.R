@@ -5065,6 +5065,7 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
   #colnames(dict) <- c("Status","Crop", "Crop measurement", "traitCode", "VariableId", "Scale")
 
   dict3 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/cm.rds")
+  dict3<- as.data.frame(dict3, stringsAsFactors=FALSE)
 
   observe({
     if(!is.null(input$cropCommonNameMono)){
@@ -5108,7 +5109,7 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
 
   output$Main_table3 <-renderDataTable({
     DT= traitsVals3$Data
-    #DT[["Change scale"]] <- drawComboInTable3()
+    DT[["Change scale"]] <- drawComboInTable3()
     DT[["Select variable"]] <- drawButtonSelect3()
     #DT[["Variable ID"]] <- traitsVals2$Data[,6]
     #DT[["Variable ID"]] <- traitsVals2$Data[,4]
@@ -5164,7 +5165,7 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
     l <- c()
     for(index in 1:n){
       old_row = traitsVals3$Data[index,]
-      options = old_row[[5]]
+      options = old_row[[4]]
       str  <- paste0('<select id="select_scale3_' , index, '" class="select_scale3" style="width:150px;">')
       arrOpt <- strsplit(options, ",")[[1]]
 
@@ -5177,7 +5178,7 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
           # if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
           #
           # str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
-          if(mval[[1]] == old_row[[7]]) sel <- "selected" else sel <-""
+          if(mval[[1]] == old_row[[5]]) sel <- "selected" else sel <-""
 
           str <- paste0(str, '<option value="', mval[[2]], "-" , mval[[1]], '" ', sel,'> ', mval[[1]], '</option>')
         }
