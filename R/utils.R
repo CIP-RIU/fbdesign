@@ -192,7 +192,7 @@ getTrtInputs <- function(group, subgroup, fct, dfr){
 #'
 getAgrOper <- function(feature, other="") {
 
-  if(is.null(feature)){
+  if(is.null(feature) || is.na(feature)){
     out <- ""
   } else if(feature!= 'Other'){
     out <- feature   #ToDo: check value with R.Arias
@@ -205,25 +205,40 @@ getAgrOper <- function(feature, other="") {
 
 # Get agronomic operations inputs from experiment conditions
 #
-#@description Insert column between columns based on positions.
-#@param feature value of the feature
-##@param n number of values
-#@export
+#' @description Insert column between columns based on positions.
+#' @param feature value of the feature
+#' @param n number of values
+#' @param label an argument to get units from field operations
+#' @export
 #
-# get_loop_AgrOper <- function(feature= "", n, label = "unit"){
-#
-#   out <- vector(mode="character", length = n)
-#
-#   if(label!= "unit"){
-#     for(i in 1:n){
-#       out[[i]] <-  paste(input[[paste0(feature, i)]])
-#       if(length(out[[i]])==0){ out[[i]] <- "" }
-#     }
-#   } else{
-#     out[[i]] <-paste(input[[paste0(feature, i, "unit")]])
-#   }
-#
-#   out
-# }
+get_loop_AgrOper <- function(feature= "", n, label = "unit"){
+
+  out <- list()
+
+  label <- "none"
+
+  if(label!= "unit"){
+    for(i in 1:n){
+      fi <- paste(feature,i,sep="")
+      res1 <- paste("input", fi, sep="$")
+      res2 <- as.quoted(res1)
+      out[[i]] <- res2[[1]]
+      #out[[i]] <-  paste(input[[paste0(feature, i)]])
+      if(length(out[[i]])==0){ out[[i]] <- "" }
+      # print("print dentro")
+      # print(out[[i]])
+      # print("print dentro fin")
+    }
+  } else{
+    fi <- paste(feature,i,label,sep="")
+    res1 <- paste("input", fi, sep="$")
+    res2 <- as.quoted(res1)
+    out[[i]] <- res2[[1]]
+    #out[[i]] <-  paste(input[[paste0(feature, i)]])
+    if(length(out[[i]])==0){ out[[i]] <- "" }
+  }
+
+  out
+}
 
 

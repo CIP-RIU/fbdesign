@@ -1022,7 +1022,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
 
     insertTab(inputId = "treatmentSetPanel",
-              tabPanel(paste0("Soil fertility detail - factor ", index),  value = paste0("panelTreatment_soilFertility_", index),
+              tabPanel(paste0("Soil fertility details - factor ", index),  value = paste0("panelTreatment_soilFertility_", index),
                        column(12, br(),
                               fluidRow(
                                 column(6,
@@ -1258,6 +1258,9 @@ server_design_agrofims <- function(input, output, session, values){
     results = list()
     max_len = 0
     sum <- ""
+
+    print(aux_vals)
+    print(index)
 
     if(napps >0){
       for(i  in 1:napps){
@@ -2256,7 +2259,13 @@ server_design_agrofims <- function(input, output, session, values){
                      column(6, dateInput(paste0("weeding_start_date_", index), "Start date", format = "yyyy/mm/dd")),
                      column(6, dateInput(paste0("weeding_end_date_", index), "End date", format = "yyyy/mm/dd"))
                    ),
-                   selectInput(paste0("weeding_technique_", index), "Technique", c("Chemical", "Manual", "Mechanized"))
+                   #selectInput(paste0("weeding_technique_", index), "Technique", c("Chemical", "Manual", "Mechanized"))
+                   selectizeInput(paste0("weeding_technique_", index), "Technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),
+                                  choices =  c(
+                                    "Chemical",
+                                    "Manual",
+                                    "Mechanized")
+                   )
             ),
             column(6,
                    h4("Implement"),
@@ -2393,8 +2402,8 @@ server_design_agrofims <- function(input, output, session, values){
                          ),
                          selectizeInput(paste0("irrigation_technique_", order), label = "Irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                           c("Irrigation sprinker",
-                                            "Surface",
                                             "Localized",
+                                            "Surface",
                                             #"Sub-irrigation",
                                             "Other")
                          ),
@@ -2682,19 +2691,32 @@ server_design_agrofims <- function(input, output, session, values){
                                   ),
                            column(2, style="padding:5px;",
                                   selectizeInput(paste0("select_element_soil_table_row_", index), "",multiple = TRUE, options = list( placeholder ="Sel..."),
-                                                 choices= c(
-                                                   "B",
-                                                   "Ca",
-                                                   "Cu",
-                                                   "Fe",
-                                                   "K",
-                                                   "Mn",
-                                                   "Mo",
-                                                   "N",
-                                                   "P",
-                                                   "S",
-                                                   "Zn",
-                                                   "Other")
+                                                 # choices= c(
+                                                 #   "B",
+                                                 #   "Ca",
+                                                 #   "Cu",
+                                                 #   "Fe",
+                                                 #   "K",
+                                                 #   "Mn",
+                                                 #   "Mo",
+                                                 #   "N",
+                                                 #   "P",
+                                                 #   "S",
+                                                 #   "Zn",
+                                                 #   "Other")
+                                                 choices = c("Nitrogen",
+                                                             "Phosphorus",
+                                                             "Potassium",
+                                                             "Boron",
+                                                             "Calcium",
+                                                             "Copper",
+                                                             "Iron",
+                                                             "Manganese",
+                                                             "Molybdenum",
+                                                             "Sulfur",
+                                                             "Zinc",
+                                                             "Other"
+                                                 )
                                   ),
                                   hidden(textInput(paste0("select_element_soil_table_row_",index, "_other" ), ""))
                            )
@@ -4925,6 +4947,249 @@ server_design_agrofims <- function(input, output, session, values){
 
   ############ end traits table #############################################################
 
+  ### start crop measurement 2 ###
+
+  traitsVals2 <- reactiveValues()
+  traitsVals2$aux <- data.frame()
+  traitsVals2$selectedRows <- list()
+  traitsVals2$Data <- data.table()
+
+  # dict2 <- data.frame(stringsAsFactors = FALSE,
+  #                    c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"),
+  #                    c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean','Soybean','Soybean'),
+  #                    c('Number of tubers planted','Number of emerged plants','Plant emergence proportion','Number of harvested plants','Proportion of plants harvested','Non-marketable tuber number','Tuber number','Tuber number per plant','Number of marketable tubers','Number of marketable tubers per plant','Non-marketable tuber weight','Tuber weight','Tuber weight per plant','Tuber yield no adjusted','Tuber yield adjusted','Marketable tuber weight','Marketable tuber weight per plant','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield','Root Yield','Root Yield','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Sprout count','Root Yield','Root Yield','Storage root weight','Storage root weight','Number of stakes','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','In-season aboveground biomass','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Shelled cob weight','Grain test weight','Grain weight','Grain weight','Grain yield','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots','Total number of root','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Fodder Yield','Seed yield','Seed yield','Seed weight'),
+  #                    c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000305','CO_330:0000293','CO_330:0000297','CO_330:0000314','CO_330:0000317','CO_330:0000321','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000311','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000158','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000231','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001213','CO_321:0001217','CO_321:0001220','CO_321:0001223','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_321:0001651','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000744','CO_322:0000757','CO_322:0000754','CO_322:0000756','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000230','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000296','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000340','CO_336:0000261','CO_336:0000337','CO_336:0000333'),
+  #                    c('tuber/plot','tuber/plot','%','plants/plot','%','tuber/plot','tuber/ plot','tuber /plant','tuber/plot','tuber/plant','kg/plot','kg/plot','kg/plant','t/ha','t/ha','kg/plot','kg/plant','t/ha','t/ha','g','g','ratio','7 pt scale','Plant','Count','kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','kg/plot','Number','kg/pl','kg/plot','Number','Seedling','plot','plot','kg','kg','1 month','kg/plant','t/ha','kg','kg','Count','m2/kg','g/1000 grain','g/m2','g/plant','%','num','index','m2/kg','1-5 scoring scale','g/1000grain','kg/ha','g/plot','g/plot','%','Rank number','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','plants/plot','plants/plot','plants/plot','plants/plot','roots/plot','roots/plot','roots/ plot','roots/ plant','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','t/ha','t/ha','%','t/ha','RtYldR 5 pt. scale','%','g/plot','kg/ha','g/plot','kg/ha','g')
+  # )
+  # colnames(dict2) <- c("Status","Crop", "Crop measurement", "VariableId", "Scale")
+
+
+  # dict2 <- data.frame(stringsAsFactors = FALSE,
+  #                    c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"),
+  #                    c('Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize'),
+  #                    c('Area harvested','Storage organ (seed, grain, root, tuber, etc)_Fresh weight','Storage organ (seed, grain, root, tuber, etc)_Subsample fresh weight','Storage organ (seed, grain, root, tuber, etc)_Subsample dry weight','Storage organ (seed, grain, root, tuber, etc)_Moisture content','Storage organ (seed, grain, root, tuber, etc)_Dry weight','Storage organ (seed, grain, root, tuber, etc)_Dry matter yield','Infructesence (including grain or seed holding structure)_Fresh weight','Infructesence (including grain or seed holding structure)_Subsample fresh weight','Infructesence (including grain or seed holding structure)_Subsample dry weight','Infructesence (including grain or seed holding structure)_Moisture content','Infructesence (including grain or seed holding structure)_Dry weight','Infructesence (including grain or seed holding structure)_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots (excluding storage roots)_Fresh weight','Roots (excluding storage roots)_Subsample fresh weight','Roots (excluding storage roots)_Subsample dry weight','Roots (excluding storage roots)_Moisture content','Roots (excluding storage roots)_Dry weight','Roots (excluding storage roots)_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including all roots,  storage roots, and tubers)_Fresh weight','Total biomass (including all roots,  storage roots, and tubers)_Subsample fresh weight','Total biomass (including all roots,  storage roots, and tubers)_Subsample dry weight','Total biomass(including all roots,  storage roots, and tubers)_Moisture content','Total biomass (including all roots,  storage roots, and tubers)_Dry weight','Total biomass (including all roots,  storage roots, and tubers)_Dry matter yield','Total aboveground biomass (including infructesence)_Fresh weight','Total aboveground biomass (including infructesence)_Subsample fresh weight','Total aboveground biomass (including infructesence)_Subsample dry weight','Total aboveground biomass (including infructesence)_Moisture content','Total aboveground biomass (including infructesence)_Dry weight','Total aboveground biomass (including infructesence)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Storage organ (seed, grain, root, tuber, etc)_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Storage organ (seed, grain, root, tuber, etc)_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Storage organ (seed, grain, root, tuber, etc)_Potassium content','Grain or seed_Zinc content','Storage organ (seed, grain, root, tuber, etc)_beta-carotene (Vit A) content','Storage organ (seed, grain, root, tuber, etc)_Protein content','Leaves and stems_Lignin content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Tubers_Fresh weight','Tubers_Subsample fresh weight','Tubers_Subsample dry weight','Tubers_Moisture content','Tubers_Dry weight','Tubers_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots_Fresh weight','Roots_Subsample fresh weight','Roots_Subsample dry weight','Roots_Moisture content','Roots_Dry weight','Roots_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including roots and tubers)_Fresh weight','Total biomass (including roots and tubers)_Subsample fresh weight','Total biomass (including roots and tubers)_Subsample dry weight','Total biomass (including roots and tubers)_Moisture content','Total biomass (including roots and tubers)_Dry weight','Total biomass (including roots and tubers)_Dry matter yield','Total aboveground biomass (leaves, stems, fruits)_Fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample dry weight','Total aboveground biomass (leaves, stems, fruits)_Moisture content','Total aboveground biomass (leaves, stems, fruits)_Dry weight','Total aboveground biomass (leaves, stems, fruits)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Tubers_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Tubers_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Tubers_Potassium content','Tubers_Zinc content','Tubers_beta-carotene (Vit A) content','Tubers_Protein content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Storage root_Fresh weight','Storage root_Subsample fresh weight','Storage root_Subsample dry weight','Storage root_Moisture content','Storage root_Dry weight','Storage root_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots (excluding storage roots)_Fresh weight','Roots (excluding storage roots)_Subsample fresh weight','Roots (excluding storage roots)_Subsample dry weight','Roots (excluding storage roots)_Moisture content','Roots (excluding storage roots)_Dry weight','Roots (excluding storage roots)_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including roots and storage roots)_Fresh weight','Total biomass (including roots and storage roots)_Subsample fresh weight','Total biomass (including roots and storage roots)_Subsample dry weight','Total biomass (including roots and storage roots)_Moisture content','Total biomass (including roots and storage roots)_Dry weight','Total biomass (including roots and storage roots)_Dry matter yield','Total aboveground biomass (leaves, stems, fruits)_Fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample dry weight','Total aboveground biomass (leaves, stems, fruits)_Moisture content','Total aboveground biomass (leaves, stems, fruits)_Dry weight','Total aboveground biomass (leaves, stems, fruits)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Storage root_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Storage root_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Storage root_Potassium content','Storage root_Zinc content','Storage root_beta-carotene (Vit A) content','Storage root_Protein content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Storage roots_Fresh weight','Storage roots_Subsample fresh weight','Storage roots_Subsample dry weight','Storage roots_Moisture content','Storage roots_Dry weight','Storage roots_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots (excluding storage roots)_Fresh weight','Roots (excluding storage roots)_Subsample fresh weight','Roots (excluding storage roots)_Subsample dry weight','Roots (excluding storage roots)_Moisture content','Roots (excluding storage roots)_Dry weight','Roots (excluding storage roots)_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including roots and storage roots)_Fresh weight','Total biomass (including roots and storage roots)_Subsample fresh weight','Total biomass (including roots and storage roots)_Subsample dry weight','Total biomass (including roots and storage roots)_Moisture content','Total biomass (including roots and storage roots)_Dry weight','Total biomass (including roots and storage roots)_Dry matter yield','Total aboveground biomass (leaves, stems, fruits)_Fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample dry weight','Total aboveground biomass (leaves, stems, fruits)_Moisture content','Total aboveground biomass (leaves, stems, fruits)_Dry weight','Total aboveground biomass (leaves, stems, fruits)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Storage root_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Storage root_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Storage root_Potassium content','Storage root_Zinc content','Storage root_beta-carotene (Vit A) content','Storage root_Protein content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Grain_Fresh weight','Grain_Subsample fresh weight','Grain_Subsample dry weight','Grain_Moisture content','Grain_Dry weight','Grain_Dry matter yield','Panicle_Fresh weight','Panicle_Subsample fresh weight','Panicle_Subsample dry weight','Panicle_Moisture content','Panicle_Dry weight','Panicle_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots_Fresh weight','Roots_Subsample fresh weight','Roots_Subsample dry weight','Roots_Moisture content','Roots_Dry weight','Roots_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including all roots and panicle)_Fresh weight','Total biomass (including all roots and panicle)_Subsample fresh weight','Total biomass (including all roots and panicle)_Subsample dry weight','Total biomass (including all roots and panicle)_Moisture content','Total biomass (including all roots and panicle)_Dry weight','Total biomass (including all roots and panicle)_Dry matter yield','Total aboveground biomass (including panicles)_Fresh weight','Total aboveground biomass (including panicles)_Subsample fresh weight','Total aboveground biomass (including panicles)_Subsample dry weight','Total aboveground biomass (including panicles)_Moisture content','Total aboveground biomass (including panicles)_Dry weight','Total aboveground biomass (including panicles)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Grain_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Grain_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Grain_Potassium content','Grain or seed_Zinc content','Grain_beta-carotene (Vit A) content','Grain_Protein content','Leaves and stems_Lignin content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Grain_Fresh weight','Grain_Subsample fresh weight','Grain_Subsample dry weight','Grain_Moisture content','Grain_Dry weight','Grain_Dry matter yield','Spike_Fresh weight','Spike_Subsample fresh weight','Spike_Subsample dry weight','Spike_Moisture content','Spike_Dry weight','Spike_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots_Fresh weight','Roots_Subsample fresh weight','Roots_Subsample dry weight','Roots_Moisture content','Roots_Dry weight','Roots_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including all roots and spikes)_Fresh weight','Total biomass (including all roots and spikes)_Subsample fresh weight','Total biomass (including all roots and spikes)_Subsample dry weight','Total biomass (including all roots and spikes)_Moisture content','Total biomass (including all roots and spikes)_Dry weight','Total biomass (including all roots and spikes)_Dry matter yield','Total aboveground biomass (including spikes)_Fresh weight','Total aboveground biomass (including spikes)_Subsample fresh weight','Total aboveground biomass (including spikes)_Subsample dry weight','Total aboveground biomass (including spikes)_Moisture content','Total aboveground biomass (including spikes)_Dry weight','Total aboveground biomass (including spikes)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Grain_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Grain_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Grain_Potassium content','Grain or seed_Zinc content','Grain_beta-carotene (Vit A) content','Grain_Protein content','Leaves and stems_Lignin content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Grain_Fresh weight','Grain_Subsample fresh weight','Grain_Subsample dry weight','Grain_Moisture content','Grain_Dry weight','Grain_Dry matter yield','Ear_Fresh weight','Ear_Subsample fresh weight','Ear_Subsample dry weight','Ear_Moisture content','Ear_Dry weight','Ear_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots_Fresh weight','Roots_Subsample fresh weight','Roots_Subsample dry weight','Roots_Moisture content','Roots_Dry weight','Roots_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including all roots and ears)_Fresh weight','Total biomass (including all roots and ears)_Subsample fresh weight','Total biomass (including all roots and ears)_Subsample dry weight','Total biomass (including all roots and ears)_Moisture content','Total biomass (including all roots and ears)_Dry weight','Total biomass (including all roots and ears)_Dry matter yield','Total aboveground biomass (including ears)_Fresh weight','Total aboveground biomass (including ears)_Subsample fresh weight','Total aboveground biomass (including ears)_Subsample dry weight','Total aboveground biomass (including ears)_Moisture content','Total aboveground biomass (including ears)_Dry weight','Total aboveground biomass (including ears)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Grain_Nitrogen content','Cob_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Grain_Phosphorus content','Cob_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Grain_Potassium content','Cob_Potassium content','Grain or seed_Zinc content','Grain_beta-carotene (Vit A) content','Grain_Protein content','Leaves and stems_Lignin content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage'),
+  #                    c('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95','96','97','98','99','100','101','102','103','104','105','106','107','108','109','110','111','112','113','114','115','116','117','118','119','120','121','122','123','124','125','126','127','128','129','130','131','132','133','134','135','136','137','138','139','140','141','142','143','144','145','146','147','148','149','150','151','152','153','154','155','156','157','158','159','160','161','162','163','164','165','166','167','168','169','170','171','172','173','174','175','176','177','178','179','180','181','182','183','184','185','186','187','188','189','190','191','192','193','194','195','196','197','198','199','200','201','202','203','204','205','206','207','208','209','210','211','212','213','214','215','216','217','218','219','220','221','222','223','224','225','226','227','228','229','230','231','232','233','234','235','236','237','238','239','240','241','242','243','244','245','246','247','248','249','250','251','252','253','254','255','256','257','258','259','260','261','262','263','264','265','266','267','268','269','270','271','272','273','274','275','276','277','278','279','280','281','282','283','284','285','286','287','288','289','290','291','292','293','294','295','296','297','298','299','300','301','302','303','304','305','306','307','308','309','310','311','312','313','314','315','316','317','318','319','320','321','322','323','324','325','326','327','328','329','330','331','332','333','334','335','336','337','338','339','340','341','342','343','344','345','346','347','348','349','350','351','352','353','354','355','356','357','358','359','360','361','362','363','364','365','366','367','368','369','370','371','372','373','374','375','376','377','378','379','380','381','382','383','384','385','386','387','388','389','390','391','392','393','394','395','396','397','398','399','400','401','402','403','404','405','406','407','408','409','410','411','412','413','414','415','416','417','418','419','420','421','422','423','424','425','426','427','428','429','430','431','432','433','434','435','436','437','438','439','440','441','442','443','444','445','446','447','448','449','450','451','452','453','454','455','456','457','458','459','460','461','462','463','464','465','466','467','468','469','470','471'),
+  #                    c('m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','')
+  # )
+  # colnames(dict2) <- c("Status","Crop", "Crop measurement", "VariableId", "Scale")
+
+dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/crop_measurements.rds")
+
+  observe({
+    if(!is.null(input$cropCommonNameMono)){
+      traitsVals2$selectedRows <- list()
+      aux2 <- dplyr::filter(as.data.frame(dict2),Crop==input$cropCommonNameMono[1])
+      traitsVals2$Data<-data.table(aux2)
+      output$uiTraitsList2 <- renderUI({
+
+        column(12,dataTableOutput("Main_table2"),
+
+               tags$script("$(document).on('change', '.selectRow', function () {
+                         Shiny.onInputChange('selectRowClickId',this.id);
+                         Shiny.onInputChange('selectRowClickChecked',this.checked);
+                         Shiny.onInputChange('selectRowClick', Math.random())
+    });"
+               ),
+               tags$script("$(document).on('change', '.select_scale', function () {
+                         Shiny.onInputChange('selectScaleClickId',this.id);
+                         Shiny.onInputChange('selectScaleClickValue',this.value);
+                         Shiny.onInputChange('selectScaleClick', Math.random())
+  });"
+               )
+        )
+      })
+
+    }
+    else{
+      traitsVals2$Data <- data.table()
+      traitsVals2$selectedRows <- list()
+      output$uiTraitsList2 <- renderUI({
+        column(width = 10,
+
+               h4("Select crop to show list of traits 2.")
+        )
+
+      })
+
+    }
+
+  })
+
+  output$Main_table2 <-renderDataTable({
+    DT= traitsVals2$Data
+    #DT[["Change scale"]] <- drawComboInTable()
+    DT[["Select variable"]] <- drawButtonSelect2()
+    #DT[["Variable ID"]] <- traitsVals2$Data[,6]
+    #DT[["Variable ID"]] <- traitsVals2$Data[,4]
+    datatable(DT,
+              escape=F,
+
+              selection = list(mode = 'none'),
+              options = list(
+                scrollX = TRUE,
+                pageLength = 25,
+                #columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
+                columnDefs = list(list(visible=FALSE, targets=c(1,4)))
+              )
+    )})
+
+  drawButtonSelect2 <- function(){
+    n<- nrow(traitsVals2$Data)
+    l <- c()
+    for(index in 1:n){
+
+      old_row <- traitsVals2$Data[index,]
+
+      ckecked <-  ""
+      if(old_row[[1]] %like% "Selected"){
+        ckecked <- "checked"
+      }
+
+      str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
+        <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
+        </div>')
+      l<- c(l,str)
+    }
+    return(l)
+  }
+
+  ### end crop measurement 2 ###
+
+  ### start crop measurement 3 ###
+
+  traitsVals3 <- reactiveValues()
+  traitsVals3$aux <- data.frame()
+  traitsVals3$selectedRows <- list()
+  traitsVals3$Data <- data.table()
+
+  #colnames(dict) <- c("Status","Crop", "Crop measurement", "traitCode", "VariableId", "Scale")
+
+  dict3 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/cm.rds")
+
+  observe({
+    if(!is.null(input$cropCommonNameMono)){
+      traitsVals3$selectedRows <- list()
+      aux3 <- dplyr::filter(as.data.frame(dict3),Crop==input$cropCommonNameMono[1])
+      traitsVals3$Data<-data.table(aux3)
+      output$uiTraitsList3 <- renderUI({
+
+        column(12,dataTableOutput("Main_table3"),
+
+               tags$script("$(document).on('change', '.selectRow', function () {
+                           Shiny.onInputChange('selectRowClickId',this.id);
+                           Shiny.onInputChange('selectRowClickChecked',this.checked);
+                           Shiny.onInputChange('selectRowClick', Math.random())
+      });"
+               ),
+               tags$script("$(document).on('change', '.select_scale3', function () {
+                           Shiny.onInputChange('selectScale3ClickId',this.id);
+                           Shiny.onInputChange('selectScale3ClickValue',this.value);
+                           Shiny.onInputChange('selectScale3Click', Math.random())
+    });"
+               )
+        )
+    })
+
+      }
+    else{
+      traitsVals3$Data <- data.table()
+      traitsVals3$selectedRows <- list()
+      output$uiTraitsList3 <- renderUI({
+        column(width = 10,
+
+               h4("Select crop to show list of traits 3.")
+        )
+
+      })
+
+    }
+
+      })
+
+  output$Main_table3 <-renderDataTable({
+    DT= traitsVals3$Data
+    #DT[["Change scale"]] <- drawComboInTable3()
+    DT[["Select variable"]] <- drawButtonSelect3()
+    #DT[["Variable ID"]] <- traitsVals2$Data[,6]
+    #DT[["Variable ID"]] <- traitsVals2$Data[,4]
+    datatable(DT,
+              escape=F,
+
+              selection = list(mode = 'none'),
+              options = list(
+                scrollX = TRUE,
+                pageLength = 25,
+                #columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
+                columnDefs = list(list(visible=FALSE, targets=c(1,4,5)))
+              )
+    )})
+
+  observeEvent(input$selectScale3Click,{
+    vv  <- strsplit(input$selectScale3ClickValue, "-")[[1]]
+    var <- list()
+    if(length(vv) == 1){
+      var[[1]] = vv
+      var[[2]] = ""
+    }
+    else{
+      var <- vv
+    }
+
+    traitsVals3$Data[[5]][as.numeric(gsub("select_scale3_","",input$selectScale3ClickId))]<- var[[1]]
+    traitsVals3$Data[[6]][as.numeric(gsub("select_scale3_","",input$selectScale3ClickId))]<- var[[2]]
+  })
+
+  drawButtonSelect3 <- function(){
+    n<- nrow(traitsVals3$Data)
+    l <- c()
+    for(index in 1:n){
+
+      old_row <- traitsVals3$Data[index,]
+
+      ckecked <-  ""
+      if(old_row[[1]] %like% "Selected"){
+        ckecked <- "checked"
+      }
+
+      str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
+        <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
+        </div>')
+      l<- c(l,str)
+    }
+    return(l)
+  }
+
+  drawComboInTable3 <- function(){
+    n<- nrow(traitsVals3$Data)
+    l <- c()
+    for(index in 1:n){
+      old_row = traitsVals3$Data[index,]
+      options = old_row[[5]]
+      str  <- paste0('<select id="select_scale3_' , index, '" class="select_scale3" style="width:150px;">')
+      arrOpt <- strsplit(options, ",")[[1]]
+
+      if(length(arrOpt) == 1){
+        str <- ""
+      }
+      else{
+        for(val in arrOpt){
+          mval  <- strsplit(val, "-")[[1]]
+          # if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
+          #
+          # str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
+          if(mval[[1]] == old_row[[7]]) sel <- "selected" else sel <-""
+
+          str <- paste0(str, '<option value="', mval[[2]], "-" , mval[[1]], '" ', sel,'> ', mval[[1]], '</option>')
+        }
+        str <- paste0(str, "</select>")
+      }
+      l <- c(l, str)
+    }
+    return(l)
+  }
+
+  ### end crop measurement 3 ###
+
 
   # # Reactive table. Get material list table #################################################################
   # material_table <-  shiny::reactive({
@@ -6179,221 +6444,6 @@ server_design_agrofims <- function(input, output, session, values){
 
   ###############################Agrofeatures ######################################################
 
-
-  ### Land description  ################################################################
-  dt_land_description <- reactive({
-
-    out <- fb_agrofims()
-
-
-    landLeveling_start_date	<-	paste(input$landLeveling_start_date)
-    landLeveling_end_date	<-	paste(input$landLeveling_end_date)
-    numPasses	<-	input$numPasses
-
-    land_impl_type	<-	input$land_impl_type
-    if(is.null(land_impl_type)){
-      land_impl_type	<-	""
-    }
-    if(land_impl_type=="Other"){
-      land_impl_type	<-	input$land_impl_type_other
-    }
-
-    land_traction	<-	input$land_traction
-    if(is.null(land_traction)){
-      land_traction		<-	""
-    }
-    if(land_traction=="Other"){
-      land_traction		<-	input$contOtherTraction
-    }
-    puddling_start_date	<-	paste(input$puddling_start_date)
-    puddling_end_date	<-	paste(input$puddling_end_date)
-    Penetrometer_in_field	<-	input$Penetrometer_in_field
-    puddling_depth_val	<-	input$puddling_depth_val
-
-    puddling_depth_unit	<-	input$puddling_depth_unit
-    if(is.null(puddling_depth_unit)){
-      puddling_depth_unit	<-	""
-    }
-
-    pud_impl_type	<-	input$pud_impl_type
-    if(is.null(pud_impl_type)){
-      pud_impl_type	<-	""
-    }
-    if(pud_impl_type=="Other"){
-      pud_impl_type	<-	input$pud_impl_type_other
-    }
-    pud_traction	<-	input$pud_traction
-
-    if(is.null(pud_traction)){
-      pud_traction	<-	""
-    }
-    if(pud_traction=="Other"){
-      pud_traction	<-	input$pud_contOtherTraction
-    }
-
-    tillage_start_date	<-	paste(input$tillage_start_date)
-    tillage_end_date	<-	paste(input$tillage_end_date)
-
-    till_technique	<-	input$till_technique
-    if(is.null(till_technique)){
-      till_technique	<-	""
-    }
-    if(is.null(till_technique)){
-      till_technique	<-	""
-    }
-    if(till_technique=="Other"){
-    till_technique	<-	input$till_technique_other
-    }
-
-    till_depth_method	<-	input$till_depth_method
-    tillage_depth	<-	input$tillage_depth
-
-    tillage_depth_unit	<-	input$tillage_depth_unit
-    if(is.null(tillage_depth_unit)){
-      tillage_depth_unit <- ""
-    }
-
-    total_number_tillage_passes	<-	input$total_number_tillage_passes
-
-    till_impl_type	<-	input$till_impl_type
-    if(is.null(till_impl_type)){
-      till_impl_type	<-	""
-    }
-    if(till_impl_type=="Other"){
-      till_impl_type	<-	input$contOthertill_impl_type
-    }
-
-    till_traction	<-	input$till_traction
-
-    if(is.null(till_traction)){
-      till_traction	<-	""
-    }
-    if(till_traction=="Other"){
-      till_traction	<-	input$contOthertill_traction
-    }
-
-    liming_start_date	<-	paste(input$liming_start_date)
-    liming_end_date	<-	paste(input$liming_end_date)
-    lim_material	<-	input$lim_material
-    lim_quantity	<-	input$lim_quantity
-
-    lim_quantity_unit	<-	input$lim_quantity_unit
-    if(is.null(lim_quantity_unit)){
-      lim_quantity_unit	<-	""
-    }
-
-    lim_description	<-	input$lim_description
-
-    liming_impl_type	<-	input$liming_impl_type
-    if(is.null(liming_impl_type)){
-      liming_impl_type	<-	""
-    }
-    if(liming_impl_type== "Other"){
-      liming_impl_type	<-	input$contOtherliming_impl_type
-    }
-
-    dtLandprep <- data.frame(landLeveling_start_date,
-                             landLeveling_end_date,
-                             numPasses,
-                             land_impl_type,
-                             land_traction,
-
-                             puddling_start_date,
-                             puddling_end_date,
-                             Penetrometer_in_field,
-                             puddling_depth_val,
-                             puddling_depth_unit,
-                             pud_impl_type,
-                             pud_traction,#)#,
-
-                             tillage_start_date,
-                             tillage_end_date,
-                             till_technique,
-                             till_depth_method,
-                             tillage_depth,
-                             tillage_depth_unit,
-                             total_number_tillage_passes,
-                             till_impl_type,
-                             till_traction,#)#,
-
-                             liming_start_date,
-                             liming_end_date,
-                             lim_material,
-                             lim_quantity,
-                             lim_quantity_unit,
-                             lim_description,
-                             liming_impl_type)
-
-    landpreNames <- c('Land levelling start date',
-                       'Land levelling end date',
-                       'Total number of levelling passes',
-                       'Land levelling implement type',
-                       'Land levelling traction',
-
-                       'Puddling start date',
-                       'Puddling end date',
-                       'Penetrometer in field',
-                       'Puddling depth val',
-                       'Puddling depth unit',
-                       'Puddling implement type',
-                       'Puddling traction',#)#,
-
-                       'Tillage start date',
-                       'Tillage end date',
-                       'Tillage technique',
-                       'Tillage depth method',
-                       'Tillage depth',
-                       'Tillage depth unit',
-                       'Total number of tillage passes',
-                       'Tillage implement',
-                       'Tillage traction',#,
-                       #
-                       'Liming start date',
-                       'Liming end date',
-                       'Liming material',
-                       'Quantity of liming material',
-                       'Quantity of liming material unit',
-                       'Liming description',
-                       'Liming implement')
-
-
-    names(dtLandprep) <- landpreNames
-
-
-    out <- merge(out, dtLandprep, by = 0, all = TRUE)[-1]
-
-    #print(out)
-    # c(input$landLeveling_start_date, input$landLeveling_end_date,
-    #   input$numPasses,input$land_impl_type,input$land_impl_type_other,
-    #   input$land_traction,input$contOtherTraction,input$puddling_start_date,input$puddling_end_date,
-    #   input$Penetrometer_in_field,input$puddling_depth_val,input$puddling_depth_unit,
-    #   input$pud_impl_type,input$pud_impl_type_other,input$pud_traction,
-    #   input$pud_contOtherTraction,input$tillage_start_date,input$tillage_end_date,
-    #   input$till_technique,input$till_technique_other,input$till_depth_method,input$tillage_depth,
-    #   input$tillage_depth_unit,input$total_number_tillage_passes,input$till_impl_type,
-    #   input$contOthertill_impl_type,input$till_traction,input$contOthertill_traction,input$liming_start_date,input$liming_end_date,
-    #   input$lim_material,input$lim_quantity,input$lim_quantity_unit,input$lim_description,
-    #   input$liming_impl_type,input$contOtherliming_impl_type)
-
-
-
-      # out<-  land_des(input$landLeveling_start_date,input$landLeveling_end_date,
-      #             input$numPasses,input$operationsOrder,input$impl_type,
-      #             input$animal_traction,input$humanPowered,input$motorized_traction,
-      #             input$puddling_start_date,input$puddling_end_date,
-      #             input$Penetrometer_in_field,input$puddling_depth_val,input$pud_animal_traction,
-      #             input$pud_humanPowered,input$pud_motorized_traction,input$tillage_start_date,
-      #             input$tillage_end_date,input$till_technique,input$till_depth_method,input$till_depth,
-      #             input$till_total_op_season,input$till_impl_type,input$till_animal_traction,
-      #             input$till_humanPowered,input$till_motorized_traction,input$liming_start_date,
-      #             input$liming_end_date,input$lim_material,input$lim_quantity,input$lim_description
-      #   )
-
-     out
-     # out <- dt
-  })
-
-
   ### Mulching   ########################################################################
   dt_mulching <- reactive({
 
@@ -6810,94 +6860,259 @@ server_design_agrofims <- function(input, output, session, values){
 
    })
 
-  ### Irrigation  ##########################################################################
-#   dt_irrigation <- reactive({
-#
-#    #Irrigation start date
-#    n <- as.numeric(input$numApplicationsIrrigation)
-#    irri_start_date <- get_loop_AgrOper("irrigationevent_start_date_", n=n)
-#    irri_start_date <- vector(mode="character", length = n)
-#    if(label!= "unit"){
-#      for(i in 1:n){
-#        irri_start_date[[i]] <-  paste(input[[paste0(feature, i)]])
-#        if(length(irri_start_date[[i]])==0){ irri_start_date[[i]] <- "" }
-#      }
-#    } else{
-#      irri_start_date[[i]] <-paste(input[[paste0(feature, i, "unit")]])
-#    }
-#
-#    #Irrigation end date
-#    irri_end_date <- vector(mode="character", length = n)
-#    if(label!= "unit"){
-#      for(i in 1:n){
-#        irri_end_date[[i]] <-  paste(input[[paste0(feature, i)]])
-#        if(length(irri_end_date[[i]])==0){ irri_end_date[[i]] <- "" }
-#      }
-#    } else{
-#      irri_end_date[[i]] <-paste(input[[paste0(feature, i, "unit")]])
-#    }
-#
-#
-#
-#
-#
-#    #Irrigation technique
-#    irri_technique <-  get_loop_AgrOper("irrigation_technique_",n=n)
-#
-#    out<- vector(mode = "character", length= length(irri_technique))
-#    for (i in 1:length(irri_technique)){
-#      if(irri_technique[i] == "Irrigation sprinker"){
-#          out[i] <- paste0("irrigation_using_sprinkler_systems_", i)
-#        if(out[i]=="Other"){
-#          out[i]<- paste0("irrigation_using_sprinkler_systems_", i, "_other") #other
-#        }
-#      }
-#      else if(irri_technique[i] == "Surface"){
-#          out[i] <- paste0("surface_irrigation_technique_", i)
-#        if(out[i]=="Other"){
-#          out[i] <- paste0("surface_irrigation_technique_", i, "_other") #other
-#        }
-#      }
-#      else if(irri_technique[i] == "Localized"){
-#          out[i] <- paste0("localized_irrigation_technique", i)
-#        if( out[i]=="Other"){
-#          out[i] <- paste0("localized_irrigation_technique", i, "_other") #other
-#        }
-#      }
-#      else if(irri_technique[i] == "Other"){
-#         out[i] <- paste0("irrigation_technique_", i, "_other") #other
-#      }
-#    }
-#
-#    irri_technique_subselection <- out
-#    irri_source <- get_loop_AgrOper("irrigation_source_", n=n)
-#    irri_source_dist <- get_loop_AgrOper("irrigation_source_distance_", n =n)
-#    irri_source_dist_unit <- get_loop_AgrOper("irrigation_source_distance_",n =n, label ="unit") #unit
-#    irri_amount <- get_loop_AgrOper("irrigation_amount_", n =n)
-#    irri_amount_unit <- get_loop_AgrOper("irrigation_amount_",n =n, label ="unit") #unit
-#    irri_notes <- get_loop_AgrOper("irrigation_notes_", n=n)
-#
-#
-#    irriNames <- c(paste('Start date',1:n),
-#                   paste('End date', 1:n) ,
-#                   paste('Irrigation technique', 1:n ),
-#                   paste('Sub selection technique', 1:n ),
-#                   paste('Irrigation source', 1:n),
-#                   paste(paste('Irrigation source distance', irri_source_dist_unit,sep = "_"), 1:n ),
-#                   paste(paste('Irrigation amount ', irri_amount_unit,sep = "_"), 1:n),
-#                   paste( 'Notes', 1:n )
-#    )
-#    dtIrri <- data.frame(irri_start_date,
-#                          irri_end_date,
-#                          irri_technique,
-#                          irri_technique_subselection,
-#                          irri_source,
-#                          irri_source_dist,
-#                          irri_amount,
-#                          irri_notes
-#    )
-#    names(dtIrri) <- irriNames
-# })
+  ## Irrigation  #########################################################################
+  dt_irrigation <- reactive({
+
+   #Irrigation start date
+   n <- as.numeric(input$numApplicationsIrrigation)
+
+   irri_start_date <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigationevent_start_date_", n=n)[[x]])))
+   irri_end_date <-   paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigationevent_end_date_", n=n)[[x]])))
+   irri_techinque <-  paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigation_technique_",n=n)[[x]])))
+
+   irri_source <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_", n=n)[[x]])))
+   irri_source_dist <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_", n =n)[[x]])))
+   irri_source_dist_unit <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_",n =n, label ="unit")[[x]]))) #unit
+   irri_source_def <- paste( irri_source_dist,irri_source_dist_unit, sep="_" ) #measure+unit
+   irri_amount <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_amount_", n =n)[[x]])))
+   irri_amount_unit <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_amount_",n =n, label ="unit")[[x]]))) #unit
+   irri_amount_def <- paste(irri_amount, irri_amount_unit, sep="_")  #measure+unit
+   irri_notes <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_notes_", n=n)[[x]])))
+
+   irriNames <- c("Irrigation start date", "Irrigation end date", "Irrigation technique",
+                  "Irrigation source", "Irrigation source distance", "Irrigation amount", "Notes")
+
+   dtIrri<- data.frame(irri_start_date, irri_end_date, irri_techinque, irri_source, irri_source_def, irri_amount_def, irri_notes)
+   names(dtIrri) <- irriNames
+   dtIrri
+
+   # #Irrigation end date
+   # irri_end_date <- vector(mode="character", length = n)
+   # #Irrigation technique
+   # irri_technique <-  get_loop_AgrOper("irrigation_technique_",n=n)
+   # out<- vector(mode = "character", length= length(irri_technique))
+   # for (i in 1:length(irri_technique)){
+   #   if(irri_technique[i] == "Irrigation sprinker"){
+   #       out[i] <- paste0("irrigation_using_sprinkler_systems_", i)
+   #     if(out[i]=="Other"){
+   #       out[i]<- paste0("irrigation_using_sprinkler_systems_", i, "_other") #other
+   #     }
+   #   }
+   #   else if(irri_technique[i] == "Surface"){
+   #       out[i] <- paste0("surface_irrigation_technique_", i)
+   #     if(out[i]=="Other"){
+   #       out[i] <- paste0("surface_irrigation_technique_", i, "_other") #other
+   #     }
+   #   }
+   #   else if(irri_technique[i] == "Localized"){
+   #       out[i] <- paste0("localized_irrigation_technique", i)
+   #     if( out[i]=="Other"){
+   #       out[i] <- paste0("localized_irrigation_technique", i, "_other") #other
+   #     }
+   #   }
+   #   else if(irri_technique[i] == "Other"){
+   #      out[i] <- paste0("irrigation_technique_", i, "_other") #other
+   #   }
+   # }
+   # irri_technique_subselection <- out
+
+
+   # irriNames <- c("Start date", "End date", "Irrigation technique", "Dependiente",
+   #                "Irrigation source", "Irrigation source distance", "Irrigation amount", "Notes")
+
+   # irriNames <- c(paste('Start date',1:n),
+   #                paste('End date', 1:n) ,
+   #                paste('Irrigation technique', 1:n ),
+   #                paste('Sub selection technique', 1:n ),
+   #                paste('Irrigation source', 1:n),
+   #                paste(paste('Irrigation source distance', irri_source_dist_unit,sep = "_"), 1:n ),
+   #                paste(paste('Irrigation amount ', irri_amount_unit,sep = "_"), 1:n),
+   #                paste( 'Notes', 1:n )
+   # )
+   # dtIrri <- data.frame(irri_start_date,
+   #                       irri_end_date,
+   #                       irri_technique,
+   #                       irri_technique_subselection,
+   #                       irri_source,
+   #                       irri_source_dist,
+   #                       irri_amount,
+   #                       irri_notes
+   #)
+
+
+})
+
+
+  ## Land Preparation ####################################################################
+  dt_land_description <- reactive({
+
+     flag<-FALSE
+
+     if(input$landLevelling_checkbox==TRUE){
+
+       ll_start_date <- paste(input$landLeveling_start_date)
+       ll_end_date <- paste(input$landLeveling_end_date)
+       ll_npasses <- getAgrOper(input$numPasses)
+       ll_notes <- input$landLeveling_notes
+       ll_type <- getAgrOper(input$land_impl_type, input$land_impl_type_other)
+       ll_traction <- getAgrOper(input$land_traction, input$land_traction_other)
+       lldt <- data.frame(ll_start_date, ll_end_date, ll_npasses, ll_notes, ll_type,  ll_traction)
+       llNames<- c("Land levelling start date", "Land levelling end date", "Land levelling Total number of levelling passes", "Land levelling Notes",
+                   "Land levelling Type", "Land levelling traction")
+       names(lldt) <- llNames
+       flag  <- TRUE
+       out   <- lldt
+     }
+
+     if(input$puddling_checkbox==TRUE){
+       lp_start_date <- paste(input$puddling_start_date)
+       lp_end_date <- paste(input$puddling_end_date)
+
+       lp_depth_val <- getAgrOper(input$puddling_depth_val)
+       lp_depth_unit <- getAgrOper(input$puddling_depth_unit)
+       lp_depth_lbl <- paste("Puddling depth", lp_depth_unit, sep="_") #label
+
+       lp_npasses <- getAgrOper(input$puddling_total_number_puddling_passes)
+       lp_notes <- input$puddling_notes
+       lp_type <- getAgrOper(input$pud_impl_type, input$pud_impl_type_other)
+       lp_traction <- getAgrOper(input$pud_traction, input$pud_traction_other)
+
+       lpdt <- data.frame(lp_start_date, lp_end_date, lp_depth_val, lp_npasses, lp_notes, lp_type ,  lp_traction )
+       lpNames <- c("Puddling start date", "Puddling end date", lp_depth_lbl, "Puddling Total number of puddling passes",
+                    "Puddling notes", "Puddling type", "Puddling traction")
+
+       names(lpdt) <- lpNames
+
+       if(flag==TRUE){
+         out <- cbind(out, lpdt)
+         flag <- TRUE
+       }
+       else{
+         flag <- FALSE
+         out  <- lpdt
+       }
+       flag <- flag
+       out  <-out
+     }
+
+     if(input$tillage_checkbox==TRUE){
+
+       lt_start_date <- paste(input$tillage_start_date)
+       lt_end_date  <-  paste(input$tillage_end_date)
+       lt_technique  <- getAgrOper(input$till_technique, input$till_technique_other)
+       lt_depth_method  <- getAgrOper(input$till_depth_method)
+
+       lt_depth  <- getAgrOper(input$tillage_depth)
+       lt_depth_unit  <- getAgrOper(input$tillage_depth_unit)
+       lt_depth_lbl <- paste("Tillage depth", lt_depth_unit, sep="_") #label
+
+       lt_npasses  <- getAgrOper(input$total_number_tillage_passes)
+       lt_notes  <- input$tillage_notes
+       lt_type  <-  getAgrOper(input$till_impl_type, input$till_impl_type_other)
+       lt_traction <- getAgrOper(input$till_traction, input$till_traction_other)
+
+       ltdt <- data.frame(lt_start_date, lt_end_date, lt_technique, lt_depth_method, lt_depth,
+                          lt_npasses ,  lt_notes, lt_type, lt_traction )
+
+       ltNames <- c("Tillage start date", "Tillage end date", "Tillage technique", "Depth measurement method",lt_depth_lbl,
+                    "Total number of tillage passes", "Tillage Notes", "Tillage Type", "Tillage Traction")
+
+       names(ltdt) <- ltNames
+
+       if(flag==TRUE){
+         out  <- cbind(out, ltdt)
+         flag <-TRUE
+       }
+       else{
+         flag<-FALSE
+         out <- ltdt
+       }
+       flag <- flag
+       out  <- out
+     }
+
+     out <- out
+   })
+
+
+  ## Mulching and residue ################################################################
+   dt_mulching <- reactive({
+
+     m_start_date <- paste(input$mulch_start_date)
+     m_end_date <- paste(input$mulch_end_date)
+     m_type <- getAgrOper(input$mulch_type, input$mulch_type_other)
+     m_thickness <-  getAgrOper(input$mulch_thickness)
+     m_thickness_unit <-  getAgrOper(input$mulch_thickness_unit)
+     m_thickness_lbl<- paste("Mulch thickness", m_thickness_unit, sep= "_") #label
+     m_mulchSq  <-  getAgrOper(input$mulch_amountPerSq)
+     m_mulchSq_unit  <-  getAgrOper(input$mulch_amountPerSq_unit)
+     m_mulchSq_lbl <- paste("Mulch amount", m_mulchSq_unit, sep= "_")#label
+     m_color <- input$mulch_color
+     m_cov <- getAgrOper(input$mulch_percCoverage)
+     m_cov_unit <-  getAgrOper(input$mulch_percCoverage_unit)
+     m_pgt_lbl <- paste("Percentage of coverage", m_cov_unit, sep= "_")#label
+     m_rem_start_date <- paste(input$mulch_remove_start_date)
+     m_rem_end_date <- paste(input$mulch_remove_end_date)
+     m_mgm_notes <-  getAgrOper(input$mulching_management_notes)
+     m_implement <-  getAgrOper(input$mulch_implement_type)
+     m_traction <-  getAgrOper(input$mulch_traction, input$mulch_traction_other)
+
+
+     mudt <- data.frame(m_start_date, m_end_date, m_type, m_thickness, m_mulchSq, m_color, m_cov, m_rem_start_date,  m_rem_end_date,
+                        m_mgm_notes, m_implement, m_traction )
+
+     muNames <- c("Mulch start date" ,"Mulch end date", "Mulch type", m_thickness_lbl,  m_mulchSq_lbl, "Mulch color", m_pgt_lbl, "Mulch removal start date",
+                  "Mulch removal end date", "Notes", "Mulch implement type", "Mulching implement traction")
+
+     names(mudt)<- muNames
+     mudt
+   })
+   dt_residue <- reactive({
+
+     r_start_date<- input$residue_start_date
+     r_end_date<- input$residure_end_date
+     r_part <- getAgrOper(input$residue_plantPart, input$residue_plantPart_other)
+     r_technique <- getAgrOper(input$residue_technique, input$residue_technique_other)
+     r_traction <- getAgrOper(input$residue_traction, input$residue_traction_other)
+     r_thick <- input$crop_residue_thick
+     r_thick_unit <- getAgrOper(input$crop_residue_thick_unit)
+     r_thick_lbl <- paste("Crop residue thickness", r_thick_unit, sep="_") #label
+     r_amount <- input$crop_residue_amount_sqm
+     r_amount_unit <- getAgrOper(input$crop_residue_amount_sqm_unit)
+     r_amount_lbl <- paste("Crop residue amount", r_amount_unit, sep="_")  #label
+     r_cov <- getAgrOper(input$crop_residue_perc_cov)
+     r_cov_unit <- getAgrOper(input$crop_residue_perc_cov_unit)
+     r_cov_lbl <-  paste("Crop residue percent of coverage", r_amount_unit, sep="_")  #label
+     r_depth <- getAgrOper(input$residue_inc_depth)
+     r_depth_unit <- getAgrOper(input$residue_inc_depth_unit)
+     r_depth_lbl <- paste("Residue incorporation depth", r_depth_unit,sep="_")  #label
+     r_moisture <- getAgrOper(input$crop_residue_moisture)
+     r_notes <- input$residue_management_notes
+
+     resNames<- c("Residue start date", "Residue end date", "Residue plant part", "Residue technique", "Residue traction", r_thick_lbl, r_amount_lbl,
+                  r_cov_lbl, r_depth_lbl, "Crop residue moisture", "Residue notes")
+
+     dtres <- data.frame(r_start_date, r_end_date, r_part, r_technique, r_traction, r_thick, r_amount, r_cov, r_depth, r_moisture,
+                         r_notes)
+     names(dtres)<- resNames
+     dtres
+
+   })
+
+  dt_mures <- reactive({
+    print("mu1")
+    if(input$mulchManag_checkbox==TRUE && input$residueManag_checkbox==FALSE){
+      print("mu2")
+      dt_mr <- dt_mulching()
+    } else if(input$mulchManag_checkbox==FALSE && input$residueManag_checkbox==TRUE){
+      print("mu3")
+      dt_mr <- dt_residue()
+    } else if( input$mulchManag_checkbox==TRUE  && input$residueManag_checkbox==TRUE ){
+      print("mu4")
+      dt_mr <- cbind(dt_mulching(), dt_residue())
+    }
+    dt_mr
+  })
 
 
   ##biofertilization   ##################################################################
@@ -6962,7 +7177,6 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   })
-
 
 
   ### nutrient   ########################################################################
@@ -7174,7 +7388,6 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-
   ### pest and disease   ################################################################
   dt_pestdis <- reactive({
 
@@ -7244,10 +7457,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   })
 
-
-
   ################################End agrofeatures ######################################
-
 
 
   ##reactive weather   #################################################################
@@ -8332,6 +8542,32 @@ server_design_agrofims <- function(input, output, session, values){
 
        withProgress(message = 'Downloading fieldbook', value = 0, {
 
+         print(input$landLevelling_checkbox)
+
+         n <- as.numeric(input$numApplicationsIrrigation)
+
+         # irri_end_date <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigationevent_end_date_", n=n)[[x]])))
+         # irri_techinque <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_technique_",n=n)[[x]])))
+         #
+         # irri_source <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_", n=n)[[x]])))
+         # irri_source_dist <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_", n =n)[[x]])))
+         # irri_source_dist_unit <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_",n =n, label ="unit")[[x]]))) #unit
+         # irri_source_def <- paste( irri_source_dist,irri_source_dist_unit, sep="_" ) #measure+unit
+
+         #irri_start_date <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigationevent_start_date_", n=n)[[x]])))
+         #irri_start_date <- irri_end_date<- NULL
+         # for(i in 1:n){
+         #   irri_start_date[[i]] <- eval(get_loop_AgrOper("irrigationevent_start_date_", n=n)[[i]])
+         #   if(is.null(irri_start_date[[i]])){irri_start_date[[i]] <- ""}
+         #   print(irri_start_date[[i]])
+         # }
+         # for(i in 1:n){
+         #   irri_end_date[[i]] <- eval(get_loop_AgrOper("irrigationevent_end_date_", n=n)[[i]])
+         #   if(is.null(irri_end_date[[i]]) || irri_end_date[[i]]=="Date of length 0") {irri_end_date[[i]] <- ""}
+         # }
+         #irri_start_date<- unlist(irri_start_date)
+         # irri_end_date<- unlist(irri_start_date)
+         #print(irri_start_date)
 
          fb_traits <- fb_agrofims_traits()
 
@@ -8395,34 +8631,7 @@ server_design_agrofims <- function(input, output, session, values){
          openxlsx::writeDataTable(wb, "Fieldbook", x = fb_traits,
                                   colNames = TRUE, withFilter = FALSE)
 
-         #write agrofeatures sheet
-          agroFeaSelected <- input$selectAgroFeature
-         # agrofea_sheets <- c("Harvest", "Irrigation", "Land preparation", "Mulching and residue", "Planting and transplanting", "Soil fertility", "Weeding")
-         #
-         # if(is.element("Land preparation", agroFeaSelected)) {
-         #
-         #   incProgress(10/20,message = "Adding land preparation sheet...")
-         #
-         #   dt_land <- dt_land_description()
-         #   print(dt_land)
-         #   openxlsx::addWorksheet(wb, "Land preparation", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Land preparation", x = dt_land ,
-         #                            colNames = TRUE, withFilter = FALSE)
-         #
-         # }
-         #
-         # if(is.element("Mulching and residue management", agroFeaSelected)) {
-         #
-         #   incProgress(11/20,message = "Adding mulching data...")
-         #
-         #   dt_mulch <- dt_mulching()
-         #   print(dt_mulch)
-         #   openxlsx::addWorksheet(wb, "Mulching and residue management", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Mulching and residue management", x = dt_mulch,
-         #                            colNames = TRUE, withFilter = FALSE)
-         #
-         #
-         # }
+         agroFeaSelected <- input$selectAgroFeature
          #
          # if(is.element("Planting, transplanting", agroFeaSelected)) {
          #
@@ -8457,21 +8666,18 @@ server_design_agrofims <- function(input, output, session, values){
          #
          # }
          #
-         # if(is.element("Irrigation", agroFeaSelected)) {
-         #
-         #
-         #
-         #
-         #   incProgress(14/20,message = "Adding irrigation data...")
-         #
-         #   dt_irri <- dt_irrigation()
-         #   print(dt_irri)
-         #   openxlsx::addWorksheet(wb, "Irrigation", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Irrigation", x = dt_irri,
-         #                            colNames = TRUE, withFilter = FALSE)
-         #
-         # }
-         #
+
+         if(is.element("Irrigation", agroFeaSelected)) {
+
+           incProgress(14/20,message = "Adding irrigation data...")
+           dt_irri <- dt_irrigation()
+           print(dt_irri)
+           openxlsx::addWorksheet(wb, "Irrigation", gridLines = TRUE)
+           openxlsx::writeDataTable(wb, "Irrigation", x = dt_irri,
+                                    colNames = TRUE, withFilter = FALSE)
+
+         }
+
          if(is.element("Harvest", agroFeaSelected)) {
 
            incProgress(13/20,message = "Adding harvest data...")
@@ -8483,7 +8689,31 @@ server_design_agrofims <- function(input, output, session, values){
                                     colNames = TRUE, withFilter = FALSE)
 
          }
-         #
+
+         if(is.element("Land preparation", agroFeaSelected)) {
+
+            incProgress(10/20,message = "Adding land preparation sheet...")
+
+            dt_land <- dt_land_description()
+            print(dt_land)
+            openxlsx::addWorksheet(wb, "Land preparation", gridLines = TRUE)
+            openxlsx::writeDataTable(wb, "Land preparation", x = dt_land ,
+                                     colNames = TRUE, withFilter = FALSE)
+
+          }
+
+         if(is.element("Mulching and residue", agroFeaSelected)) {
+
+           incProgress(11/20,message = "Adding mulching data...")
+
+           dt_mr <- dt_mures()
+
+           openxlsx::addWorksheet(wb, "Mulching and residue", gridLines = TRUE)
+           openxlsx::writeDataTable(wb, "Mulching and residue", x = dt_mr,
+                                    colNames = TRUE, withFilter = FALSE)
+         }
+
+
          # if(is.element("Pest & disease", agroFeaSelected)) {
          #
          #   incProgress(16/20,message = "Adding pest and disease data...")
