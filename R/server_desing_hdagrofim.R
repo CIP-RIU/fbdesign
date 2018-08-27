@@ -433,6 +433,12 @@ server_design_agrofims <- function(input, output, session, values){
       if(n>=7) output[[paste0("intercropName_row_crop_", 7)]] <- renderText(paste0(cropsVar$selectedIntercrop[[paste0("c", 7)]], ":"))
 
       output[[paste0("intercropX_row_crop_", n)]] <- renderText("")
+
+
+
+
+      # traitsVals$Data$Crop<-rep(ivan(), nrow(traitsVals$Data))
+      # traitsVals$Data$Crop<-rep(input$cropCommonNameMono_other, nrow(traitsVals$Data))
     }
     else{
         removeUI(selector = paste0("#intercrop_rows_crop_", 1), immediate = T)
@@ -440,6 +446,7 @@ server_design_agrofims <- function(input, output, session, values){
     }
 
   })
+
 
 
   ################# fin crop ######################################################
@@ -4788,73 +4795,346 @@ server_design_agrofims <- function(input, output, session, values){
 
   ########### traits table ############################################
 
+  # traitsVals <- reactiveValues()
+  # traitsVals$aux <- data.frame()
+  # traitsVals$selectedRows <- list()
+  # traitsVals$Data <- data.table()
+  #
+  # dict <- data.frame(stringsAsFactors = FALSE,
+  #     c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"),
+  #     c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean','Soybean','Soybean'),
+  #     c('Number of tubers planted','Number of emerged plants','Plant emergence proportion','Number of harvested plants','Proportion of plants harvested','Non-marketable tuber number','Tuber number','Tuber number per plant','Number of marketable tubers','Number of marketable tubers per plant','Non-marketable tuber weight','Tuber weight','Tuber weight per plant','Tuber yield no adjusted','Tuber yield adjusted','Marketable tuber weight','Marketable tuber weight per plant','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield','Root Yield','Root Yield','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Sprout count','Root Yield','Root Yield','Storage root weight','Storage root weight','Number of stakes','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','In-season aboveground biomass','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Shelled cob weight','Grain test weight','Grain weight','Grain weight','Grain yield','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots','Total number of root','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Fodder Yield','Seed yield','Seed yield','Seed weight'),
+  #     c('Count the number of planted tubers and record it','Count the number of emerged plants and record it','Compute the proportion of plants emerged over tubers planted using the formula','Count the number of harvested plants and record it','Compute the proportion of plant harvested over plant emerged using the formula','Count the number of non-marketable tubers per unit area and record it','Compute the total number of tubers per unit area using the formula','Compute the total number of tubers per plant using the formula','Compute the total number of marketable tubers per unit area using the formula','Compute the total number of marketable tubers per plant','Compute the weight of non-marketable tubers per unit area usihg the formula','Compute the total weight of tubers per unit area using the formula','Compute the total weight of tubers per plant using the formula','Compute the total tuber yield no adjusted per unit area using the formula','Compute the total tuber yield adjusted per unit area using the formula','Compute the total weight of marketable tubers per unit area using the formula','Compute the total weight of marketable tubers per plant using the formula','Compute the marketable tuber yield no adjusted per unit area using the formula','Compute the marketable tuber yield adjusted per unit area using the formula','Compute the average tuber weight in grams using the formula','Compute the average marketable tuber weight in grams using the formula','The number of germinated stakes divided by the total number of planted stakes scored one month after planting','Trait monitored by observing plant vigor one month after planting','Count the number of plant stands that are harvested in a plot','','Weigh harvested storage roots per plot at harvest','Calculated as weight of fresh storage roots expressed in tons per hectares per plant at harvest','Dry weight of harvested roots derived by multiplying fresh storage root yield by dry matter content expressed in tons per hectares.','Calculated as weight of foliage and stems expressed in tons per hectares per plot at harvest','Measured stem weight excluding leaves and stump','Count of the number of stems per plot','Measured weight of harvested cassava roots usually classified as large size and medium size excluding small sized roots','','Count of the rotted stems per plot at the time of harvest','Measured weight of cassava root samples (kg) between 4 - 5kg of each of the harvested plot to determine the dry matter by specific gravity','As part of the dry matter determination method by specific gravimetry','Count of the number of stakes planted per plot','Count of the number of emerging seedlings from each family in the pre-nursery done on a daily bases until its ready for transplanting','Count of the number of small or less than 1kg root size','Count of the number of big or more than 1kg root size','Measurement of the fresh weight of the planted part anchoring the storage root(kg)','Measurement of the fresh weight of harvested plant biomass excluding leaves','Count of the number of stakes germinated','Average yield per plant in a plot. It is estimated by dividing the total weight of roots by the number of plants harvested.','Annual root yield using yield per hectare as a function of the crop duration.','Fresh cassava roots are washed in water and weighed on a pan suspended to a weighing scale','This is the weight of peeled cassava roots using a pan suspended to a weighing scale','An estimated number of plantable stakes (about 20cm long','Cut all aboveground biomass in a predetermined area (A). Avoid border effects by sampling away from edges of plot. Biomass as other yield components can be calculated or measured individually (Bell and Fischer, 1994; Reynolds et al., 2001; Pask et al., 2012), decide which method suit better for your objectives.','Dry grains at 70oC and weigh.','Use formulae to calculate grain yield in g/m2','The weight of the grain harvested is registered on a scale, decide which method suit better for your objectives. In breeding trials, a sample area (rather than the whole plot) is generally used for estimating yield. Discard borders when combine harvest for a better estimation of yield.','Calculate grain yield of an entry as percentage over a local check.','Standard method for yield factor','Harvest index is expressed as a ratio and can be calculated as Harvest index = (Grain yield/Biomass).','Sampling is typically performed at sequential developmental stages/time intervals through crop growth. Cut all aboveground biomass in a predetermined area (A). Avoid border effects by sampling away from edges of plot.  In most cases, determinations of dry mass are made on representative sub-samples to reduce oven space requirement, take additional measurements (e.g., fertile culm count) etc. Several protocols available (Bell and Fischer, 1994; Reynolds et al., 2001; Pask et al., 2012), decide which method suit better for your objectives.','Standard method for In-season aboveground biomass.','Count and weigh grains randomly selected from the total grains.','Calculate shelled grain yield per unit area adjusted to 12.5% grain moisture.','Shell the grains (kernels) from the ears harvested per plot and put grains in a paper bag and  dry at 60-70∞C for 1-2 days, then measure and record the weight of dried grain.','Shell the grains (kernels) from the ears harvested per plot and record fresh (field) weight.','It is calculated as the numerical position of the progeny when yields are arrenged from highest to lowest.','Calculated as relative grain yield agaisnst the best check in percentage.','Relative grain yield expressed as percentage of the mean grain yield of the trial. Values above 100% indicate above-average performance; values below 100% indicate below-average performance.','Record shelled cob field weight.','Standard method for grain test weight.','Compute grain weigh adjuted to 12.5% moisture.','Count and weigh grains randomly selected from the total grains.','Shell the grains (kernels) from the ears harvested per plot and record fresh (field) weight.','Counting of established plants.','Counting plants/vines planted.','Visual estimation','Visual estimation','Visual estimation','Visual estimation','Number of commercial plus Number of non-commercial roots','Total number of root per plot / Number of plants harvested','Measured using scales','Measured using scales','Measured using scales','Weight of commercial storage roots plus weight of non-commercial storage roots','(Weight of commercial storage roots/ plot size)*10','(Weight of commercial storage roots/ Number of non-commercial roots','(Weight of commercial storage roots/ plot size)*10','(Weight total of root/ plot size)*10','Number of non-commercial roots/Total number of root after harvest*100','','','','Measure the dry weight of stover, haulm harvested after threshing plants harvested from the plot excluing the borders.','Measure the dry weight of stover, haulm harvested after threshing plants harvested from the plot excluing the borders. Then divide the measured harvested weight by the effectively harvested area of the plot','Weigh the amount of harvested grains (excluding the borders) adjusted to 13% moisture,','Weigh the amount of harvested grains (excluding the borders) adjusted to 13% moisture, and then divided by the area of the plot','Weigh 100 seeds'),
+  #     c('tuber/plot-CO_330:0000265','tuber/plot-CO_330:0000268','%-CO_330:0000283','plants/plot-CO_330:0000287','%-CO_330:0000290','tuber/plot-CO_330:0000300','tuber/ plot-CO_330:0000304','tuber /plant-CO_330:0000305','tuber/plot-CO_330:0000293','tuber/plant-CO_330:0000297','kg/plot-CO_330:0000314','kg/plot-CO_330:0000317','kg/plant-CO_330:0000321','t/ha-CO_330:0000324','t/ha-CO_330:0000323','kg/plot-CO_330:0000308','kg/plant-CO_330:0000311','t/ha-CO_330:0000330','t/ha-CO_330:0000327','g-CO_330:0000333','g-CO_330:0000336','ratio-CO_334:0000008','7 pt scale-CO_334:0000009','Plant-CO_334:0000010','Count-CO_334:0000011','kg/plot-CO_334:0000012','t/ha-CO_334:0000013','t/ha-CO_334:0000014','t/ha-CO_334:0000017','kg/pl-CO_334:0000127','Stem-CO_334:0000129','kg/plot-CO_334:0000131','kg/plot-CO_334:0000132','Number-CO_334:0000133','kg/pl-CO_334:0000157','kg/plot-CO_334:0000158','Number-CO_334:0000159','Seedling-CO_334:0000166','plot-CO_334:0000168','plot-CO_334:0000169','kg-CO_334:0000170','kg-CO_334:0000171','1 month-CO_334:0000213,3 months-CO_334:0000214,6 months-CO_334:0000215,9 months-CO_334:0000216','kg/plant-CO_334:0000230','t/ha-CO_334:0000231','kg-CO_334:0000247','kg-CO_334:0000248','Count-CO_334:0000250','m2/kg-CO_321:0001034,kg/ha-CO_321:0001035,t/ha-CO_321:0001036,g/plant-CO_321:0001037,g/plot-CO_321:0001038,kg/plot-CO_321:0001039','g/1000 grain-CO_321:0001213,g/100 grain-CO_321:0001214,g/200 grain-CO_321:0001215','g/m2-CO_321:0001217,kg/ha-CO_321:0001218,t/ha-CO_321:0001219','g/plant-CO_321:0001220,g/plot-CO_321:0001221,kg/plot-CO_321:0001222','%-CO_321:0001223','num-CO_321:0001224','index-CO_321:0001231,%-CO_321:0001232','m2/kg-CO_321:0001246,kg/ha-CO_321:0001247,t/ha-CO_321:0001248,g/plot-CO_321:0001249,kg/plot-CO_321:0001250','1-5 scoring scale-CO_321:0001651','g/1000grain-CO_322:0000723,g/100grain-CO_322:0000725,g/200grain-CO_322:0000727','kg/ha-CO_322:0000730,t/ha-CO_322:0000731','g/plot-CO_322:0000734,kg/plot-CO_322:0000740,t/ha-CO_322:0000742,kg/ha-CO_322:0000737','g/plot-CO_322:0000744,kg/plot-CO_322:0000749,kg/ha-CO_322:0000747,t/ha-CO_322:0000751','%-CO_322:0000757','Rank number-CO_322:0000754','%-CO_322:0000756','g/plot-CO_322:0000928,kg/plot-CO_322:0000931','lb/bsh-CO_322:0001008','g/1000grain-CO_322:0001009,g/100grain-CO_322:0001010,g/200grain-CO_322:0001011','g/200grain-CO_322:0001012,g/1000grain-CO_322:0001013,g/100grain-CO_322:0001014','lb/plot-CO_322:0001016','plants/plot-CO_331:0000192','plants/plot-CO_331:0000678','plants/plot-CO_331:0000679','plants/plot-CO_331:0000211','roots/plot-CO_331:0000214','roots/plot-CO_331:0000217','roots/ plot-CO_331:0000233','roots/ plant-CO_331:0000230','kg/plot-CO_331:0000220','kg/plot-CO_331:0000223','kg/plot-CO_331:0000227','kg/plot-CO_331:0000237','t/ha-CO_331:0000218','t/ha-CO_331:0000680','t/ha-CO_331:0000681','t/ha-CO_331:0000296','%-CO_331:0000682','t/ha-CO_331:0000683','RtYldR 5 pt. scale-CO_331:0000791','%-CO_331:0000792','g/plot-CO_336:0000262','kg/ha-CO_336:0000340','g/plot-CO_336:0000261','kg/ha-CO_336:0000337','g-CO_336:0000333'),
+  #     c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000305','CO_330:0000293','CO_330:0000297','CO_330:0000314','CO_330:0000317','CO_330:0000321','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000311','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000158','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000231','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001213','CO_321:0001217','CO_321:0001220','CO_321:0001223','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_321:0001651','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000744','CO_322:0000757','CO_322:0000754','CO_322:0000756','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000230','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000296','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000340','CO_336:0000261','CO_336:0000337','CO_336:0000333'),
+  #     c('tuber/plot','tuber/plot','%','plants/plot','%','tuber/plot','tuber/ plot','tuber /plant','tuber/plot','tuber/plant','kg/plot','kg/plot','kg/plant','t/ha','t/ha','kg/plot','kg/plant','t/ha','t/ha','g','g','ratio','7 pt scale','Plant','Count','kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','kg/plot','Number','kg/pl','kg/plot','Number','Seedling','plot','plot','kg','kg','1 month','kg/plant','t/ha','kg','kg','Count','m2/kg','g/1000 grain','g/m2','g/plant','%','num','index','m2/kg','1-5 scoring scale','g/1000grain','kg/ha','g/plot','g/plot','%','Rank number','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','plants/plot','plants/plot','plants/plot','plants/plot','roots/plot','roots/plot','roots/ plot','roots/ plant','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','t/ha','t/ha','%','t/ha','RtYldR 5 pt. scale','%','g/plot','kg/ha','g/plot','kg/ha','g')
+  # )
+  # colnames(dict) <- c("Status","Crop", "Crop measurement", "Measurement method", "traitCode", "VariableId", "Scale")
+  #
+  # observe({
+  #   if(!is.null(input$cropCommonNameMono)){
+  #     traitsVals$selectedRows <- list()
+  #     aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
+  #     traitsVals$Data<-data.table(aux)
+  #     output$uiTraitsList <- renderUI({
+  #         #column(width=12,
+  #             column(12,dataTableOutput("Main_table"),
+  #
+  #                 tags$script("$(document).on('change', '.selectRow', function () {
+  #                     Shiny.onInputChange('selectRowClickId',this.id);
+  #                     Shiny.onInputChange('selectRowClickChecked',this.checked);
+  #                     Shiny.onInputChange('selectRowClick', Math.random())
+  #                     });"
+  #                 ),
+  #                 tags$script("$(document).on('change', '.select_scale', function () {
+  #                         Shiny.onInputChange('selectScaleClickId',this.id);
+  #                         Shiny.onInputChange('selectScaleClickValue',this.value);
+  #                         Shiny.onInputChange('selectScaleClick', Math.random())
+  #                     });"
+  #                 )
+  #                    )
+  #     })
+  #
+  #   }
+  #   else{
+  #     traitsVals$Data <- data.table()
+  #     traitsVals$selectedRows <- list()
+  #     output$uiTraitsList <- renderUI({
+  #       column(width = 10,
+  #
+  #       h4("Select crop to show list of traits.")
+  #       )
+  #
+  #     })
+  #
+  #   }
+  #
+  # })#end observe
+  #
+  #
+  # output$Main_table <-renderDataTable({
+  #   # as.list(lapply(1:nrow(traitsVals$Data), "drawComboInTable"))
+  #
+  #   DT= traitsVals$Data
+  #   # DT[["Change scale"]] <- as.list(lapply(1:nrow(traitsVals$Data), "drawComboInTable"))
+  #   DT[["Change scale"]] <- drawComboInTable()
+  #
+  #   # DT[["Select variable"]] <- lapply(1:nrow(traitsVals$Data), "drawButtonSelect")
+  #   DT[["Select variable"]] <- drawButtonSelect()
+  #   DT[["Variable ID"]] <- traitsVals$Data[,6]
+  #   datatable(DT,
+  #             escape=F,
+  #             # selection = list(mode = 'multiple', selected = traitsVals$selectedRows),
+  #             selection = list(mode = 'none'),
+  #             options = list(
+  #               scrollX = TRUE,
+  #               pageLength = 25,
+  #               columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
+  #             )
+  #   )})
+  #
+  # observeEvent(input$selectRowClick, {
+  #   selectedRow  <- as.numeric(gsub("selectRow_","",input$selectRowClickId))
+  #   row <- traitsVals$Data[selectedRow,]
+  #   if(input$selectRowClickChecked){
+  #     # traitsVals$Data[[1]][selectedRow] <- "<font color='red'><b>Selected</b></font>"
+  #     traitsVals$Data[[1]][selectedRow] <- "Selected"
+  #   }
+  #   else{
+  #     # traitsVals$Data[[1]][selectedRow] <- "<font color='black'>Not selected</font>"
+  #     traitsVals$Data[[1]][selectedRow] <- "Not selected"
+  #
+  #   }
+  #
+  # })
+  #
+  # observeEvent(input$selectScaleClick,{
+  #   vv  <- strsplit(input$selectScaleClickValue, "-")[[1]]
+  #   var <- list()
+  #   if(length(vv) == 1){
+  #     var[[1]] = vv
+  #     var[[2]] = ""
+  #   }
+  #   else{
+  #     var <- vv
+  #   }
+  #
+  #   traitsVals$Data[[6]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[1]]
+  #   traitsVals$Data[[7]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[2]]
+  # })
+  #
+  # drawButtonSelect <- function(){
+  #   n<- nrow(traitsVals$Data)
+  #   l <- c()
+  #   for(index in 1:n){
+  #
+  #     old_row <- traitsVals$Data[index,]
+  #
+  #     ckecked <-  ""
+  #     if(old_row[[1]] %like% "Selected"){
+  #       ckecked <- "checked"
+  #     }
+  #
+  #     str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
+  #       <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
+  #       </div>')
+  #     l<- c(l,str)
+  #   }
+  #   return(l)
+  # }
+  #
+  # drawComboInTable <- function(){
+  #   n<- nrow(traitsVals$Data)
+  #   l <- c()
+  #   for(index in 1:n){
+  #     old_row = traitsVals$Data[index,]
+  #     options = old_row[[5]]
+  #     str  <- paste0('<select id="select_scale_' , index, '" class="select_scale" style="width:150px;">')
+  #     arrOpt <- strsplit(options, ",")[[1]]
+  #
+  #     if(length(arrOpt) == 1){
+  #       str <- ""
+  #     }
+  #     else{
+  #       for(val in arrOpt){
+  #         mval  <- strsplit(val, "-")[[1]]
+  #         # if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
+  #         #
+  #         # str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
+  #         if(mval[[1]] == old_row[[7]]) sel <- "selected" else sel <-""
+  #
+  #         str <- paste0(str, '<option value="', mval[[2]], "-" , mval[[1]], '" ', sel,'> ', mval[[1]], '</option>')
+  #       }
+  #       str <- paste0(str, "</select>")
+  #     }
+  #     l <- c(l, str)
+  #   }
+  #   return(l)
+  # }
+
+  ############ end traits table #############################################################
+
+  ### start crop measurement 2 ###
+
   traitsVals <- reactiveValues()
   traitsVals$aux <- data.frame()
   traitsVals$selectedRows <- list()
   traitsVals$Data <- data.table()
 
-  dict <- data.frame(stringsAsFactors = FALSE,
-      c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"),
-      c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean','Soybean','Soybean'),
-      c('Number of tubers planted','Number of emerged plants','Plant emergence proportion','Number of harvested plants','Proportion of plants harvested','Non-marketable tuber number','Tuber number','Tuber number per plant','Number of marketable tubers','Number of marketable tubers per plant','Non-marketable tuber weight','Tuber weight','Tuber weight per plant','Tuber yield no adjusted','Tuber yield adjusted','Marketable tuber weight','Marketable tuber weight per plant','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield','Root Yield','Root Yield','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Sprout count','Root Yield','Root Yield','Storage root weight','Storage root weight','Number of stakes','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','In-season aboveground biomass','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Shelled cob weight','Grain test weight','Grain weight','Grain weight','Grain yield','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots','Total number of root','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Fodder Yield','Seed yield','Seed yield','Seed weight'),
-      c('Count the number of planted tubers and record it','Count the number of emerged plants and record it','Compute the proportion of plants emerged over tubers planted using the formula','Count the number of harvested plants and record it','Compute the proportion of plant harvested over plant emerged using the formula','Count the number of non-marketable tubers per unit area and record it','Compute the total number of tubers per unit area using the formula','Compute the total number of tubers per plant using the formula','Compute the total number of marketable tubers per unit area using the formula','Compute the total number of marketable tubers per plant','Compute the weight of non-marketable tubers per unit area usihg the formula','Compute the total weight of tubers per unit area using the formula','Compute the total weight of tubers per plant using the formula','Compute the total tuber yield no adjusted per unit area using the formula','Compute the total tuber yield adjusted per unit area using the formula','Compute the total weight of marketable tubers per unit area using the formula','Compute the total weight of marketable tubers per plant using the formula','Compute the marketable tuber yield no adjusted per unit area using the formula','Compute the marketable tuber yield adjusted per unit area using the formula','Compute the average tuber weight in grams using the formula','Compute the average marketable tuber weight in grams using the formula','The number of germinated stakes divided by the total number of planted stakes scored one month after planting','Trait monitored by observing plant vigor one month after planting','Count the number of plant stands that are harvested in a plot','','Weigh harvested storage roots per plot at harvest','Calculated as weight of fresh storage roots expressed in tons per hectares per plant at harvest','Dry weight of harvested roots derived by multiplying fresh storage root yield by dry matter content expressed in tons per hectares.','Calculated as weight of foliage and stems expressed in tons per hectares per plot at harvest','Measured stem weight excluding leaves and stump','Count of the number of stems per plot','Measured weight of harvested cassava roots usually classified as large size and medium size excluding small sized roots','','Count of the rotted stems per plot at the time of harvest','Measured weight of cassava root samples (kg) between 4 - 5kg of each of the harvested plot to determine the dry matter by specific gravity','As part of the dry matter determination method by specific gravimetry','Count of the number of stakes planted per plot','Count of the number of emerging seedlings from each family in the pre-nursery done on a daily bases until its ready for transplanting','Count of the number of small or less than 1kg root size','Count of the number of big or more than 1kg root size','Measurement of the fresh weight of the planted part anchoring the storage root(kg)','Measurement of the fresh weight of harvested plant biomass excluding leaves','Count of the number of stakes germinated','Average yield per plant in a plot. It is estimated by dividing the total weight of roots by the number of plants harvested.','Annual root yield using yield per hectare as a function of the crop duration.','Fresh cassava roots are washed in water and weighed on a pan suspended to a weighing scale','This is the weight of peeled cassava roots using a pan suspended to a weighing scale','An estimated number of plantable stakes (about 20cm long','Cut all aboveground biomass in a predetermined area (A). Avoid border effects by sampling away from edges of plot. Biomass as other yield components can be calculated or measured individually (Bell and Fischer, 1994; Reynolds et al., 2001; Pask et al., 2012), decide which method suit better for your objectives.','Dry grains at 70oC and weigh.','Use formulae to calculate grain yield in g/m2','The weight of the grain harvested is registered on a scale, decide which method suit better for your objectives. In breeding trials, a sample area (rather than the whole plot) is generally used for estimating yield. Discard borders when combine harvest for a better estimation of yield.','Calculate grain yield of an entry as percentage over a local check.','Standard method for yield factor','Harvest index is expressed as a ratio and can be calculated as Harvest index = (Grain yield/Biomass).','Sampling is typically performed at sequential developmental stages/time intervals through crop growth. Cut all aboveground biomass in a predetermined area (A). Avoid border effects by sampling away from edges of plot.  In most cases, determinations of dry mass are made on representative sub-samples to reduce oven space requirement, take additional measurements (e.g., fertile culm count) etc. Several protocols available (Bell and Fischer, 1994; Reynolds et al., 2001; Pask et al., 2012), decide which method suit better for your objectives.','Standard method for In-season aboveground biomass.','Count and weigh grains randomly selected from the total grains.','Calculate shelled grain yield per unit area adjusted to 12.5% grain moisture.','Shell the grains (kernels) from the ears harvested per plot and put grains in a paper bag and  dry at 60-70∞C for 1-2 days, then measure and record the weight of dried grain.','Shell the grains (kernels) from the ears harvested per plot and record fresh (field) weight.','It is calculated as the numerical position of the progeny when yields are arrenged from highest to lowest.','Calculated as relative grain yield agaisnst the best check in percentage.','Relative grain yield expressed as percentage of the mean grain yield of the trial. Values above 100% indicate above-average performance; values below 100% indicate below-average performance.','Record shelled cob field weight.','Standard method for grain test weight.','Compute grain weigh adjuted to 12.5% moisture.','Count and weigh grains randomly selected from the total grains.','Shell the grains (kernels) from the ears harvested per plot and record fresh (field) weight.','Counting of established plants.','Counting plants/vines planted.','Visual estimation','Visual estimation','Visual estimation','Visual estimation','Number of commercial plus Number of non-commercial roots','Total number of root per plot / Number of plants harvested','Measured using scales','Measured using scales','Measured using scales','Weight of commercial storage roots plus weight of non-commercial storage roots','(Weight of commercial storage roots/ plot size)*10','(Weight of commercial storage roots/ Number of non-commercial roots','(Weight of commercial storage roots/ plot size)*10','(Weight total of root/ plot size)*10','Number of non-commercial roots/Total number of root after harvest*100','','','','Measure the dry weight of stover, haulm harvested after threshing plants harvested from the plot excluing the borders.','Measure the dry weight of stover, haulm harvested after threshing plants harvested from the plot excluing the borders. Then divide the measured harvested weight by the effectively harvested area of the plot','Weigh the amount of harvested grains (excluding the borders) adjusted to 13% moisture,','Weigh the amount of harvested grains (excluding the borders) adjusted to 13% moisture, and then divided by the area of the plot','Weigh 100 seeds'),
-      c('tuber/plot-CO_330:0000265','tuber/plot-CO_330:0000268','%-CO_330:0000283','plants/plot-CO_330:0000287','%-CO_330:0000290','tuber/plot-CO_330:0000300','tuber/ plot-CO_330:0000304','tuber /plant-CO_330:0000305','tuber/plot-CO_330:0000293','tuber/plant-CO_330:0000297','kg/plot-CO_330:0000314','kg/plot-CO_330:0000317','kg/plant-CO_330:0000321','t/ha-CO_330:0000324','t/ha-CO_330:0000323','kg/plot-CO_330:0000308','kg/plant-CO_330:0000311','t/ha-CO_330:0000330','t/ha-CO_330:0000327','g-CO_330:0000333','g-CO_330:0000336','ratio-CO_334:0000008','7 pt scale-CO_334:0000009','Plant-CO_334:0000010','Count-CO_334:0000011','kg/plot-CO_334:0000012','t/ha-CO_334:0000013','t/ha-CO_334:0000014','t/ha-CO_334:0000017','kg/pl-CO_334:0000127','Stem-CO_334:0000129','kg/plot-CO_334:0000131','kg/plot-CO_334:0000132','Number-CO_334:0000133','kg/pl-CO_334:0000157','kg/plot-CO_334:0000158','Number-CO_334:0000159','Seedling-CO_334:0000166','plot-CO_334:0000168','plot-CO_334:0000169','kg-CO_334:0000170','kg-CO_334:0000171','1 month-CO_334:0000213,3 months-CO_334:0000214,6 months-CO_334:0000215,9 months-CO_334:0000216','kg/plant-CO_334:0000230','t/ha-CO_334:0000231','kg-CO_334:0000247','kg-CO_334:0000248','Count-CO_334:0000250','m2/kg-CO_321:0001034,kg/ha-CO_321:0001035,t/ha-CO_321:0001036,g/plant-CO_321:0001037,g/plot-CO_321:0001038,kg/plot-CO_321:0001039','g/1000 grain-CO_321:0001213,g/100 grain-CO_321:0001214,g/200 grain-CO_321:0001215','g/m2-CO_321:0001217,kg/ha-CO_321:0001218,t/ha-CO_321:0001219','g/plant-CO_321:0001220,g/plot-CO_321:0001221,kg/plot-CO_321:0001222','%-CO_321:0001223','num-CO_321:0001224','index-CO_321:0001231,%-CO_321:0001232','m2/kg-CO_321:0001246,kg/ha-CO_321:0001247,t/ha-CO_321:0001248,g/plot-CO_321:0001249,kg/plot-CO_321:0001250','1-5 scoring scale-CO_321:0001651','g/1000grain-CO_322:0000723,g/100grain-CO_322:0000725,g/200grain-CO_322:0000727','kg/ha-CO_322:0000730,t/ha-CO_322:0000731','g/plot-CO_322:0000734,kg/plot-CO_322:0000740,t/ha-CO_322:0000742,kg/ha-CO_322:0000737','g/plot-CO_322:0000744,kg/plot-CO_322:0000749,kg/ha-CO_322:0000747,t/ha-CO_322:0000751','%-CO_322:0000757','Rank number-CO_322:0000754','%-CO_322:0000756','g/plot-CO_322:0000928,kg/plot-CO_322:0000931','lb/bsh-CO_322:0001008','g/1000grain-CO_322:0001009,g/100grain-CO_322:0001010,g/200grain-CO_322:0001011','g/200grain-CO_322:0001012,g/1000grain-CO_322:0001013,g/100grain-CO_322:0001014','lb/plot-CO_322:0001016','plants/plot-CO_331:0000192','plants/plot-CO_331:0000678','plants/plot-CO_331:0000679','plants/plot-CO_331:0000211','roots/plot-CO_331:0000214','roots/plot-CO_331:0000217','roots/ plot-CO_331:0000233','roots/ plant-CO_331:0000230','kg/plot-CO_331:0000220','kg/plot-CO_331:0000223','kg/plot-CO_331:0000227','kg/plot-CO_331:0000237','t/ha-CO_331:0000218','t/ha-CO_331:0000680','t/ha-CO_331:0000681','t/ha-CO_331:0000296','%-CO_331:0000682','t/ha-CO_331:0000683','RtYldR 5 pt. scale-CO_331:0000791','%-CO_331:0000792','g/plot-CO_336:0000262','kg/ha-CO_336:0000340','g/plot-CO_336:0000261','kg/ha-CO_336:0000337','g-CO_336:0000333'),
-      c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000305','CO_330:0000293','CO_330:0000297','CO_330:0000314','CO_330:0000317','CO_330:0000321','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000311','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000158','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000231','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001213','CO_321:0001217','CO_321:0001220','CO_321:0001223','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_321:0001651','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000744','CO_322:0000757','CO_322:0000754','CO_322:0000756','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000230','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000296','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000340','CO_336:0000261','CO_336:0000337','CO_336:0000333'),
-      c('tuber/plot','tuber/plot','%','plants/plot','%','tuber/plot','tuber/ plot','tuber /plant','tuber/plot','tuber/plant','kg/plot','kg/plot','kg/plant','t/ha','t/ha','kg/plot','kg/plant','t/ha','t/ha','g','g','ratio','7 pt scale','Plant','Count','kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','kg/plot','Number','kg/pl','kg/plot','Number','Seedling','plot','plot','kg','kg','1 month','kg/plant','t/ha','kg','kg','Count','m2/kg','g/1000 grain','g/m2','g/plant','%','num','index','m2/kg','1-5 scoring scale','g/1000grain','kg/ha','g/plot','g/plot','%','Rank number','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','plants/plot','plants/plot','plants/plot','plants/plot','roots/plot','roots/plot','roots/ plot','roots/ plant','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','t/ha','t/ha','%','t/ha','RtYldR 5 pt. scale','%','g/plot','kg/ha','g/plot','kg/ha','g')
-  )
-  colnames(dict) <- c("Status","Crop", "Crop measurement", "Measurement method", "traitCode", "VariableId", "Scale")
+  dict <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/crop_measurements_v2.rds")
+  dict <- as.data.frame(dict, stringsAsFactors=FALSE)
 
   observe({
-    if(!is.null(input$cropCommonNameMono)){
-      traitsVals$selectedRows <- list()
-      aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
-      traitsVals$Data<-data.table(aux)
-      output$uiTraitsList <- renderUI({
-          #column(width=12,
-              column(12,dataTableOutput("Main_table"),
+    aux <- NULL
+    rs <- "Other"
+    newVal <- "Other"
 
-                  tags$script("$(document).on('change', '.selectRow', function () {
-                      Shiny.onInputChange('selectRowClickId',this.id);
-                      Shiny.onInputChange('selectRowClickChecked',this.checked);
-                      Shiny.onInputChange('selectRowClick', Math.random())
+    if(input$croppingType == "Monocrop"){
+      if(!is.null(input$cropCommonNameMono)){
+        valSel <- input$cropCommonNameMono[1]
+        aux <- dplyr::filter(as.data.frame(dict),Crop==valSel)
+
+        if(valSel == "Other") {
+          newVal <- trim(input$cropCommonNameMono_other)
+          if(newVal == "") newVal <- "Other"
+          aux$Crop<- rep(newVal, length(aux$Crop))
+        }
+        traitsVals$otherMonocropPrev <-  newVal
+
+      }
+      else{
+        aux <- dplyr::filter(as.data.frame(dict),Crop=="AnyValueToCreateEmptyFrame")
+      }
+    }
+    else if(input$croppingType == "Intercrop"){
+      crop_selected <- input$cropsSelected
+      aux <- dplyr::filter(as.data.frame(dict), Crop %in% crop_selected)
+      if("Other" %in% crop_selected && !is.null(input$jsCropCommonNameOtherVal)){
+        newVal <- trim(input$jsCropCommonNameOtherVal)
+        if( newVal == "" ) newVal <- "Other"
+        aux$Crop<- gsub("Other", newVal, aux$Crop)
+      }
+    }
+    traitsVals$Data <- data.table(aux)
+
+  })
+
+
+
+
+  # observe({
+  #   if(!is.null(input$cropCommonNameMono)){
+  #     traitsVals$selectedRows <- list()
+  #
+  #
+  #     #isolate({
+  #     # if (input$cropCommonNameMono[1] == "Other") {
+  #     #   aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
+  #     #   traitsVals$Data<-data.table(aux)
+  #     #   traitsVals$Data$Crop<-rep(input$cropCommonNameMono_other, nrow(traitsVals$Data))
+  #     #   #traitsVals$Data$Crop<-rep("ivan", nrow(traitsVals$Data))
+  #     #   print(traitsVals$Data$Crop)
+  #     #   print("other")
+  #     #
+  #     # }
+  #     #})
+  #
+  #       #else {
+  #       # aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
+  #       # traitsVals$Data<-data.table(aux)
+  #       #print("crop")
+  #     #}
+  #
+  #     # ivan <- reactive({
+  #     #   p <- input$cropCommonNameMono_other
+  #     #   p
+  #     # })
+  #
+  #     observeEvent(input$cropCommonNameMono[1],{
+  #       #observe(
+  #       if(input$cropCommonNameMono[1] == "Other"){
+  #
+  #         aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
+  #         traitsVals$Data<-data.table(aux)
+  #         # traitsVals$Data$Crop<-rep(ivan(), nrow(traitsVals$Data))
+  #         traitsVals$Data$Crop<-rep(input$cropCommonNameMono_other, nrow(traitsVals$Data))
+  #
+  #
+  #         print(ivan())
+  #         print("other")
+  #
+  #       } else {
+  #         aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
+  #         traitsVals$Data<-data.table(aux)
+  #         print("crop")
+  #       }#)
+  #
+  #     })
+  #
+  #     # aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
+  #     # traitsVals$Data<-data.table(aux)
+  #
+  #     # output$uiTraitsList <- renderUI({
+  #     #         column(12,dataTableOutput("Main_table"),
+  #     #
+  #     #             tags$script("$(document).on('change', '.selectRow', function () {
+  #     #                 Shiny.onInputChange('selectRowClickId',this.id);
+  #     #                 Shiny.onInputChange('selectRowClickChecked',this.checked);
+  #     #                 Shiny.onInputChange('selectRowClick', Math.random())
+  #     #                 });"
+  #     #             ),
+  #     #             tags$script("$(document).on('change', '.select_scale', function () {
+  #     #                     Shiny.onInputChange('selectScaleClickId',this.id);
+  #     #                     Shiny.onInputChange('selectScaleClickValue',this.value);
+  #     #                     Shiny.onInputChange('selectScaleClick', Math.random())
+  #     #                 });"
+  #     #             )
+  #     #         )
+  #     # })
+  #
+  #   }
+  #   # else{
+  #   #   traitsVals$Data <- data.table()
+  #   #   traitsVals$selectedRows <- list()
+  #   #   output$uiTraitsList <- renderUI({
+  #   #     column(width = 10,
+  #   #
+  #   #     h4("Select crop to show list of traits.")
+  #   #     )
+  #   #
+  #   #   })
+  #   #
+  #   # }
+  #
+  # })
+
+  output$uiTraitsList <- renderUI({
+
+    column(12,
+           column(12,  style = "padding-top:0px; padding-bottom:10px; text-align:center; color:red;", id = "ms_traitsTable_message", h3("Must select a crop to show traits list")),
+           br(),
+           dataTableOutput("Main_table"),
+
+           tags$script("$(document).on('change', '.selectRow', function () {
+                       Shiny.onInputChange('selectRowClickId',this.id);
+                       Shiny.onInputChange('selectRowClickChecked',this.checked);
+                       Shiny.onInputChange('selectRowClick', Math.random())
                       });"
                   ),
-                  tags$script("$(document).on('change', '.select_scale', function () {
-                          Shiny.onInputChange('selectScaleClickId',this.id);
-                          Shiny.onInputChange('selectScaleClickValue',this.value);
-                          Shiny.onInputChange('selectScaleClick', Math.random())
+           tags$script("$(document).on('change', '.select_scale', function () {
+                       Shiny.onInputChange('selectScaleClickId',this.id);
+                       Shiny.onInputChange('selectScaleClickValue',this.value);
+                       Shiny.onInputChange('selectScaleClick', Math.random())
                       });"
-                  )
-                     )
-      })
+                  ),
+           tags$script('$(document).on("change", "input[id^=\'cropCommon\']",  function(){
+                                if($("#" + this.id).is(":enabled")){
+                                      Shiny.onInputChange("jsCropCommonNameOtherVal", this.value);
+                                      //Shiny.onInputChange("jsCropCommonNameOtherFlag",Math.random());
+                                }
 
-    }
-    else{
-      traitsVals$Data <- data.table()
-      traitsVals$selectedRows <- list()
-      output$uiTraitsList <- renderUI({
-        column(width = 10,
+})
+                                      '
+           )
 
-        h4("Select crop to show list of traits.")
-        )
 
-      })
+    )
+})
 
-    }
 
-  })#end observe
+
 
 
   output$Main_table <-renderDataTable({
-    # as.list(lapply(1:nrow(traitsVals$Data), "drawComboInTable"))
-
     DT= traitsVals$Data
-    # DT[["Change scale"]] <- as.list(lapply(1:nrow(traitsVals$Data), "drawComboInTable"))
-    DT[["Change scale"]] <- drawComboInTable()
+    #DT[["Change scale"]] <- drawComboInTable()
 
-    # DT[["Select variable"]] <- lapply(1:nrow(traitsVals$Data), "drawButtonSelect")
-    DT[["Select variable"]] <- drawButtonSelect()
-    DT[["Variable ID"]] <- traitsVals$Data[,6]
+    if(nrow(traitsVals$Data) >0){
+      DT[["Select variable"]] <- drawButtonSelect()
+      hide("ms_traitsTable_message")
+    }
+    else{shinyjs::show(id="ms_traitsTable_message")}
+    #DT[["Variable ID"]] <- traitsVals$Data[,6]
     datatable(DT,
               escape=F,
               # selection = list(mode = 'multiple', selected = traitsVals$selectedRows),
@@ -4862,7 +5142,7 @@ server_design_agrofims <- function(input, output, session, values){
               options = list(
                 scrollX = TRUE,
                 pageLength = 25,
-                columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
+                columnDefs = list(list(visible=FALSE, targets=c(1,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
               )
     )})
 
@@ -4945,249 +5225,141 @@ server_design_agrofims <- function(input, output, session, values){
     return(l)
   }
 
-  ############ end traits table #############################################################
-
-  ### start crop measurement 2 ###
-
-  traitsVals2 <- reactiveValues()
-  traitsVals2$aux <- data.frame()
-  traitsVals2$selectedRows <- list()
-  traitsVals2$Data <- data.table()
-
-  # dict2 <- data.frame(stringsAsFactors = FALSE,
-  #                    c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"),
-  #                    c('Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Soybean','Soybean','Soybean','Soybean','Soybean'),
-  #                    c('Number of tubers planted','Number of emerged plants','Plant emergence proportion','Number of harvested plants','Proportion of plants harvested','Non-marketable tuber number','Tuber number','Tuber number per plant','Number of marketable tubers','Number of marketable tubers per plant','Non-marketable tuber weight','Tuber weight','Tuber weight per plant','Tuber yield no adjusted','Tuber yield adjusted','Marketable tuber weight','Marketable tuber weight per plant','Marketable tuber yield no adjusted','Marketable tuber yield adjusted','Average of tuber weight','Average of marketable tuber weight','Sprouting','Initial Vigor','Plant Stands Harvested','Root Number','Storage root weight','Root Yield','Root Yield','Root Yield','Stem weight','Stem number','Marketable root weight','Non marketable root weight','Number of rotten stem','Storage root weight','Storage root weight','Number of planted stakes','Seedling number','Non marketable root number','Marketable root number','Stock weight','Stem weight','Sprout count','Root Yield','Root Yield','Storage root weight','Storage root weight','Number of stakes','Aboveground biomass at maturity','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield factor','Harvest index','In-season aboveground biomass','In-season aboveground biomass','Grain weight','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Grain yield','Shelled cob weight','Grain test weight','Grain weight','Grain weight','Grain yield','Number of plants established','Number of plants planted','Number of plants harvested','Number of plants with storage roots','Number of commercial storage roots','Number of non-commercial storage roots','Total number of root','Total number of root','Weight of commercial storage roots','Weight of non-commercial storage roots','Weight of vines','Total root weight','Marketable root yield','Average commercial root weight','Yield of total roots','Yield of total roots','Percentage of marketable roots','Biomass yield','Relative Storage Root Yield','Storage Root Yield relative to check','Fodder Yield','Fodder Yield','Seed yield','Seed yield','Seed weight'),
-  #                    c('CO_330:0000265','CO_330:0000268','CO_330:0000283','CO_330:0000287','CO_330:0000290','CO_330:0000300','CO_330:0000304','CO_330:0000305','CO_330:0000293','CO_330:0000297','CO_330:0000314','CO_330:0000317','CO_330:0000321','CO_330:0000324','CO_330:0000323','CO_330:0000308','CO_330:0000311','CO_330:0000330','CO_330:0000327','CO_330:0000333','CO_330:0000336','CO_334:0000008','CO_334:0000009','CO_334:0000010','CO_334:0000011','CO_334:0000012','CO_334:0000013','CO_334:0000014','CO_334:0000017','CO_334:0000127','CO_334:0000129','CO_334:0000131','CO_334:0000132','CO_334:0000133','CO_334:0000157','CO_334:0000158','CO_334:0000159','CO_334:0000166','CO_334:0000168','CO_334:0000169','CO_334:0000170','CO_334:0000171','CO_334:0000213','CO_334:0000230','CO_334:0000231','CO_334:0000247','CO_334:0000248','CO_334:0000250','CO_321:0001034','CO_321:0001213','CO_321:0001217','CO_321:0001220','CO_321:0001223','CO_321:0001224','CO_321:0001231','CO_321:0001246','CO_321:0001651','CO_322:0000723','CO_322:0000730','CO_322:0000734','CO_322:0000744','CO_322:0000757','CO_322:0000754','CO_322:0000756','CO_322:0000928','CO_322:0001008','CO_322:0001009','CO_322:0001012','CO_322:0001016','CO_331:0000192','CO_331:0000678','CO_331:0000679','CO_331:0000211','CO_331:0000214','CO_331:0000217','CO_331:0000233','CO_331:0000230','CO_331:0000220','CO_331:0000223','CO_331:0000227','CO_331:0000237','CO_331:0000218','CO_331:0000680','CO_331:0000681','CO_331:0000296','CO_331:0000682','CO_331:0000683','CO_331:0000791','CO_331:0000792','CO_336:0000262','CO_336:0000340','CO_336:0000261','CO_336:0000337','CO_336:0000333'),
-  #                    c('tuber/plot','tuber/plot','%','plants/plot','%','tuber/plot','tuber/ plot','tuber /plant','tuber/plot','tuber/plant','kg/plot','kg/plot','kg/plant','t/ha','t/ha','kg/plot','kg/plant','t/ha','t/ha','g','g','ratio','7 pt scale','Plant','Count','kg/plot','t/ha','t/ha','t/ha','kg/pl','Stem','kg/plot','kg/plot','Number','kg/pl','kg/plot','Number','Seedling','plot','plot','kg','kg','1 month','kg/plant','t/ha','kg','kg','Count','m2/kg','g/1000 grain','g/m2','g/plant','%','num','index','m2/kg','1-5 scoring scale','g/1000grain','kg/ha','g/plot','g/plot','%','Rank number','%','g/plot','lb/bsh','g/1000grain','g/200grain','lb/plot','plants/plot','plants/plot','plants/plot','plants/plot','roots/plot','roots/plot','roots/ plot','roots/ plant','kg/plot','kg/plot','kg/plot','kg/plot','t/ha','t/ha','t/ha','t/ha','%','t/ha','RtYldR 5 pt. scale','%','g/plot','kg/ha','g/plot','kg/ha','g')
-  # )
-  # colnames(dict2) <- c("Status","Crop", "Crop measurement", "VariableId", "Scale")
-
-
-  # dict2 <- data.frame(stringsAsFactors = FALSE,
-  #                    c("Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected","Not selected"),
-  #                    c('Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Other crop','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Potato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Sweetpotato','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Cassava','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Rice','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Wheat','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize','Maize'),
-  #                    c('Area harvested','Storage organ (seed, grain, root, tuber, etc)_Fresh weight','Storage organ (seed, grain, root, tuber, etc)_Subsample fresh weight','Storage organ (seed, grain, root, tuber, etc)_Subsample dry weight','Storage organ (seed, grain, root, tuber, etc)_Moisture content','Storage organ (seed, grain, root, tuber, etc)_Dry weight','Storage organ (seed, grain, root, tuber, etc)_Dry matter yield','Infructesence (including grain or seed holding structure)_Fresh weight','Infructesence (including grain or seed holding structure)_Subsample fresh weight','Infructesence (including grain or seed holding structure)_Subsample dry weight','Infructesence (including grain or seed holding structure)_Moisture content','Infructesence (including grain or seed holding structure)_Dry weight','Infructesence (including grain or seed holding structure)_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots (excluding storage roots)_Fresh weight','Roots (excluding storage roots)_Subsample fresh weight','Roots (excluding storage roots)_Subsample dry weight','Roots (excluding storage roots)_Moisture content','Roots (excluding storage roots)_Dry weight','Roots (excluding storage roots)_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including all roots,  storage roots, and tubers)_Fresh weight','Total biomass (including all roots,  storage roots, and tubers)_Subsample fresh weight','Total biomass (including all roots,  storage roots, and tubers)_Subsample dry weight','Total biomass(including all roots,  storage roots, and tubers)_Moisture content','Total biomass (including all roots,  storage roots, and tubers)_Dry weight','Total biomass (including all roots,  storage roots, and tubers)_Dry matter yield','Total aboveground biomass (including infructesence)_Fresh weight','Total aboveground biomass (including infructesence)_Subsample fresh weight','Total aboveground biomass (including infructesence)_Subsample dry weight','Total aboveground biomass (including infructesence)_Moisture content','Total aboveground biomass (including infructesence)_Dry weight','Total aboveground biomass (including infructesence)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Storage organ (seed, grain, root, tuber, etc)_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Storage organ (seed, grain, root, tuber, etc)_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Storage organ (seed, grain, root, tuber, etc)_Potassium content','Grain or seed_Zinc content','Storage organ (seed, grain, root, tuber, etc)_beta-carotene (Vit A) content','Storage organ (seed, grain, root, tuber, etc)_Protein content','Leaves and stems_Lignin content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Tubers_Fresh weight','Tubers_Subsample fresh weight','Tubers_Subsample dry weight','Tubers_Moisture content','Tubers_Dry weight','Tubers_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots_Fresh weight','Roots_Subsample fresh weight','Roots_Subsample dry weight','Roots_Moisture content','Roots_Dry weight','Roots_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including roots and tubers)_Fresh weight','Total biomass (including roots and tubers)_Subsample fresh weight','Total biomass (including roots and tubers)_Subsample dry weight','Total biomass (including roots and tubers)_Moisture content','Total biomass (including roots and tubers)_Dry weight','Total biomass (including roots and tubers)_Dry matter yield','Total aboveground biomass (leaves, stems, fruits)_Fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample dry weight','Total aboveground biomass (leaves, stems, fruits)_Moisture content','Total aboveground biomass (leaves, stems, fruits)_Dry weight','Total aboveground biomass (leaves, stems, fruits)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Tubers_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Tubers_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Tubers_Potassium content','Tubers_Zinc content','Tubers_beta-carotene (Vit A) content','Tubers_Protein content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Storage root_Fresh weight','Storage root_Subsample fresh weight','Storage root_Subsample dry weight','Storage root_Moisture content','Storage root_Dry weight','Storage root_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots (excluding storage roots)_Fresh weight','Roots (excluding storage roots)_Subsample fresh weight','Roots (excluding storage roots)_Subsample dry weight','Roots (excluding storage roots)_Moisture content','Roots (excluding storage roots)_Dry weight','Roots (excluding storage roots)_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including roots and storage roots)_Fresh weight','Total biomass (including roots and storage roots)_Subsample fresh weight','Total biomass (including roots and storage roots)_Subsample dry weight','Total biomass (including roots and storage roots)_Moisture content','Total biomass (including roots and storage roots)_Dry weight','Total biomass (including roots and storage roots)_Dry matter yield','Total aboveground biomass (leaves, stems, fruits)_Fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample dry weight','Total aboveground biomass (leaves, stems, fruits)_Moisture content','Total aboveground biomass (leaves, stems, fruits)_Dry weight','Total aboveground biomass (leaves, stems, fruits)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Storage root_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Storage root_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Storage root_Potassium content','Storage root_Zinc content','Storage root_beta-carotene (Vit A) content','Storage root_Protein content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Storage roots_Fresh weight','Storage roots_Subsample fresh weight','Storage roots_Subsample dry weight','Storage roots_Moisture content','Storage roots_Dry weight','Storage roots_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots (excluding storage roots)_Fresh weight','Roots (excluding storage roots)_Subsample fresh weight','Roots (excluding storage roots)_Subsample dry weight','Roots (excluding storage roots)_Moisture content','Roots (excluding storage roots)_Dry weight','Roots (excluding storage roots)_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including roots and storage roots)_Fresh weight','Total biomass (including roots and storage roots)_Subsample fresh weight','Total biomass (including roots and storage roots)_Subsample dry weight','Total biomass (including roots and storage roots)_Moisture content','Total biomass (including roots and storage roots)_Dry weight','Total biomass (including roots and storage roots)_Dry matter yield','Total aboveground biomass (leaves, stems, fruits)_Fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample fresh weight','Total aboveground biomass (leaves, stems, fruits)_Subsample dry weight','Total aboveground biomass (leaves, stems, fruits)_Moisture content','Total aboveground biomass (leaves, stems, fruits)_Dry weight','Total aboveground biomass (leaves, stems, fruits)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Storage root_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Storage root_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Storage root_Potassium content','Storage root_Zinc content','Storage root_beta-carotene (Vit A) content','Storage root_Protein content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Grain_Fresh weight','Grain_Subsample fresh weight','Grain_Subsample dry weight','Grain_Moisture content','Grain_Dry weight','Grain_Dry matter yield','Panicle_Fresh weight','Panicle_Subsample fresh weight','Panicle_Subsample dry weight','Panicle_Moisture content','Panicle_Dry weight','Panicle_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots_Fresh weight','Roots_Subsample fresh weight','Roots_Subsample dry weight','Roots_Moisture content','Roots_Dry weight','Roots_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including all roots and panicle)_Fresh weight','Total biomass (including all roots and panicle)_Subsample fresh weight','Total biomass (including all roots and panicle)_Subsample dry weight','Total biomass (including all roots and panicle)_Moisture content','Total biomass (including all roots and panicle)_Dry weight','Total biomass (including all roots and panicle)_Dry matter yield','Total aboveground biomass (including panicles)_Fresh weight','Total aboveground biomass (including panicles)_Subsample fresh weight','Total aboveground biomass (including panicles)_Subsample dry weight','Total aboveground biomass (including panicles)_Moisture content','Total aboveground biomass (including panicles)_Dry weight','Total aboveground biomass (including panicles)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Grain_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Grain_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Grain_Potassium content','Grain or seed_Zinc content','Grain_beta-carotene (Vit A) content','Grain_Protein content','Leaves and stems_Lignin content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Grain_Fresh weight','Grain_Subsample fresh weight','Grain_Subsample dry weight','Grain_Moisture content','Grain_Dry weight','Grain_Dry matter yield','Spike_Fresh weight','Spike_Subsample fresh weight','Spike_Subsample dry weight','Spike_Moisture content','Spike_Dry weight','Spike_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots_Fresh weight','Roots_Subsample fresh weight','Roots_Subsample dry weight','Roots_Moisture content','Roots_Dry weight','Roots_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including all roots and spikes)_Fresh weight','Total biomass (including all roots and spikes)_Subsample fresh weight','Total biomass (including all roots and spikes)_Subsample dry weight','Total biomass (including all roots and spikes)_Moisture content','Total biomass (including all roots and spikes)_Dry weight','Total biomass (including all roots and spikes)_Dry matter yield','Total aboveground biomass (including spikes)_Fresh weight','Total aboveground biomass (including spikes)_Subsample fresh weight','Total aboveground biomass (including spikes)_Subsample dry weight','Total aboveground biomass (including spikes)_Moisture content','Total aboveground biomass (including spikes)_Dry weight','Total aboveground biomass (including spikes)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Grain_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Grain_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Grain_Potassium content','Grain or seed_Zinc content','Grain_beta-carotene (Vit A) content','Grain_Protein content','Leaves and stems_Lignin content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage','Date','Area harvested','Grain_Fresh weight','Grain_Subsample fresh weight','Grain_Subsample dry weight','Grain_Moisture content','Grain_Dry weight','Grain_Dry matter yield','Ear_Fresh weight','Ear_Subsample fresh weight','Ear_Subsample dry weight','Ear_Moisture content','Ear_Dry weight','Ear_Dry matter yield','Leaves_Fresh weight','Leaves_Subsample fresh weight','Leaves_Subsample dry weight','Leaves_Moisture content','Leaves_Dry weight','Leaves_Dry matter yield','Stems_Fresh weight','Stems_Subsample fresh weight','Stems_Subsample dry weight','Stems_Moisture content','Stems_Dry weight','Stems_Dry matter yield','Roots_Fresh weight','Roots_Subsample fresh weight','Roots_Subsample dry weight','Roots_Moisture content','Roots_Dry weight','Roots_Dry matter yield','Leaves and stems_Fresh weight','Leaves and stems_Subsample fresh weight','Leaves and stems_Subsample dry weight','Leaves and stems_Moisture content','Leaves and stems_Dry weight','Leaves and stems_Dry matter yield','Total biomass (including all roots and ears)_Fresh weight','Total biomass (including all roots and ears)_Subsample fresh weight','Total biomass (including all roots and ears)_Subsample dry weight','Total biomass (including all roots and ears)_Moisture content','Total biomass (including all roots and ears)_Dry weight','Total biomass (including all roots and ears)_Dry matter yield','Total aboveground biomass (including ears)_Fresh weight','Total aboveground biomass (including ears)_Subsample fresh weight','Total aboveground biomass (including ears)_Subsample dry weight','Total aboveground biomass (including ears)_Moisture content','Total aboveground biomass (including ears)_Dry weight','Total aboveground biomass (including ears)_Dry matter yield','Leaf Area Index (LAI)_LAI','Plant height_Plant height ','Plant growth stage_Growth stage name or tag','Leaves_Nitrogen content','Stems_Nitrogen content','Grain_Nitrogen content','Cob_Nitrogen content','Leaves_Phosphorus content','Stems_Phosphorus content','Grain_Phosphorus content','Cob_Phosphorus content','Leaves_Potassium content','Stems_Potassium content','Grain_Potassium content','Cob_Potassium content','Grain or seed_Zinc content','Grain_beta-carotene (Vit A) content','Grain_Protein content','Leaves and stems_Lignin content','Biotic stress_Disease incidence','Biotic stress_Disase severity','Biotic stress_Weed density','Abiotic stress_Damage'),
-  #                    c('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95','96','97','98','99','100','101','102','103','104','105','106','107','108','109','110','111','112','113','114','115','116','117','118','119','120','121','122','123','124','125','126','127','128','129','130','131','132','133','134','135','136','137','138','139','140','141','142','143','144','145','146','147','148','149','150','151','152','153','154','155','156','157','158','159','160','161','162','163','164','165','166','167','168','169','170','171','172','173','174','175','176','177','178','179','180','181','182','183','184','185','186','187','188','189','190','191','192','193','194','195','196','197','198','199','200','201','202','203','204','205','206','207','208','209','210','211','212','213','214','215','216','217','218','219','220','221','222','223','224','225','226','227','228','229','230','231','232','233','234','235','236','237','238','239','240','241','242','243','244','245','246','247','248','249','250','251','252','253','254','255','256','257','258','259','260','261','262','263','264','265','266','267','268','269','270','271','272','273','274','275','276','277','278','279','280','281','282','283','284','285','286','287','288','289','290','291','292','293','294','295','296','297','298','299','300','301','302','303','304','305','306','307','308','309','310','311','312','313','314','315','316','317','318','319','320','321','322','323','324','325','326','327','328','329','330','331','332','333','334','335','336','337','338','339','340','341','342','343','344','345','346','347','348','349','350','351','352','353','354','355','356','357','358','359','360','361','362','363','364','365','366','367','368','369','370','371','372','373','374','375','376','377','378','379','380','381','382','383','384','385','386','387','388','389','390','391','392','393','394','395','396','397','398','399','400','401','402','403','404','405','406','407','408','409','410','411','412','413','414','415','416','417','418','419','420','421','422','423','424','425','426','427','428','429','430','431','432','433','434','435','436','437','438','439','440','441','442','443','444','445','446','447','448','449','450','451','452','453','454','455','456','457','458','459','460','461','462','463','464','465','466','467','468','469','470','471'),
-  #                    c('m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','','dd/mm/yy','m2','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','g','g','g','%','g','kg/ha','','m','','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','μg/g','','','','','')
-  # )
-  # colnames(dict2) <- c("Status","Crop", "Crop measurement", "VariableId", "Scale")
-
-dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/crop_measurements.rds")
-
-  observe({
-    if(!is.null(input$cropCommonNameMono)){
-      traitsVals2$selectedRows <- list()
-      aux2 <- dplyr::filter(as.data.frame(dict2),Crop==input$cropCommonNameMono[1])
-      traitsVals2$Data<-data.table(aux2)
-      output$uiTraitsList2 <- renderUI({
-
-        column(12,dataTableOutput("Main_table2"),
-
-               tags$script("$(document).on('change', '.selectRow', function () {
-                         Shiny.onInputChange('selectRowClickId',this.id);
-                         Shiny.onInputChange('selectRowClickChecked',this.checked);
-                         Shiny.onInputChange('selectRowClick', Math.random())
-    });"
-               ),
-               tags$script("$(document).on('change', '.select_scale', function () {
-                         Shiny.onInputChange('selectScaleClickId',this.id);
-                         Shiny.onInputChange('selectScaleClickValue',this.value);
-                         Shiny.onInputChange('selectScaleClick', Math.random())
-  });"
-               )
-        )
-      })
-
-    }
-    else{
-      traitsVals2$Data <- data.table()
-      traitsVals2$selectedRows <- list()
-      output$uiTraitsList2 <- renderUI({
-        column(width = 10,
-
-               h4("Select crop to show list of traits 2.")
-        )
-
-      })
-
-    }
-
-  })
-
-  output$Main_table2 <-renderDataTable({
-    DT= traitsVals2$Data
-    #DT[["Change scale"]] <- drawComboInTable()
-    DT[["Select variable"]] <- drawButtonSelect2()
-    #DT[["Variable ID"]] <- traitsVals2$Data[,6]
-    #DT[["Variable ID"]] <- traitsVals2$Data[,4]
-    datatable(DT,
-              escape=F,
-
-              selection = list(mode = 'none'),
-              options = list(
-                scrollX = TRUE,
-                pageLength = 25,
-                #columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
-                columnDefs = list(list(visible=FALSE, targets=c(1,4)))
-              )
-    )})
-
-  drawButtonSelect2 <- function(){
-    n<- nrow(traitsVals2$Data)
-    l <- c()
-    for(index in 1:n){
-
-      old_row <- traitsVals2$Data[index,]
-
-      ckecked <-  ""
-      if(old_row[[1]] %like% "Selected"){
-        ckecked <- "checked"
-      }
-
-      str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
-        <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
-        </div>')
-      l<- c(l,str)
-    }
-    return(l)
-  }
-
   ### end crop measurement 2 ###
 
   ### start crop measurement 3 ###
 
-  traitsVals3 <- reactiveValues()
-  traitsVals3$aux <- data.frame()
-  traitsVals3$selectedRows <- list()
-  traitsVals3$Data <- data.table()
-
-  #colnames(dict) <- c("Status","Crop", "Crop measurement", "traitCode", "VariableId", "Scale")
-
-  dict3 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/cm.rds")
-  dict3<- as.data.frame(dict3, stringsAsFactors=FALSE)
-
-  observe({
-    if(!is.null(input$cropCommonNameMono)){
-      traitsVals3$selectedRows <- list()
-      aux3 <- dplyr::filter(as.data.frame(dict3),Crop==input$cropCommonNameMono[1])
-      traitsVals3$Data<-data.table(aux3)
-      output$uiTraitsList3 <- renderUI({
-
-        column(12,dataTableOutput("Main_table3"),
-
-               tags$script("$(document).on('change', '.selectRow', function () {
-                           Shiny.onInputChange('selectRowClickId',this.id);
-                           Shiny.onInputChange('selectRowClickChecked',this.checked);
-                           Shiny.onInputChange('selectRowClick', Math.random())
-      });"
-               ),
-               tags$script("$(document).on('change', '.select_scale3', function () {
-                           Shiny.onInputChange('selectScale3ClickId',this.id);
-                           Shiny.onInputChange('selectScale3ClickValue',this.value);
-                           Shiny.onInputChange('selectScale3Click', Math.random())
-    });"
-               )
-        )
-    })
-
-      }
-    else{
-      traitsVals3$Data <- data.table()
-      traitsVals3$selectedRows <- list()
-      output$uiTraitsList3 <- renderUI({
-        column(width = 10,
-
-               h4("Select crop to show list of traits 3.")
-        )
-
-      })
-
-    }
-
-      })
-
-  output$Main_table3 <-renderDataTable({
-    DT= traitsVals3$Data
-    DT[["Change scale"]] <- drawComboInTable3()
-    DT[["Select variable"]] <- drawButtonSelect3()
-    #DT[["Variable ID"]] <- traitsVals2$Data[,6]
-    #DT[["Variable ID"]] <- traitsVals2$Data[,4]
-    datatable(DT,
-              escape=F,
-
-              selection = list(mode = 'none'),
-              options = list(
-                scrollX = TRUE,
-                pageLength = 25,
-                #columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
-                columnDefs = list(list(visible=FALSE, targets=c(1,4,5)))
-              )
-    )})
-
-  observeEvent(input$selectScale3Click,{
-    vv  <- strsplit(input$selectScale3ClickValue, "-")[[1]]
-    var <- list()
-    if(length(vv) == 1){
-      var[[1]] = vv
-      var[[2]] = ""
-    }
-    else{
-      var <- vv
-    }
-
-    traitsVals3$Data[[5]][as.numeric(gsub("select_scale3_","",input$selectScale3ClickId))]<- var[[1]]
-    traitsVals3$Data[[6]][as.numeric(gsub("select_scale3_","",input$selectScale3ClickId))]<- var[[2]]
-  })
-
-  drawButtonSelect3 <- function(){
-    n<- nrow(traitsVals3$Data)
-    l <- c()
-    for(index in 1:n){
-
-      old_row <- traitsVals3$Data[index,]
-
-      ckecked <-  ""
-      if(old_row[[1]] %like% "Selected"){
-        ckecked <- "checked"
-      }
-
-      str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
-        <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
-        </div>')
-      l<- c(l,str)
-    }
-    return(l)
-  }
-
-  drawComboInTable3 <- function(){
-    n<- nrow(traitsVals3$Data)
-    l <- c()
-    for(index in 1:n){
-      old_row = traitsVals3$Data[index,]
-      options = old_row[[4]]
-      str  <- paste0('<select id="select_scale3_' , index, '" class="select_scale3" style="width:150px;">')
-      arrOpt <- strsplit(options, ",")[[1]]
-
-      if(length(arrOpt) == 1){
-        str <- ""
-      }
-      else{
-        for(val in arrOpt){
-          mval  <- strsplit(val, "-")[[1]]
-          # if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
-          #
-          # str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
-          if(mval[[1]] == old_row[[5]]) sel <- "selected" else sel <-""
-
-          str <- paste0(str, '<option value="', mval[[2]], "-" , mval[[1]], '" ', sel,'> ', mval[[1]], '</option>')
-        }
-        str <- paste0(str, "</select>")
-      }
-      l <- c(l, str)
-    }
-    return(l)
-  }
+  # traitsVals3 <- reactiveValues()
+  # traitsVals3$aux <- data.frame()
+  # traitsVals3$selectedRows <- list()
+  # traitsVals3$Data <- data.table()
+  #
+  # #colnames(dict) <- c("Status","Crop", "Crop measurement", "traitCode", "VariableId", "Scale")
+  #
+  # dict3 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/cm.rds")
+  # dict3<- as.data.frame(dict3, stringsAsFactors=FALSE)
+  #
+  # observe({
+  #   if(!is.null(input$cropCommonNameMono)){
+  #     traitsVals3$selectedRows <- list()
+  #     aux3 <- dplyr::filter(as.data.frame(dict3),Crop==input$cropCommonNameMono[1])
+  #     traitsVals3$Data<-data.table(aux3)
+  #     output$uiTraitsList3 <- renderUI({
+  #
+  #       column(12,dataTableOutput("Main_table3"),
+  #
+  #              tags$script("$(document).on('change', '.selectRow', function () {
+  #                          Shiny.onInputChange('selectRowClickId',this.id);
+  #                          Shiny.onInputChange('selectRowClickChecked',this.checked);
+  #                          Shiny.onInputChange('selectRowClick', Math.random())
+  #     });"
+  #              ),
+  #              tags$script("$(document).on('change', '.select_scale3', function () {
+  #                          Shiny.onInputChange('selectScale3ClickId',this.id);
+  #                          Shiny.onInputChange('selectScale3ClickValue',this.value);
+  #                          Shiny.onInputChange('selectScale3Click', Math.random())
+  #   });"
+  #              )
+  #       )
+  #   })
+  #
+  #     }
+  #   else{
+  #     traitsVals3$Data <- data.table()
+  #     traitsVals3$selectedRows <- list()
+  #     output$uiTraitsList3 <- renderUI({
+  #       column(width = 10,
+  #
+  #              h4("Select crop to show list of traits 3.")
+  #       )
+  #
+  #     })
+  #
+  #   }
+  #
+  #     })
+  #
+  # output$Main_table3 <-renderDataTable({
+  #   DT= traitsVals3$Data
+  #   DT[["Change scale"]] <- drawComboInTable3()
+  #   DT[["Select variable"]] <- drawButtonSelect3()
+  #   #DT[["Variable ID"]] <- traitsVals2$Data[,6]
+  #   #DT[["Variable ID"]] <- traitsVals2$Data[,4]
+  #   datatable(DT,
+  #             escape=F,
+  #
+  #             selection = list(mode = 'none'),
+  #             options = list(
+  #               scrollX = TRUE,
+  #               pageLength = 25,
+  #               #columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
+  #               columnDefs = list(list(visible=FALSE, targets=c(1,4,5)))
+  #             )
+  #   )})
+  #
+  # observeEvent(input$selectScale3Click,{
+  #   vv  <- strsplit(input$selectScale3ClickValue, "-")[[1]]
+  #   var <- list()
+  #   if(length(vv) == 1){
+  #     var[[1]] = vv
+  #     var[[2]] = ""
+  #   }
+  #   else{
+  #     var <- vv
+  #   }
+  #
+  #   traitsVals3$Data[[5]][as.numeric(gsub("select_scale3_","",input$selectScale3ClickId))]<- var[[1]]
+  #   traitsVals3$Data[[6]][as.numeric(gsub("select_scale3_","",input$selectScale3ClickId))]<- var[[2]]
+  # })
+  #
+  # drawButtonSelect3 <- function(){
+  #   n<- nrow(traitsVals3$Data)
+  #   l <- c()
+  #   for(index in 1:n){
+  #
+  #     old_row <- traitsVals3$Data[index,]
+  #
+  #     ckecked <-  ""
+  #     if(old_row[[1]] %like% "Selected"){
+  #       ckecked <- "checked"
+  #     }
+  #
+  #     str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
+  #       <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
+  #       </div>')
+  #     l<- c(l,str)
+  #   }
+  #   return(l)
+  # }
+  #
+  # drawComboInTable3 <- function(){
+  #   n<- nrow(traitsVals3$Data)
+  #   l <- c()
+  #   for(index in 1:n){
+  #     old_row = traitsVals3$Data[index,]
+  #     options = old_row[[4]]
+  #     str  <- paste0('<select id="select_scale3_' , index, '" class="select_scale3" style="width:150px;">')
+  #     arrOpt <- strsplit(options, ",")[[1]]
+  #
+  #     if(length(arrOpt) == 1){
+  #       str <- ""
+  #     }
+  #     else{
+  #       for(val in arrOpt){
+  #         mval  <- strsplit(val, "-")[[1]]
+  #         # if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
+  #         #
+  #         # str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
+  #         if(mval[[1]] == old_row[[5]]) sel <- "selected" else sel <-""
+  #
+  #         str <- paste0(str, '<option value="', mval[[2]], "-" , mval[[1]], '" ', sel,'> ', mval[[1]], '</option>')
+  #       }
+  #       str <- paste0(str, "</select>")
+  #     }
+  #     l <- c(l, str)
+  #   }
+  #   return(l)
+  # }
 
   ### end crop measurement 3 ###
 
@@ -6452,8 +6624,8 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
     out <- fb_agrofims()
 
 
-    mulch_start_date	<-	input$mulch_start_date
-    mulch_end_date	<-	input$mulch_end_date
+    mulch_start_date	<-	paste(input$mulch_start_date)
+    mulch_end_date	<-	paste(input$mulch_end_date)
 
     mulch_type	<-	input$mulch_type
     if(is.null(mulch_type)){
@@ -6492,8 +6664,8 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
       mulch_traction <- input$mulch_type_other
     }
 
-    residue_start_date	<-	input$residue_start_date
-    residure_end_date	<-	input$residure_end_date
+    residue_start_date	<-	paste(input$residue_start_date)
+    residure_end_date	<-	paste(input$residure_end_date)
 
     residue_cropType	<-	input$residue_cropType
     if(is.null(residue_cropType)){
@@ -6619,188 +6791,6 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
 
   })
 
-
-  ### Planting   ########################################################################
-  dt_planting <- reactive({
-
-    out <- fb_agrofims()
-
-    plantNames<-c('Direct seeding  Start date',
-                  'Direct seeding  End date',
-                  'Direct seeding  Seeding environment',
-                  'Direct seeding  Seeding technique',
-                  'Direct seeding  Seed treatment',
-                  'Direct seeding  Traction',
-
-
-                  'Direct seeding  Distance between rows',
-                  'Direct seeding  Distance between rows unit',
-                  'Direct seeding/Seeding rate',
-                  'Direct seeding/Seeding rate unit',
-                  'Distance between plants',
-                  'Distance between plants units',
-                  'Transplanting Start date',
-                  'Transplanting End date',
-                  'Transplanting Age of seedling',
-                  'Transplanting seeding Environment',
-                  'Transplanting Seed treatment',
-                  'Transplanting Technique',
-                  'Transplanting Traction',
-
-                  'Transplanting Seedling density',
-                  'Transplanting Seedling density units',
-                  'Transplanting Distance between rows',
-                  'Transplanting Distance between rows units',
-                  'Transplanting Distance between plants',
-                  'Transplanting Distance between plants units',
-                  'Transplanting number of row')
-
-
-
-    planting_start_date	<-	input$planting_start_date
-    planting_end_date	<-	input$planting_end_date
-
-    seeding_environment	<-	input$seeding_environment
-    if(is.null(seeding_environment )){
-      seeding_environment	<-	""
-    }
-
-    seeding_technique	<-	input$seeding_technique
-    if(is.null(seeding_technique )){
-      seeding_technique	<-	""
-    }
-
-
-    seed_treatment	<-	input$seed_treatment
-
-    seeding_traction	<-	input$seeding_traction
-    if(is.null(seeding_traction )){
-      seeding_traction	<-	""
-    }
-    if(seeding_traction== "Other"){
-      seeding_traction	<-	input$seeding_traction_name
-    }
-
-    distance_rows	<-	input$distance_rows
-
-    distance_rows_unit	<-	input$distance_rows_unit
-    if(is.null(distance_rows_unit )){
-      distance_rows_unit	<-	""
-    }
-
-    seeding_rate	<-	input$seeding_rate
-    seeding_rate_unit	<-	input$seeding_rate_unit
-    if(is.null(seeding_rate_unit )){
-      seeding_rate_unit	<-	""
-    }
-
-    distance_plants	<-	input$distance_plants
-    distance_plants_unit	<-	input$distance_plants_unit
-    if(is.null(distance_plants_unit )){
-      distance_plants_unit	<-	""
-    }
-
-
-    transplanting_start_date	<-	input$transplanting_start_date
-    transplanting_end_date	<-	input$transplanting_end_date
-    age_seedling	<-	input$age_seedling
-
-    transplanting_environment	<-	input$transplanting_environment
-    if(is.null(transplanting_environment )){
-      transplanting_environment	<-	""
-    }
-
-    transplanting_treatment	<-	input$transplanting_treatment
-
-
-    transplanting_technique	<-	input$transplanting_technique
-    if(is.null(transplanting_technique )){
-      transplanting_technique	<-	""
-    }
-
-    trans_traction	<-	input$trans_traction
-    if(is.null(trans_traction )){
-      trans_traction	<-	""
-    }
-    if(trans_traction== "Other"){
-      trans_traction	<-	input$trans_traction_name
-    }
-
-    trans_seeding_density	<-	input$trans_seeding_density
-
-    trans_seeding_density_unit	<-	input$trans_seeding_density_unit
-
-    if(is.null(trans_seeding_density_unit )){
-      trans_seeding_density_unit	<-	""
-    }
-
-    trans_distance_rows	<-	input$trans_distance_rows
-    trans_distance_rows_unit	<-	input$trans_distance_rows_unit
-    if(is.null(trans_distance_rows_unit )){
-      trans_distance_rows_unit	<-	""
-    }
-
-    trans_distance_plants	<-	input$trans_distance_plants
-    trans_distance_plants_unit	<-	input$trans_distance_plants_unit
-
-    if(is.null(trans_distance_plants_unit )){
-      trans_distance_plants_unit	<-	""
-    }
-
-    trans_num_rows	<-	input$trans_num_rows
-
-
-    dtPlanting <- data.frame(
-                      planting_start_date,
-                      planting_end_date,
-                      seeding_environment,
-                      seeding_technique,
-
-                      seed_treatment,
-                      seeding_traction,
-                      distance_rows,
-                      distance_rows_unit,
-                      seeding_rate,
-                      seeding_rate_unit,
-                      distance_plants,
-                      distance_plants_unit,
-
-                      transplanting_start_date,
-                      transplanting_end_date,
-                      age_seedling,
-                      transplanting_environment,
-                      transplanting_treatment,
-                      transplanting_technique,
-                      trans_traction,
-                      trans_seeding_density,
-                      trans_seeding_density_unit,
-                      trans_distance_rows,
-                      trans_distance_rows_unit,
-                      trans_distance_plants,
-                      trans_distance_plants_unit,
-                      trans_num_rows
-    )
-
-
-    names(dtPlanting) <- plantNames
-
-
-    out <- merge(out, dtPlanting, by = 0, all = TRUE)[-1]
-
-
-
-    # out<- plant(input$planting_start_date,input$planting_end_date,
-    #        input$planting_directSeeding,input$planting_seedingTech,
-    #        input$planting_ageSeeding,input$planting_manual,
-    #        input$planting_animal_traction,input$planting_motorized_traction,
-    #        input$planting_rowDistance,input$planting_seedingRate,
-    #        input$planting_seedPerhill,input$planting_distance,
-    #        input$planting_distribution)
-     out
-
-  })
-
-
   ### Harvest  ##########################################################################
   dt_harvest <- reactive({
 
@@ -6918,31 +6908,9 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
    # irri_technique_subselection <- out
 
 
-   # irriNames <- c("Start date", "End date", "Irrigation technique", "Dependiente",
-   #                "Irrigation source", "Irrigation source distance", "Irrigation amount", "Notes")
-
-   # irriNames <- c(paste('Start date',1:n),
-   #                paste('End date', 1:n) ,
-   #                paste('Irrigation technique', 1:n ),
-   #                paste('Sub selection technique', 1:n ),
-   #                paste('Irrigation source', 1:n),
-   #                paste(paste('Irrigation source distance', irri_source_dist_unit,sep = "_"), 1:n ),
-   #                paste(paste('Irrigation amount ', irri_amount_unit,sep = "_"), 1:n),
-   #                paste( 'Notes', 1:n )
-   # )
-   # dtIrri <- data.frame(irri_start_date,
-   #                       irri_end_date,
-   #                       irri_technique,
-   #                       irri_technique_subselection,
-   #                       irri_source,
-   #                       irri_source_dist,
-   #                       irri_amount,
-   #                       irri_notes
-   #)
 
 
 })
-
 
   ## Land Preparation ####################################################################
   dt_land_description <- reactive({
@@ -7035,7 +7003,6 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
      out <- out
    })
 
-
   ## Mulching and residue ################################################################
    dt_mulching <- reactive({
 
@@ -7099,8 +7066,8 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
      dtres
 
    })
-
-  dt_mures <- reactive({
+   #Total
+   dt_mures <- reactive({
     print("mu1")
     if(input$mulchManag_checkbox==TRUE && input$residueManag_checkbox==FALSE){
       print("mu2")
@@ -7114,6 +7081,106 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
     }
     dt_mr
   })
+
+
+
+   ### Planting   ########################################################################
+   dt_directSeed <- reactive({
+
+     # Direct Seeding#################################
+     pl_start_date <- paste(input$planting_start_date)
+     pl_end_date <- paste(input$planting_end_date)
+
+     pl_env <-  getAgrOper(input$seeding_environment)
+     pl_technique <-  getAgrOper(input$seeding_technique)
+     pl_trt <-  getAgrOper(input$seed_treatment)
+
+     pl_type <- getAgrOper(input$seeding_implement_type, input$seeding_implement_type_other)
+     pl_traction <- getAgrOper(input$seeding_traction,  input$seeding_traction_other)
+
+     pl_row <-  getAgrOper(input$distance_rows)
+     pl_row_unit <- getAgrOper(input$distance_rows_unit)
+     pl_row_lbl <- paste("Direct seeding distance between rows",pl_row_unit,sep="_") #label
+
+     pl_rate <- getAgrOper(input$seeding_rate)
+     pl_rate_unit <- getAgrOper(input$seeding_rate_unit)
+     pl_rate_lbl <- paste("Direct seeding rate",pl_rate_unit, sep="_") #label
+
+     pl_dist <- getAgrOper(input$distance_plants)
+     pl_dist_unit <- getAgrOper(input$distance_plants_unit)
+     pl_dist_lbl<- paste("Direct seeding distance between plants",pl_dist_unit, sep="_") #label
+
+     pl_nrow <- getAgrOper(input$seeding_density_number_rows)
+
+     pl_den <- getAgrOper(input$seeding_plant_density)
+     pl_den_unit <- getAgrOper(input$seeding_plant_density_unit)
+     pl_den_lbl <- paste("Direct seeding plant density",pl_den_unit, sep="_") #label
+
+     pl_notes <- getAgrOper(input$direct_seeding_notes)
+
+     plNames<- c("Seeding begin date", "Seeding end environment", "Seeding environment", "Seeding technique",
+                 "Seed treatment", "Seeding Type", "Seeding Traction", pl_row_lbl, pl_rate_lbl, pl_dist_lbl,
+                 "Number of rows", pl_den_lbl,   "Plant density notes")
+
+     dtpl <- data.frame(pl_start_date,pl_end_date,pl_env, pl_technique, pl_trt, pl_type, pl_traction, pl_row,
+                        pl_rate, pl_dist, pl_nrow, pl_den, pl_notes)
+
+     names(dtpl)<- plNames
+     dtpl
+   })
+   dt_transPlant <- reactive ({
+
+     #Transplanting  ######################################
+     tr_start_date <- paste(input$transplanting_start_date)
+     tr_end_date<- paste(input$transplanting_end_date)
+     tr_age <- getAgrOper(input$age_seedling)
+
+     tr_env <- getAgrOper(input$transplanting_environment, input$transplanting_environment_other)
+     tr_technique <- getAgrOper(input$transplanting_technique, input$transplanting_technique_other)
+
+     tr_traction <- getAgrOper(input$trans_traction,  input$trans_traction_other)
+
+     tr_treatment<- getAgrOper(input$transplanting_treatment)
+
+     tr_row <- getAgrOper(input$trans_distance_rows)
+     tr_row_unit <- getAgrOper(input$trans_distance_rows_unit)
+     tr_row_lbl <- paste("Transplanting Distance between rows", tr_row_unit,sep="_")
+
+     tr_den <- getAgrOper(input$trans_seeding_density)
+     tr_den_unit <- getAgrOper(input$trans_seeding_density_unit)
+     tr_den_lbl <- paste("Transplanting Seeding density", tr_den_unit, sep="_" )
+
+     tr_nrow <- getAgrOper(input$trans_num_rows)
+
+     tr_distplant  <- getAgrOper(input$trans_distance_plants)
+     tr_distplant_unit <- getAgrOper(input$trans_distance_plants_unit)
+     tr_displant_lbl <- paste("Transplanting Distance between plants", tr_distplant_unit, sep="_")
+
+     tr_notes <- input$transplanting_density_notes
+
+     trNames <- c("Transplanting start date", "Transplanting end date", "Transplanting age of seedling (days)",
+                  "Transplanting Seedling environment", "Transplanting Technique",
+                  "Transplanting Seed treatment", "Transplanting Traction",  tr_row_lbl, tr_den_lbl, "Transplanting Number of rows" ,tr_displant_lbl,
+                  "Notes"
+     )
+
+     dttr<- data.frame( tr_start_date, tr_end_date, tr_age, tr_env, tr_technique,tr_treatment, tr_traction, tr_row,
+                        tr_den, tr_nrow, tr_distplant, tr_notes )
+
+     names(dttr) <- trNames
+     dttr
+   })
+   #Total
+   dt_planting <- reactive({
+     if(input$directSeeding_checkbox==TRUE && input$transplanting_checkbox==FALSE){
+       dt_plant <- dt_directSeed()
+     }else if (input$directSeeding_checkbox==FALSE && input$transplanting_checkbox==TRUE){
+       dt_plant <- dt_transPlant()
+     } else if(input$directSeeding_checkbox==TRUE && input$transplanting_checkbox==TRUE){
+       dt_plant <- cbind(dt_directSeed(),dt_transPlant())
+     }
+     dt_plant
+   })
 
 
   ##biofertilization   ##################################################################
@@ -7457,6 +7524,7 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
 
 
   })
+
 
   ################################End agrofeatures ######################################
 
@@ -8468,59 +8536,6 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
        }
        #print(flag)
 
-       # flag <- TRUE #temporary
-       # if(input$setCropFactor == TRUE && length(input$cropVarietyNameMono)<=1){
-       #   flag  <- FALSE
-       #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to enter more than 1 variety."), styleclass = "danger")
-       # }
-       #
-       # if(input$nfactors_hdafims == "1"  &&
-       #     is.null(input$sel1_1) && is.null(input$sel1_2) && is.null(input$sel1_3) ){
-       #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
-       #   flag  <- FALSE
-       #   print("flag1")
-       # }
-       #
-       # if( (input$nfactors_hdafims == "2")  &&
-       #     (is.null(input$sel1_1) || is.null(input$sel1_2) || is.null(input$sel1_3) ||
-       #     is.null(input$sel2_1) || is.null(input$sel2_2) || is.null(input$sel2_3)  )) {
-       #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
-       #   flag  <- FALSE
-       #   print("flag2")
-       # }
-       #
-       # if( (input$nfactors_hdafims == "3")  &&
-       #     (is.null(input$sel1_1) || is.null(input$sel1_2) || is.null(input$sel1_3) ||
-       #      is.null(input$sel2_1) || is.null(input$sel2_2) || is.null(input$sel2_3)  ||
-       #      is.null(input$sel3_1) || is.null(input$sel3_2) || is.null(input$sel3_3)  )) {
-       #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
-       #   flag  <- FALSE
-       #   print("flag2")
-       # }
-       #
-       # if( (input$nfactors_hdafims == "4")  &&
-       #     (is.null(input$sel1_1) || is.null(input$sel1_2) || is.null(input$sel1_3) ||
-       #      is.null(input$sel2_1) || is.null(input$sel2_2) || is.null(input$sel2_3)  ||
-       #      is.null(input$sel3_1) || is.null(input$sel3_2) || is.null(input$sel3_3)  ||
-       #      is.null(input$sel4_1) || is.null(input$sel4_2) || is.null(input$sel4_3)
-       #      )) {
-       #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
-       #   flag  <- FALSE
-       #   print("flag2")
-       # }
-       #
-       # if( (input$nfactors_hdafims == "5")  &&
-       #     (is.null(input$sel1_1) || is.null(input$sel1_2) || is.null(input$sel1_3) ||
-       #      is.null(input$sel2_1) || is.null(input$sel2_2) || is.null(input$sel2_3)  ||
-       #      is.null(input$sel3_1) || is.null(input$sel3_2) || is.null(input$sel3_3)  ||
-       #      is.null(input$sel4_1) || is.null(input$sel4_2) || is.null(input$sel4_3)  ||
-       #      is.null(input$sel5_1) || is.null(input$sel5_2) || is.null(input$sel5_3)
-       #     )) {
-       #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to select one factor and levels"), styleclass = "danger")
-       #   flag  <- FALSE
-       #   print("flag2")
-       # }
-
        if(flag){
 
        fb  <- fb_agrofims_traits()
@@ -8634,17 +8649,7 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
 
          agroFeaSelected <- input$selectAgroFeature
          #
-         # if(is.element("Planting, transplanting", agroFeaSelected)) {
-         #
-         #   incProgress(12/20,message = "Adding planting data...")
-         #
-         #   dt_plant <- dt_planting()
-         #
-         #   openxlsx::addWorksheet(wb, "Planting, transplanting", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Planting, transplanting", x = dt_plant,
-         #                            colNames = TRUE, withFilter = FALSE)
-         #
-         # }
+
          #
          # if(is.element("Nutrient management", agroFeaSelected)) {
          #   dt_nut<-  dt_nutrient()
@@ -8712,6 +8717,19 @@ dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/in
            openxlsx::addWorksheet(wb, "Mulching and residue", gridLines = TRUE)
            openxlsx::writeDataTable(wb, "Mulching and residue", x = dt_mr,
                                     colNames = TRUE, withFilter = FALSE)
+         }
+
+
+         if(is.element("Planting and transplanting", agroFeaSelected)) {
+
+           incProgress(12/20,message = "Adding planting data...")
+
+           dt_plant <- dt_planting()
+
+           openxlsx::addWorksheet(wb, "Planting and transplanting", gridLines = TRUE)
+           openxlsx::writeDataTable(wb, "Planting and transplanting", x = dt_plant,
+                                    colNames = TRUE, withFilter = FALSE)
+
          }
 
 

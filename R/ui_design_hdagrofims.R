@@ -304,6 +304,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                       '
                           ),
 
+
                           ### code for buttons in tab soil to calculate sum in Experiment conditions
                           # tags$script('$(document).on("click", "button[id^=\'buttonSoilTab_\']",  function(){
                           # tags$script('$(document).on("change", "input[id^=\'input_tabSoil_rate_\']",  function(){
@@ -832,7 +833,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                                                                          column(width = 6,
 
-                                                                                                selectizeInput("cropCommonNameMono", "Crop common name", multiple = TRUE, options = list(maxItems =1, placeholder="Select one..."), choices = c("Cassava","Maize","Other crop","Potato","Rice","Sweetpotato", "Wheat", "Other")),
+                                                                                                selectizeInput("cropCommonNameMono", "Crop common name", multiple = TRUE, options = list(maxItems =1, placeholder="Select one..."), choices = c("Cassava","Maize","Potato","Rice","Sweetpotato", "Wheat", "Other")),
                                                                                                 hidden(textInput("cropCommonNameMono_other", ""))
 
                                                                                          ),
@@ -860,7 +861,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                              conditionalPanel("input.croppingType == 'Intercrop'",
                                                                               fluidRow(
                                                                                 column( width = 6,
-                                                                                        selectizeInput("cropsSelected",label="Select crops", selected=NULL, multiple = TRUE, choices=c("Cassava","Maize","Other crop","Potato","Rice","Sweetpotato", "Wheat", "Other"))
+                                                                                        selectizeInput("cropsSelected",label="Select crops", selected=NULL, multiple = TRUE, choices=c("Cassava","Maize","Potato","Rice","Sweetpotato", "Wheat", "Other"))
                                                                                 )
                                                                               ),
 
@@ -1106,7 +1107,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                            br(),
                                                            h2("Treatment description"),
                                                            HTML("<center>"),
-                                                           h3(radioButtons(inputId = "fullFactorialRB", "Is full factorial?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
+                                                           h3(radioButtons(inputId = "fullFactorialRB", "Is this a full factorial design?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
 #
                                                            #h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB", label = "Is full factorial?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
 
@@ -2001,7 +2002,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                   ),
                                                                                   fluidRow(
                                                                                     column(width = 6,
-                                                                                           numericInput("trans_seeding_density",  label = "Seeding density", value="", min=0, max=100, step=1)
+                                                                                           numericInput("trans_seeding_density",  label = "Seedling density", value="", min=0, max=100, step=1)
                                                                                     ),
                                                                                     column(width = 6, ##IMPLENTAR EN EXCEL o concatenar
                                                                                            selectizeInput("trans_seeding_density_unit", label = "Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
@@ -2382,48 +2383,47 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
                                               ),
 
+                                              # shiny::tabPanel("Crop measurement", value = "tabTraits", icon = shiny::icon("leaf"),
+                                              #
+                                              #       column(width = 12,
+                                              #              h2("Crop measurement"),
+                                              #              br()
+                                              #
+                                              #     ),
+                                              #     uiOutput("uiTraitsList"),
+                                              #
+                                              #       sidebarPanel(id="sidebar", width = 12,
+                                              #                    actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+                                              #       )
+                                              #     #)
+                                              # ),
                                               shiny::tabPanel("Crop measurement", value = "tabTraits", icon = shiny::icon("leaf"),
 
-                                                    column(width = 12,
-                                                           h2("Crop measurement"),
-                                                           br()
-
-                                                  ),
-                                                  uiOutput("uiTraitsList"),
-
-                                                    sidebarPanel(id="sidebar", width = 12,
-                                                                 actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;", href="#top")
-                                                    )
-                                                  #)
-                                              ),
-                                              shiny::tabPanel("Crop measurement2", value = "tabTraits2", icon = shiny::icon("leaf"),
-
                                                               column(width = 12,
-                                                                     h2("Crop measurement2"),
-                                                                     br()
+                                                                     h2("Crop measurement")
 
                                                               ),
-                                                              uiOutput("uiTraitsList2"),
+                                                              uiOutput("uiTraitsList"),
 
                                                               sidebarPanel(id="sidebar", width = 12,
                                                                            actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;", href="#top")
                                                               )
                                                               #)
                                               ),
-                                              shiny::tabPanel("Crop measurement3", value = "tabTraits3", icon = shiny::icon("leaf"),
-
-                                                              column(width = 12,
-                                                                     h2("Crop measurement3"),
-                                                                     br()
-
-                                                              ),
-                                                              uiOutput("uiTraitsList3"),
-
-                                                              sidebarPanel(id="sidebar", width = 12,
-                                                                           actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;", href="#top")
-                                                              )
-                                                              #)
-                                              ),
+                                              # shiny::tabPanel("Crop measurement3", value = "tabTraits3", icon = shiny::icon("leaf"),
+                                              #
+                                              #                 column(width = 12,
+                                              #                        h2("Crop measurement3"),
+                                              #                        br()
+                                              #
+                                              #                 ),
+                                              #                 uiOutput("uiTraitsList3"),
+                                              #
+                                              #                 sidebarPanel(id="sidebar", width = 12,
+                                              #                              actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+                                              #                 )
+                                              #                 #)
+                                              # ),
                                               shiny::tabPanel("Weather & Soil", value = 'tabEnvironment', icon = shiny::icon("bolt"),
                                                   #br(),
                                                   # h2("Weather & Soil"),
