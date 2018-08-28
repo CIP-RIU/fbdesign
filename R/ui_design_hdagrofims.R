@@ -976,8 +976,11 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                        #textInput(inputId = "numPreviousCrop", label = "Number of previous crop", value = ""),
                                                                        # numericInput(inputId = "numPreviousCrop", label = "Number of previous crop", value = "1", min = 1, max = 10),
 
-                                                                       selectInput("prevCropName", "", c("Cassava","Common bean", "Fallow", "Maize","Potato", "Sweetpotato", "Wheat", "Other")
-                                                                       ),
+                                                                       # selectInput("prevCropName", "", c("Cassava","Common bean", "Fallow", "Maize","Potato", "Sweetpotato", "Wheat", "Other")
+                                                                       # ),
+                                                                       # hidden(textInput("prevCropName_other", ""))
+
+                                                                       selectizeInput("prevCropName", "", multiple = TRUE, options = list(maxItems =1, placeholder="Select one..."), choices = c("Cassava","Maize","Potato","Rice","Sweetpotato", "Wheat", "Other")),
                                                                        hidden(textInput("prevCropName_other", ""))
                                                                )
                                                              )
@@ -1107,9 +1110,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                            br(),
                                                            h2("Treatment description"),
                                                            HTML("<center>"),
-                                                           h3(radioButtons(inputId = "fullFactorialRB", "Is this a full factorial design?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
-#
-                                                           #h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB", label = "Is full factorial?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
+                                                           #h3(radioButtons(inputId = "fullFactorialRB", "Is this a full factorial design?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
+                                                           h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB", label = "Is this a full factorial design?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
 
                                                            HTML("</center>")
                                                     ),

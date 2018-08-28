@@ -457,7 +457,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   path <- fbglobal::get_base_dir()
   # field operations as list of factors
-  fp <- file.path(path, "listFactors.rds")
+  fp <- file.path(path, "listFactors_v2.1.rds")
 
   # para guardar lista de comboboxes para la tabla en treatment description
   lvl <- reactiveValues()
@@ -6424,7 +6424,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   # Fieldbook with traits #######################################################################
-  fb_agrofims_traits <- reactive({
+   fb_agrofims_traits <- reactive({
 
 
      fb <- fb_agrofims()
@@ -6455,7 +6455,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   ##reactive table from metadata info   ##########################################################
 
-  dt_metadata_agrofims <- reactive({
+   dt_metadata_agrofims <- reactive({
 
     startDate_val <- input$fbDesign_project_time_line[1]
     print(startDate_val)
@@ -6553,7 +6553,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
   ### reactive table for installation info ########################################################
-  dt_installation_agrofims <- reactive({
+   dt_installation_agrofims <- reactive({
 
 
     crop <- input$cropCommonNameMono #monocrop
@@ -6617,186 +6617,12 @@ server_design_agrofims <- function(input, output, session, values){
 
   ###############################Agrofeatures ######################################################
 
-  ### Mulching   ########################################################################
-  dt_mulching <- reactive({
-
-
-    out <- fb_agrofims()
-
-
-    mulch_start_date	<-	paste(input$mulch_start_date)
-    mulch_end_date	<-	paste(input$mulch_end_date)
-
-    mulch_type	<-	input$mulch_type
-    if(is.null(mulch_type)){
-      mulch_type	<-	""
-    }
-    if(mulch_type == "Other"){
-      mulch_type <- input$mulch_type_other
-    }
-
-    mulch_thickness	<-	input$mulch_thickness
-    mulch_thickness_unit	<-	input$mulch_thickness_unit #unit
-    if(is.null(mulch_thickness_unit)){
-      mulch_thickness_unit	<-	""
-    }
-
-    mulch_amountPerSq	<-	input$mulch_amountPerSq
-    mulch_amountPerSq_unit	<-	input$mulch_amountPerSq_unit #unit
-    if(is.null(mulch_amountPerSq_unit)){
-      mulch_amountPerSq_unit	<-	""
-    }
-
-    mulch_color	<-	input$mulch_color
-    if(is.null(mulch_color)){
-      mulch_color	<-	""
-    }
-
-    mulch_percCoverage	<-	input$mulch_percCoverage
-    mulch_remove_start_date	<-	input$mulch_remove_start_date
-    mulch_remove_end_date	<-	input$mulch_remove_end_date
-
-    mulch_traction	<-	input$mulch_traction
-    if(is.null(mulch_traction)){
-      mulch_traction	<-	""
-    }
-    if(mulch_traction == "Other"){
-      mulch_traction <- input$mulch_type_other
-    }
-
-    residue_start_date	<-	paste(input$residue_start_date)
-    residure_end_date	<-	paste(input$residure_end_date)
-
-    residue_cropType	<-	input$residue_cropType
-    if(is.null(residue_cropType)){
-      residue_cropType	<-	""
-    }
-    if(residue_cropType == "Other"){
-      residue_cropType <- input$residue_traction_other
-    }
-
-
-    residue_technique	<-	input$residue_technique
-    if(is.null(residue_technique)){
-      residue_technique	<-	""
-    }
-
-    residue_traction	<-	input$residue_traction
-    if(is.null(residue_traction)){
-      residue_traction	<-	""
-    }
-    if(residue_traction == "Other"){
-      residue_traction <- input$residue_traction_other
-    }
-
-    crop_residue_thick	<-	input$crop_residue_thick
-    crop_residue_thick_unit <- input$crop_residue_thick_unit #unit
-    if(is.null(crop_residue_thick_unit)){
-      crop_residue_thick_unit	<-	""
-    }
-
-    crop_residue_amount_sqm	<-	input$crop_residue_amount_sqm
-    crop_residue_amount_sqm_unit	<-	input$crop_residue_amount_sqm_unit #unit
-    if(is.null(crop_residue_amount_sqm_unit)){
-      crop_residue_amount_sqm_unit	<-	""
-    }
-    crop_residue_perc_cov	<-	input$crop_residue_perc_cov
-    residue_inc_depth	<-	input$residue_inc_depth
-
-    above_ground_res_moisture	<-	input$above_ground_res_moisture
-    if(is.null(above_ground_res_moisture)){
-      above_ground_res_moisture	<-	""
-    }
-
-    above_ground_res_amount	<-	input$above_ground_res_amount
-
-    above_ground_res_amount_unit	<-	input$above_ground_res_amount_unit #unit
-    if(is.null(above_ground_res_amount_unit)){
-      above_ground_res_amount_unit	<-	""
-    }
-
-    dtmulch <- data.frame(mulch_start_date,
-                          mulch_end_date,
-                          mulch_type,
-                          mulch_thickness,
-                          mulch_thickness_unit,
-                          mulch_amountPerSq,
-                          mulch_amountPerSq_unit,
-                          mulch_color,
-                          mulch_percCoverage,
-                          mulch_remove_start_date,
-                          mulch_remove_end_date,
-                          mulch_traction,
-                          residue_start_date,
-                          residure_end_date,
-                          residue_cropType,
-                          residue_technique,
-                          residue_traction,
-                          crop_residue_thick,
-                          crop_residue_thick_unit,
-                          crop_residue_amount_sqm,
-                          crop_residue_amount_sqm_unit,
-                          crop_residue_perc_cov,
-                          residue_inc_depth,
-                          above_ground_res_moisture,
-                          above_ground_res_amount,
-                          above_ground_res_amount_unit)
-
-
-
-    mulchresNames <-c(
-                'Mulching start date',
-                'Mulching end date',
-                'Mulch type',
-                'Mulch thickness',
-                'Mulch thickness unit',
-                'Mulch amount per sq. m',
-                'Mulch amount per sq. m unit',
-                'Mulch color',
-                'Mulch percentage of coverage',
-                'Mulch removal start date',
-                'Mulch removal end date',
-                'Mulching traction',
-                'Residue start date',
-                'Residue end date',
-                'Crop residue type',
-                'Residue management technique',
-                'Residue management traction ',
-                'Crop residue thickness',
-                'Crop residue thickness unit',
-                'Crop residue amount per sq. m',
-                'Crop residue amount per sq. m unit',
-                'Crop residue percentage of coverage',
-                'Residue incorporation depth',
-                'Above ground residue moisture',
-                'Above ground residue (amount)',
-                'Above ground residue (amount) unit')
-
-
-    names(dtmulch) <- mulchresNames
-
-
-    out <- merge(out, dtmulch, by = 0, all = TRUE)[-1]
-
-    # out<-mulch(input$mulch_start_date,input$mulch_end_date,
-    #       input$mulch_type,input$mulch_thickness,input$mulch_amountPerSq,
-    #       input$mulch_color,input$mulch_percCoverage,input$mulch_remove_start_date,
-    #       input$mulch_remove_end_date,input$mulch_make,input$mulch_model,
-    #       input$mulch_animal_traction,input$mulch_humanPowered,
-    #       input$mulch_motorized_traction,input$residue_cropType,
-    #       input$residue_technique,input$residue_incorp_depth,
-    #       input$residue_aboveGroundMoisture,
-    #       input$residue_aboveGroundAmount)
-     out
-
-  })
-
   ### Harvest  ##########################################################################
-  dt_harvest <- reactive({
+   dt_harvest <- reactive({
 
      #out <- fb_agrofims()
-     h_start_date	<-	input$harvest_start_date
-     h_end_date	<-	input$harvest_end_date
+     h_start_date	<-	paste(input$harvest_start_date) #dates
+     h_end_date	<-	paste(input$harvest_end_date) #dates
      h_cut_height	<-	input$harvest_cut_height
      h_cut_height_unit <- getAgrOper(input$harvest_cut_height_unit) #get units
      h_method <- getAgrOper(feature=input$harvest_method, other = input$harvest_method_value_other)
@@ -6816,34 +6642,34 @@ server_design_agrofims <- function(input, output, session, values){
 
      harvNames <- c('Start date',
                     'End date',
-                    paste('Harvest cut height', h_cut_height_unit ,sep="_"),
-                    paste('Harvest method',  h_method_value, sep="_"),
+                    'Harvest cut height',  'Harvest cut height Unit',
+                    'Harvest method',
                     'Harvest method value',
                     'Crop component harvested',
-                    paste('Space between rows harvested', h_space_rows_unit, sep="_"),
-                    paste('Total area harvested', h_totarea_unit , sep="_"),
+                    'Space between rows harvested','Space between rows harvested Unit',
+                    'Total area harvested',  'Total area harvested Unit',
                     'Number of plants in area harvested',
-                    'Notes',
                     'Technique',
                     'Harvest implement',
                     'Traction',
-                    paste('Amount harvested', h_amount_unit, sep= "_")
+                    'Amount harvested', 'Amount harvested Unit',
+                    'Notes'
      )
 
      dtHarv <- data.frame( h_start_date,
                            h_end_date,
-                           h_cut_height,
+                           h_cut_height,  h_cut_height_unit,
                            h_method,
                            h_method_value,
                            h_component_harvested,
-                           h_space_rows,
-                           h_totarea,
+                           h_space_rows,h_space_rows_unit ,
+                           h_totarea,h_totarea_unit,
                            h_plants_area,
-                           h_notes ,
                            h_technique ,
                            h_implement	,
                            h_traction,
-                           h_amount
+                           h_amount, h_amount_unit,
+                           h_notes
      )
      names(dtHarv) <- harvNames
      #out <- merge(out, dtHarv, by = 0, all = TRUE)[-1]
@@ -6852,28 +6678,43 @@ server_design_agrofims <- function(input, output, session, values){
    })
 
   ## Irrigation  #########################################################################
-  dt_irrigation <- reactive({
+   dt_irrigation <- reactive({
 
    #Irrigation start date
    n <- as.numeric(input$numApplicationsIrrigation)
 
-   irri_start_date <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigationevent_start_date_", n=n)[[x]])))
-   irri_end_date <-   paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigationevent_end_date_", n=n)[[x]])))
-   irri_techinque <-  paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigation_technique_",n=n)[[x]])))
+   irri_start_date <- paste(lapply(1:n, function(x) paste(eval(get_loop_AgrOper("irrigationevent_start_date_", n=n)[[x]])))) #dates
+   irri_end_date <- paste(lapply(1:n, function(x) paste( eval(get_loop_AgrOper("irrigationevent_end_date_", n=n)[[x]])))) #dates
+   irri_techinque <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigation_technique_",n=n)[[x]])))
 
    irri_source <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_", n=n)[[x]])))
+
    irri_source_dist <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_", n =n)[[x]])))
    irri_source_dist_unit <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_",n =n, label ="unit")[[x]]))) #unit
-   irri_source_def <- paste( irri_source_dist,irri_source_dist_unit, sep="_" ) #measure+unit
+
+   irri_source_def <- paste( irri_source_dist, irri_source_dist_unit, sep="_" ) #measure+unit
+
    irri_amount <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_amount_", n =n)[[x]])))
    irri_amount_unit <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_amount_",n =n, label ="unit")[[x]]))) #unit
+
    irri_amount_def <- paste(irri_amount, irri_amount_unit, sep="_")  #measure+unit
    irri_notes <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_notes_", n=n)[[x]])))
 
-   irriNames <- c("Irrigation start date", "Irrigation end date", "Irrigation technique",
-                  "Irrigation source", "Irrigation source distance", "Irrigation amount", "Notes")
+   irriNames <- c("Number of irrigations",
+                  "Irrigation start date", "Irrigation end date", "Irrigation technique",
+                  "Irrigation source", "Irrigation source distance",
+                  "Irrigation source distance Unit (ft; km; m; mi)", #unit label
+                  "Irrigation amount",
+                  "Irrigation amount Unit (in; mm)", #unit label
+                  "Notes")
 
-   dtIrri<- data.frame(irri_start_date, irri_end_date, irri_techinque, irri_source, irri_source_def, irri_amount_def, irri_notes)
+   dtIrri<- data.frame(1:n, irri_start_date, irri_end_date, irri_techinque, irri_source,
+                       irri_source_dist,
+                       irri_source_dist_unit,
+                       irri_amount,
+                       irri_amount_unit,
+                       irri_notes)
+
    names(dtIrri) <- irriNames
    dtIrri
 
@@ -6913,14 +6754,14 @@ server_design_agrofims <- function(input, output, session, values){
 })
 
   ## Land Preparation ####################################################################
-  dt_land_description <- reactive({
+   dt_land_description <- reactive({
 
      flag<-FALSE
 
      if(input$landLevelling_checkbox==TRUE){
 
-       ll_start_date <- paste(input$landLeveling_start_date)
-       ll_end_date <- paste(input$landLeveling_end_date)
+       ll_start_date <- paste(input$landLeveling_start_date) #dates
+       ll_end_date <- paste(input$landLeveling_end_date) #dates
        ll_npasses <- getAgrOper(input$numPasses)
        ll_notes <- input$landLeveling_notes
        ll_type <- getAgrOper(input$land_impl_type, input$land_impl_type_other)
@@ -6939,16 +6780,22 @@ server_design_agrofims <- function(input, output, session, values){
 
        lp_depth_val <- getAgrOper(input$puddling_depth_val)
        lp_depth_unit <- getAgrOper(input$puddling_depth_unit)
-       lp_depth_lbl <- paste("Puddling depth", lp_depth_unit, sep="_") #label
+       #lp_depth_lbl <- paste("Puddling depth", lp_depth_unit, sep="_") #label
 
        lp_npasses <- getAgrOper(input$puddling_total_number_puddling_passes)
        lp_notes <- input$puddling_notes
        lp_type <- getAgrOper(input$pud_impl_type, input$pud_impl_type_other)
        lp_traction <- getAgrOper(input$pud_traction, input$pud_traction_other)
 
-       lpdt <- data.frame(lp_start_date, lp_end_date, lp_depth_val, lp_npasses, lp_notes, lp_type ,  lp_traction )
-       lpNames <- c("Puddling start date", "Puddling end date", lp_depth_lbl, "Puddling Total number of puddling passes",
+       lpNames <- c("Puddling start date", "Puddling end date",
+                    "Puddling depth", "Puddling depth Unit (cm; ft; in; m)",
+                    "Puddling Total number of puddling passes",
                     "Puddling notes", "Puddling type", "Puddling traction")
+
+       lpdt <- data.frame(lp_start_date, lp_end_date,
+                          lp_depth_val,
+                          lp_depth_unit, #depth unit
+                          lp_npasses, lp_notes, lp_type ,  lp_traction )
 
        names(lpdt) <- lpNames
 
@@ -6973,18 +6820,21 @@ server_design_agrofims <- function(input, output, session, values){
 
        lt_depth  <- getAgrOper(input$tillage_depth)
        lt_depth_unit  <- getAgrOper(input$tillage_depth_unit)
-       lt_depth_lbl <- paste("Tillage depth", lt_depth_unit, sep="_") #label
+       #lt_depth_lbl <- paste("Tillage depth", lt_depth_unit, sep="_") #label
 
        lt_npasses  <- getAgrOper(input$total_number_tillage_passes)
        lt_notes  <- input$tillage_notes
        lt_type  <-  getAgrOper(input$till_impl_type, input$till_impl_type_other)
        lt_traction <- getAgrOper(input$till_traction, input$till_traction_other)
 
-       ltdt <- data.frame(lt_start_date, lt_end_date, lt_technique, lt_depth_method, lt_depth,
-                          lt_npasses ,  lt_notes, lt_type, lt_traction )
-
-       ltNames <- c("Tillage start date", "Tillage end date", "Tillage technique", "Depth measurement method",lt_depth_lbl,
+       ltNames <- c("Tillage start date", "Tillage end date", "Tillage technique", "Tillage depth measurement method",
+                    "Tillage depth", "Tillage depth Unit (cm; ft; in; m)", #unit label
                     "Total number of tillage passes", "Tillage Notes", "Tillage Type", "Tillage Traction")
+
+       ltdt <- data.frame(lt_start_date, lt_end_date, lt_technique, lt_depth_method,
+                          lt_depth,lt_depth_unit,
+                          lt_npasses ,lt_notes, lt_type, lt_traction )
+
 
        names(ltdt) <- ltNames
 
@@ -7006,62 +6856,87 @@ server_design_agrofims <- function(input, output, session, values){
   ## Mulching and residue ################################################################
    dt_mulching <- reactive({
 
-     m_start_date <- paste(input$mulch_start_date)
-     m_end_date <- paste(input$mulch_end_date)
+     m_start_date <- paste(input$mulch_start_date) #dates
+     m_end_date <- paste(input$mulch_end_date) #dates
      m_type <- getAgrOper(input$mulch_type, input$mulch_type_other)
      m_thickness <-  getAgrOper(input$mulch_thickness)
-     m_thickness_unit <-  getAgrOper(input$mulch_thickness_unit)
-     m_thickness_lbl<- paste("Mulch thickness", m_thickness_unit, sep= "_") #label
+     m_thickness_unit <-  getAgrOper(input$mulch_thickness_unit) #unit
+     #m_thickness_lbl<- paste("Mulch thickness", m_thickness_unit, sep= "_") #label
      m_mulchSq  <-  getAgrOper(input$mulch_amountPerSq)
-     m_mulchSq_unit  <-  getAgrOper(input$mulch_amountPerSq_unit)
-     m_mulchSq_lbl <- paste("Mulch amount", m_mulchSq_unit, sep= "_")#label
+     m_mulchSq_unit  <-  getAgrOper(input$mulch_amountPerSq_unit)#unit
+     #m_mulchSq_lbl <- paste("Mulch amount", m_mulchSq_unit, sep= "_")#label
      m_color <- input$mulch_color
      m_cov <- getAgrOper(input$mulch_percCoverage)
-     m_cov_unit <-  getAgrOper(input$mulch_percCoverage_unit)
-     m_pgt_lbl <- paste("Percentage of coverage", m_cov_unit, sep= "_")#label
+     m_cov_unit <-  getAgrOper(input$mulch_percCoverage_unit) #unit
+     #m_pgt_lbl <- paste("Percentage of coverage", m_cov_unit, sep= "_")#label
      m_rem_start_date <- paste(input$mulch_remove_start_date)
      m_rem_end_date <- paste(input$mulch_remove_end_date)
      m_mgm_notes <-  getAgrOper(input$mulching_management_notes)
      m_implement <-  getAgrOper(input$mulch_implement_type)
      m_traction <-  getAgrOper(input$mulch_traction, input$mulch_traction_other)
 
+     muNames <- c("Mulch start date" ,"Mulch end date", "Mulch type",
+                  "Mulch thickness" ,"Mulch thickness Unit (cm; ft; in; m)",
+                  "Mulch amount", "Mulch amount (g/ft2; g/m2; kg/ha; kf/m2: lb/ac)",
+                  "Mulch color",
+                  "Mulch percent coverage", "Mulch percent coverage Unit (%)",
+                  "Mulch removal start date",
+                  "Mulch removal end date", "Notes", "Mulch implement type", "Mulching implement traction")
 
-     mudt <- data.frame(m_start_date, m_end_date, m_type, m_thickness, m_mulchSq, m_color, m_cov, m_rem_start_date,  m_rem_end_date,
+     mudt <- data.frame(m_start_date, m_end_date, m_type,
+                        m_thickness, m_thickness_unit , #unit
+                        m_mulchSq, m_mulchSq_unit,
+                        m_color,
+                        m_cov,  m_cov_unit, #unit
+                        m_rem_start_date,  m_rem_end_date,
                         m_mgm_notes, m_implement, m_traction )
 
-     muNames <- c("Mulch start date" ,"Mulch end date", "Mulch type", m_thickness_lbl,  m_mulchSq_lbl, "Mulch color", m_pgt_lbl, "Mulch removal start date",
-                  "Mulch removal end date", "Notes", "Mulch implement type", "Mulching implement traction")
 
      names(mudt)<- muNames
      mudt
    })
    dt_residue <- reactive({
 
-     r_start_date<- input$residue_start_date
-     r_end_date<- input$residure_end_date
+     r_start_date<- paste(input$residue_start_date) #dates
+     r_end_date<- paste(input$residure_end_date) #dates
      r_part <- getAgrOper(input$residue_plantPart, input$residue_plantPart_other)
      r_technique <- getAgrOper(input$residue_technique, input$residue_technique_other)
      r_traction <- getAgrOper(input$residue_traction, input$residue_traction_other)
+
      r_thick <- input$crop_residue_thick
-     r_thick_unit <- getAgrOper(input$crop_residue_thick_unit)
-     r_thick_lbl <- paste("Crop residue thickness", r_thick_unit, sep="_") #label
+     r_thick_unit <- getAgrOper(input$crop_residue_thick_unit)#unit
+     #r_thick_lbl <- paste("Crop residue thickness", r_thick_unit, sep="_") #label
+
      r_amount <- input$crop_residue_amount_sqm
-     r_amount_unit <- getAgrOper(input$crop_residue_amount_sqm_unit)
-     r_amount_lbl <- paste("Crop residue amount", r_amount_unit, sep="_")  #label
+     r_amount_unit <- getAgrOper(input$crop_residue_amount_sqm_unit)#unit
+     #r_amount_lbl <- paste("Crop residue amount", r_amount_unit, sep="_")  #label
+
      r_cov <- getAgrOper(input$crop_residue_perc_cov)
-     r_cov_unit <- getAgrOper(input$crop_residue_perc_cov_unit)
-     r_cov_lbl <-  paste("Crop residue percent of coverage", r_amount_unit, sep="_")  #label
+     r_cov_unit <- getAgrOper(input$crop_residue_perc_cov_unit)#unit
+     #r_cov_lbl <-  paste("Crop residue percent of coverage", r_amount_unit, sep="_")  #label
+
      r_depth <- getAgrOper(input$residue_inc_depth)
-     r_depth_unit <- getAgrOper(input$residue_inc_depth_unit)
-     r_depth_lbl <- paste("Residue incorporation depth", r_depth_unit,sep="_")  #label
+     r_depth_unit <- getAgrOper(input$residue_inc_depth_unit)#unit
+     #r_depth_lbl <- paste("Residue incorporation depth", r_depth_unit,sep="_")  #label
+
      r_moisture <- getAgrOper(input$crop_residue_moisture)
      r_notes <- input$residue_management_notes
 
-     resNames<- c("Residue start date", "Residue end date", "Residue plant part", "Residue technique", "Residue traction", r_thick_lbl, r_amount_lbl,
-                  r_cov_lbl, r_depth_lbl, "Crop residue moisture", "Residue notes")
+     resNames<- c("Residue management start date", "Residue management end date", "Residue management plant part", "Residue management technique", "Residue management traction implement",
+                  "Crop residue thickness", "Crop residue thickness Unit (cm; ft; in; m)",
+                  "Crop residue amount", "Crop residue amount Unit (g/ft2; g/m2; kg/ha; kf/m2: lb/ac)",
+                  "Crop residue percent coverage", "Crop residue percent coverage Unit (%)",
+                  "Residue incorporation depth", "Residue incorporation depth Unit (cm; ft; in; m)",
+                  "Crop residue moisture", "Residue notes")
 
-     dtres <- data.frame(r_start_date, r_end_date, r_part, r_technique, r_traction, r_thick, r_amount, r_cov, r_depth, r_moisture,
-                         r_notes)
+     dtres <- data.frame( r_start_date, r_end_date, r_part, r_technique, r_traction,
+                          r_thick, r_thick_unit,
+                          r_amount, r_amount_unit,
+                          r_cov,r_cov_unit,
+                          r_depth,r_depth_unit,
+                          r_moisture,
+                          r_notes )
+
      names(dtres)<- resNames
      dtres
 
@@ -7082,14 +6957,12 @@ server_design_agrofims <- function(input, output, session, values){
     dt_mr
   })
 
-
-
-   ### Planting   ########################################################################
+  ### Planting   ########################################################################
    dt_directSeed <- reactive({
 
      # Direct Seeding#################################
-     pl_start_date <- paste(input$planting_start_date)
-     pl_end_date <- paste(input$planting_end_date)
+     pl_start_date <- paste(input$planting_start_date) #dates
+     pl_end_date <- paste(input$planting_end_date) #dates
 
      pl_env <-  getAgrOper(input$seeding_environment)
      pl_technique <-  getAgrOper(input$seeding_technique)
@@ -7100,30 +6973,43 @@ server_design_agrofims <- function(input, output, session, values){
 
      pl_row <-  getAgrOper(input$distance_rows)
      pl_row_unit <- getAgrOper(input$distance_rows_unit)
-     pl_row_lbl <- paste("Direct seeding distance between rows",pl_row_unit,sep="_") #label
+     #pl_row_lbl <- paste("Direct seeding distance between rows",pl_row_unit,sep="_") #label
 
      pl_rate <- getAgrOper(input$seeding_rate)
      pl_rate_unit <- getAgrOper(input$seeding_rate_unit)
-     pl_rate_lbl <- paste("Direct seeding rate",pl_rate_unit, sep="_") #label
+     #pl_rate_lbl <- paste("Direct seeding rate",pl_rate_unit, sep="_") #label
 
      pl_dist <- getAgrOper(input$distance_plants)
      pl_dist_unit <- getAgrOper(input$distance_plants_unit)
-     pl_dist_lbl<- paste("Direct seeding distance between plants",pl_dist_unit, sep="_") #label
+     #pl_dist_lbl<- paste("Direct seeding distance between plants",pl_dist_unit, sep="_") #label
 
      pl_nrow <- getAgrOper(input$seeding_density_number_rows)
 
      pl_den <- getAgrOper(input$seeding_plant_density)
      pl_den_unit <- getAgrOper(input$seeding_plant_density_unit)
-     pl_den_lbl <- paste("Direct seeding plant density",pl_den_unit, sep="_") #label
+     #pl_den_lbl <- paste("Direct seeding plant density",pl_den_unit, sep="_") #label
 
      pl_notes <- getAgrOper(input$direct_seeding_notes)
 
      plNames<- c("Seeding begin date", "Seeding end environment", "Seeding environment", "Seeding technique",
-                 "Seed treatment", "Seeding Type", "Seeding Traction", pl_row_lbl, pl_rate_lbl, pl_dist_lbl,
-                 "Number of rows", pl_den_lbl,   "Plant density notes")
+                 "Seed treatment", "Seeding Type", "Seeding Traction",
+                 "Seeding distance between rows",	"Seeding distance between rows Unit (cm; ft; in; m)",
+                 "Seeding rate",	"Seeding rate Unit (kg/ha; lb/ac; plants/pot)",
+                 "Seeding distance between plants",	"Seeding distance between plants Unit (cm; ft; in; m)",
+                 "Seeding number of rows",
+                 "Seeding plant density"	,
+                 "Seeding plant density Unit (plants/hill; plants/m2; plants/pot; plants/row)",
+                 "Seeding density notes")
 
-     dtpl <- data.frame(pl_start_date,pl_end_date,pl_env, pl_technique, pl_trt, pl_type, pl_traction, pl_row,
-                        pl_rate, pl_dist, pl_nrow, pl_den, pl_notes)
+
+
+     dtpl <- data.frame(pl_start_date, pl_end_date, pl_env, pl_technique, pl_trt, pl_type, pl_traction,
+                        pl_row,  pl_row_unit,
+                        pl_rate, pl_rate_unit,
+                        pl_dist, pl_dist_unit,
+                        pl_nrow,
+                        pl_den, pl_den_unit,
+                        pl_notes)
 
      names(dtpl)<- plNames
      dtpl
@@ -7131,8 +7017,8 @@ server_design_agrofims <- function(input, output, session, values){
    dt_transPlant <- reactive ({
 
      #Transplanting  ######################################
-     tr_start_date <- paste(input$transplanting_start_date)
-     tr_end_date<- paste(input$transplanting_end_date)
+     tr_start_date <- paste(input$transplanting_start_date) #dates
+     tr_end_date<- paste(input$transplanting_end_date) #dates
      tr_age <- getAgrOper(input$age_seedling)
 
      tr_env <- getAgrOper(input$transplanting_environment, input$transplanting_environment_other)
@@ -7144,28 +7030,37 @@ server_design_agrofims <- function(input, output, session, values){
 
      tr_row <- getAgrOper(input$trans_distance_rows)
      tr_row_unit <- getAgrOper(input$trans_distance_rows_unit)
-     tr_row_lbl <- paste("Transplanting Distance between rows", tr_row_unit,sep="_")
+     #tr_row_lbl <- paste("Transplanting Distance between rows", tr_row_unit,sep="_")
 
      tr_den <- getAgrOper(input$trans_seeding_density)
      tr_den_unit <- getAgrOper(input$trans_seeding_density_unit)
-     tr_den_lbl <- paste("Transplanting Seeding density", tr_den_unit, sep="_" )
+     #tr_den_lbl <- paste("Transplanting Seeding density", tr_den_unit, sep="_" )
 
      tr_nrow <- getAgrOper(input$trans_num_rows)
 
      tr_distplant  <- getAgrOper(input$trans_distance_plants)
      tr_distplant_unit <- getAgrOper(input$trans_distance_plants_unit)
-     tr_displant_lbl <- paste("Transplanting Distance between plants", tr_distplant_unit, sep="_")
+     #tr_displant_lbl <- paste("Transplanting Distance between plants", tr_distplant_unit, sep="_")
 
      tr_notes <- input$transplanting_density_notes
 
      trNames <- c("Transplanting start date", "Transplanting end date", "Transplanting age of seedling (days)",
                   "Transplanting Seedling environment", "Transplanting Technique",
-                  "Transplanting Seed treatment", "Transplanting Traction",  tr_row_lbl, tr_den_lbl, "Transplanting Number of rows" ,tr_displant_lbl,
-                  "Notes"
-     )
+                  "Transplanting Seed treatment", "Transplanting Traction",
+                  "Transplanting Distance between rows", "Transplanting distance between rows Unit (cm; ft; in; m)",
+                  "Transplanting Seeding density", "Transplanting seedling density Unit (plants/hill; plants/m2; plants/pot; plants/row)",
+                  "Transplanting Number of rows",
+                  "Transplanting Distance between plants", "Transplanting distance between plants Unit (m)",
+                  "Notes")
 
-     dttr<- data.frame( tr_start_date, tr_end_date, tr_age, tr_env, tr_technique,tr_treatment, tr_traction, tr_row,
-                        tr_den, tr_nrow, tr_distplant, tr_notes )
+     dttr<- data.frame( tr_start_date, tr_end_date, tr_age, tr_env, tr_technique,
+                        tr_treatment, tr_traction,
+                        tr_row, tr_row_unit,
+                        tr_den, tr_den_unit,
+                        tr_nrow,
+                        tr_distplant , tr_distplant_unit,
+                        tr_notes)
+
 
      names(dttr) <- trNames
      dttr
@@ -7183,347 +7078,24 @@ server_design_agrofims <- function(input, output, session, values){
    })
 
 
-  ##biofertilization   ##################################################################
-  dt_bioferti <- reactive({
+  ## Weeding        ##################################################################
+  dt_weeding <- reactive({
+     n<- input$numWeeding
+     weed_start_date <- paste(lapply(1:n, function(x) paste(eval(get_loop_AgrOper("weeding_start_date_", n=n)[[x]]))) ) #dates
+     weed_end_date <-   paste(lapply(1:n, function(x) paste(eval(get_loop_AgrOper("weeding_end_date_", n=n)[[x]]))) ) #dates
+     weed_techinque <-  paste(lapply(1:n, function(x) eval(get_loop_AgrOper("weeding_technique_",n=n)[[x]])))
+     weed_type <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("weeding_type_",n=n)[[x]])))
+     #add other case
+     weed_traction <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("weeding_traction_",n=n)[[x]])))
+     #add other case
+     weedNames <- c("Number of weedings", "Weeding start date", "Weeding end date",
+                    "Weeding technique", "Weeding implment type",
+                    "Weeding implement traction")
+     dtweed <- data.frame(1:n, weed_start_date, weed_end_date, weed_techinque, weed_type, weed_traction)
+     names(dtweed)<- weedNames
+     dtweed
 
-    out <- fb_agrofims()
-
-    nbio <- input$numApplicationsBiofert
-
-    sdate <- edate <-  strain <- quant <- uni <- method<- prodbiofer <- daysbiofer <- list()
-
-    for(i in 1:nbio) {
-
-      sdate[[i]] <-  paste(input[[  paste0("biofertilizer_landLeveling_start_date_", i)    ]])
-      edate[[i]] <-  paste(input[[   paste0("biofertilizer_landLeveling_end_date",  i)      ]])
-      strain[[i]] <- paste(  input[[   paste0("biofertilizer_rhizobium_inoculum_strain_", i)    ]])
-      if(is.null( strain[[i]] ) || length(strain[[i]])==0 ) strain[[i]] <- ""
-      if(is.null( strain[[i]]=="Other")) strain[[i]] <- paste(input[[ paste0("rhizobium_name_", i)  ]])
-      quant[[i]] <- paste(input[[  paste0("biofertilizer_quantity_inoculated_", i) ]])
-      uni[[i]] <-  paste(input[[ paste0("biofertilizer_quantity_inoculated_unit_", i) ]])
-      if(is.null(uni[[i]]) || length(uni[[i]])==0 ) uni[[i]]  <- ""
-      method[[i]]  <-  paste(input[[  paste0("biofertilizer_inoculation_method_", i)    ]])
-      if(is.null( method[[i]] ) || length(  method[[i]])==0 ) method[[i]] <- ""
-      if(is.null( method[[i]]=="Other")) method[[i]] <- paste(input[[  paste0("inoculation_method_name_", i)  ]])
-      prodbiofer[[i]] <- paste( input[[   paste0("biofertilizer_product_formulation_", i) ]])
-      if(is.null( prodbiofer[[i]] ) || length(  prodbiofer[[i]])==0 ) prodbiofer[[i]] <- ""
-      if(is.null( prodbiofer[[i]]=="Other")) prodbiofer[[i]] <- paste(input[[  paste0("inoculation_method_name_", i)  ]])
-      daysbiofer[[i]] <-   paste(input[[ paste0("biofertilizer_days_sowing_after_rhizobium_inocculation_", i) ]])
-
-    }
-
-
-    sdate <-unlist(sdate)
-    edate <-  unlist(edate)
-    strain <- unlist(strain)
-    quant <- unlist(quant)
-    uni <- unlist(uni)
-    method <- unlist(method)
-    prodbiofer <- unlist(prodbiofer)
-    daysbiofer <- unlist(daysbiofer)
-
-    biofer <- c(  sdate , edate ,  strain , quant , uni , method, prodbiofer , daysbiofer )
-    temp <- t(biofer)
-    bioferdt <- as.data.frame(temp)
-
-    for(i in 1:nbio){
-      #a1 <- paste('Number of applications', 1:i )
-      a2 <-paste('Biofertilizer control Start date', 1:i)
-      a3 <-paste('Biofertilizer control End date', 1:i )
-      a4 <-paste('Rhizobium inoculum strain', 1:i )
-      a5 <-paste('Biofertilizer quantity inoculated', 1:i)
-      a6 <-paste('Biofertilizer quantity inoculated unit', 1:i)
-      a7 <-paste('Biofertilizer Inoculation method', 1:i )
-      a8 <-paste('Biofertilizer Product formulation', 1:i )
-      a9<- paste('Days to sowing after Rhizobium inocculation', 1:i )
-    }
-    bioferNames <- c(a2, a3, a4, a5, a6, a7, a8, a9)
-
-    names(bioferdt) <- bioferNames
-
-    out <- merge(out, bioferdt, by = 0, all = TRUE)[-1]
-
-
-  })
-
-
-  ### nutrient   ########################################################################
-  dt_nutrient <- reactive ({
-
-      out <- fb_agrofims()
-
-      a1<- a2<-  a3<- a4<- a5<- a6<- a7<- a8<- a9<- " "
-       h1<- c("Fertilizer amount applied: Organic Start date 1" ,
-              "Fertilizer amount applied Organic End date 1",
-              "Fertilizer amount applied Organic Type 1",
-              "Fertilizer amount applied Organic Unit 1",
-              "Fertilizer amount applied Organic Technique 1",
-              "Fertilizer amount applied Organic Implement 1",
-              "Fertilizer amount applied Organic Rate 1",
-              "Fertilizer amount applied Organic Rate (unit) 1" ,
-              "Fertilizer amount applied Organic Nutrient Content 1")
-
-      dta <- data.frame(a1,a2,a3,a4,a5,a6,a7,a8,a9, stringsAsFactors = FALSE)
-      names(dta) < h1
-
-
-       b1<- b2<-  b3<- b4<- b5<- b6<- b7<- b8<- b9<- " "
-      h2<- c("Fertilizer amount applied: Inorganic Start date 1" ,
-            "Fertilizer amount applied: Inorganic End date 1",
-             "Fertilizer amount applied: Inorganic Inorganic 1",
-            "Fertilizer amount applied: Inorganic Unit 1",
-               "Fertilizer amount applied: Inorganic Technique 1",
-             "Fertilizer amount applied: Inorganic Implement 1",
-               "Fertilizer amount applied: Inorganic Rate 1",
-               "Fertilizer amount applied: Inorganic Rate (unit) 1",
-              "Fertilizer amount applied: Inorganic Nutrient Content 1")
-
-      dtb <- data.frame(b1,b2,b3,b4,b5,b6,b7,b8,b9, stringsAsFactors = FALSE)
-      names(dtb) < h2
-
-
-      c1<- c2<-  c3<- c4<- c5<- c6<- c7<- c8<- c9<- " "
-
-      h3<- c(
-        "Fertilizer amount applied: Green manure Start date 1",
-        "Fertilizer amount applied: Green manure End date 1" ,
-        "Fertilizer amount applied: Green manure Green manure 1" ,
-        "Fertilizer amount applied: Green manure Unit 1",
-        "Fertilizer amount applied: Green manure Technique 1",
-        "Fertilizer amount applied: Green manure Implement 1",
-        "Fertilizer amount applied: Green manure Rate 1",
-        "Fertilizer amount applied: Green manure Rate (unit) 1" ,
-        "Fertilizer amount applied: Green manure Nutrient Content 1"
-      )
-
-      dtc <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9, stringsAsFactors = FALSE)
-      names(dtc) < h3
-
-      dtotal <- data.frame(a1,a2,a3,a4,a5,a6,a7,a8,a9,b1,b2,b3,b4,b5,b6,b7,b8,b9,c1,c2,c3,c4,c5,c6,c7,c8,c9, stringsAsFactors = FALSE )
-      names(dtotal)<- c(h1,h2,h3)
-      # #organic
-      # #norg <- input$numApplications_Organic
-      # norg <- 1
-      #
-      # for(i in 1:norg){
-      #
-      #   norgsdate <-  paste(input[[  paste0("nutrient_start_date_", "Organic" , "_", norg)    ]])
-      #   print(norgsdate)
-      #   norgedate <-  paste(input[[  paste0("nutrient_end_date_", "Organic" , "_", norg)  ]])
-      #   print(norgedate)
-      #   norgtotino <- paste(input[[  paste0("nutrient_app_rate_", "Organic" , "_", norg)  ]])
-      #   norgtotinounit <- paste(input[[ paste0("nutrient_app_rate_unit_", "Organic" , "_", norg) ]])
-      #   if(is.null( norgtotinounit) || length(norgtotinounit)) norgtotinounit <- ""
-      #   norgrecino <-  paste(input[[ paste0("nutrient_recommended_rate_", "Organic" , "_", norg) ]])
-      #   norgrecinounit  <- paste(input[[ paste0("nutrient_recommended_rate_unit_", "Organic" , "_", norg) ]])
-      #   if(is.null( norgrecinounit) || is.null( norgrecinounit)) norgrecinounit <- ""
-      #   norgperecinounit  <- paste(input[[ paste0("perc_recomm_rate_", "Organic" , "_", norg) ]])
-      #
-      #   #nitrogen1
-      #   #`Fertilizer amount applied: Organic # of app 1'  paste(input[[  paste0("nutrient_start_date_", type, "_", 1)    ]])
-      #   `Fertilizer amount applied: Organic Start date 1` <- paste(input[[paste0("nutrient_start_date_", "Organic", "_", norg)    ]])
-      #   `Fertilizer amount applied: Organic End date 1` <-  paste(input[[paste0("nutrient_end_date_", "Organic", "_", norg)  ]])
-      #   `Fertilizer amount applied: Organic Type 1` <-  paste(input[[paste0("fert_nit_type1_", "Organic", "_", norg)  ]])
-      #   if(is.null(  `Fertilizer amount applied: Organic Type 1` ) || length( `Fertilizer amount applied: Organic Type 1`)==0)  `Fertilizer amount applied: Organic Type 1` <- ""
-      #
-      #
-      #   `Fertilizer amount applied: Organic Unit 1`<-  paste(input[[paste0("fert_nit_type1_unit_", "Organic", "_", norg) ]])
-      #   if(is.null( `Fertilizer amount applied: Organic Unit 1`) || length(`Fertilizer amount applied: Organic Unit 1`)) `Fertilizer amount applied: Organic Unit 1` <- ""
-      #
-      #   `Fertilizer amount applied: Organic Technique 1` <- paste(input[[ paste0("fertilizer_nit_application_technique1_", "Organic", "_", norg)   ]])
-      #   if(is.null( `Fertilizer amount applied: Organic Technique 1`) || length(`Fertilizer amount applied: Organic Technique 1`)) `Fertilizer amount applied: Organic Technique 1` <- ""
-      #
-      #   `Fertilizer amount applied: Organic Implement 1` <- paste(input[[paste0("fertilizer_nit_implement1_", "Organic", "_", norg)   ]])
-      #
-      #   `Fertilizer amount applied: Organic Rate 1`<-  paste(input[[ paste0("fert_nit_amountApplied1_", "Organic", "_", norg)    ]])
-      #   `Fertilizer amount applied: Organic Rate (unit) 1` <- paste(input[[paste0("fert_nit_amountAppliedScale1_", "Organic", "_", norg)    ]])
-      #   if(is.null( `Fertilizer amount applied: Organic Rate (unit) 1`) || length(`Fertilizer amount applied: Organic Rate (unit) 1`)==0) `Fertilizer amount applied: Organic Rate (unit) 1` <- ""
-      #
-      #   `Fertilizer amount applied: Organic Nutrient Content 1`<-  paste(input[[ paste0("fert_nit_nutrientContent1_", "Organic", "_", norg)   ]])
-      # }
-      # morg <- data.frame( norgsdate,norgedate,  norgtotino, norgtotinounit, norgrecino, norgrecinounit, norgperecinounit, stringsAsFactors = FALSE )
-      # print(morg)
-      # #`Fertilizer amount applied: Organic # of app 1'  paste(input[[  paste0("nutrient_start_date_", type, "_", 1)    ]])
-      # dtorg <- data.frame(`Fertilizer amount applied: Organic Start date 1`,
-      #                     `Fertilizer amount applied: Organic End date 1`,
-      #                     `Fertilizer amount applied: Organic Type 1`,
-      #                     `Fertilizer amount applied: Organic Unit 1`,
-      #                     `Fertilizer amount applied: Organic Technique 1`,
-      #                     `Fertilizer amount applied: Organic Implement 1`,
-      #                     `Fertilizer amount applied: Organic Rate 1`,
-      #                     `Fertilizer amount applied: Organic Rate (unit) 1` ,
-      #                     `Fertilizer amount applied: Organic Nutrient Content 1`,stringsAsFactors = FALSE)
-      #
-      # print(dtorg)
-      # tot_dtorg <- data.frame(morg, dtorg, stringsAsFactors = FALSE)
-      #
-      # #inorganic
-      # #ninorg <- input$numApplications_Inorganic
-      # ninorg <- 1
-      # for(i in 1:ninorg){
-      #
-      #   #in1inor<- paste(input[[	numApplications_Inorganic	]])
-      #   in2inor<- paste(input[[	paste0("nutrient_start_date_", "Inorganic", "_", ninorg)	]])
-      #   in3inor<- paste(input[[	paste0("nutrient_end_date_", "Inorganic", "_", ninorg)	]])
-      #   in3inor<- paste(input[[	paste0("nutrient_app_rate_", "Inorganic", "_", ninorg)	]])
-      #   in4inor<- paste(input[[	paste0("nutrient_app_rate_unit_", "Inorganic", "_", ninorg)	]])
-      #   if(is.null(in4inor)) in4inor <- ""
-      #
-      #   in5inor<- paste(input[[	paste0("nutrient_recommended_rate_", "Inorganic", "_", ninorg)	]])
-      #   in6inor<- paste(input[[	paste0("fertilizer_recommended_rate_unit_", "Inorganic", "_", ninorg)	]])
-      #   in7inor<- paste(input[[	paste0("perc_recomm_rate_", "Inorganic", "_", ninorg)	]])
-      #   if(is.null(in7inor))  in7inor <- ""
-      #
-      #   #`Fertilizer amount applied: Inorganic # of app 1` <- paste(input[[	paste0("nutrientApplied_nit_numApps1_", "Inorganic", "_", ninorg) ]])
-      #   `Fertilizer amount applied: Inorganic Start date 1` <- paste(input[[	paste0("fert_nit_start_date1_", "Inorganic", "_", ninorg) ]])
-      #   `Fertilizer amount applied: Inorganic End date 1`<- paste(input[[	paste0("fert_nit_end_date1_", "Inorganic", "_", ninorg) ]])
-      #   `Fertilizer amount applied: Inorganic "Inorganic" 1`<- paste(input[[	paste0("fert_nit_type1_", "Inorganic", "_", ninorg) ]])
-      #   `Fertilizer amount applied: Inorganic Unit 1`<- paste(input[[	paste0("fert_nit_type1_unit_", "Inorganic", "_", ninorg) ]])
-      #   `Fertilizer amount applied: Inorganic Technique 1`<- paste(input[[	paste0("fertilizer_nit_application_technique1_", "Inorganic", "_", ninorg) ]])
-      #   if(is.null(`Fertilizer amount applied: Inorganic Technique 1`) || length(`Fertilizer amount applied: Inorganic Technique 1`)==0 ) `Fertilizer amount applied: Inorganic Technique 1`<- ""
-      #   if(`Fertilizer amount applied: Inorganic Technique 1` == "Other") `Fertilizer amount applied: Inorganic Technique 1`<- ""
-      #   `Fertilizer amount applied: Inorganic Implement 1`<- paste(input[[	paste0("fertilizer_nit_implement1_", "Inorganic", "_", ninorg) ]])
-      #   `Fertilizer amount applied: Inorganic Rate 1`<- paste(input[[	paste0("fert_nit_amountApplied1_", "Inorganic", "_", ninorg) ]])
-      #   `Fertilizer amount applied: Inorganic Rate (unit) 1`<- paste(input[[	paste0("fert_nit_amountAppliedScale1_", "Inorganic", "_", ninorg) ]])
-      #   if(is.null(`Fertilizer amount applied: Inorganic Rate (unit) 1`) || length(`Fertilizer amount applied: Inorganic Rate (unit) 1`)==0  ) `Fertilizer amount applied: Inorganic Rate (unit) 1`<- ""
-      #   if(`Fertilizer amount applied: Inorganic Rate (unit) 1`== "Other") `Fertilizer amount applied: Inorganic Rate (unit) 1` <- ""
-      #   `Fertilizer amount applied: Inorganic Nutrient Content 1`<- paste(input[[	paste0("fert_nit_nutrientContent1_", "Inorganic", "_", ninorg) ]])
-      #
-      # }
-      # minorg <- data.frame( in1inor , in2inor  ,  in3inor, in4inor, in5inor, in6inor, ininor, stringsAsFactors = FALSE )
-      # dtinor<- data.frame(
-      #                      `Fertilizer amount applied: Inorganic Start date 1` ,
-      #                      `Fertilizer amount applied: Inorganic End date 1`,
-      #                      `Fertilizer amount applied: Inorganic "Inorganic 1`,
-      #                      `Fertilizer amount applied: Inorganic Unit 1`,
-      #                      `Fertilizer amount applied: Inorganic Technique 1`,
-      #                      `Fertilizer amount applied: Inorganic Implement 1`,
-      #                      `Fertilizer amount applied: Inorganic Rate 1`,
-      #                      `Fertilizer amount applied: Inorganic Rate (unit) 1`,
-      #                      `Fertilizer amount applied: Inorganic Nutrient Content 1` ,stringsAsFactors = FALSE)
-      #
-      # tot_inor <- data.frame(minorg, dtinor, stringsAsFactors = FALSE)
-      #
-      # #Green manure ####
-      # #ngreen<- input$numApplications_Green_manure
-      # ngreen <- 1
-      # for(i in 1:ngreen){
-      #
-      #   green1inor <- paste(input[[	paste0("nutrient_start_date_", "Green manure", "_", ngreen)	]])
-      #   green2inor<- paste(input[[	paste0("nutrient_end_date_", "Green manure" , "_", ngreen)	]])
-      #   green3inor<- paste(input[[	paste0("nutrient_app_rate_", "Green manure", "_", ngreen)	]])
-      #   green4inor<- paste(input[[	paste0("nutrient_app_rate_unit_", "Green manure", "_", ngreen)	]])
-      #   if(is.null(green4inor) ||  length(green4inor)==0 ) green4inor <- ""
-      #   green5inor<- paste(input[[	paste0("nutrient_recommended_rate_", "Green manure", "_", ngreen)	]])
-      #   green6inor<- paste(input[[	paste0("fertilizer_recommended_rate_unit_","Green manure", "_", ngreen)	]])
-      #   if(is.null(green6inor) ||   length(green6inor)==0) green6inor <- ""
-      #   green7inor<- paste(input[[	paste0("perc_recomm_rate_", "Green manure", "_", ngreen)	]])
-      #
-      #
-      #   #`Fertilizer amount applied: Green manure # of app 1` <-	paste0("nutrientApplied_nit_numApps1_", "Green manure", "_", ngreen)
-      #   `Fertilizer amount applied: Green manure Start date 1`<-	paste0("fert_nit_start_date1_", "Green manure", "_", ngreen)
-      #   `Fertilizer amount applied: Green manure End date 1` <-	paste0("fert_nit_end_date1_", "Green manure", "_", ngreen)
-      #   `Fertilizer amount applied: Green manure Green manure type 1` <-	paste0("fert_nit_type1_", "Green manure", "_", ngreen)
-      #   if(is.null(`Fertilizer amount applied: Green manure Green manure type 1`) ||  length(`Fertilizer amount applied: Green manure Green manure type 1`)==0     ) `Fertilizer amount applied: Green manure Green manure type 1`<- ""
-      #   if(`Fertilizer amount applied: Green manure Green manure type 1` == "Other") `Fertilizer amount applied: Green manure Green manure type 1`<- ""
-      #
-      #   `Fertilizer amount applied: Green manure Unit 1`<-	paste0("fert_nit_type1_unit_", "Green manure", "_", ngreen)
-      #   `Fertilizer amount applied: Green manure Technique 1`<-	paste0("fertilizer_nit_application_technique1_", "Green manure", "_", ngreen)
-      #   `Fertilizer amount applied: Green manure Implement 1` <-	paste0("fertilizer_nit_implement1_", "Green manure", "_", ngreen)
-      #   `Fertilizer amount applied: Green manure Rate 1`<-	paste0("fert_nit_amountApplied1_", "Green manure", "_", ngreen)
-      #   `Fertilizer amount applied: Green manure Rate (unit) 1` <-	paste0("fert_nit_amountAppliedScale1_", "Green manure", "_", ngreen)
-      #   if(is.null(`Fertilizer amount applied: Green manure Rate (unit) 1`) || length(`Fertilizer amount applied: Green manure Rate (unit) 1`)==0 )`Fertilizer amount applied: Green manure Rate (unit) 1` <- ""
-      #   `Fertilizer amount applied: Green manure Nutrient Content 1` <-	paste0("fert_nit_nutrientContent1_", "Green manure", "_", ngreen)
-      # }
-      # mgreen <- data.frame( green1inor , green2inor  ,  green3inor, green4inor, green5inor, green6inor, green7inor, stringsAsFactors = FALSE )
-      # dtgreen <- data.frame (
-      #                        `Fertilizer amount applied: Green manure Start date 1`,
-      #                        `Fertilizer amount applied: Green manure End date 1` ,
-      #                        `Fertilizer amount applied: Green manure Green manure 1` ,
-      #                        `Fertilizer amount applied: Green manure Unit 1`,
-      #                        `Fertilizer amount applied: Green manure Technique 1`,
-      #                        `Fertilizer amount applied: Green manure Implement 1`,
-      #                        `Fertilizer amount applied: Green manure Rate 1`,
-      #                        `Fertilizer amount applied: Green manure Rate (unit) 1` ,
-      #                        `Fertilizer amount applied: Green manure Nutrient Content 1` ,stringsAsFactors = FALSE)
-      #
-      # tot_green <- data.frame(mgreen, dtgreen, stringsAsFactors = FALSE)
-
-      #subtot <- data.frame(tot_dtorg,tot_inor, dtgreen, stringsAsFactors = FALSE)
-      out <- merge(out, dtotal, by = 0, all = TRUE)[-1]
-      out
-
-  })
-
-
-  ### pest and disease   ################################################################
-  dt_pestdis <- reactive({
-
-
-    out <- fb_agrofims()
-
-    npest<- input$numApplicationsPestDisease
-
-    sdate <- edate <- tech<- forname <- depth <- amount <- uni <- list()
-    for(i in 1:npest) {
-
-      sdate[[i]] <-  paste(input[[paste0("pestcontrol_start_date_", i) ]])
-      edate[[i]] <-  paste(input[[paste0("pestcontrol_start_date_", i) ]])
-      tech[[i]]  <-  paste(input[[paste0("pest_control_technique_",i) ]])
-      print(tech[[i]])
-      if(is.null( tech[[i]] ) || length(tech[[i]]) ==0) tech[[i]] <-  ""
-      #if(  tech[[i]]]=="Other"  )  tech[[i]] <-  ""
-      forname[[i]] <- paste(input[[ paste0("pest_name_form_", i) ]])
-      depth[[i]] <-  paste(input[[ paste0("pesticide_application_depth_", i) ]])
-      amount[[i]] <- paste(input[[ paste0("pesticide_amount_", i) ]])
-      uni[[i]] <-   paste(input[[ paste0("pesticide_amount_unit_", i) ]])
-      print(uni[[i]])
-      if(is.null(uni[[i]]) || length(uni[[i]])==0 ) uni[[i]]  <- ""
-
-    }
-
-    sdate <-unlist(sdate)
-    edate  <-unlist( edate)
-    tech  <-unlist(tech)
-    forname<-unlist( forname)
-    depth  <-unlist(depth)
-    amount  <-unlist(amount)
-    uni <-unlist(uni)
-
-    pest <- c(sdate, edate, tech, forname, depth, amount, uni)
-    temp <- t(pest)
-    pestdt <- as.data.frame(temp)
-
-    for(i in 1:npest){
-      #a1 <- paste('Number of applications', 1:i )
-      a2 <-paste('Pest control Start date', 1:i)
-      a3 <-paste('Pest control End date', 1:i )
-      a4 <-paste('Pest control Technique', 1:i )
-      a5 <-paste('Pest control Pesticide name / formulation', 1:i)
-      a6 <-paste('Pest control Pesticide application depth', 1:i)
-      a7 <-paste('Pest control Pesticide amount', 1:i )
-      a8 <-paste('Pest control Pesticide amount unit', 1:i )
-    }
-    pestNames <- c(a2, a3, a4, a5, a6, a7, a8)
-
-    names(pestdt) <- pestNames
-
-    out <- merge(out, pestdt, by = 0, all = TRUE)[-1]
-
-
-    # out<-pestdis (input$disease_observation_date,input$disease_name,
-    #           input$disease_plant_parts_affected,input$disease_percentage_experiement_affected,
-    #           input$disease_damages_notes,input$disease_notes,input$pest_type,input$pest_name,
-    #           input$pest_damage_notes,input$pest_notes,input$pestcontrol_start_date,input$pestcontrol_end_date,
-    #           input$pest_control_technique,input$pesticide_application_depth,input$pesticide_amount,
-    #           "", #input$pest_image,
-    #           input$pest_control_applications_totnumber,input$pest_control_details,input$chemical_pest_control_equipment,
-    #           input$pesticide_implement_make,input$pesticide_implement_model,input$pesticide_animal_traction,
-    #           input$pesticide_humanPowered,input$pesticide_motorized_traction)
-    # out
-
-
-  })
+   })
 
 
   ################################End agrofeatures ######################################
@@ -8559,6 +8131,8 @@ server_design_agrofims <- function(input, output, session, values){
        withProgress(message = 'Downloading fieldbook', value = 0, {
 
          print(input$landLevelling_checkbox)
+          irri_source_dist_unit <- paste(lapply(1:3, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_",n =3, label ="unit")[[x]]))) #unit
+          print( irri_source_dist_unit)
 
          n <- as.numeric(input$numApplicationsIrrigation)
 
@@ -8627,18 +8201,18 @@ server_design_agrofims <- function(input, output, session, values){
 
          incProgress(2/20,message = "Downloading data...")
 
-         # incProgress(6/20,message = "Metadata metadata sheet...")
-         #
-         # openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
-         # openxlsx::writeDataTable(wb, "Metadata", x = metadata,
-         #                          colNames = TRUE, withFilter = FALSE)
+         incProgress(6/20,message = "Metadata metadata sheet...")
+
+         openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
+         openxlsx::writeDataTable(wb, "Metadata", x = metadata,
+                                  colNames = TRUE, withFilter = FALSE)
 
 
-         # incProgress(7/20,message = "Adding installation sheet...")
-         #
-         #openxlsx::addWorksheet(wb, "Variables", gridLines = TRUE)
-         #openxlsx::writeDataTable(wb, "Variables", x = installation,
-         #                          colNames = TRUE, withFilter = FALSE)
+         incProgress(7/20,message = "Adding installation sheet...")
+
+         openxlsx::addWorksheet(wb, "Variables", gridLines = TRUE)
+         openxlsx::writeDataTable(wb, "Variables", x = installation,
+                                  colNames = TRUE, withFilter = FALSE)
 
          incProgress(7/20,message = "Adding fieldbook data...")
          openxlsx::addWorksheet(wb, "Fieldbook", gridLines = TRUE)
@@ -8722,15 +8296,27 @@ server_design_agrofims <- function(input, output, session, values){
 
          if(is.element("Planting and transplanting", agroFeaSelected)) {
 
-           incProgress(12/20,message = "Adding planting data...")
+           incProgress(12/20,message = "Adding planting and transplanting data...")
 
            dt_plant <- dt_planting()
 
            openxlsx::addWorksheet(wb, "Planting and transplanting", gridLines = TRUE)
            openxlsx::writeDataTable(wb, "Planting and transplanting", x = dt_plant,
                                     colNames = TRUE, withFilter = FALSE)
-
          }
+
+         if(is.element("Weeding", agroFeaSelected)){
+
+            incProgress(13/20,message = "Adding Weeding data...")
+
+            dt_weed <- dt_weeding()
+
+            openxlsx::addWorksheet(wb, "Weeding", gridLines = TRUE)
+            openxlsx::writeDataTable(wb, "Weeding", x = dt_weed,
+                                     colNames = TRUE, withFilter = FALSE)
+
+
+          }
 
 
          # if(is.element("Pest & disease", agroFeaSelected)) {
@@ -8747,36 +8333,38 @@ server_design_agrofims <- function(input, output, session, values){
          #
          # incProgress(9/20,message = "Adding trait list sheet...")
          #
-         # # openxlsx::addWorksheet(wb, "Trait list", gridLines = TRUE)
-         # # openxlsx::writeDataTable(wb, "Trait list", x = trait_agrofims_dt,
-         # #                          colNames = TRUE, withFilter = FALSE)
+         # openxlsx::addWorksheet(wb, "Trait list", gridLines = TRUE)
+         # openxlsx::writeDataTable(wb, "Trait list", x = trait_agrofims_dt,
+         #                          colNames = TRUE, withFilter = FALSE)
          #
          # incProgress(8/20,message = "Adding fieldbook sheet...")
          #
          #
          #
-         # if(is.null(weather) || length(weather)==0 || nrow(weather)==0  ){
-         #   print("there is no weather data")
-         #
-         # } else {
-         #
-         #   incProgress(8/10,message = "Adding weather variables sheet...")
-         #
-         #   openxlsx::addWorksheet(wb, "Weather", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Weather", x = weather,
-         #                            colNames = TRUE, withFilter = FALSE)
-         # }
-         #
-         # if(is.null(soil_vars) || length(soil_vars)==0 || nrow(soil_vars)==0 ){
-         #   print("there is no soil data")
-         #
-         # } else {
-         #
-         #   incProgress(9/10,message = "Adding soil variables sheet...")
-         #   openxlsx::addWorksheet(wb, "Soil", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Soil", x = soil_vars,
-         #                            colNames = TRUE, withFilter = FALSE)
-         # }
+         if(is.null(weather) || length(weather)==0 || nrow(weather)==0  ){
+           print("there is no weather data")
+
+         }
+         else {
+
+           incProgress(8/10,message = "Adding weather variables sheet...")
+
+           openxlsx::addWorksheet(wb, "Weather", gridLines = TRUE)
+           openxlsx::writeDataTable(wb, "Weather", x = weather,
+                                    colNames = TRUE, withFilter = FALSE)
+         }
+
+         if(is.null(soil_vars) || length(soil_vars)==0 || nrow(soil_vars)==0 ){
+           print("there is no soil data")
+
+         }
+         else {
+
+           incProgress(9/10,message = "Adding soil variables sheet...")
+           openxlsx::addWorksheet(wb, "Soil", gridLines = TRUE)
+           openxlsx::writeDataTable(wb, "Soil", x = soil_vars,
+                                    colNames = TRUE, withFilter = FALSE)
+         }
 
          incProgress(19/20,message = "Downloading file...")
 

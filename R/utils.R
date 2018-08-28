@@ -209,36 +209,30 @@ getAgrOper <- function(feature, other="") {
 #' @param feature value of the feature
 #' @param n number of values
 #' @param label an argument to get units from field operations
+#' @param other character. Specify 'other' value inputs.
 #' @export
 #
-get_loop_AgrOper <- function(feature= "", n, label = "unit"){
+get_loop_AgrOper <- function(feature= "", n, label = "none", other= "other"){
 
   out <- list()
 
-  label <- "none"
-
-  if(label!= "unit"){
-    for(i in 1:n){
+  label <- label
+  for(i in 1:n){
+    if(label!= "unit"){
       fi <- paste(feature,i,sep="")
       res1 <- paste("input", fi, sep="$")
       res2 <- as.quoted(res1)
       out[[i]] <- res2[[1]]
-      #out[[i]] <-  paste(input[[paste0(feature, i)]])
       if(length(out[[i]])==0){ out[[i]] <- "" }
-      # print("print dentro")
-      # print(out[[i]])
-      # print("print dentro fin")
-    }
-  } else{
-    fi <- paste(feature,i,label,sep="")
-    res1 <- paste("input", fi, sep="$")
-    res2 <- as.quoted(res1)
-    out[[i]] <- res2[[1]]
-    #out[[i]] <-  paste(input[[paste0(feature, i)]])
-    if(length(out[[i]])==0){ out[[i]] <- "" }
+      } else {
+      fi <- paste(feature,i,label,sep="")
+      res1 <- paste("input", fi, sep="$")
+      res2 <- as.quoted(res1)
+      out[[i]] <- res2[[1]]
+      if(length(out[[i]])==0){ out[[i]] <- "" }
+     }
   }
-
   out
 }
-
+#irrigation_technique_1_other
 
