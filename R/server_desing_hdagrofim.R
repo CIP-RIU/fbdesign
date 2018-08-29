@@ -6488,7 +6488,7 @@ server_design_agrofims <- function(input, output, session, values){
        fct1 <- paste0(gr1, sf1) #factor1 label in the spreadshet
        lvl1 <- input$levelSelection_1 #Factor-levels 1
        f1Inputs <- getTrtInputs(group= input$sel1_1, subgroup = input$sel1_2, fct = input$sel1_3, dfr = f1())
-       print("error 1")
+       #print("error 1")
        #Factor 2
        gr2 <- input$sel_2_1;  sgr2 <- input$sel_2_2 ; sf2<-input$sel_2_3 #gr: group, sgr: subgroup, sf: factor of group-subgroup
        numfct2 <- input$numLevels_2 # number of levels
@@ -6502,7 +6502,7 @@ server_design_agrofims <- function(input, output, session, values){
        fct3 <- paste0(gr1, sf1) #factor3 label in spreadshet
        lvl3 <- input$levelSelection_3 #Factor-levels 3
        f3Inputs <- getTrtInputs(group= input$sel3_1, subgroup = input$sel3_2, fct = input$sel3_3, dfr = f3())
-       print("error 2")
+       #print("error 2")
        #Factor 4
        gr4 <-input$sel_4_1 ; sgr4 <- input$sel_4_2;  sf4 <- input$sel_4_3 #gr: group, sgr: subgroup, sf: factor of group-subgroup
        numfct4 <- input$numLevels_4 # number of levels
@@ -6517,7 +6517,7 @@ server_design_agrofims <- function(input, output, session, values){
        lvl5 <- input$levelSelection_5#Factor-levels 3
        f5Inputs <- getTrtInputs(group= input$sel5_1, subgroup = input$sel5_2, fct = input$sel5_3, dfr = f5())
 
-       print("error 3")
+       #print("error 3")
        if(nf==2){
          fb <- try(st4gi::cr.f(fnames = c(f1Inputs$label, f2Inputs$label),
                                flevels = list(f1Inputs$level,f2Inputs$level), nrep = nr,
@@ -7314,17 +7314,33 @@ server_design_agrofims <- function(input, output, session, values){
       nexpProjEnt <- as.numeric(input$numProjEntity)
     }
     projEntity <- contCenter<- contCRP<- NULL
+
     for(i in 1:nexpProjEnt){
-    if(input[[paste0("projEntity_", i)]]=="Other"){
-      projEntity[i] <- input[[paste0("projEntity_", i,"_other")]]
-      contCenter[i] <-  ""
-      contCRP[i] <- ""
-    } else {
-      projEntity[i]<- input[[paste0("projEntity_", i)]] #Project entity
-      contCenter[i]<- input[[paste0("contCenter_", i)]] #Contributor center
-      contCRP[i]<- input[[paste0("contCRP_",  i)]] #contributor crp
-    }
-    }
+      if(is.null(input[[paste0("projEntity_", i)]])){
+        projEntity[i] <- ""
+        contCenter[i] <- ""
+        contCRP[i]    <- ""
+        print("first null")
+      } else if( !is.null(input[[paste0("projEntity_", i)]])  && is.null(input[[paste0("contCenter_", i)]]) ){
+        projEntity[i] <- input[[paste0("projEntity_", i)]]
+        contCenter[i] <- ""
+        contCRP[i] <- ""
+        print("2 null")
+      } else if( !is.null(input[[paste0("projEntity_", i)]])  && !is.null(input[[paste0("contCenter_", i)]]) && is.null(input[[paste0("contCRP_",  i)]]) ){
+        projEntity[i] <- input[[paste0("projEntity_", i)]] #Project entity
+        contCenter[i] <- input[[paste0("contCenter_", i)]] #Contributor center
+        contCRP[i] <- ""  #contributor crp
+        print("2 null")
+      } else if(input[[paste0("projEntity_", i)]]=="Other"){
+        projEntity[i] <- input[[paste0("projEntity_", i,"_other")]]
+        contCenter[i] <-  ""
+        contCRP[i] <- ""
+      } else {
+        projEntity[i]<- input[[paste0("projEntity_", i)]] #Project entity
+        contCenter[i]<- input[[paste0("contCenter_", i)]] #Contributor center
+        contCRP[i]<- input[[paste0("contCRP_",  i)]] #contributor crp
+      }
+  }
     projEntity<- paste(projEntity, collapse = ", ")
     contCenter <- paste(contCenter, collape=",")
     contCRP <- paste(contCRP, collape=",")
@@ -7337,13 +7353,18 @@ server_design_agrofims <- function(input, output, session, values){
 
     #Leader
     nexpleads<- as.numeric(input$numLeads)
-    projLeadEnt <- tLeadCenter<- NULL
+    projLeadEnt <- tLeadCenter<- expLead<- NULL
 
     for(i in 1:nexpleads){
-     if(input[[paste0("projLeadEnt_",  i)]]=="CGIAR center"){
-       projLeadEnt[i] <- input[[paste0("projLeadEnt_",  i)]]
-       tLeadCenter[i]  <- input[[paste0("tLeadCenter_", i)]]
-       expLead <-   input[[paste0("expLead_",i)]]
+
+     if(is.null(input[[paste0("projLeadEnt_",  i)]])){
+        projLeadEnt[i] <- ""
+        tLeadCenter[i] <-""
+        expLead[i] <- ""
+     } else if(input[[paste0("projLeadEnt_",  i)]]=="CGIAR center"){
+        projLeadEnt[i] <- input[[paste0("projLeadEnt_",  i)]]
+        tLeadCenter[i]  <- input[[paste0("tLeadCenter_", i)]]
+        expLead <-   input[[paste0("expLead_",i)]]
      } else {
        if(is.null(input[[paste0("lead_org_type_1_", i)]])){
            projLeadEnt[i]<- ""
@@ -8160,11 +8181,13 @@ server_design_agrofims <- function(input, output, session, values){
 
 
          n <- as.numeric(input$numApplicationsIrrigation)
-
+         print("error -1")
          fb_traits <- fb_agrofims_traits()
-
+         print("error0")
          metadata <- metadata_dt2()
          phenology <- phenology_dt()
+
+         print("error1")
 
          #names(metadata) <- c("Variable", "Value")
          #installation <- as.data.frame(factor_dt2())
@@ -8179,7 +8202,7 @@ server_design_agrofims <- function(input, output, session, values){
          #
          weather <- dt_weather_agrofims()
          soil_vars <- dt_soil_agrofims()
-
+         print("error2")
          #
          fname <- paste(file,"xlsx",sep=".")
          # #wb <- openxlsx::loadWorkbook(file = fname, create = TRUE)
@@ -8188,8 +8211,8 @@ server_design_agrofims <- function(input, output, session, values){
 
          incProgress(2/20,message = "Downloading data...")
 
-         #incProgress(6/20,message = "Metadata metadata sheet...")
-
+         incProgress(6/20,message = "Metadata metadata sheet...")
+         print("error3")
          openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
          openxlsx::writeDataTable(wb, "Metadata", x = metadata,
                                   colNames = TRUE, withFilter = FALSE)
@@ -8198,11 +8221,11 @@ server_design_agrofims <- function(input, output, session, values){
          openxlsx::addWorksheet(wb, "Phenology", gridLines = TRUE)
          openxlsx::writeDataTable(wb, "Phenology", x = phenology,
                                   colNames = TRUE, withFilter = FALSE)
-         #
+
          #
          # incProgress(7/20,message = "Adding installation sheet...")
          #
-
+         print("error4")
 
          incProgress(7/20,message = "Adding fieldbook data...")
          openxlsx::addWorksheet(wb, "Fieldbook", gridLines = TRUE)
@@ -8213,7 +8236,7 @@ server_design_agrofims <- function(input, output, session, values){
 
          agroFeaSelected <- input$selectAgroFeature
          #
-
+         print("error5")
          if(is.element("Irrigation", agroFeaSelected)) {
             print("irri")
            incProgress(14/20,message = "Adding irrigation data...")
@@ -8224,7 +8247,7 @@ server_design_agrofims <- function(input, output, session, values){
                                     colNames = TRUE, withFilter = FALSE)
 
          }
-
+         print("error6")
          if(is.element("Harvest", agroFeaSelected)) {
            print("har")
            incProgress(13/20,message = "Adding harvest data...")
@@ -8236,7 +8259,7 @@ server_design_agrofims <- function(input, output, session, values){
                                     colNames = TRUE, withFilter = FALSE)
 
          }
-
+         print("error7")
          if(is.element("Land preparation", agroFeaSelected)) {
            print("harv")
             incProgress(10/20,message = "Adding land preparation sheet...")
@@ -8248,7 +8271,7 @@ server_design_agrofims <- function(input, output, session, values){
                                      colNames = TRUE, withFilter = FALSE)
 
           }
-
+         print("error9")
          if(is.element("Mulching and residue", agroFeaSelected)) {
            print("mu")
            incProgress(11/20,message = "Adding mulching data...")
@@ -8259,7 +8282,7 @@ server_design_agrofims <- function(input, output, session, values){
            openxlsx::writeDataTable(wb, "Mulching and residue", x = dt_mr,
                                     colNames = TRUE, withFilter = FALSE)
          }
-
+         print("error10")
          if(is.element("Planting and transplanting", agroFeaSelected)) {
            print("plant")
            incProgress(12/20,message = "Adding planting and transplanting data...")
@@ -8270,7 +8293,7 @@ server_design_agrofims <- function(input, output, session, values){
            openxlsx::writeDataTable(wb, "Planting and transplanting", x = dt_plant,
                                     colNames = TRUE, withFilter = FALSE)
          }
-
+         print("error11")
          if(is.element("Weeding", agroFeaSelected)){
            print("wed")
             incProgress(13/20,message = "Adding Weeding data...")
@@ -8288,7 +8311,7 @@ server_design_agrofims <- function(input, output, session, values){
          openxlsx::writeDataTable(wb, "Trait list", x = trait_agrofims_dt,
                                   colNames = TRUE, withFilter = FALSE)
 
-
+         print("error12")
          if(is.null(weather) || length(weather)==0 || nrow(weather)==0  ){
            print("there is no weather data")
 
@@ -8301,7 +8324,7 @@ server_design_agrofims <- function(input, output, session, values){
            openxlsx::writeDataTable(wb, "Weather", x = weather,
                                     colNames = TRUE, withFilter = FALSE)
          }
-
+         print("error13")
          if(is.null(soil_vars) || length(soil_vars)==0 || nrow(soil_vars)==0 ){
            print("there is no soil data")
 

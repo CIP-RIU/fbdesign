@@ -493,24 +493,19 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
 
               selectizeInput("designFieldbook_fundAgencyType", "Funding agency type", multiple = TRUE,
                              options = list(placeholder ="Select..."),
-                             choices = sort(c("Agricultural Extension",
-                                              "Advisory Services",
-                                              "International NGO",
-                                              "National NGO",
-                                              "Farmers Organization",
-                                              "Regional Organization",
-                                              "International Organization",
-                                              "Financing Institution",
-                                              "Foundation",
-                                              "Private Company",
-                                              "Academic Institution",
-                                              "National Research Institution",
-                                              "International Research Center",
-                                              "Foreign Government",
-                                              "National Government"))
+                             choices = c("Academic institution",
+                                         "Farmer organization",
+                                         "Finance or insurance entity",
+                                         "Foundation or public charity",
+                                         "Government or government agency",
+                                         "International NGO",
+                                         "National NGO",
+                                         "Private sector entity",
+                                         "Other")
               ),
 
               fluidRow(id = "fl_agencies_assoc_exp"),
+              hidden(textInput("designFieldbook_fundAgencyType_other", "", value = "")),
 
               numericInput("numProjEntity", "Number of project management entities", min = 1, max=5, value = 1)
             ),
