@@ -1253,6 +1253,7 @@ server_design_agrofims <- function(input, output, session, values){
     )
   }
 
+  # design
   observeEvent(input$calculateTabSoil,{
     aux_vals <- strsplit(input$calculateTabSoilButtonId ,"_")[[1]]
     index  <- aux_vals[5]
@@ -1266,12 +1267,13 @@ server_design_agrofims <- function(input, output, session, values){
     max_len = 0
     sum <- ""
 
-    print(aux_vals)
-    print(index)
+    #print(aux_vals)
+    #print(index)
 
     if(napps >0){
       for(i  in 1:napps){
         in_id = paste0("input_tabSoil_rate_", type ,"_" , index , "_level_" , level , "_app_" , i)
+        #print(in_id)
         inp <- input[[in_id]]
         if(inp != ""){
           values[[paste0("v", i)]] <- strsplit(inp, ":")
@@ -1300,6 +1302,136 @@ server_design_agrofims <- function(input, output, session, values){
       }
 
       updateTextInput(session, paste0("input_", type, "_RateTotal_factor_", index, "_level_", level), value= sum)
+    }
+
+
+  })
+
+  # exp conditions 1
+  observeEvent(input$calculateTabSoil2,{
+    aux_vals <- strsplit(input$calculateTabSoil2ButtonId ,"_")[[1]]
+    index  <- aux_vals[5]
+    level <- aux_vals[7]
+    type <- aux_vals[4]
+
+    #napps = as.numeric(input[[paste0("numApps_tabSoil_factor_" , index,"_box_" , level)]])
+    napps = as.numeric(input[[paste0("soil_fertilizer_num_apps")]])
+    values = list()
+    lens = list()
+    results = list()
+    max_len = 0
+    sum <- ""
+
+    #print(aux_vals)
+    #print(index)
+
+    if(napps >0){
+      for(i  in 1:napps){
+        #in_id = paste0("input_tabSoil_rate_", type ,"_" , index , "_level_" , level , "_app_" , i)
+        in_id = paste0("input_productRate_soil_table_row", i)
+        inp <- input[[in_id]]
+
+        # add
+        # inp <- as.character(inp)
+        # if (is.na(inp)) {
+        #   inp <- ""
+        # }
+
+        #print(inp)
+        if(inp != ""){
+          values[[paste0("v", i)]] <- strsplit(inp, ":")
+          lens[[paste0("v", i)]] <- length(values[[paste0("v", i)]][[1]] )
+        }
+        else{
+          values[[paste0("v", i)]] = ""
+          lens[[paste0("v", i)]] = 0
+        }
+        if(max_len < lens[[paste0("v", i)]]) max_len = lens[[paste0("v", i)]]
+      }
+
+      if(max_len != 0 ){
+
+        for(i in 1:max_len){
+
+          results[[paste0("v", i)]] <- 0
+          for(j in 1:napps){
+            if(lens[[j]] >= i){
+              num <- as.integer(values[[paste0("v",j)]][[1]][i])
+              if(!is.na(num))  results[[paste0("v", i)]] <- num + results[[paste0("v", i)]]
+            }
+          }
+        }
+        sum <- paste(results, collapse = ":")
+      }
+
+      #updateTextInput(session, paste0("input_", type, "_RateTotal_factor_", index, "_level_", level), value= sum)
+      updateTextInput(session, "soil_fertilizer_totalAppRate1", value= sum)
+
+    }
+
+
+  })
+
+  # exp conditions 2
+  observeEvent(input$calculateTabSoil3,{
+    aux_vals <- strsplit(input$calculateTabSoil3ButtonId ,"_")[[1]]
+    index  <- aux_vals[5]
+    level <- aux_vals[7]
+    type <- aux_vals[4]
+
+    #napps = as.numeric(input[[paste0("numApps_tabSoil_factor_" , index,"_box_" , level)]])
+    napps = as.numeric(input[[paste0("soil_fertilizer_num_apps")]])
+    values = list()
+    lens = list()
+    results = list()
+    max_len = 0
+    sum <- ""
+
+    #print(aux_vals)
+    #print(index)
+
+    if(napps >0){
+      for(i  in 1:napps){
+        #in_id = paste0("input_tabSoil_rate_", type ,"_" , index , "_level_" , level , "_app_" , i)
+        in_id = paste0("input_elementRate_soil_table_row_", i)
+        inp <- input[[in_id]]
+
+        # add
+        # inp <- as.character(inp)
+        # if (is.na(inp)) {
+        #   inp <- ""
+        # }
+
+        #print(inp)
+        if(inp != ""){
+          values[[paste0("v", i)]] <- strsplit(inp, ":")
+          lens[[paste0("v", i)]] <- length(values[[paste0("v", i)]][[1]] )
+        }
+        else{
+          values[[paste0("v", i)]] = ""
+          lens[[paste0("v", i)]] = 0
+        }
+        if(max_len < lens[[paste0("v", i)]]) max_len = lens[[paste0("v", i)]]
+      }
+
+      if(max_len != 0 ){
+
+        for(i in 1:max_len){
+
+          results[[paste0("v", i)]] <- 0
+          for(j in 1:napps){
+            if(lens[[j]] >= i){
+              num <- as.integer(values[[paste0("v",j)]][[1]][i])
+              if(!is.na(num))  results[[paste0("v", i)]] <- num + results[[paste0("v", i)]]
+            }
+          }
+        }
+        sum <- paste(results, collapse = ":")
+      }
+
+      #updateTextInput(session, paste0("input_", type, "_RateTotal_factor_", index, "_level_", level), value= sum)
+      updateTextInput(session, "soil_fertilizer_totalAppRate2", value= sum)
+
     }
 
 
@@ -2694,7 +2826,8 @@ server_design_agrofims <- function(input, output, session, values){
 
                            ),
                            column(2, style="padding:5px;",
-                                  numericInput(paste0("input_productRate_soil_table_row", index), "", min=1, max=100, value=NULL, step=1)
+                                  #numericInput(paste0("input_productRate_soil_table_row", index), "", min=1, max=100, value=NULL, step=1)
+                                  textInput(paste0("input_productRate_soil_table_row", index), "")
                                   ),
                            column(2, style="padding:5px;",
                                   selectizeInput(paste0("select_element_soil_table_row_", index), "",multiple = TRUE, options = list( placeholder ="Sel..."),
@@ -2730,7 +2863,8 @@ server_design_agrofims <- function(input, output, session, values){
                     ),
                     column(6,style="padding:0px;",
                            column(2, style="padding:5px;",
-                                  numericInput(paste0("input_elementRate_soil_table_row_", index), "", min=1, max=100, value=NULL, step=1)
+                                  #numericInput(paste0("input_elementRate_soil_table_row_", index), "", min=1, max=100, value=NULL, step=1)
+                                  textInput(paste0("input_elementRate_soil_table_row_", index), "")
                                   ),
                            column(3, style="padding:5px;",
                                   selectizeInput(paste0("select_implement_soil_table_row_", index), "", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),
@@ -6618,7 +6752,7 @@ server_design_agrofims <- function(input, output, session, values){
   ###############################Agrofeatures ######################################################
 
   ### Harvest  ##########################################################################
-   dt_harvest <- reactive({
+  dt_harvest <- reactive({
 
      #out <- fb_agrofims()
      h_start_date	<-	paste(input$harvest_start_date) #dates
@@ -6678,14 +6812,25 @@ server_design_agrofims <- function(input, output, session, values){
    })
 
   ## Irrigation  #########################################################################
-   dt_irrigation <- reactive({
+  dt_irrigation <- reactive({
 
    #Irrigation start date
    n <- as.numeric(input$numApplicationsIrrigation)
 
    irri_start_date <- paste(lapply(1:n, function(x) paste(eval(get_loop_AgrOper("irrigationevent_start_date_", n=n)[[x]])))) #dates
    irri_end_date <- paste(lapply(1:n, function(x) paste( eval(get_loop_AgrOper("irrigationevent_end_date_", n=n)[[x]])))) #dates
-   irri_techinque <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigation_technique_",n=n)[[x]])))
+   irri_technique <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigation_technique_",n=n)[[x]])))
+
+   irri_technique_system <- unlist(lapply(1:n, function(x) eval(get_loop_irrigation_technique(irri_technique, module="irrigation")[[x]]) ))
+
+   if(is.null(irri_technique_system)){
+     irri_technique_system <- rep("NA", n)
+   } else {
+     irri_technique_system <- unlist(lapply(1:n, function(x) eval(get_loop_irrigation_technique_other(irri_technique, irri_technique_system)[[x]]) ))
+   }
+
+
+   #irri_technique_system <- unlist(lapply(1:n, function(x) eval(get_loop_irrigation_technique_other(irri_techinque, irri_technique_system)[[x]]) ))
 
    irri_source <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_", n=n)[[x]])))
 
@@ -6701,14 +6846,16 @@ server_design_agrofims <- function(input, output, session, values){
    irri_notes <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_notes_", n=n)[[x]])))
 
    irriNames <- c("Number of irrigations",
-                  "Irrigation start date", "Irrigation end date", "Irrigation technique",
+                  "Irrigation start date", "Irrigation end date", "Irrigation technique",  "Irrigation technique system",
                   "Irrigation source", "Irrigation source distance",
                   "Irrigation source distance Unit (ft; km; m; mi)", #unit label
                   "Irrigation amount",
                   "Irrigation amount Unit (in; mm)", #unit label
                   "Notes")
 
-   dtIrri<- data.frame(1:n, irri_start_date, irri_end_date, irri_techinque, irri_source,
+   dtIrri<- data.frame(1:n, irri_start_date, irri_end_date,
+                       irri_technique,irri_technique_system,
+                       irri_source,
                        irri_source_dist,
                        irri_source_dist_unit,
                        irri_amount,
@@ -6754,7 +6901,7 @@ server_design_agrofims <- function(input, output, session, values){
 })
 
   ## Land Preparation ####################################################################
-   dt_land_description <- reactive({
+  dt_land_description <- reactive({
 
      flag<-FALSE
 
@@ -6854,7 +7001,7 @@ server_design_agrofims <- function(input, output, session, values){
    })
 
   ## Mulching and residue ################################################################
-   dt_mulching <- reactive({
+  dt_mulching <- reactive({
 
      m_start_date <- paste(input$mulch_start_date) #dates
      m_end_date <- paste(input$mulch_end_date) #dates
@@ -6895,7 +7042,7 @@ server_design_agrofims <- function(input, output, session, values){
      names(mudt)<- muNames
      mudt
    })
-   dt_residue <- reactive({
+  dt_residue <- reactive({
 
      r_start_date<- paste(input$residue_start_date) #dates
      r_end_date<- paste(input$residure_end_date) #dates
@@ -6941,8 +7088,8 @@ server_design_agrofims <- function(input, output, session, values){
      dtres
 
    })
-   #Total
-   dt_mures <- reactive({
+  #Total
+  dt_mures <- reactive({
     print("mu1")
     if(input$mulchManag_checkbox==TRUE && input$residueManag_checkbox==FALSE){
       print("mu2")
@@ -6958,7 +7105,7 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
   ### Planting   ########################################################################
-   dt_directSeed <- reactive({
+  dt_directSeed <- reactive({
 
      # Direct Seeding#################################
      pl_start_date <- paste(input$planting_start_date) #dates
@@ -7014,7 +7161,7 @@ server_design_agrofims <- function(input, output, session, values){
      names(dtpl)<- plNames
      dtpl
    })
-   dt_transPlant <- reactive ({
+  dt_transPlant <- reactive ({
 
      #Transplanting  ######################################
      tr_start_date <- paste(input$transplanting_start_date) #dates
@@ -7065,8 +7212,8 @@ server_design_agrofims <- function(input, output, session, values){
      names(dttr) <- trNames
      dttr
    })
-   #Total
-   dt_planting <- reactive({
+  #Total
+  dt_planting <- reactive({
      if(input$directSeeding_checkbox==TRUE && input$transplanting_checkbox==FALSE){
        dt_plant <- dt_directSeed()
      }else if (input$directSeeding_checkbox==FALSE && input$transplanting_checkbox==TRUE){
@@ -7141,278 +7288,94 @@ server_design_agrofims <- function(input, output, session, values){
   #############  metadata_dt2 ###################################################################
   metadata_dt2 <- reactive({
 
-    c1 <- c('Experiment ID', input$experimentId)
-    c2 <- c('Experiment name', input$experimentName )
-    c3 <- c('Experiment project name', input$experimentProjectName)
-    c4 <- c('Experiment start date', paste(input$fbDesign_project_time_line[1]) )
-    c5 <- c('Experiment end date', paste(input$fbDesign_project_time_line[2]))
+    expid <- input$experimentId  #c('Experiment ID', input$experimentId)
+    expname <- input$experimentName #c('Experiment name', input$experimentName )
+    expProjName <- input$experimentProjectName #c('Experiment project name', input$experimentProjectName)
+    expBeginDate <- paste(input$fbDesign_project_time_line[1]) #c('Experiment start date', paste(input$fbDesign_project_time_line[1]) )
+    expEnDate <- paste(input$fbDesign_project_time_line[2]) #c('Experiment end date', paste(input$fbDesign_project_time_line[2]))
 
+    expTypeExp <- fbdesign::getAgrOper(input$designFieldbook_typeExperiment) #type experiment
+    expObj <- fbdesign::getAgrOper(input$experimentObj) #experiment objective
+    expAgType <- NULL #funding Agency Type
+
+    if(is.null(input$designFieldbook_fundAgencyType)){
+      expAgType <- ""
+    } #funding Agency Type
+    else {
+       for(i in 1:length(input$designFieldbook_fundAgencyType)){
+         expAgType[i] <- input[[paste0("fundName_", i)]] # Funding agency type
+       }
+      expAgType<- paste(expAgType, collapse = ", ")
+    }
+
+    if(is.null(input$numProjEntity)|| is.na(input$numProjEntity)){
+      nexpProjEnt <- 1
+    } else{
+      nexpProjEnt <- as.numeric(input$numProjEntity)
+    }
+    projEntity <- contCenter<- contCRP<- NULL
+    for(i in 1:nexpProjEnt){
+    if(input[[paste0("projEntity_", i)]]=="Other"){
+      projEntity[i] <- input[[paste0("projEntity_", i,"_other")]]
+      contCenter[i] <-  ""
+      contCRP[i] <- ""
+    } else {
+      projEntity[i]<- input[[paste0("projEntity_", i)]] #Project entity
+      contCenter[i]<- input[[paste0("contCenter_", i)]] #Contributor center
+      contCRP[i]<- input[[paste0("contCRP_",  i)]] #contributor crp
+    }
+    }
+    projEntity<- paste(projEntity, collapse = ", ")
+    contCenter <- paste(contCenter, collape=",")
+    contCRP <- paste(contCRP, collape=",")
+
+    #Experiment duration
     xdur <- interval(ymd(input$fbDesign_project_time_line[1]),ymd(input$fbDesign_project_time_line[2]))
     xdur <- xdur %/% months(1)
     xdur <- paste(xdur," months", sep = "")
+    expDuration <- c('Experiment duration', xdur)
 
+    #Leader
+    nexpleads<- as.numeric(input$numLeads)
+    projLeadEnt <- tLeadCenter<- NULL
 
-    c6 <- c('Experiment duration', xdur)
-    vTypeExperiment <- ""
-    if(!is.null(input$designFieldbook_typeExperiment)) vTypeExperiment <- input$designFieldbook_typeExperiment
-
-    c7 <- c('Type of experiment', vTypeExperiment)
-    c8 <- c('Experiment objective', input$experimentObj)
-
-    vfundAgenType <- ""
-    vfundName <-""
-    if(!is.null(input$designFieldbook_fundAgencyType)) {
-      vfundAgenType <- paste(input$designFieldbook_fundAgencyType, collapse = ",")
-      vn <- length(input$designFieldbook_fundAgencyType)
-      vfundName <- input[[paste0("fundName_", 1)]]
-
-      for(i in 2:vn){
-        vfundName <- paste(vfundName, ",", input[[paste0("fundName_", i)]])
-      }
-    }
-
-    c9 <- c('Funding agency type', vfundAgenType)
-    c10 <- c('Funding agency name', vfundName)
-
-    vNumPrEnt <- ""
-    vPrEnt <- c()
-    vContCenter <- c()
-    vcontCRP <- c()
-    vPrName <- c()
-
-
-
-    if(is.numeric(input$numProjEntity)){
-      vNumPrEnt <- input$numProjEntity
-      vn <- input$numProjEntity
-
-      for(i in 1:vn){
-        aux <- input[[paste0("projEntity_", i)]]
-        if(!is.null(aux)){
-          vPrEnt <- c(vPrEnt,aux)
-          if(aux == "Other"){
-            vPrName <- c(vPrName, input[[paste0("contOtherCenter_", i)]])
-          }
-          else{
-            if(!is.null(input[[paste0("contCenter_", i)]])){
-              vContCenter <- c(vContCenter, input[[paste0("contCenter_", i)]])
-            }
-            else{
-              vContCenter <- c(vContCenter, "")
-            }
-            if(!is.null(input[[paste0("contCRP_", i)]])){
-              vcontCRP <- c(vcontCRP, input[[paste0("contCRP_", i)]])
-            }
-            else{
-              vcontCRP <- c(vcontCRP, "")
-            }
-          }
+    for(i in 1:nexpleads){
+     if(input[[paste0("projLeadEnt_",  i)]]=="CGIAR center"){
+       projLeadEnt[i] <- input[[paste0("projLeadEnt_",  i)]]
+       tLeadCenter[i]  <- input[[paste0("tLeadCenter_", i)]]
+       expLead <-   input[[paste0("expLead_",i)]]
+     } else {
+       if(is.null(input[[paste0("lead_org_type_1_", i)]])){
+           projLeadEnt[i]<- ""
+           tLeadCenter[i]<- ""
+           expLead[i]<- ""
+          } else {
+           projLeadEnt[i]<- input[[paste0("lead_org_type_1_", i)]]
+           tLeadCenter[i]<- input[[paste0("leadNameOther_",i)]]
+           expLead[i] <-   input[[paste0("expLead_",i)]]
         }
-      }
-      vPrEnt <- paste(vPrEnt, collapse = ",")
-      vContCenter <- paste(vContCenter, collapse = ",")
-      vcontCRP <- paste(vcontCRP, collapse = ",")
-      vPrName <- paste(vPrName, collapse = ",")
+       }
     }
-
-    c11 <- c('Number of project management entities',vNumPrEnt )
-    c12 <- c('Project management entity',vPrEnt )
-    c13 <- c('Contribuitor center',vContCenter )
-    c14 <- c('Contribuitor CRP', vcontCRP)
-    c15 <- c('Project management entity name', vPrName )
+    projLeadEnt <- paste(projLeadEnt, collapse = ", ") #Experiment, lead organization type
+    tLeadCenter <-  paste(tLeadCenter, collapse = ", ") #Choose CGIAR center
+    expLead <- paste(expLead, collapse = ", ") #Experiment lead person/Primary Investigator
 
 
+    dt<- data.frame(expid, expname, expProjName, expBeginDate, expEnDate, expDuration,
+      expTypeExp, expObj, expAgType ,projEntity,
+      contCenter, contCRP, projLeadEnt,tLeadCenter, expLead)
 
-    vleadOrgType <- c()
-    vleadPerson <- c()
-    vleadOrgName <- c()
+    dtNames<- c("Experiment ID","Experiment name", "Experiment project name", "Experiment start date",
+                "Experiment end date", "Experiment duration",  "Type of experiment",
+                "Experiment objective", "Funding agency type",
+                "Project management entity", "Contributor Center", "Contributor CRP",
+                "Experiment, lead organization type", "Experiment, lead center", "Experiment lead person / Primary Investigator"
+                )
 
-    if(is.numeric(input$numLeads)){
-      vn <- input$numProjEntity
-      for(i in 1:vn){
-        aux <- input[[paste0("projLeadEnt_", i)]]
-        if(!is.null(aux)){
-          if(aux == "Other"){
-            if(is.null(input[[paste0("lead_org_type_1_", i)]])) vleadOrgType <- c(vleadOrgType,aux)
-            else vleadOrgType <- c(vleadOrgType, input[[paste0("lead_org_type_1_", i)]])
-            vleadOrgName <- c(vleadOrgName, input[[paste0("leadNameOther_", i)]])
-          }
-          else{
-            vleadOrgType <- c(vleadOrgType,aux)
-            if(!is.null(input[[paste0("tLeadCenter_", i)]])){
-              vleadOrgName <- c(vleadOrgName, input[[paste0("tLeadCenter_", i)]])
-            }
-            else{
-              vleadOrgName <- c(vleadOrgName, "")
-            }
-          }
-          vleadPerson <- c(vleadPerson, input[[paste0("expLead_", i)]])
-        }
-      }
-
-      vleadOrgType <- paste(vleadOrgType, collapse = ";")
-      vleadOrgName <- paste(vleadOrgName, collapse = ";")
-      vleadPerson <- paste(vleadPerson, collapse = ";")
-    }
-
-    c16 <- c('Experiment, lead organization type',vleadOrgType )
-    c17 <- c('Experiment lead person / Primary Investigator', vleadOrgName)
-    c18 <- c('Experiment, lead organization name',vleadPerson )
-
-    np <- input$npersons
-    vperType <- c()
-    vperfname <- c()
-    vperlname <- c()
-    vperemail <- c()
-    vperAff <- c()
-    vperOrcid <- c()
-    vpercountry <- c()
-
-    for(i  in 1:np){
-      if(is.null(input[[paste0("personnel",i,"Type")]])) vperType <- c(vperType, "")
-      else vperType <- c(vperType, input[[paste0("personnel",i,"Type")]])
-
-      vperfname <- c(vperfname, input[[paste0("person",i,"FirstName")]])
-      vperlname <- c(vperlname, input[[paste0("person",i,"LastName")]])
-
-      if(is.null(input[[paste0("person",i,"Affiliation")]])) vperAff <- c(vperAff, "")
-      else{
-        if(input[[paste0("person",i,"Affiliation")]] == "CGIAR Center"){
-          if(is.null(input[[paste0("person",i,"Center")]])) vperAff <- c(vperAff, "CGIAR Center")
-          else vperAff <- c(vperAff, input[[paste0("person",i,"Center")]])
-        }
-        else{
-          vperAff <- c(vperAff, input[[paste0("person",i,"CenterOther")]])
-        }
-      }
-
-      vperemail <- c(vperemail, input[[paste0("person",i,"Email")]])
-      vperOrcid <- c(vperOrcid, input[[paste0("person",i,"ORCID")]])
-
-      if(is.null(input[[paste0("person",i,"Country")]])) vpercountry <- c(vpercountry, "")
-      else vpercountry <- c(vpercountry, input[[paste0("person",i,"Country")]])
-    }
-
-    vperType <- paste(vperType, collapse = ",")
-    vperfname <-paste(vperfname, collapse = ",")
-    vperlname <- paste(vperlname, collapse = ",")
-    vperemail <- paste(vperemail, collapse = ",")
-    vperAff <- paste(vperAff, collapse = ",")
-    vperOrcid <- paste(vperOrcid, collapse = ",")
-    vpercountry <- paste(vpercountry, collapse = ",")
-
-    c19 <- c('Person type',vperType )
-    c20 <- c('Person, first name',vperfname )
-    c21 <- c('Person, last name', vperlname)
-    c22 <- c('Person, email', vperemail)
-    c23 <- c('Person, affiliation', vperAff)
-    c24 <- c('Person, ORCID',vperOrcid )
-    c25 <- c('Country in which active', vpercountry)
-
-
-    vsitetype <- ""
-    vsitename <- ""
-    vsiteId <- ""
-    vsiteCountry <- ""
-    vsiteadmin1 <- ""
-    vsiteadmin2 <- ""
-    vsiteVillage <- ""
-    vsitenear <- ""
-    vsiteElev <- ""
-    vsiteLat <- ""
-    visteLon <- ""
-
-    if(!is.null(input$fbDesign_countryTrial) && !is.null(input$designFieldbook_sites)){
-      vsiteCountry <- input$fbDesign_countryTrial
-
-      xpath <- fbglobal::get_base_dir()
-      xfp <- file.path(path, "table_sites_agrofims.rds")
-
-      xaux <- input$designFieldbook_sites
-      # print(xaux)
-      # xstart <- which(strsplit(xaux, "")[[1]]=="(")
-      # vsiteId <- substr(xaux, xstart+1, nchar(xaux)-1)
-      vsiteId <- xaux
-
-      x_sites_data <- readRDS(file = xfp)
-      data <- dplyr::filter(x_sites_data, shortn==vsiteId)
-      if(nrow(data) != 0){
-        xsite <- data[1,]
-        vsitetype <- xsite$Type
-        vsitename <- xsite$local
-        vsiteadmin1 <- xsite$adm1
-        vsiteadmin2 <- xsite$adm2
-        vsiteVillage <- xsite$village
-        vsitenear <- xsite$nearpop
-        vsiteElev <- xsite$elev
-        vsiteLat <- xsite$latd
-        visteLon <- xsite$lond
-      }
-
-
-    }
-
-    c26 <- c('Site type',vsitetype)
-    c27 <- c('Site name',vsitename)
-    c28 <- c('Site ID', vsiteId)
-    c29 <- c('Country name', vsiteCountry)
-    c30 <- c('Site, first-level administrative division name',vsiteadmin1 )
-    c31 <- c('Site, second-level administrative division name',vsiteadmin2 )
-    c32 <- c('Village name', vsiteVillage)
-    c33 <- c('Nearest populated place', vsitenear)
-    c34 <- c('Site elevation',vsiteElev )
-    c35 <- c('Site latitude (in decimal degrees)', vsiteLat)
-    c36 <- c('Site longitude (in decimal degrees)',visteLon )
-
-    vHighLevel <- ""
-    if(!is.null(input$fbDesign_inHighLevel)) vHighLevel <- input$fbDesign_inHighLevel
-
-    c37 <- c('Higher-level landform',vHighLevel)
-
-    vSiteVegetation <- ""
-    if(!is.null(input$fbDesign_inSiteVegetation)) vSiteVegetation <- paste(input$fbDesign_inSiteVegetation, collapse = ",")
-
-    c38 <- c('Vegetation surrounding the experimental site', vSiteVegetation)
-    c39 <- c('Site description notes', input$inSiteDescNotes)
-
-    c40 <- c('Cropping type', input$croppingType )
-
-    vCropCommon <- ""
-    if(!is.null(input$cropCommonNameMono)) vCropCommon <- input$cropCommonNameMono
-
-    c41 <- c('Crop common name',vCropCommon )
-    c42 <- c('Crop latin name', input$cropLatinNameMono)
-
-    vCropVarName <- ""
-    if(!is.null(input$cropVarietyNameMono)) vCropVarName <- paste(input$cropVarietyNameMono, collapse = ",")
-
-    c43 <- c('Crop variety name', vCropVarName)
-    c44 <- c('Cultivar name',input$cultivarNameMono )
-    c45 <- c('Crop local name', input$monoCropLocalName)
-
-    nCropPrevCrop <- ""
-    nprevCropName <- ""
-    nprevCropVar <- ""
-
-    if(is.numeric(input$numPreviousCrop)) nCropPrevCrop <-input$numPreviousCrop
-    if(!is.null(input$prevCropName)) nprevCropName <- paste(input$prevCropName, collapse = ",")
-    if(!is.null(input$prevCropVar)) nprevCropVar <- paste(input$prevCropVar, collapse = ",")
-
-    c46 <- c('Number of previous crop', nCropPrevCrop)
-    c47 <- c('Previous crop name', nprevCropName)
-    c48 <- c('Previous crop variety',nprevCropVar )
-
-    # c56 <- c('Subject', )
-    # c57 <- c('Keywords', )
-    # c58 <- c('Embargo end date', )
-
-    df_metadata <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,
-                              c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,
-                              c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,
-                              c31,c32,c33,c34,c35,c36,c37,c38,c39,c40,
-                              c41,c42,c43,c44,c45,c46,c47, c48)
-    var_metadata <-  t(df_metadata)
-    # print(df_metadata)
+    names(dt) <- dtNames
+    dt <- as.data.frame(t(dt))
+    names(dt)[1:2] <- c("Variable",	"Value")
+    dt
 
   })
 
@@ -8130,69 +8093,26 @@ server_design_agrofims <- function(input, output, session, values){
 
        withProgress(message = 'Downloading fieldbook', value = 0, {
 
-         print(input$landLevelling_checkbox)
-          irri_source_dist_unit <- paste(lapply(1:3, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_",n =3, label ="unit")[[x]]))) #unit
-          print( irri_source_dist_unit)
 
          n <- as.numeric(input$numApplicationsIrrigation)
 
-         # irri_end_date <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigationevent_end_date_", n=n)[[x]])))
-         # irri_techinque <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_technique_",n=n)[[x]])))
-         #
-         # irri_source <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_", n=n)[[x]])))
-         # irri_source_dist <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_", n =n)[[x]])))
-         # irri_source_dist_unit <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_source_distance_",n =n, label ="unit")[[x]]))) #unit
-         # irri_source_def <- paste( irri_source_dist,irri_source_dist_unit, sep="_" ) #measure+unit
-
-         #irri_start_date <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigationevent_start_date_", n=n)[[x]])))
-         #irri_start_date <- irri_end_date<- NULL
-         # for(i in 1:n){
-         #   irri_start_date[[i]] <- eval(get_loop_AgrOper("irrigationevent_start_date_", n=n)[[i]])
-         #   if(is.null(irri_start_date[[i]])){irri_start_date[[i]] <- ""}
-         #   print(irri_start_date[[i]])
-         # }
-         # for(i in 1:n){
-         #   irri_end_date[[i]] <- eval(get_loop_AgrOper("irrigationevent_end_date_", n=n)[[i]])
-         #   if(is.null(irri_end_date[[i]]) || irri_end_date[[i]]=="Date of length 0") {irri_end_date[[i]] <- ""}
-         # }
-         #irri_start_date<- unlist(irri_start_date)
-         # irri_end_date<- unlist(irri_start_date)
-         #print(irri_start_date)
-
          fb_traits <- fb_agrofims_traits()
 
-         # incProgress(1/10, message = "...")
+         metadata <- metadata_dt2()
+         #names(metadata) <- c("Variable", "Value")
+         #installation <- as.data.frame(factor_dt2())
 
-         # flag <- TRUE #temporary
-         # if(input$setCropFactor == TRUE && length(input$cropVarietyNameMono)<=1){
-         #   flag  <- FALSE
-         #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You need to enter more than 1 variety."), styleclass = "danger")
-         # }
-         #
-         # print(input$cropCommonNameMono)
-
-         # design <- input$designFieldbook_agrofims
-         # nrep <- input$designFieldbook_agrofims_r
-         # weather_vars <- unlist(shinyTree::get_selected(input$designFieldbook_weatherVar_agrofims))
-         #
-         # fb_traits <- fb_agrofims_traits()
-         #
-         # metadata <- as.data.frame(metadata_dt2())
-         # names(metadata) <- c("Variable", "Value")
-         # installation <- as.data.frame(factor_dt2())
-         # print(installation)
-         # names(installation) <- c("Variable", "Value")
+         #names(installation) <- c("Variable", "Value")
          #
          # print(installation)
-         # trait_agrofims_dt <- trait_agrofims()
-         # trait_agrofims_dt<- trait_agrofims_dt[,-3]
+         trait_agrofims_dt <- traits_dt()
+         #trait_agrofims_dt<- trait_agrofims_dt[,-3]
          #
          # print(trait_agrofims_dt)
          #
-         # weather <- dt_weather_agrofims()
-         # print(weather)
-         # soil_vars <- dt_soil_agrofims()
-         # print(soil_vars)
+         weather <- dt_weather_agrofims()
+         soil_vars <- dt_soil_agrofims()
+
          #
          fname <- paste(file,"xlsx",sep=".")
          # #wb <- openxlsx::loadWorkbook(file = fname, create = TRUE)
@@ -8201,18 +8121,16 @@ server_design_agrofims <- function(input, output, session, values){
 
          incProgress(2/20,message = "Downloading data...")
 
-         incProgress(6/20,message = "Metadata metadata sheet...")
+         #incProgress(6/20,message = "Metadata metadata sheet...")
 
          openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
          openxlsx::writeDataTable(wb, "Metadata", x = metadata,
                                   colNames = TRUE, withFilter = FALSE)
+         #
+         #
+         # incProgress(7/20,message = "Adding installation sheet...")
+         #
 
-
-         incProgress(7/20,message = "Adding installation sheet...")
-
-         openxlsx::addWorksheet(wb, "Variables", gridLines = TRUE)
-         openxlsx::writeDataTable(wb, "Variables", x = installation,
-                                  colNames = TRUE, withFilter = FALSE)
 
          incProgress(7/20,message = "Adding fieldbook data...")
          openxlsx::addWorksheet(wb, "Fieldbook", gridLines = TRUE)
@@ -8224,31 +8142,8 @@ server_design_agrofims <- function(input, output, session, values){
          agroFeaSelected <- input$selectAgroFeature
          #
 
-         #
-         # if(is.element("Nutrient management", agroFeaSelected)) {
-         #   dt_nut<-  dt_nutrient()
-         #
-         #   openxlsx::addWorksheet(wb, "Nutrient management", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Nutrient management", x = dt_nut,
-         #                            colNames = TRUE, withFilter = FALSE)
-         #
-         # }
-         #
-         # if(is.element("Biofertilizer", agroFeaSelected)) {
-         #
-         #   incProgress(15/20,message = "Adding biofertilizer data...")
-         #
-         #   dt_biof <- dt_bioferti()
-         #
-         #   openxlsx::addWorksheet(wb, "Biofertilizer", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Biofertilizer", x = dt_biof,
-         #                            colNames = TRUE, withFilter = FALSE)
-         #
-         # }
-         #
-
          if(is.element("Irrigation", agroFeaSelected)) {
-
+            print("irri")
            incProgress(14/20,message = "Adding irrigation data...")
            dt_irri <- dt_irrigation()
            print(dt_irri)
@@ -8259,7 +8154,7 @@ server_design_agrofims <- function(input, output, session, values){
          }
 
          if(is.element("Harvest", agroFeaSelected)) {
-
+           print("har")
            incProgress(13/20,message = "Adding harvest data...")
 
            dt_harv <- dt_harvest()
@@ -8271,7 +8166,7 @@ server_design_agrofims <- function(input, output, session, values){
          }
 
          if(is.element("Land preparation", agroFeaSelected)) {
-
+           print("harv")
             incProgress(10/20,message = "Adding land preparation sheet...")
 
             dt_land <- dt_land_description()
@@ -8283,7 +8178,7 @@ server_design_agrofims <- function(input, output, session, values){
           }
 
          if(is.element("Mulching and residue", agroFeaSelected)) {
-
+           print("mu")
            incProgress(11/20,message = "Adding mulching data...")
 
            dt_mr <- dt_mures()
@@ -8293,9 +8188,8 @@ server_design_agrofims <- function(input, output, session, values){
                                     colNames = TRUE, withFilter = FALSE)
          }
 
-
          if(is.element("Planting and transplanting", agroFeaSelected)) {
-
+           print("plant")
            incProgress(12/20,message = "Adding planting and transplanting data...")
 
            dt_plant <- dt_planting()
@@ -8306,7 +8200,7 @@ server_design_agrofims <- function(input, output, session, values){
          }
 
          if(is.element("Weeding", agroFeaSelected)){
-
+           print("wed")
             incProgress(13/20,message = "Adding Weeding data...")
 
             dt_weed <- dt_weeding()
@@ -8314,33 +8208,15 @@ server_design_agrofims <- function(input, output, session, values){
             openxlsx::addWorksheet(wb, "Weeding", gridLines = TRUE)
             openxlsx::writeDataTable(wb, "Weeding", x = dt_weed,
                                      colNames = TRUE, withFilter = FALSE)
+         }
+     #
+         incProgress(9/20,message = "Adding trait list sheet...")
+
+         openxlsx::addWorksheet(wb, "Trait list", gridLines = TRUE)
+         openxlsx::writeDataTable(wb, "Trait list", x = trait_agrofims_dt,
+                                  colNames = TRUE, withFilter = FALSE)
 
 
-          }
-
-
-         # if(is.element("Pest & disease", agroFeaSelected)) {
-         #
-         #   incProgress(16/20,message = "Adding pest and disease data...")
-         #
-         #   dt_pestd <- dt_pestdis()
-         #
-         #   openxlsx::addWorksheet(wb, "Pest and disease", gridLines = TRUE)
-         #   openxlsx::writeDataTable(wb, "Pest and disease", x = dt_pestd,
-         #                            colNames = TRUE, withFilter = FALSE)
-         #
-         # }
-         #
-         # incProgress(9/20,message = "Adding trait list sheet...")
-         #
-         # openxlsx::addWorksheet(wb, "Trait list", gridLines = TRUE)
-         # openxlsx::writeDataTable(wb, "Trait list", x = trait_agrofims_dt,
-         #                          colNames = TRUE, withFilter = FALSE)
-         #
-         # incProgress(8/20,message = "Adding fieldbook sheet...")
-         #
-         #
-         #
          if(is.null(weather) || length(weather)==0 || nrow(weather)==0  ){
            print("there is no weather data")
 
@@ -8358,18 +8234,14 @@ server_design_agrofims <- function(input, output, session, values){
            print("there is no soil data")
 
          }
-         else {
-
-           incProgress(9/10,message = "Adding soil variables sheet...")
-           openxlsx::addWorksheet(wb, "Soil", gridLines = TRUE)
-           openxlsx::writeDataTable(wb, "Soil", x = soil_vars,
-                                    colNames = TRUE, withFilter = FALSE)
+         else{
+               incProgress(9/10,message = "Adding soil variables sheet...")
+               openxlsx::addWorksheet(wb, "Soil", gridLines = TRUE)
+               openxlsx::writeDataTable(wb, "Soil", x = soil_vars,
+                                            colNames = TRUE, withFilter = FALSE)
          }
-
          incProgress(19/20,message = "Downloading file...")
-
          saveWorkbook(wb, file = fname , overwrite = TRUE)
-
          file.rename(fname, file)
 
 

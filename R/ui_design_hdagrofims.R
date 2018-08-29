@@ -254,14 +254,11 @@ design_conditional_panels_agrofims <- function(){
   )
 }
 
-
-
-
 #' shiny UI element for HIDAP-AGROFIMS
 #'
 #' returns a re-usable user interface element
 #'
-#' @author Raul Arias, Omar Benites
+#' @author Raul Arias, Omar Benites, Ivan Perez
 #' @param type type of ui element; default is a tab in a shiny dashboard
 #' @param title display title
 #' @param name a reference name
@@ -272,85 +269,97 @@ design_conditional_panels_agrofims <- function(){
 
 ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phenotype_fieldbook_design" ){
 
-  #############
-  shinydashboard::tabItem(tabName = name,
-                          h1("Experiment description"),
+  ##### Tab item #####
+  shinydashboard::tabItem(
+    tabName = name,
+    h1("Experiment description"),
 
-                          shinyjs::useShinyjs(), #to reset panels and UI
+    # To reset panels and UI
+    shinyjs::useShinyjs(),
 
-                          ### code for showing  when other is selected in a combobox
-                          tags$script('$(document).on("change", "select",  function(){
-                                              var a = this.id + "_other";
-                                              var b = "#" + a ;
-                                              var val = this.value
+    # Code for showing  when other is selected in a combobox
+    tags$script('$(document).on("change", "select",  function(){
+                 var a = this.id + "_other";
+                 var b = "#" + a ;
+                 var val = this.value
 
-                                              if(val == "Other") {
-                                                shinyjs.show(a)
-                                                $(b).focus();
-                                              }
-                                              else{shinyjs.hide(a)}
+                 if(val == "Other") {
+                 shinyjs.show(a)
+                 $(b).focus();
+                 }
+                 else{shinyjs.hide(a)}
+                 })
+                '
+    ),
 
-                                              })
-                                      '
-                                    ),
+    ### code for buttons in tab soil to calculate sum
+    # tags$script('$(document).on("click", "button[id^=\'buttonSoilTab_\']",  function(){
+    tags$script('$(document).on("change", "input[id^=\'input_tabSoil_rate_\']",  function(){
+                 Shiny.onInputChange("calculateTabSoil", Math.random());
+                 Shiny.onInputChange("calculateTabSoilButtonId", this.id);
+                 })
+                '
+    ),
 
-                          ### code for buttons in tab soil to calculate sum
-                          # tags$script('$(document).on("click", "button[id^=\'buttonSoilTab_\']",  function(){
-                          tags$script('$(document).on("change", "input[id^=\'input_tabSoil_rate_\']",  function(){
-                                            Shiny.onInputChange("calculateTabSoil", Math.random());
-                                            Shiny.onInputChange("calculateTabSoilButtonId", this.id);
+    # suma product en exp cond
+    tags$script('$(document).on("change", "input[id^=\'input_productRate_soil_table_row\']",  function(){
+                 Shiny.onInputChange("calculateTabSoil2", Math.random());
+                 Shiny.onInputChange("calculateTabSoil2ButtonId", this.id);
+                 })
+                '
+    ),
 
-                                        })
-                                      '
-                          ),
+    # suma elemt en exp cond
+    tags$script('$(document).on("change", "input[id^=\'input_elementRate_soil_table_row_\']",  function(){
+                 Shiny.onInputChange("calculateTabSoil3", Math.random());
+                 Shiny.onInputChange("calculateTabSoil3ButtonId", this.id);
+                 })
+                '
+    ),
 
+    ### code for buttons in tab soil to calculate sum in Experiment conditions
+    # tags$script('$(document).on("click", "button[id^=\'buttonSoilTab_\']",  function(){
+    # tags$script('$(document).on("change", "input[id^=\'input_tabSoil_rate_\']",  function(){
+    #                   Shiny.onInputChange("calculateTabSoil", Math.random());
+    #                   Shiny.onInputChange("calculateTabSoilButtonId", this.id);
+    #
+    #               })
+    #             '
+    # ),
 
-                          ### code for buttons in tab soil to calculate sum in Experiment conditions
-                          # tags$script('$(document).on("click", "button[id^=\'buttonSoilTab_\']",  function(){
-                          # tags$script('$(document).on("change", "input[id^=\'input_tabSoil_rate_\']",  function(){
-                          #                   Shiny.onInputChange("calculateTabSoil", Math.random());
-                          #                   Shiny.onInputChange("calculateTabSoilButtonId", this.id);
-                          #
-                          #               })
-                          #             '
-                          # ),
+    ## script listening when fertilizer type is changed in soil fertility in experiment conditions
+    tags$script('$(document).on("change", "select[id^=\'select_fertilizerType_soil_table_row\']",  function(){
+                 Shiny.onInputChange("soilFertility_typeFertilizer", Math.random());
+                 Shiny.onInputChange("soilFertility_typeFertilizer_id", this.id);
+                 Shiny.onInputChange("soilFertility_typeFertilizer_value", this.value);
+                 })
+                '
+    ),
 
-                          ## script listening when fertilizer type is changed in soil fertility in experiment conditions
-                          tags$script('$(document).on("change", "select[id^=\'select_fertilizerType_soil_table_row\']",  function(){
-                                            Shiny.onInputChange("soilFertility_typeFertilizer", Math.random());
-                                            Shiny.onInputChange("soilFertility_typeFertilizer_id", this.id);
-                                            Shiny.onInputChange("soilFertility_typeFertilizer_value", this.value);
+    ## script listening when product is changed in soil fertility in experiment conditions
+    tags$script('$(document).on("change", "select[id^=\'select_product_soil_table_row_\']",  function(){
+                 Shiny.onInputChange("soilFertility_product", Math.random());
+                 Shiny.onInputChange("soilFertility_product_id", this.id);
+                 })
+                '
+    ),
 
-                                        })
-                                      '
-                          ),
-                          ## script listening when product is changed in soil fertility in experiment conditions
-                          tags$script('$(document).on("change", "select[id^=\'select_product_soil_table_row_\']",  function(){
-                                            Shiny.onInputChange("soilFertility_product", Math.random());
-                                            Shiny.onInputChange("soilFertility_product_id", this.id);
-                                        })
-                                      '
-                          ),
+    tags$script('Shiny.addCustomMessageHandler("focus",
+                 function(a) {
+                 document.getElementById(a).focus();
+                 });
+                '
+    ),
 
-                          tags$script(
-                            'Shiny.addCustomMessageHandler("focus",
-                                    function(a) {
-                                    document.getElementById(a).focus();
-                                    });'
-                          ),
+    # select_product_soil_table_row_
+    #        tags$style(HTML("
+    #          #landLeveling_start_date .form-control {
+    #          background-color: #cce5ff;
+    #    }
+    #
+    # ")),
 
-
-                          # select_product_soil_table_row_
-                   #        tags$style(HTML("
-                   #          #landLeveling_start_date .form-control {
-                   #          background-color: #cce5ff;
-                   #    }
-                   #
-                   # ")),
-
-
-
-                          tags$style(HTML("
+    tags$style(HTML("
 
                               .box.box-solid.box-warning>.box-header {
                                 color:#000;
@@ -449,555 +458,682 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                      #   shiny::textOutput("fbDesign_id")
                                      # ),
 
-                                     fluidRow(
-                                       box(
-                                         title = tagList(shiny::icon("plus-circle"), "Create fieldbook"), status = "primary", solidHeader = TRUE, icon = icon("plus-circle"),
-                                         collapsible = TRUE, width = 12,
+    # Box: Create fieldbook
+    fluidRow(
+      box(
+        title = tagList(shiny::icon("plus-circle"), "Create fieldbook"), status = "primary", solidHeader = TRUE, collapsible = TRUE, width = 12,
+        tabsetPanel(
+          id= "fbDesignNav",
 
-                                         #shiny::tabsetPanel(# id = "fbDesignNav",
-                                         #fluidRow(
-                                         tabsetPanel(id= "fbDesignNav",
-                                         #shinydashboard::tabBox(id = "fbDesignNav", height = NULL, width = 12,
-                                         # box(title = "", solidHeader = TRUE, status = "primary", width=12,
-                                            #tabsetPanel(id = "inExpInfo", #Begin Master tabSetPanel
+          ##### Tab: Start Experiment #####
+          shiny::tabPanel(
+            title = tagList(shiny::icon("info"), "Experiment"), value = "experiment",
+            column(
+              width = 6,
+              h2("Experiment details"),
+              disabled(textInput(inputId = "experimentId", label = "Experiment ID", value = stri_rand_strings(1, 8,  '[A-Z0-9]'))),
+              textInput(inputId = "experimentName", label = "Experiment name", value = ""),
+              textInput(inputId = "experimentProjectName", label = "Experiment project name", value = ""),
 
-                                              shiny::tabPanel("Experiment", value = "experiment", icon = shiny::icon("info"),
-                                                  #fluidRow(
-                                                    column(width = 6,
-                                                           h2("Experiment details"),
-                                                           # actionButton("btTest", "test"),
+              shiny::dateRangeInput("fbDesign_project_time_line", "Experiment date", start = Sys.Date() - 2, end = Sys.Date() + 20, startview = "year", format = "yyyy/mm/dd"),
 
-                                                           disabled(textInput(inputId = "experimentId", label = "Experiment ID", value = stri_rand_strings(1, 8,  '[A-Z0-9]'))),
-                                                           textInput(inputId = "experimentName", label = "Experiment name", value = ""),
-                                                           textInput(inputId = "experimentProjectName", label = "Experiment project name", value = ""),
+              selectizeInput("designFieldbook_typeExperiment", "Type of experiment", multiple = TRUE,
+                             options = list(maxItems =1, placeholder = "Select one..."),
+                             choices = c("Controlled treatment trial",
+                                         "Observation trial",
+                                         "Varietal trial",
+                                         "Demonstration trial",
+                                         "Germplasm screening trial")
+              ),
 
-                                                           shiny::dateRangeInput("fbDesign_project_time_line", "Experiment date", start = Sys.Date() - 2,
-                                                                                 end = Sys.Date() + 20, startview = "year",format = "yyyy/mm/dd"),
-                                                           selectizeInput("designFieldbook_typeExperiment", "Type of experiment", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("Controlled treatment trial","Observation trial","Varietal trial", "Demonstration trial", "Germplasm screening trial")),
+              textAreaInput(inputId = "experimentObj", label = "Experiment objective", value = ""),
 
-                                                            textAreaInput(inputId = "experimentObj", label = "Experiment objective", value = ""),
+              br(),
+              h2("Institutions/Organizations/Agencies associated with experiment"),
 
-                                                           # hr(),
-                                                           br(),
-                                                           h2("Institutions/Organizations/Agencies associated with experiment"),
+              selectizeInput("designFieldbook_fundAgencyType", "Funding agency type", multiple = TRUE,
+                             options = list(placeholder ="Select..."),
+                             choices = sort(c("Agricultural Extension",
+                                              "Advisory Services",
+                                              "International NGO",
+                                              "National NGO",
+                                              "Farmers Organization",
+                                              "Regional Organization",
+                                              "International Organization",
+                                              "Financing Institution",
+                                              "Foundation",
+                                              "Private Company",
+                                              "Academic Institution",
+                                              "National Research Institution",
+                                              "International Research Center",
+                                              "Foreign Government",
+                                              "National Government"))
+              ),
 
-                                                           selectizeInput("designFieldbook_fundAgencyType", "Funding agency type",multiple = TRUE, options = list(placeholder ="Select..."), choices =
-                                                                            sort(c(
-                                                                              "Agricultural Extension",
-                                                                              "Advisory Services",
-                                                                              "International NGO",
-                                                                              "National NGO",
-                                                                              "Farmers Organization",
-                                                                              "Regional Organization",
-                                                                              "International Organization",
-                                                                              "Financing Institution",
-                                                                              "Foundation",
-                                                                              "Private Company",
-                                                                              "Academic Institution",
-                                                                              "National Research Institution",
-                                                                              "International Research Center",
-                                                                              "Foreign Government",
-                                                                              "National Government"))
-                                                                          ),
-                                                           fluidRow(id="fl_agencies_assoc_exp"),
-                                                           numericInput("numProjEntity", "Number of project management entities", min = 1, max=5, value = 1)
-                                                           # textInput(inputId = "fundName", label = "Funding agency name", value = ""),
-                                                    ),
-                                                  column(width = 12,
-                                                         fluidRow(id="fl_entities_exp")
-                                                  ),
-                                                  column(width = 6,
+              fluidRow(id = "fl_agencies_assoc_exp"),
 
+              numericInput("numProjEntity", "Number of project management entities", min = 1, max=5, value = 1)
+            ),
 
-                                                           br(),
+            column(
+              width = 12,
+              fluidRow(id = "fl_entities_exp")
+            ),
 
-                                                           h2("Experiment leads"),
+            column(
+              width = 6,
+              br(),
+              h2("Experiment leads"),
+              numericInput("numLeads", "Number of experiment leads", min = 1, max=5, value = 1)
+            ),
 
-                                                           numericInput("numLeads", "Number of experiment leads", min = 1, max=5, value = 1)
-                                                  ),
-                                                  column(width = 12,
-                                                         fluidRow(id="fl_exp_leads")
-                                                  ),
-                                                  #),
-                                                  #fluidRow(
-                                                    sidebarPanel(id="sidebar", width = 12,
-                                                                 actionButton("btnNextPersonnelInfo", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+            column(
+              width = 12,
+              fluidRow(id = "fl_exp_leads")
+            ),
+
+            sidebarPanel(
+              id = "sidebar", width = 12,
+              actionButton("btnNextPersonnelInfo", "Next", class = "btn-primary", style="color: #fff;", href = "#top")
+            )
+          ),
+          ##### Tab: End Experiment #####
+
+          ##### Tab: Start Personnel #####
+          tabPanel(
+            title = tagList(shiny::icon("user"), "Personnel"), value = "tabPersonnel",
+            column(
+              width = 6,
+              h2("Personnel associated with the experiment"),
+              selectInput("npersons", "Number of personnel", choices = 1:5)
+            ),
+
+            box(
+              title = tagList(shiny::icon("user"), "Personnel #1"), solidHeader = TRUE, status = "warning", width=12,
+              fluidRow(
+                column(
+                  width=6,
+                  selectizeInput("personnel1Type", "Person type", multiple=TRUE,
+                                 options = list(maxItems =1, placeholder= "Select one..."),
+                                 choices = c("Farmer",
+                                             "Researcher",
+                                             "Student",
+                                             "Research station worker",
+                                             "Extension agent",
+                                             "Faculty member",
+                                             "Other")
+                  ),
+
+                  hidden(textInput("personnel1Type_other", "", value = "")),
+                  textInput("person1FirstName", "Person, first name", value = ""),
+                  textInput("person1LastName", "Person, last name", value = "")
+                ),
+
+                column(
+                  width=6,
+                  textInput("person1Email", "Person email", value = ""),
+                  selectizeInput("person1Affiliation", "Person, affiliation", multiple =T,
+                                 options = list(maxItems =1, placeholder="Select one.."),
+                                 choices = c("CGIAR Center",
+                                             "Other")
+                  ),
+
+                  conditionalPanel("input.person1Affiliation == 'CGIAR Center'",
+                                   selectizeInput("person1Center", "Organization name", multiple = TRUE,
+                                                  options = list(maxItems =1, placeholder ="Select one..."),
+                                                  choices = c("Africa Rice Center",
+                                                              "Bioversity International",
+                                                              "Center for International Forestry Research (CIFOR)",
+                                                              "International Center for Agricultural Research (ICARDA)",
+                                                              "International Center for Tropical Agriculture (CIAT)",
+                                                              "International Crops Research Institute for the Semi-Arid (ICRISAT)",
+                                                              "International Food Policy Research Institute (IFPRI)",
+                                                              "International Institute of Tropical Agriculture (IITA)",
+                                                              "International Livestock Research Institure (ILRI)",
+                                                              "International Maize and Wheat Improvement Center (CIMMYT)",
+                                                              "International Potato Center (CIP)",
+                                                              "International Rice Research Institute (IRRI)",
+                                                              "International Water Management Institute (IWMI)",
+                                                              "World Agroforestry Centre (ICRAF)",
+                                                              "WorldFish")
+                                   )
+                  ),
+
+                  hidden(textInput("person1Affiliation_other", "", value = "")),
+                  textInput(inputId = "person1ORCID",
+                            label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"),
+                            value = ""
+                  )
+                )
+              )
+            ),
+
+            conditionalPanel("input.npersons == 2 | input.npersons == 3 | input.npersons == 4 | input.npersons == 5",
+                             box(
+                               title = tagList(shiny::icon("user"), "Personnel #2"), solidHeader = TRUE, status = "warning", width=12,
+                               fluidRow(
+                                 column(
+                                   width=6,
+                                   selectizeInput("personnel2Type", "Person type", multiple=TRUE,
+                                                  options = list(maxItems =1, placeholder= "Select one..."),
+                                                  choices = c("Farmer",
+                                                              "Researcher",
+                                                              "Student",
+                                                              "Research station worker",
+                                                              "Extension agent",
+                                                              "Faculty member",
+                                                              "Other")
+                                   ),
+
+                                   hidden(textInput(inputId = "personnel2Type_other", label = "", value = "")),
+                                   textInput(inputId = "person2FirstName", label = "Person, first name", value = ""),
+                                   textInput(inputId = "person2LastName", label = "Person, last name", value = "")
+                                 ),
+
+                                 column(
+                                   width=6,
+                                   textInput(inputId = "person2Email", label = "Person email", value = ""),
+                                   selectizeInput("person2Affiliation", "Person, affiliation", multiple =T,
+                                                  options = list(maxItems =1, placeholder="Select one.."),
+                                                  choices = c("CGIAR Center",
+                                                              "Other")
+                                   ),
+
+                                   conditionalPanel("input.person2Affiliation == 'CGIAR Center'",
+                                                    selectizeInput("person2Center", "Organization name", multiple = TRUE,
+                                                                   options = list(maxItems =1, placeholder ="Select one..."),
+                                                                   choices = c("Africa Rice Center",
+                                                                               "Bioversity International",
+                                                                               "Center for International Forestry Research (CIFOR)",
+                                                                               "International Center for Agricultural Research (ICARDA)",
+                                                                               "International Center for Tropical Agriculture (CIAT)",
+                                                                               "International Crops Research Institute for the Semi-Arid (ICRISAT)",
+                                                                               "International Food Policy Research Institute (IFPRI)",
+                                                                               "International Institute of Tropical Agriculture (IITA)",
+                                                                               "International Livestock Research Institure (ILRI)",
+                                                                               "International Maize and Wheat Improvement Center (CIMMYT)",
+                                                                               "International Potato Center (CIP)",
+                                                                               "International Rice Research Institute (IRRI)",
+                                                                               "International Water Management Institute (IWMI)",
+                                                                               "World Agroforestry Centre (ICRAF)",
+                                                                               "WorldFish")
                                                     )
-                                                  #)
-                                              ),
+                                   ),
 
-                                              tabPanel("Personnel", value = "tabPersonnel", icon = shiny::icon("user"),
-                                                # column( width = 12,
-                                                  #fluidRow(
-                                                    # fluidRow(
-                                                      column( width = 6,
-                                                      h2("Personnel associated with the experiment"),
-                                                      selectInput(inputId = "npersons", label = "Number of personnel", choices = 1:5)
-                                                      ),
-                                                    # ),
+                                   hidden(textInput("person2Affiliation_other", "", value = "")),
+                                   textInput(inputId = "person2ORCID",
+                                             label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"),
+                                             value = ""
+                                   )
+                                 )
+                               )
+                             )
+            ),
 
-                                                    # fluidRow(
-                                                           box(
-                                                             title = tagList(shiny::icon("user"), "Personnel #1"), solidHeader = TRUE, status = "warning", width=12,
+            conditionalPanel("input.npersons == 3 | input.npersons == 4 | input.npersons == 5",
+                             box(
+                               title = tagList(shiny::icon("user"), "Personnel #3"), solidHeader = TRUE, status = "warning", width=12,
+                               fluidRow(
+                                 column(
+                                   width=6,
+                                   selectizeInput("personnel3Type", "Person type", multiple=TRUE,
+                                                  options = list(maxItems =1, placeholder= "Select one..."),
+                                                  choices = c("Farmer",
+                                                              "Researcher",
+                                                              "Student",
+                                                              "Research station worker",
+                                                              "Extension agent",
+                                                              "Faculty member",
+                                                              "Other")
+                                   ),
 
-                                                             fluidRow(
-                                                               column(width=6,
-                                                                      selectizeInput("personnel1Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
-                                                                      hidden(textInput(inputId = "personnel1Type_other", label = "", value = "")),
+                                   hidden(textInput(inputId = "personnel3Type_other", label = "", value = "")),
+                                   textInput(inputId = "person3FirstName", label = "Person, first name", value = ""),
+                                   textInput(inputId = "person3LastName", label = "Person, last name", value = "")
+                                 ),
 
-                                                                      textInput(inputId = "person1FirstName", label = "Person, first name", value = ""),
-                                                                      textInput(inputId = "person1LastName", label = "Person, last name", value = "")
+                                 column(
+                                   width=6,
+                                   textInput(inputId = "person3Email", label = "Person email", value = ""),
+                                   selectizeInput("person3Affiliation", "Person, affiliation", multiple =T,
+                                                  options = list(maxItems =1, placeholder="Select one.."),
+                                                  choices = c("CGIAR Center",
+                                                              "Other")
+                                   ),
 
-                                                                      # actionButton(inputId = "addAnotherPerson",label="Add another")
-                                                               ),
-                                                               column(width=6,
+                                   conditionalPanel("input.person3Affiliation == 'CGIAR Center'",
+                                                    selectizeInput("person3Center", "Organization name", multiple = TRUE,
+                                                                   options = list(maxItems =1, placeholder ="Select one..."),
+                                                                   choices = c("Africa Rice Center",
+                                                                               "Bioversity International",
+                                                                               "Center for International Forestry Research (CIFOR)",
+                                                                               "International Center for Agricultural Research (ICARDA)",
+                                                                               "International Center for Tropical Agriculture (CIAT)",
+                                                                               "International Crops Research Institute for the Semi-Arid (ICRISAT)",
+                                                                               "International Food Policy Research Institute (IFPRI)",
+                                                                               "International Institute of Tropical Agriculture (IITA)",
+                                                                               "International Livestock Research Institure (ILRI)",
+                                                                               "International Maize and Wheat Improvement Center (CIMMYT)",
+                                                                               "International Potato Center (CIP)",
+                                                                               "International Rice Research Institute (IRRI)",
+                                                                               "International Water Management Institute (IWMI)",
+                                                                               "World Agroforestry Centre (ICRAF)",
+                                                                               "WorldFish")
+                                                    )
+                                   ),
 
-                                                                      textInput(inputId = "person1Email", label = "Person email", value = ""),
-                                                                      selectizeInput("person1Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
-                                                                                       c("CGIAR Center",
-                                                                                         "Other"
-                                                                                       )
-                                                                      ),
-                                                                      conditionalPanel("input.person1Affiliation == 'CGIAR Center'",
-                                                                                       selectizeInput("person1Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
-                                                                                         "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
+                                   hidden(textInput("person3Affiliation_other", "", value = "")),
+                                   textInput(inputId = "person3ORCID",
+                                             label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"),
+                                             value = ""
+                                   )
+                                 )
+                               )
+                             )
+            ),
 
-                                                                                       ))
-                                                                                       # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
+            conditionalPanel("input.npersons == 4 | input.npersons == 5",
+                             box(
+                               title = tagList(shiny::icon("user"), "Personnel #4"), solidHeader = TRUE, status = "warning", width=12,
+                               fluidRow(
+                                 column(
+                                   width=6,
+                                   selectizeInput("personnel4Type", "Person type", multiple=TRUE,
+                                                  options = list(maxItems =1, placeholder= "Select one..."),
+                                                  choices = c("Farmer",
+                                                              "Researcher",
+                                                              "Student",
+                                                              "Research station worker",
+                                                              "Extension agent",
+                                                              "Faculty member",
+                                                              "Other")
+                                   ),
 
-                                                                      ),
-                                                                      hidden(textInput("person1Affiliation_other", "", value = "")),
+                                   hidden(textInput(inputId = "personnel4Type_other", label = "", value = "")),
+                                   textInput(inputId = "person4FirstName", label = "Person, first name", value = ""),
+                                   textInput(inputId = "person4LastName", label = "Person, last name", value = "")
+                                 ),
 
+                                 column(
+                                   width=6,
+                                   textInput(inputId = "person4Email", label = "Person email", value = ""),
+                                   selectizeInput("person4Affiliation", "Person, affiliation", multiple =T,
+                                                  options = list(maxItems =1, placeholder="Select one.."),
+                                                  choices = c("CGIAR Center",
+                                                              "Other")
+                                   ),
 
-                                                                      # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
-                                                                      textInput(inputId = "person1ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = "")
-                                                                      # selectizeInput("person1Country", label="Country in which active", multiple = TRUE,
-                                                                      #                choices = listCountries,
-                                                                      #                options = list(maxItems = 1, placeholder = 'Select one... '))
-                                                               )
-                                                              )
-                                                         ),
-                                                    # ),
+                                   conditionalPanel("input.person4Affiliation == 'CGIAR Center'",
+                                                    selectizeInput("person1Center", "Organization name", multiple = TRUE,
+                                                                   options = list(maxItems =1, placeholder ="Select one..."),
+                                                                   choices = c("Africa Rice Center",
+                                                                               "Bioversity International",
+                                                                               "Center for International Forestry Research (CIFOR)",
+                                                                               "International Center for Agricultural Research (ICARDA)",
+                                                                               "International Center for Tropical Agriculture (CIAT)",
+                                                                               "International Crops Research Institute for the Semi-Arid (ICRISAT)",
+                                                                               "International Food Policy Research Institute (IFPRI)",
+                                                                               "International Institute of Tropical Agriculture (IITA)",
+                                                                               "International Livestock Research Institure (ILRI)",
+                                                                               "International Maize and Wheat Improvement Center (CIMMYT)",
+                                                                               "International Potato Center (CIP)",
+                                                                               "International Rice Research Institute (IRRI)",
+                                                                               "International Water Management Institute (IWMI)",
+                                                                               "World Agroforestry Centre (ICRAF)",
+                                                                               "WorldFish")
+                                                    )
+                                   ),
 
+                                   hidden(textInput("person4Affiliation_other", "", value = "")),
+                                   textInput(inputId = "person4ORCID",
+                                             label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"),
+                                             value = ""
+                                   )
+                                 )
+                               )
+                             )
+            ),
 
-                                                    conditionalPanel("input.npersons == 2  |
-                                                                     input.npersons == 3  |
-                                                                     input.npersons == 4 |
-                                                                     input.npersons == 5",
-                                                      # fluidRow(
-                                                        box(
-                                                          title = tagList(shiny::icon("user"), "Personnel #2"), solidHeader = TRUE, status = "warning", width=12,
+            conditionalPanel("input.npersons == 5",
+                             box(
+                               title = tagList(shiny::icon("user"), "Personnel #5"), solidHeader = TRUE, status = "warning", width=12,
+                               fluidRow(
+                                 column(
+                                   width=6,
+                                   selectizeInput("personnel5Type", "Person type", multiple=TRUE,
+                                                  options = list(maxItems =1, placeholder= "Select one..."),
+                                                  choices = c("Farmer",
+                                                              "Researcher",
+                                                              "Student",
+                                                              "Research station worker",
+                                                              "Extension agent",
+                                                              "Faculty member",
+                                                              "Other")
+                                   ),
 
-                                                          fluidRow(
-                                                            column(width=6,
-                                                                   selectizeInput("personnel2Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
-                                                                   hidden(textInput(inputId = "personnel2Type_other", label = "", value = "")),
+                                   hidden(textInput(inputId = "personnel5Type_other", label = "", value = "")),
+                                   textInput(inputId = "person5FirstName", label = "Person, first name", value = ""),
+                                   textInput(inputId = "person5LastName", label = "Person, last name", value = "")
+                                 ),
 
-                                                                   textInput(inputId = "person2FirstName", label = "Person, first name", value = ""),
-                                                                   textInput(inputId = "person2LastName", label = "Person, last name", value = "")
+                                 column(
+                                   width=6,
+                                   textInput(inputId = "person5Email", label = "Person email", value = ""),
+                                   selectizeInput("person5Affiliation", "Person, affiliation", multiple =T,
+                                                  options = list(maxItems =1, placeholder="Select one.."),
+                                                  choices = c("CGIAR Center",
+                                                              "Other")
+                                   ),
 
-                                                                   # actionButton(inputId = "addAnotherPerson",label="Add another")
-                                                            ),
-                                                            column(width=6,
+                                   conditionalPanel("input.person5Affiliation == 'CGIAR Center'",
+                                                    selectizeInput("person5Center", "Organization name", multiple = TRUE,
+                                                                   options = list(maxItems =1, placeholder ="Select one..."),
+                                                                   choices = c("Africa Rice Center",
+                                                                               "Bioversity International",
+                                                                               "Center for International Forestry Research (CIFOR)",
+                                                                               "International Center for Agricultural Research (ICARDA)",
+                                                                               "International Center for Tropical Agriculture (CIAT)",
+                                                                               "International Crops Research Institute for the Semi-Arid (ICRISAT)",
+                                                                               "International Food Policy Research Institute (IFPRI)",
+                                                                               "International Institute of Tropical Agriculture (IITA)",
+                                                                               "International Livestock Research Institure (ILRI)",
+                                                                               "International Maize and Wheat Improvement Center (CIMMYT)",
+                                                                               "International Potato Center (CIP)",
+                                                                               "International Rice Research Institute (IRRI)",
+                                                                               "International Water Management Institute (IWMI)",
+                                                                               "World Agroforestry Centre (ICRAF)",
+                                                                               "WorldFish")
+                                                    )
+                                   ),
 
+                                   hidden(textInput("person5Affiliation_other", "", value = "")),
+                                   textInput(inputId = "person5ORCID",
+                                             label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"),
+                                             value = ""
+                                   )
+                                 )
+                               )
+                             )
+            ),
 
+            sidebarPanel(
+              id="sidebar", width = 12,
+              actionButton("btnNextSite", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+            )
+          ),
+          ##### Tab: End Personnel #####
 
+          ##### Tab: Start Site #####
+          tabPanel(
+            title = tagList(shiny::icon("location-arrow"), "Site"), value="tabSite",
+            column(
+              width = 6,
+              h2("Site information"),
+              uiOutput("uiTest"),
+              actionButton("refreshSiteList", "Look for sites"),
+              shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),
+              shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
+              br(),
+              h2("Site surrounding description"),
+              selectizeInput("fbDesign_inHighLevel", label="Higher-level landform", multiple = TRUE,
+                             choices = c("Plain",
+                                         "Basin",
+                                         "Valley",
+                                         "Plateau",
+                                         "Upland",
+                                         "Hill",
+                                         "Mountain"),
+                             options = list(maxItems = 1, placeholder = 'Select  one...')
+              ),
 
-                                                                   textInput(inputId = "person2Email", label = "Person email", value = ""),
-                                                                   selectizeInput("person2Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
-                                                                                    c("CGIAR Center",
-                                                                                      "Other"
-                                                                                    )
-                                                                   ),
-                                                                   conditionalPanel("input.person2Affiliation == 'CGIAR Center'",
-                                                                                    selectizeInput("person2Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
-                                                                                      "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
+              selectizeInput("fbDesign_inSiteVegetation", label="Vegetation surrounding the experiment site", multiple = TRUE,
+                             choices = c("Grassland",
+                                         "Crops",
+                                         "Forest",
+                                         "Woodland",
+                                         "Shrubs",
+                                         "Savanna",
+                                         "Other"),
+                             options = list(maxItems = 5, placeholder = 'Select one... ')
+              ),
 
-                                                                                    ))
-                                                                                    # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
+              textAreaInput("inSiteDescNotes", label="Site description notes", value="")
+            ),
 
-                                                                   ),
-                                                                   hidden(textInput("person2Affiliation_other", "", value = "")),
+            sidebarPanel(
+              id="sidebar", width = 12,
+              actionButton("btnNextCropInfo", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+            )
+          ),
+          ##### Tab: End Site #####
 
-                                                                   # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
-                                                                   textInput(inputId = "person2ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = "")
-                                                                   # selectizeInput("person2Country", label="Country in which active", multiple = TRUE,
-                                                                   #                choices = listCountries,
-                                                                   #                options = list(maxItems = 1, placeholder = 'Select one... '))
-                                                            )
-                                                          )
-                                                        )#)
+          ##### Tab: Start Crop #####
+          tabPanel(
+            title = tagList(shiny::icon("pagelines"), "Crop"), value="tabCrop",
+            column(
+              width = 6,
+              h2("Description of crops sown"),
+              shiny::selectInput("croppingType", "Cropping type",
+                                 choices = c("Monocrop",
+                                             "Intercrop")
+              )
+            ),
 
+            column(
+              width = 12,
+              conditionalPanel("input.croppingType == 'Monocrop'",
+                               fluidRow(
+                                 column(
+                                   width = 12,
+                                   h2("Crop information"),
+                                   fluidRow(
+                                     column(
+                                       width = 6,
+                                       selectizeInput("cropCommonNameMono", "Crop common name", multiple = TRUE,
+                                                      options = list(maxItems =1, placeholder="Select one..."),
+                                                      choices = c("Cassava",
+                                                                  "Maize",
+                                                                  "Potato",
+                                                                  "Rice",
+                                                                  "Sweetpotato",
+                                                                  "Wheat",
+                                                                  "Other")
+                                       ),
+
+                                       hidden(textInput("cropCommonNameMono_other", ""))
+                                     ),
+
+                                     column(
+                                       width = 6,
+                                       selectizeInput(inputId = "cultivarNameMono", label = "Variety name", choices = c(), multiple = T,
+                                                      options = list(maxItems=1, 'create' = TRUE)
+                                       )
+                                     )
+                                   )
+                                 )
+                               )
+              ),
+
+              conditionalPanel("input.croppingType == 'Intercrop'",
+                               fluidRow(
+                                 column(
+                                   width = 6,
+                                   selectizeInput("cropsSelected", label="Select crops", selected=NULL, multiple = TRUE,
+                                                  choices = c("Cassava",
+                                                              "Maize",
+                                                              "Potato",
+                                                              "Rice",
+                                                              "Sweetpotato",
+                                                              "Wheat",
+                                                              "Other")
+                                   )
+                                 )
+                               ),
+
+                               conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 0",
+                                                h2("Crop information"),
+                                                box(
+                                                  title = "Crop #1", solidHeader = TRUE, status = "warning", width=12,
+                                                  fluidRow(
+                                                    column(
+                                                      width = 6,
+                                                      disabled(textInput(inputId = "cropCommonName1", label = "Crop common name", value = ""))
                                                     ),
 
-                                                    conditionalPanel("input.npersons == 3  |
-                                                                     input.npersons == 4 |
-                                                                     input.npersons == 5",
-                                                                     # column(width = 12, br()),
-                                                                     # fluidRow(
-                                                                       box(
-                                                                         title = tagList(shiny::icon("user"), "Personnel #3"), solidHeader = TRUE, status = "warning", width=12,
-
-                                                                         fluidRow(
-                                                                           column(width=6,
-
-                                                                                  selectizeInput("personnel3Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
-                                                                                  hidden(textInput(inputId = "personnel3Type_other", label = "", value = "")),
-
-                                                                                  textInput(inputId = "person3FirstName", label = "Person, first name", value = ""),
-                                                                                  textInput(inputId = "person3LastName", label = "Person, last name", value = "")
-
-                                                                                  # actionButton(inputId = "addAnotherPerson",label="Add another")
-                                                                           ),
-                                                                           column(width=6,
-
-
-                                                                                  textInput(inputId = "person3Email", label = "Person email", value = ""),
-                                                                                  selectizeInput("person3Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
-                                                                                                   c("CGIAR Center",
-                                                                                                     "Other"
-                                                                                                   )
-                                                                                  ),
-                                                                                  conditionalPanel("input.person3Affiliation == 'CGIAR Center'",
-                                                                                                   selectizeInput("person3Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
-                                                                                                     "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
-
-                                                                                                   ))
-                                                                                                   # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
-
-                                                                                  ),
-                                                                                  hidden(textInput("person3Affiliation_other", "", value = "")),
-
-                                                                                  # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
-                                                                                  textInput(inputId = "person3ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = "")
-                                                                                  # selectizeInput("person3Country", label="Country in which active", multiple = TRUE,
-                                                                                  #                choices = listCountries,
-                                                                                  #                options = list(maxItems = 1, placeholder = 'Select one... '))
-                                                                           )
-                                                                         )
-                                                                       )
-                                                                     # )
-
-                                                    ),
-
-
-                                                    conditionalPanel("input.npersons == 4 |
-                                                                     input.npersons == 5",
-
-                                                                     # fluidRow(
-                                                                       box(
-                                                                         title = tagList(shiny::icon("user"), "Personnel #4"), solidHeader = TRUE, status = "warning", width=12,
-
-                                                                         fluidRow(
-                                                                           column(width=6,
-
-                                                                                  selectizeInput("personnel4Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
-                                                                                  hidden(textInput(inputId = "personnel4Type_other", label = "", value = "")),
-
-                                                                                  textInput(inputId = "person4FirstName", label = "Person, first name", value = ""),
-                                                                                  textInput(inputId = "person4LastName", label = "Person, last name", value = "")
-
-                                                                                  # actionButton(inputId = "addAnotherPerson",label="Add another")
-                                                                           ),
-                                                                           column(width=6,
-
-                                                                                  textInput(inputId = "person4Email", label = "Person email", value = ""),
-                                                                                  selectizeInput("person4Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
-                                                                                                   c("CGIAR Center",
-                                                                                                     "Other"
-                                                                                                   )
-                                                                                  ),
-                                                                                  conditionalPanel("input.person4Affiliation == 'CGIAR Center'",
-                                                                                                   selectizeInput("person1Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
-                                                                                                     "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
-
-                                                                                                   ))
-                                                                                                   # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
-
-                                                                                  ),
-                                                                                  hidden(textInput("person4Affiliation_other", "", value = "")),
-
-                                                                                  # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
-                                                                                  textInput(inputId = "person4ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = "")
-                                                                                  # selectizeInput("person4Country", label="Country in which active", multiple = TRUE,
-                                                                                  #                choices = listCountries,
-                                                                                  #                options = list(maxItems = 1, placeholder = 'Select one... '))
-                                                                           )
-                                                                         )
-                                                                       )#)
-
-                                                    ),
-                                                    conditionalPanel("input.npersons == 5",
-
-                                                                     # fluidRow(
-                                                                       box(
-                                                                         title = tagList(shiny::icon("user"), "Personnel #5"), solidHeader = TRUE, status = "warning", width=12,
-
-                                                                         fluidRow(
-                                                                           column(width=6,
-                                                                                  selectizeInput("personnel5Type", "Person type", multiple=TRUE, options = list(maxItems =1, placeholder= "Select one..."), choices = c("Farmer","Researcher","Student", "Research station worker", "Extension agent", "Faculty member", "Other")),
-                                                                                  hidden(textInput(inputId = "personnel5Type_other", label = "", value = "")),
-
-                                                                                  textInput(inputId = "person5FirstName", label = "Person, first name", value = ""),
-                                                                                  textInput(inputId = "person5LastName", label = "Person, last name", value = "")
-
-                                                                                  # actionButton(inputId = "addAnotherPerson",label="Add another")
-                                                                           ),
-                                                                           column(width=6,
-                                                                                  textInput(inputId = "person5Email", label = "Person email", value = ""),
-                                                                                  selectizeInput("person5Affiliation", "Person, affiliation", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
-                                                                                                   c("CGIAR Center",
-                                                                                                     "Other"
-                                                                                                   )
-                                                                                  ),
-                                                                                  conditionalPanel("input.person5Affiliation == 'CGIAR Center'",
-                                                                                                   selectizeInput("person5Center", "Organization name", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
-                                                                                                     "Africa Rice Center",	"Bioversity International",	"Center for International Forestry Research (CIFOR)",	"International Center for Agricultural Research (ICARDA)",	"International Center for Tropical Agriculture (CIAT)",	"International Crops Research Institute for the Semi-Arid (ICRISAT)",	"International Food Policy Research Institute (IFPRI)",	"International Institute of Tropical Agriculture (IITA)",	"International Livestock Research Institure (ILRI)",	"International Maize and Wheat Improvement Center (CIMMYT)",	"International Potato Center (CIP)",	"International Rice Research Institute (IRRI)",	"International Water Management Institute (IWMI)",	"World Agroforestry Centre (ICRAF)",	"WorldFish"
-
-                                                                                                   ))
-                                                                                                   # textInput(inputId = "leadName", label = "Experiment, lead organization name", value = "")
-
-                                                                                  ),
-                                                                                  hidden(textInput("person5Affiliation_other", "", value = "")),
-
-                                                                                  # textInput(inputId = "person1Affiliation", label = "Person, affiliation", value = ""),
-                                                                                  textInput(inputId = "person5ORCID", label = HTML("Person, ORCID id if available (if not, consider <a href='https://orcid.org/register' target='_blank'>registering</a>!)"), value = "")
-                                                                                  # selectizeInput("person5Country", label="Country in which active", multiple = TRUE,
-                                                                                  #                choices = listCountries,
-                                                                                  #                options = list(maxItems = 1, placeholder = 'Select one... '))
-                                                                           )
-                                                                         )
-                                                                       )
-                                                                     #)
-
-                                                    ),
-
-
-                                                  sidebarPanel(id="sidebar", width = 12,
-                                                               actionButton("btnNextSite", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+                                                    column(
+                                                      width = 6,
+                                                      textInput(inputId = "cropVarietyName2", label = "Crop variety name", value = "")
+                                                    )
                                                   )
+                                                )
+                               ),
 
-                                              ),
+                               conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 1",
+                                                box(
+                                                  title = "Crop #2", solidHeader = TRUE, status = "warning", width=12,
+                                                  column(
+                                                    width = 6,
+                                                    disabled(textInput(inputId = "cropCommonName2", label = "Crop common name", value = ""))
+                                                  ),
 
-                                              tabPanel("Site", value="tabSite",  icon = shiny::icon("location-arrow"),
-                                                       #fluidRow(
-                                                         column(width = 6,
-                                                                h2("Site information"),
-
-                                                                uiOutput("uiTest"),
-                                                                actionButton("refreshSiteList", "Look for sites"),
-                                                                shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),
-                                                                shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
-
-                                                                br(),
-                                                                h2("Site surrounding description"),
-                                                                selectizeInput("fbDesign_inHighLevel", label="Higher-level landform", multiple = TRUE,
-                                                                               choices = c("Plain",	"Basin",	"Valley",	"Plateau","Upland",	"Hill",	"Mountain"),
-                                                                               options = list(maxItems = 1, placeholder = 'Select  one...')),
-                                                                selectizeInput("fbDesign_inSiteVegetation", label="Vegetation surrounding the experiment site", multiple = TRUE,
-                                                                               choices = c("Grassland", "Crops", "Forest", "Woodland", "Shrubs", "Savanna", "Other"),
-                                                                               options = list(maxItems = 5, placeholder = 'Select one... ')),
-
-
-                                                                textAreaInput("inSiteDescNotes", label="Site description notes", value="")),
-                                                       # sidebarPanel(id="sidebar", width = 12,
-                                                       #              actionButton("btnNextCropInfo", "Next", class = "btn-primary",style="color: #fff;", href="#top")
-                                                       # )
-                                                       sidebarPanel(id="sidebar", width = 12,
-                                                                    actionButton("btnNextCropInfo", "Next", class = "btn-primary",style="color: #fff;", href="#top")
-                                                       )
-                                                       #)
-
-
-                                              ),
-
-
-
-
-                                         tabPanel("Crop" , value="tabCrop", icon = shiny::icon("pagelines"),
-                                                      column( width = 6,
-                                                              h2("Description of crops sown"),
-
-                                                              shiny::selectInput("croppingType", "Cropping type", choices = c("Monocrop", "Intercrop"))
-                                                      ),
-                                                      column(width = 12,
-
-                                                             conditionalPanel("input.croppingType == 'Monocrop'",
-                                                                              fluidRow(
-                                                                                column(width = 12,
-
-                                                                                       h2("Crop information"),
-
-                                                                                       fluidRow(
-
-
-                                                                                         column(width = 6,
-
-                                                                                                selectizeInput("cropCommonNameMono", "Crop common name", multiple = TRUE, options = list(maxItems =1, placeholder="Select one..."), choices = c("Cassava","Maize","Potato","Rice","Sweetpotato", "Wheat", "Other")),
-                                                                                                hidden(textInput("cropCommonNameMono_other", ""))
-
-                                                                                         ),
-                                                                                         column(width = 6,
-                                                                                                #textInput(inputId = "cultivarNameMono", label = "Variety name", value = "")
-                                                                                                # textInput(inputId = "monoCropLocalName", label = "Crop local name", value = "")
-                                                                                                # selectizeInput("cultivarNameMono", "Variety name",
-                                                                                                #                ,  multiple = T, options = list(maxItems=1, placeholder ="Select...")),
-                                                                                                selectizeInput(inputId = "cultivarNameMono", label = "Variety name", choices = c(), multiple = T, options = list(maxItems=1, 'create' = TRUE))
-                                                                                         )
-                                                                                       )#,
-                                                                                       # h2("Row geometry for each plot"),
-                                                                                       # fluidRow(
-                                                                                       #   column(
-                                                                                       #     width = 12,
-                                                                                       #
-                                                                                       #   )
-                                                                                       # )
-                                                                                )
-                                                                              )
-
-                                                             ),
-
-
-                                                             conditionalPanel("input.croppingType == 'Intercrop'",
-                                                                              fluidRow(
-                                                                                column( width = 6,
-                                                                                        selectizeInput("cropsSelected",label="Select crops", selected=NULL, multiple = TRUE, choices=c("Cassava","Maize","Potato","Rice","Sweetpotato", "Wheat", "Other"))
-                                                                                )
-                                                                              ),
-
-                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 0",
-                                                                                               h2("Crop information"),
-
-                                                                                               box(title = "Crop #1", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                   fluidRow(
-                                                                                                     column(width = 6,
-                                                                                                            disabled(textInput(inputId = "cropCommonName1", label = "Crop common name", value = ""))
-                                                                                                     ),
-                                                                                                     column(width = 6,
-                                                                                                            textInput(inputId = "cropVarietyName2", label = "Crop variety name", value = "")
-
-                                                                                                     )
-                                                                                                   )
-                                                                                               )
-                                                                              ),
-
-                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 1",
-                                                                                               box(title = "Crop #2", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                   column(width = 6,
-                                                                                                          disabled(textInput(inputId = "cropCommonName2", label = "Crop common name", value = ""))
-                                                                                                          # textInput(inputId = "cropLatinName2", label = "Crop latin name", value = "")
-
-                                                                                                   ),
-                                                                                                   column(width = 6,
-                                                                                                          textInput(inputId = "cropVarietyName2", label = "Crop variety name", value = "")
-
-                                                                                                   )
-
-                                                                                               )
-                                                                              ),
-
-                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >2",
-                                                                                               box(title = "Crop #3", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                   column(width = 6,
-                                                                                                          disabled(textInput(inputId = "cropCommonName3", label = "Crop common name", value = ""))
-                                                                                                   ),
-                                                                                                   column(width = 6,
-                                                                                                          textInput(inputId = "cropVarietyName3", label = "Crop variety name", value = "")
-
-                                                                                                   )
-                                                                                               )
-                                                                              ),
-                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >3",
-                                                                                               box(title = "Crop #4", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                   column(width = 6,
-                                                                                                          disabled(textInput(inputId = "cropCommonName4", label = "Crop common name", value = ""))
-                                                                                                   ),
-                                                                                                   column(width = 6,
-                                                                                                          textInput(inputId = "cropVarietyName4", label = "Crop variety name", value = "")
-
-                                                                                                   )
-                                                                                               )
-                                                                              ),
-                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >4",
-                                                                                               box(title = "Crop #5", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                   column(width = 6,
-                                                                                                          disabled(textInput(inputId = "cropCommonName5", label = "Crop common name", value = ""))
-                                                                                                   ),
-                                                                                                   column(width = 6,
-                                                                                                          textInput(inputId = "cropVarietyName5", label = "Crop variety name", value = "")
-
-                                                                                                   )
-                                                                                               )
-                                                                              ),
-                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >5",
-                                                                                               box(title = "Crop #6", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                   column(width = 6,
-                                                                                                          disabled(textInput(inputId = "cropCommonName6", label = "Crop common name", value = ""))
-                                                                                                   ),
-                                                                                                   column(width = 6,
-                                                                                                          textInput(inputId = "cropVarietyName6", label = "Crop variety name", value = "")
-
-                                                                                                   )
-                                                                                               )
-                                                                              ),
-                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 6",
-                                                                                               box(title = "Crop #7", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                   column(width = 6,
-                                                                                                          disabled(textInput(inputId = "cropCommonName7", label = "Crop common name", value = ""))
-                                                                                                   ),
-                                                                                                   column(width = 6,
-                                                                                                          textInput(inputId = "cropVarietyName7", label = "Crop variety name", value = "")
-
-                                                                                                   )
-                                                                                               )
-                                                                              ),
-                                                                              conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >7",
-                                                                                               box(title = "Crop #8", solidHeader = TRUE, status = "warning", width=12,
-                                                                                                   column(width = 6,
-                                                                                                          disabled(textInput(inputId = "cropCommonName8", label = "Crop common name", value = ""))
-                                                                                                   ),
-                                                                                                   column(width = 6,
-                                                                                                          textInput(inputId = "cropVarietyName8", label = "Crop variety name", value = "")
-
-                                                                                                   )
-                                                                                               )
-                                                                              ),
-                                                                              fluidRow(
-                                                                                column(12,
-                                                                                  h2("Row geometry for each plot"),
-                                                                                  fluidRow(id="fr_intercrop_rows")
-                                                                                )
-                                                                              )
-                                                             ),
-                                                             br(),
-                                                             h2("Previous crop or fallow"),
-                                                             fluidRow(
-                                                               column( width = 6,
-                                                                       #textInput(inputId = "numPreviousCrop", label = "Number of previous crop", value = ""),
-                                                                       # numericInput(inputId = "numPreviousCrop", label = "Number of previous crop", value = "1", min = 1, max = 10),
-
-                                                                       # selectInput("prevCropName", "", c("Cassava","Common bean", "Fallow", "Maize","Potato", "Sweetpotato", "Wheat", "Other")
-                                                                       # ),
-                                                                       # hidden(textInput("prevCropName_other", ""))
-
-                                                                       selectizeInput("prevCropName", "", multiple = TRUE, options = list(maxItems =1, placeholder="Select one..."), choices = c("Cassava","Maize","Potato","Rice","Sweetpotato", "Wheat", "Other")),
-                                                                       hidden(textInput("prevCropName_other", ""))
-                                                               )
-                                                             )
-
-                                                      ),
-                                                  sidebarPanel(id="sidebar", width = 12,
-                                                               actionButton("btnDesign", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+                                                  column(
+                                                    width = 6,
+                                                    textInput(inputId = "cropVarietyName2", label = "Crop variety name", value = "")
                                                   )
-                                         ),
+                                                )
+                               ),
 
-                                              #BEGIN (STATISTICAL DESGIGN)
-                                              shiny::tabPanel("Design", value = "tabDesign", icon = shiny::icon("th-list"),
-                                                    # br(),
-                                                    # br(),
-                                                    #h2("Design information"),
+                               conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >2",
+                                                box(
+                                                  title = "Crop #3", solidHeader = TRUE, status = "warning", width=12,
+                                                  column(
+                                                    width = 6,
+                                                    disabled(textInput(inputId = "cropCommonName3", label = "Crop common name", value = ""))
+                                                  ),
 
-                                                    tags$style(HTML("
+                                                  column(
+                                                    width = 6,
+                                                    textInput(inputId = "cropVarietyName3", label = "Crop variety name", value = "")
+                                                  )
+                                                )
+                               ),
+
+                               conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >3",
+                                                box(
+                                                  title = "Crop #4", solidHeader = TRUE, status = "warning", width=12,
+                                                  column(
+                                                    width = 6,
+                                                    disabled(textInput(inputId = "cropCommonName4", label = "Crop common name", value = ""))
+                                                  ),
+
+                                                  column(
+                                                    width = 6,
+                                                    textInput(inputId = "cropVarietyName4", label = "Crop variety name", value = "")
+                                                  )
+                                                )
+                               ),
+
+                               conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >4",
+                                                box(
+                                                  title = "Crop #5", solidHeader = TRUE, status = "warning", width=12,
+                                                  column(
+                                                    width = 6,
+                                                    disabled(textInput(inputId = "cropCommonName5", label = "Crop common name", value = ""))
+                                                  ),
+
+                                                  column(
+                                                    width = 6,
+                                                    textInput(inputId = "cropVarietyName5", label = "Crop variety name", value = "")
+                                                  )
+                                                )
+                               ),
+
+                               conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >5",
+                                                box(
+                                                  title = "Crop #6", solidHeader = TRUE, status = "warning", width=12,
+                                                  column(
+                                                    width = 6,
+                                                    disabled(textInput(inputId = "cropCommonName6", label = "Crop common name", value = ""))
+                                                  ),
+
+                                                  column(
+                                                    width = 6,
+                                                    textInput(inputId = "cropVarietyName6", label = "Crop variety name", value = "")
+                                                  )
+                                                )
+                               ),
+
+                               conditionalPanel("input.cropsSelected != null && input.cropsSelected.length > 6",
+                                                box(
+                                                  title = "Crop #7", solidHeader = TRUE, status = "warning", width=12,
+                                                  column(
+                                                    width = 6,
+                                                    disabled(textInput(inputId = "cropCommonName7", label = "Crop common name", value = ""))
+                                                  ),
+
+                                                  column(
+                                                    width = 6,
+                                                    textInput(inputId = "cropVarietyName7", label = "Crop variety name", value = "")
+                                                  )
+                                                )
+                               ),
+
+                               conditionalPanel("input.cropsSelected != null && input.cropsSelected.length >7",
+                                                box(
+                                                  title = "Crop #8", solidHeader = TRUE, status = "warning", width=12,
+                                                  column(
+                                                    width = 6,
+                                                    disabled(textInput(inputId = "cropCommonName8", label = "Crop common name", value = ""))
+                                                  ),
+
+                                                  column(
+                                                    width = 6,
+                                                    textInput(inputId = "cropVarietyName8", label = "Crop variety name", value = "")
+                                                  )
+                                                )
+                               ),
+
+                               fluidRow(
+                                 column(
+                                   12,
+                                   h2("Row geometry for each plot"),
+                                   fluidRow(id="fr_intercrop_rows")
+                                 )
+                               )
+              ),
+
+              br(),
+              h2("Previous crop or fallow"),
+              fluidRow(
+                column(
+                  width = 6,
+                  selectizeInput("prevCropName", "", multiple = TRUE,
+                                 options = list(maxItems =1, placeholder="Select one..."),
+                                 choices = c("Cassava",
+                                             "Maize",
+                                             "Potato",
+                                             "Rice",
+                                             "Sweetpotato",
+                                             "Wheat",
+                                             "Other")
+                  ),
+
+                  hidden(textInput("prevCropName_other", ""))
+                )
+              )
+            ),
+
+            sidebarPanel(
+              id="sidebar", width = 12,
+              actionButton("btnDesign", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+            )
+          ),
+          ##### Tab: End Crop #####
+
+          ##### Tab: Start Design #####
+          shiny::tabPanel(
+            title = tagList(shiny::icon("th-list"), "Design"), value = "tabDesign",
+            tags$style(HTML("
 
                                                               #lvl_hdafims1 + div> div>.item {
                                                               background:   #337ab7 !important;
@@ -1044,103 +1180,137 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                               background:   #FBBF09 !important;
                                                               }"
 
-                                                    )),
+            )),
 
-                                                    #fluidRow(
+            column(
+              width = 6,
+              h2("Information on experimental unit"),
+              selectizeInput("info_experiment_unit", "Information on experimental unit", multiple = T,
+                             options = list(maxItems =1, placeholder="Select one..."),
+                             choices = c("plot",
+                                         "field",
+                                         "pot")
+              ),
 
-                                                      column(width = 6,
-                                                             h2("Information on experimental unit"),
-                                                             selectizeInput("info_experiment_unit", "Information on experimental unit", multiple = T, options = list(maxItems =1, placeholder="Select one..."), choices = c("plot", "field", "pot")),
-                                                             conditionalPanel("input.info_experiment_unit == 'plot'",
-                                                               fluidRow(
-                                                                 column(width = 3,
-                                                                        textInput("expt_plot_width", label="Width", value="")
-                                                                 ),
-                                                                 column(width = 3,
-                                                                        selectizeInput("expt_plot_width_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "ft"))
-                                                                 ),
-                                                                 column(width = 3,
-                                                                        textInput("expt_plot_length", label="Length", value="")
-                                                                 ),
-                                                                 column(width = 3,
-                                                                        selectizeInput("expt_plot_length_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "ft"))
-                                                                 )
-                                                               )
-                                                             ),
-                                                             conditionalPanel("input.info_experiment_unit == 'field'",
-                                                                              fluidRow(
-                                                                                column(width = 3,
-                                                                                       textInput("expt_field_width", label="Width", value="")
-                                                                                ),
-                                                                                column(width = 3,
-                                                                                       selectizeInput("expt_field_width_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "km", "ft", "mi"))
-                                                                                ),
-                                                                                column(width = 3,
-                                                                                       textInput("expt_field_length", label="Length", value="")
-                                                                                ),
-                                                                                column(width = 3,
-                                                                                       selectizeInput("expt_field_length_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("m", "km", "ft", "mi"))
-                                                                                )
-                                                                              )
-                                                             ),
-                                                             conditionalPanel("input.info_experiment_unit == 'pot'",
-                                                             fluidRow(
-                                                               column(width = 3,
-                                                                      textInput("pot_diameter", label="Diameter", value="")
-                                                               ),
-                                                               column(width = 3,
-                                                                      selectizeInput("pot_diameter_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("cm", "in"))
-                                                               ),
-                                                               column(width = 3,
-                                                                      textInput("pot_depth", label="Depth", value="")
-                                                               ),
-                                                               column(width = 3,
-                                                                      selectizeInput("pot_depth_unit", label="Unit", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c("cm", "in"))
-                                                               )
-                                                             )),
-                                                             br(),
-                                                             h2("Design information"),
-                                                             #Select statistical design
-                                                             shiny::selectInput("designFieldbook_agrofims", "Select experimental design",  c("Choose one" = "", design_choices_agrofims), selected = 'CRD',
-                                                                                multiple = FALSE)
+              conditionalPanel("input.info_experiment_unit == 'plot'",
+                               fluidRow(
+                                 column(width = 3, textInput("expt_plot_width", label="Width", value="")),
+                                 column(
+                                   width = 3,
+                                   selectizeInput("expt_plot_width_unit", label="Unit", multiple = TRUE,
+                                                  options = list(maxItems =1, placeholder ="Select one..."),
+                                                  choices = c("m",
+                                                              "ft")
+                                   )
+                                 ),
 
+                                 column(width = 3, textInput("expt_plot_length", label="Length", value="")),
+                                 column(
+                                   width = 3,
+                                   selectizeInput("expt_plot_length_unit", label="Unit", multiple = TRUE,
+                                                  options = list(maxItems =1, placeholder ="Select one..."),
+                                                  choices = c("m",
+                                                              "ft")
+                                   )
+                                 )
+                               )
+              ),
 
-                                                      ),
-                                                    column(12,
-                                                           br(),
-                                                           h2("Treatment description"),
-                                                           HTML("<center>"),
-                                                           #h3(radioButtons(inputId = "fullFactorialRB", "Is this a full factorial design?", choices=c("Yes", "No"), selected = "Yes", inline = T)),
-                                                           h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB", label = "Is this a full factorial design?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
+              conditionalPanel("input.info_experiment_unit == 'field'",
+                               fluidRow(
+                                 column(width = 3, textInput("expt_field_width", label="Width", value="")),
+                                 column(
+                                   width = 3,
+                                   selectizeInput("expt_field_width_unit", label="Unit", multiple = TRUE,
+                                                  options = list(maxItems =1, placeholder ="Select one..."),
+                                                  choices = c("m",
+                                                              "km",
+                                                              "ft",
+                                                              "mi")
+                                   )
+                                 ),
 
-                                                           HTML("</center>")
-                                                    ),
-                                                    column(12,
-                                                      tabsetPanel(id= "treatmentSetPanel",
+                                 column(width = 3, textInput("expt_field_length", label="Length", value="")),
+                                 column(
+                                   width = 3,
+                                   selectizeInput("expt_field_length_unit", label="Unit", multiple = TRUE,
+                                                  options = list(maxItems =1, placeholder ="Select one..."),
+                                                  choices = c("m",
+                                                              "km",
+                                                              "ft",
+                                                              "mi")
+                                   )
+                                 )
+                               )
+              ),
 
-                                                            shiny::tabPanel("Factors", value = "tabTreatmentFactors",
-                                                                br(), br(),
-                                                                column(width = 12,
+              conditionalPanel("input.info_experiment_unit == 'pot'",
+                               fluidRow(
+                                 column(width = 3, textInput("pot_diameter", label="Diameter", value="")),
+                                 column(
+                                   width = 3,
+                                   selectizeInput("pot_diameter_unit", label="Unit", multiple = TRUE,
+                                                  options = list(maxItems =1, placeholder ="Select one..."),
+                                                  choices = c("cm",
+                                                              "in")
+                                   )
+                                 ),
 
+                                 column(width = 3, textInput("pot_depth", label="Depth", value="")),
+                                 column(
+                                   width = 3,
+                                   selectizeInput("pot_depth_unit", label="Unit", multiple = TRUE,
+                                                  options = list(maxItems =1, placeholder ="Select one..."),
+                                                  choices = c("cm",
+                                                              "in")
+                                   )
+                                 )
+                               )
+              ),
 
-                                                                           fluidRow( id = "fluid_treatment_description"),
+              br(),
+              h2("Design information"),
+              shiny::selectInput("designFieldbook_agrofims", "Select experimental design", selected = 'CRD', multiple = FALSE,
+                                 c("Choose one" = "", design_choices_agrofims)
+              )
+            ),
 
-                                                                           fluidRow(id="fluid_factor_input")
-                                                                    )
-                                                            )
-                                                        )
+            column(
+              12,
+              br(),
+              h2("Treatment description"),
+              HTML("<center>"),
+              h3( shinyWidgets::radioGroupButtons(inputId = "fullFactorialRB", label = "Is this a full factorial design?", choices=c("Yes", "No"), status= "primary", size= "lg", checkIcon = list(yes = icon("ok", lib = "glyphicon")))),
+              HTML("</center>")
+            ),
 
-                                                    ),
+            column(
+              12,
+              tabsetPanel(
+                id= "treatmentSetPanel",
+                shiny::tabPanel(
+                  "Factors",
+                  value = "tabTreatmentFactors",
+                  br(),
+                  br(),
+                  column(
+                    width = 12,
+                    fluidRow( id = "fluid_treatment_description"),
+                    fluidRow(id="fluid_factor_input")
+                  )
+                )
+              )
+            ),
 
+            sidebarPanel(
+              id="sidebar", width = 12,
+              actionButton("btnNextAgro", "Next", class = "btn-primary",style="color: #fff;" , href="#top")
+            )
+          ),
+          ##### Tab: End Design #####
 
-
-                                                      sidebarPanel(id="sidebar", width = 12,
-                                                                   actionButton("btnNextAgro", "Next", class = "btn-primary",style="color: #fff;" , href="#top")
-                                                      )
-
-                                             ), #END DESIGN (STATISTICAL DESIGN)
-
-                                             shiny::tabPanel("Experiment conditions", value = "tabAgroFeat", icon = shiny::icon("truck"),
+          ##### Tab: Start Experiment conditions #####
+          shiny::tabPanel("Experiment conditions", value = "tabAgroFeat", icon = shiny::icon("truck"),
                                                         column(width = 6,
                                                                h2("Experiment conditions"),
                                                                selectizeInput("selectAgroFeature", "", c(), multiple = TRUE, choices=c(
@@ -2076,8 +2246,41 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      ),
                                                                      fluidRow(id="fr_fertilizer_application"),
                                                                      fluidRow(
-                                                                       column(4,
-                                                                              textInput("soil_fertilizer_totalAppRate", "Total application rate"),
+                                                                       column(12,
+                                                                              column(1, style="padding:3px; text-align:center;"),
+                                                                              column(10, style="padding:0px;",
+                                                                                     column(6, style="padding:0px;",
+                                                                                            column(3, style="padding:5px;"
+                                                                                            ),
+                                                                                            column(5, style="padding:5px;",
+                                                                                                   br(),HTML("<div style='text-align:center;'>"), h5("Total calculated application:"), HTML("</div>")
+                                                                                            ),
+                                                                                            column(2, style="padding:5px;",
+                                                                                                   textInput("soil_fertilizer_totalAppRate1", "")
+                                                                                            ),
+                                                                                            column(2, style="padding:5px;"
+                                                                                            )
+                                                                                     ),
+                                                                                     column(6,style="padding:0px;",
+                                                                                            column(2, style="padding:5px;",
+                                                                                                   textInput("soil_fertilizer_totalAppRate2", "")
+                                                                                            ),
+                                                                                            column(3, style="padding:5px;"
+                                                                                            ),
+                                                                                            column(3, style="padding:5px"
+                                                                                            ),
+                                                                                            column(4, style="padding:5px;"
+                                                                                            )
+                                                                                     )
+                                                                              ),
+                                                                              column(1,  style="padding:3px;"
+                                                                              )
+                                                                       )
+
+                                                                     ),
+                                                                     fluidRow(
+                                                                       column(4,br(),
+                                                                              #textInput("soil_fertilizer_totalAppRate", "Total application rate"),
                                                                               textInput("soil_fertilizer_fractionTotalAppRate", "Fraction of total application rate")
                                                                        )
                                                                      ),
