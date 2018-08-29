@@ -7361,9 +7361,11 @@ server_design_agrofims <- function(input, output, session, values){
     expLead <- paste(expLead, collapse = ", ") #Experiment lead person/Primary Investigator
 
 
+
+
     dt<- data.frame(expid, expname, expProjName, expBeginDate, expEnDate, expDuration,
-      expTypeExp, expObj, expAgType ,projEntity,
-      contCenter, contCRP, projLeadEnt,tLeadCenter, expLead)
+                    expTypeExp, expObj, expAgType ,projEntity,
+                    contCenter, contCRP, projLeadEnt,tLeadCenter, expLead)
 
     dtNames<- c("Experiment ID","Experiment name", "Experiment project name", "Experiment start date",
                 "Experiment end date", "Experiment duration",  "Type of experiment",
@@ -7374,11 +7376,74 @@ server_design_agrofims <- function(input, output, session, values){
 
     names(dt) <- dtNames
     dt <- as.data.frame(t(dt))
-    names(dt)[1:2] <- c("Variable",	"Value")
-    dt
+    dt <- tibble::rownames_to_column(dt)
+    names(dt)[1:3] <- c("Variable",	"Value", "Value2")
+    dt[,1:2]
 
   })
 
+
+  ############# phenology #######################################################################
+
+  phenology_dt <- reactive({
+
+   pheNames<- c("Planting date",	"Transplanting date",	"Planting Emergence date","Planting and transplanting notes",
+     "Sowing date", "Sowing Emergence date" , "Sowing Notes",
+
+     "Flowering date", "Flowering 50% flowering date" , "Flowering End date", "Flowering Notes",
+
+     "Grain filling Start date" , "Grain filling End date" , "Grain filling Notes",
+
+     "Fruit development start date", "50% fruit development date",
+     "Fruit development end date", "Fruit ripening date", "Fruit development notes",
+
+     "Maturity start date",	"50% maturity date",	"Maturity end date",	"Maturity Notes",
+     "Senescence start date", "50% senescence date", "Senescence end date",
+
+     "Other phenological stage Name",
+     "Other phenological stage Start date", "Other phenological stage End date",
+     "Other phenological stage Notes"
+   )
+
+  # data.frame(
+  # paste(input$cropPheno_planting_date),
+  # paste(input$cropPheno_transpanting_date),
+  # paste(input$cropPhen_plantingEmergence_date),
+  # input$cropPheno_sowEmerg_notes,
+  # paste(input$cropPheno_sowing_date),
+  # paste(input$cropPheno_emergence_date),
+  # input$cropPheno_sowEmerg_notes,
+  #
+  # input$cropPheno_flowering_sdate, input$cropPheno_flowering_50date,
+  # input$cropPheno_flowering_edate, input$cropPheno_flowering_notes,
+  #
+  # paste(input$cropPheno_grainFilling_sdate), paste( input$cropPheno_grainFilling_edate),   input$cropPheno_grainFilling_notes,
+  #
+  # paste(input$cropPheno_fruitDev_date),
+  #       paste(input$cropPheno_fruit50dev_date),
+  #             paste(input$cropPheno_fruitDevEnd_date),
+  #                   paste(input$cropPheno_fruitRip_date,
+  #   input$cropPheno_fruitDev_notes,
+  #
+  #   input$cropPheno_maturity_start_date,
+  #   input$cropPheno_maturity_50_date,
+  #   input$cropPheno_maturity_end_date,
+  #   input$cropPheno_senescence_start_date,
+  #   input$cropPheno_senescence_50_date,
+  #   input$cropPheno_senescence_end_date,
+  #   input$cropPheno_maturity_notes,
+  #
+  #     input$cropPheno_otherPheno_name,
+  #     input$cropPheno_otherPheno_start_date,
+  #     input$cropPheno_otherPheno_end_date,
+  #     input$cropPheno_otherPheno_notes
+  #  )
+
+  vect<-rep("NA", length(pheNames) )
+  res<-data.frame(t(vect))
+  names(res)<-pheNames
+  res
+  })
 
 
   #############  factor_dt2 ######################################################################
@@ -8099,6 +8164,8 @@ server_design_agrofims <- function(input, output, session, values){
          fb_traits <- fb_agrofims_traits()
 
          metadata <- metadata_dt2()
+         phenology <- phenology_dt()
+
          #names(metadata) <- c("Variable", "Value")
          #installation <- as.data.frame(factor_dt2())
 
@@ -8125,6 +8192,11 @@ server_design_agrofims <- function(input, output, session, values){
 
          openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
          openxlsx::writeDataTable(wb, "Metadata", x = metadata,
+                                  colNames = TRUE, withFilter = FALSE)
+
+
+         openxlsx::addWorksheet(wb, "Phenology", gridLines = TRUE)
+         openxlsx::writeDataTable(wb, "Phenology", x = phenology,
                                   colNames = TRUE, withFilter = FALSE)
          #
          #
