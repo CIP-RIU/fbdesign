@@ -457,7 +457,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   path <- fbglobal::get_base_dir()
   # field operations as list of factors
-  fp <- file.path(path, "listFactors_v2.1.rds")
+  fp <- file.path(path, "listFactors_v3.rds")
 
   # para guardar lista de comboboxes para la tabla en treatment description
   lvl <- reactiveValues()
@@ -1184,7 +1184,7 @@ server_design_agrofims <- function(input, output, session, values){
                                 column(10,
 
                                   column(3,br(),HTML("<div style='text-align:center;'>"), h5("Total calculated application:"), HTML("</div>")),
-                                  column(3, textInput(paste0("input_product_RateTotal_factor_", index, "_level_", level), "")),
+                                  column(3, disabled(textInput(paste0("input_product_RateTotal_factor_", index, "_level_", level), ""))),
                                   # column(3,
                                   #        fluidRow(
                                   #          column(9,
@@ -1196,7 +1196,7 @@ server_design_agrofims <- function(input, output, session, values){
                                   #        )
                                   # ),
                                   column(3),
-                                  column(3,textInput(paste0("input_element_RateTotal_factor_", index, "_level_", level), ""))
+                                  column(3,disabled(textInput(paste0("input_element_RateTotal_factor_", index, "_level_", level), "")))
 
                                   # column(3,
                                   #        fluidRow(
@@ -7330,20 +7330,31 @@ server_design_agrofims <- function(input, output, session, values){
         projEntity[i] <- input[[paste0("projEntity_", i)]] #Project entity
         contCenter[i] <- input[[paste0("contCenter_", i)]] #Contributor center
         contCRP[i] <- ""  #contributor crp
-        print("2 null")
+        print("3 null")
       } else if(input[[paste0("projEntity_", i)]]=="Other"){
         projEntity[i] <- input[[paste0("projEntity_", i,"_other")]]
         contCenter[i] <-  ""
         contCRP[i] <- ""
+        print("4 null")
       } else {
+        print("5 null")
         projEntity[i]<- input[[paste0("projEntity_", i)]] #Project entity
         contCenter[i]<- input[[paste0("contCenter_", i)]] #Contributor center
         contCRP[i]<- input[[paste0("contCRP_",  i)]] #contributor crp
       }
-  }
+    }
+
+    print(projEntity)
+    print(contCenter)
+    print(contCRP)
+
     projEntity<- paste(projEntity, collapse = ", ")
     contCenter <- paste(contCenter, collape=",")
     contCRP <- paste(contCRP, collape=",")
+
+    print(projEntity)
+    print(contCenter)
+    print(contCRP)
 
     #Experiment duration
     xdur <- interval(ymd(input$fbDesign_project_time_line[1]),ymd(input$fbDesign_project_time_line[2]))
@@ -7381,9 +7392,6 @@ server_design_agrofims <- function(input, output, session, values){
     tLeadCenter <-  paste(tLeadCenter, collapse = ", ") #Choose CGIAR center
     expLead <- paste(expLead, collapse = ", ") #Experiment lead person/Primary Investigator
 
-
-
-
     dt<- data.frame(expid, expname, expProjName, expBeginDate, expEnDate, expDuration,
                     expTypeExp, expObj, expAgType ,projEntity,
                     contCenter, contCRP, projLeadEnt,tLeadCenter, expLead)
@@ -7399,7 +7407,7 @@ server_design_agrofims <- function(input, output, session, values){
     dt <- as.data.frame(t(dt))
     dt <- tibble::rownames_to_column(dt)
     names(dt)[1:3] <- c("Variable",	"Value", "Value2")
-    dt[,1:2]
+    dt[,1:3]
 
   })
 
@@ -7691,7 +7699,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   #############  metadata_dt ##########################################################
-   metadata_dt <- function(){
+  metadata_dt <- function(){
 
      c1 <- c('Experiment ID', input$experimentId)
      c2 <- c('Experiment name', input$experimentName )
@@ -7971,7 +7979,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   #############  factor_dt ##########################################################
-   factor_dt <- function(){
+  factor_dt <- function(){
 
 
      vinfExp <-""
@@ -8121,7 +8129,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   #############  traits_dt ##########################################################
-   traits_dt <- function(){
+  traits_dt <- function(){
      a<- traitsVals$Data
      if(nrow(traitsVals$Data) >0){
        aux_dt <- dplyr::filter(traitsVals$Data, Status=="Selected")
@@ -8134,7 +8142,7 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   ### Book preview #############################################################
-   shiny::observeEvent(input$fbDesign_draft_agrofims, {
+  shiny::observeEvent(input$fbDesign_draft_agrofims, {
 
      withProgress(message = 'Fieldbook Preview', value = 0, {
 
@@ -8181,13 +8189,13 @@ server_design_agrofims <- function(input, output, session, values){
 
 
          n <- as.numeric(input$numApplicationsIrrigation)
-         print("error -1")
+         #print("error -1")
          fb_traits <- fb_agrofims_traits()
-         print("error0")
+         #print("error0")
          metadata <- metadata_dt2()
          phenology <- phenology_dt()
 
-         print("error1")
+         #print("error1")
 
          #names(metadata) <- c("Variable", "Value")
          #installation <- as.data.frame(factor_dt2())
@@ -8202,7 +8210,7 @@ server_design_agrofims <- function(input, output, session, values){
          #
          weather <- dt_weather_agrofims()
          soil_vars <- dt_soil_agrofims()
-         print("error2")
+         #print("error2")
          #
          fname <- paste(file,"xlsx",sep=".")
          # #wb <- openxlsx::loadWorkbook(file = fname, create = TRUE)
@@ -8212,7 +8220,7 @@ server_design_agrofims <- function(input, output, session, values){
          incProgress(2/20,message = "Downloading data...")
 
          incProgress(6/20,message = "Metadata metadata sheet...")
-         print("error3")
+         #print("error3")
          openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
          openxlsx::writeDataTable(wb, "Metadata", x = metadata,
                                   colNames = TRUE, withFilter = FALSE)
@@ -8225,7 +8233,7 @@ server_design_agrofims <- function(input, output, session, values){
          #
          # incProgress(7/20,message = "Adding installation sheet...")
          #
-         print("error4")
+         # print("error4")
 
          incProgress(7/20,message = "Adding fieldbook data...")
          openxlsx::addWorksheet(wb, "Fieldbook", gridLines = TRUE)
@@ -8236,9 +8244,9 @@ server_design_agrofims <- function(input, output, session, values){
 
          agroFeaSelected <- input$selectAgroFeature
          #
-         print("error5")
+         #print("error5")
          if(is.element("Irrigation", agroFeaSelected)) {
-            print("irri")
+           # print("irri")
            incProgress(14/20,message = "Adding irrigation data...")
            dt_irri <- dt_irrigation()
            print(dt_irri)
@@ -8247,9 +8255,9 @@ server_design_agrofims <- function(input, output, session, values){
                                     colNames = TRUE, withFilter = FALSE)
 
          }
-         print("error6")
+         #print("error6")
          if(is.element("Harvest", agroFeaSelected)) {
-           print("har")
+           # print("har")
            incProgress(13/20,message = "Adding harvest data...")
 
            dt_harv <- dt_harvest()
@@ -8259,9 +8267,9 @@ server_design_agrofims <- function(input, output, session, values){
                                     colNames = TRUE, withFilter = FALSE)
 
          }
-         print("error7")
+         #print("error7")
          if(is.element("Land preparation", agroFeaSelected)) {
-           print("harv")
+           # print("harv")
             incProgress(10/20,message = "Adding land preparation sheet...")
 
             dt_land <- dt_land_description()
@@ -8271,9 +8279,9 @@ server_design_agrofims <- function(input, output, session, values){
                                      colNames = TRUE, withFilter = FALSE)
 
           }
-         print("error9")
+         #print("error9")
          if(is.element("Mulching and residue", agroFeaSelected)) {
-           print("mu")
+           #print("mu")
            incProgress(11/20,message = "Adding mulching data...")
 
            dt_mr <- dt_mures()
@@ -8282,9 +8290,9 @@ server_design_agrofims <- function(input, output, session, values){
            openxlsx::writeDataTable(wb, "Mulching and residue", x = dt_mr,
                                     colNames = TRUE, withFilter = FALSE)
          }
-         print("error10")
+         #print("error10")
          if(is.element("Planting and transplanting", agroFeaSelected)) {
-           print("plant")
+           #  print("plant")
            incProgress(12/20,message = "Adding planting and transplanting data...")
 
            dt_plant <- dt_planting()
@@ -8293,9 +8301,9 @@ server_design_agrofims <- function(input, output, session, values){
            openxlsx::writeDataTable(wb, "Planting and transplanting", x = dt_plant,
                                     colNames = TRUE, withFilter = FALSE)
          }
-         print("error11")
+         #print("error11")
          if(is.element("Weeding", agroFeaSelected)){
-           print("wed")
+           # print("wed")
             incProgress(13/20,message = "Adding Weeding data...")
 
             dt_weed <- dt_weeding()
@@ -8311,7 +8319,7 @@ server_design_agrofims <- function(input, output, session, values){
          openxlsx::writeDataTable(wb, "Trait list", x = trait_agrofims_dt,
                                   colNames = TRUE, withFilter = FALSE)
 
-         print("error12")
+         #print("error12")
          if(is.null(weather) || length(weather)==0 || nrow(weather)==0  ){
            print("there is no weather data")
 
@@ -8324,7 +8332,7 @@ server_design_agrofims <- function(input, output, session, values){
            openxlsx::writeDataTable(wb, "Weather", x = weather,
                                     colNames = TRUE, withFilter = FALSE)
          }
-         print("error13")
+         #print("error13")
          if(is.null(soil_vars) || length(soil_vars)==0 || nrow(soil_vars)==0 ){
            print("there is no soil data")
 

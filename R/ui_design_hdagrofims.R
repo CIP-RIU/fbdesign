@@ -505,7 +505,6 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
               ),
 
               fluidRow(id = "fl_agencies_assoc_exp"),
-              hidden(textInput("designFieldbook_fundAgencyType_other", "", value = "")),
 
               numericInput("numProjEntity", "Number of project management entities", min = 1, max=5, value = 1)
             ),
@@ -1091,7 +1090,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                fluidRow(
                                  column(
                                    12,
-                                   h2("Row geometry for each plot"),
+                                   h2("Row geometry"),
                                    fluidRow(id="fr_intercrop_rows")
                                  )
                                )
