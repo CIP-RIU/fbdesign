@@ -171,56 +171,58 @@ server_design_agrofims <- function(input, output, session, values){
             where = "beforeEnd",
             ui =fluidRow(id = paste0("fl_box_exp_ent_", count),
                          box(title = paste0("Project management entity #", count), solidHeader = TRUE, status = "warning", width=12,
-                             column(width = 4,
-                                    selectizeInput(paste0("projEntity_", count), "Project management entity", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
-                                                     c("CGIAR center",
-                                                       "Other"
-                                                     )
-                                    )
-                             ),
+                             fluidRow(
+                               column(width = 4,
+                                      selectizeInput(paste0("projEntity_", count), "Project management entity", multiple =T, options = list(maxItems =1, placeholder="Select one.."), choices=
+                                                       c("CGIAR center",
+                                                         "Other"
+                                                       )
+                                      )
+                               ),
 
-                             conditionalPanel(paste0("input.projEntity_", count, " == 'CGIAR center'"),
-                                              column(width = 4,
-                                                     selectizeInput(paste0("contCenter_", count), "Choose CGIAR center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = sort(c(
-                                                       "Africa Rice Center",
-                                                       "Bioversity International",
-                                                       "Center for International Forestry Research (CIFOR)",
-                                                       "International Center for Agricultural Research (ICARDA)",
-                                                       "International Center for Tropical Agriculture (CIAT)",
-                                                       "International Crops Research Institute for the Semi-Arid (ICRISAT)",
-                                                       "International Food Policy Research Institute (IFPRI)",
-                                                       "International Institute of Tropical Agriculture (IITA)",
-                                                       "International Livestock Research Institure (ILRI)",
-                                                       "International Maize and Wheat Improvement Center (CIMMYT)",
-                                                       "International Potato Center (CIP)",
-                                                       "International Rice Research Institute (IRRI)",
-                                                       "International Water Management Institute (IWMI)",
-                                                       "World Agroforestry Centre (ICRAF)",
-                                                       "WorldFish",
-                                                       "None"))
-                                                     )
-                                              ),
-                                              column(width = 4,
-                                                     selectizeInput(paste0("contCRP_", count), "Contributor CRP", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = sort(c(
-                                                       "CGIAR Research Program on Fish",
-                                                       "CGIAR Research Program on Forests, Trees and Agroforestry",
-                                                       "CGIAR Research Program on Grain Legumes and Dryland Cereals",
-                                                       "CGIAR Research Program on Wheat",
-                                                       "CGIAR Research Program on Livestock",
-                                                       "CGIAR Research Program on Maize",
-                                                       "CGIAR Research Program on Rice",
-                                                       "CGIAR Research Program on Roots, Tubers and Bananas",
-                                                       "CGIAR Research Program on Agriculture for Nutrition and Health",
-                                                       "CGIAR Research Program on Climate Change, Agriculture and Food Security",
-                                                       "CGIAR Research Program on Policies, Institutions, and Markets",
-                                                       "CGIAR Research Program on Water, Land and Ecosystems",
-                                                       "None"))
-                                                     )
-                                              )
+                               conditionalPanel(paste0("input.projEntity_", count, " == 'CGIAR center'"),
+                                                column(width = 4,
+                                                       selectizeInput(paste0("contCenter_", count), "Choose CGIAR center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
+                                                         "Africa Rice Center",
+                                                         "Bioversity International",
+                                                         "Center for International Forestry Research (CIFOR)",
+                                                         "International Center for Agricultural Research (ICARDA)",
+                                                         "International Center for Tropical Agriculture (CIAT)",
+                                                         "International Crops Research Institute for the Semi-Arid (ICRISAT)",
+                                                         "International Food Policy Research Institute (IFPRI)",
+                                                         "International Institute of Tropical Agriculture (IITA)",
+                                                         "International Livestock Research Institure (ILRI)",
+                                                         "International Maize and Wheat Improvement Center (CIMMYT)",
+                                                         "International Potato Center (CIP)",
+                                                         "International Rice Research Institute (IRRI)",
+                                                         "International Water Management Institute (IWMI)",
+                                                         "World Agroforestry Centre (ICRAF)",
+                                                         "WorldFish",
+                                                         "None")
+                                                       )
+                                                ),
+                                                column(width = 4,
+                                                       selectizeInput(paste0("contCRP_", count), "Contributor CRP", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = sort(c(
+                                                         "CGIAR Research Program on Fish",
+                                                         "CGIAR Research Program on Forests, Trees and Agroforestry",
+                                                         "CGIAR Research Program on Grain Legumes and Dryland Cereals",
+                                                         "CGIAR Research Program on Wheat",
+                                                         "CGIAR Research Program on Livestock",
+                                                         "CGIAR Research Program on Maize",
+                                                         "CGIAR Research Program on Rice",
+                                                         "CGIAR Research Program on Roots, Tubers and Bananas",
+                                                         "CGIAR Research Program on Agriculture for Nutrition and Health",
+                                                         "CGIAR Research Program on Climate Change, Agriculture and Food Security",
+                                                         "CGIAR Research Program on Policies, Institutions, and Markets",
+                                                         "CGIAR Research Program on Water, Land and Ecosystems",
+                                                         "None"))
+                                                       )
+                                                )
 
-                             ),
-                             column(width =4,style="padding-top: 5px;",
-                                    hidden(textInput(paste0("projEntity_", count, "_other"), "", value = ""))
+                               ),
+                               column(width =4,style="padding-top: 5px;",
+                                      hidden(textInput(paste0("projEntity_", count, "_other"), "", value = ""))
+                               )
                              )
 
 
@@ -277,42 +279,56 @@ server_design_agrofims <- function(input, output, session, values){
             where = "beforeEnd",
             ui =fluidRow(id = paste0("fl_box_exp_lead_", count),
                          box(title = paste0("#", count, ". Experiment lead organization, if different from project management entity"), solidHeader = TRUE, status = "warning", width=12,
-                             column(width = 6,
+                             fluidRow(
+                               column(width = 6,
 
-                                    selectizeInput(paste0("projLeadEnt_", count), "Experiment, lead organization type", multiple =T, options = list(maxItems =1, placeholder="Select one..."), choices=
-                                                     c("CGIAR center",
-                                                       "Other"
-                                                     )
-                                    ),
+                                      selectizeInput(paste0("projLeadEnt_", count), "Experiment, lead organization type", multiple =T, options = list(maxItems =1, placeholder="Select one..."), choices=
+                                                       c("CGIAR center",
+                                                         "Other"
+                                                       )
+                                      ),
 
-                                    conditionalPanel(paste0("input.projLeadEnt_", count, " == 'CGIAR center'"),
+                                      conditionalPanel(paste0("input.projLeadEnt_", count, " == 'CGIAR center'"),
 
-                                                     selectizeInput(paste0("tLeadCenter_", count), "Choose CGIAR center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
-                                                       "Africa Rice Center",
-                                                       "Bioversity International",
-                                                       "Center for International Forestry Research (CIFOR)",
-                                                       "International Center for Agricultural Research (ICARDA)",
-                                                       "International Center for Tropical Agriculture (CIAT)",
-                                                       "International Crops Research Institute for the Semi-Arid (ICRISAT)",
-                                                       "International Food Policy Research Institute (IFPRI)",
-                                                       "International Institute of Tropical Agriculture (IITA)",
-                                                       "International Livestock Research Institure (ILRI)",
-                                                       "International Maize and Wheat Improvement Center (CIMMYT)",
-                                                       "International Potato Center (CIP)",
-                                                       "International Rice Research Institute (IRRI)",
-                                                       "International Water Management Institute (IWMI)",
-                                                       "World Agroforestry Centre (ICRAF)",
-                                                       "WorldFish",
-                                                       "None")
-                                                     )
+                                                       selectizeInput(paste0("tLeadCenter_", count), "Choose CGIAR center", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices = c(
+                                                         "Africa Rice Center",
+                                                         "Bioversity International",
+                                                         "Center for International Forestry Research (CIFOR)",
+                                                         "International Center for Agricultural Research (ICARDA)",
+                                                         "International Center for Tropical Agriculture (CIAT)",
+                                                         "International Crops Research Institute for the Semi-Arid (ICRISAT)",
+                                                         "International Food Policy Research Institute (IFPRI)",
+                                                         "International Institute of Tropical Agriculture (IITA)",
+                                                         "International Livestock Research Institure (ILRI)",
+                                                         "International Maize and Wheat Improvement Center (CIMMYT)",
+                                                         "International Potato Center (CIP)",
+                                                         "International Rice Research Institute (IRRI)",
+                                                         "International Water Management Institute (IWMI)",
+                                                         "World Agroforestry Centre (ICRAF)",
+                                                         "WorldFish",
+                                                         "None")
+                                                       )
 
-                                    ),
-                                    conditionalPanel(paste0("input.projLeadEnt_", count, " == 'Other'"),
-                                                     selectizeInput(paste0("lead_org_type_1_", count), "",multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),  choices = c("University","University, main campus","Agricultural experimental extension", "Government research institution (NARS)","Government research institution, designated laboratory or center", "Private company", "Farm", "Farmer association or cooperative", "Non-governmental organization", "Extension organization", "CGIAR center", "Other" )),
-                                                                      hidden(textInput(paste0("lead_org_type_1_", count, "_other"), "")),
-                                                     textInput(paste0("leadNameOther_", count), "Experiment, lead organization name", value = "")
-                                    ),
-                                    textInput(inputId = paste0("expLead_", count), label = "Experiment lead person / Primary Investigator", value = "")
+                                      ),
+                                      conditionalPanel(paste0("input.projLeadEnt_", count, " == 'Other'"),
+                                                       selectizeInput(paste0("lead_org_type_1_", count), "",multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."),
+                                                                      choices = c("Agricultural experimental extension",
+                                                                                  "CGIAR center",
+                                                                                  "Extension organization",
+                                                                                  "Farm",
+                                                                                  "Farmer association or cooperative",
+                                                                                  "Government research institution, designated laboratory or center",
+                                                                                  "Government research institution (NARS)",
+                                                                                  "Non-governmental organization",
+                                                                                  "Private company",
+                                                                                  "University",
+                                                                                  "University, main campus",
+                                                                                  "Other")),
+                                                       hidden(textInput(paste0("lead_org_type_1_", count, "_other"), "")),
+                                                       textInput(paste0("leadNameOther_", count), "Experiment, lead organization name", value = "")
+                                      ),
+                                      textInput(inputId = paste0("expLead_", count), label = "Experiment lead person / Primary Investigator", value = "")
+                               )
                              )
                          ) #end box
             )
@@ -347,7 +363,13 @@ server_design_agrofims <- function(input, output, session, values){
 
   ################# personnel ######################################################
 
-   ### to add when maikig it dynamic
+   observeEvent(input$btLoadMyInfoPersonnel, {
+     if(session$userData$logged){
+       updateTextInput(session, "person1FirstName", value=session$userData$userFname)
+       updateTextInput(session, "person1LastName", value=session$userData$userLname)
+       updateTextInput(session, "person1Email", value=session$userData$userMail)
+     }
+   })
 
   ################# fin personnel ######################################################
 
@@ -367,9 +389,12 @@ server_design_agrofims <- function(input, output, session, values){
 
   cropsVar <- reactiveValues()
   cropsVar$selectedIntercrop <- list()
+  cropsVar$indexOtherIntercrop <- 0
+  cropsVar$varAuxOtherIntercrop <- ""
 
   observe({
     if(!is.null(input$cropsSelected)){
+      otherIndex <- 0
 
       l <- input$cropsSelected
       n <- length(input$cropsSelected)
@@ -414,6 +439,8 @@ server_design_agrofims <- function(input, output, session, values){
 
         if(l[[i]] == "Other"){
           enable(paste0("cropCommonName", i))
+          cropsVar$indexOtherIntercrop <- i
+
           updateTextInput(session,  paste0("cropCommonName", i),  value ="")
         }
         else {
@@ -712,6 +739,7 @@ server_design_agrofims <- function(input, output, session, values){
                                               fluidRow(
                                                 column(width = 6,
                                                        fluidRow(id=paste0("fl_title_factor_aux_", order))
+
                                                 ),
                                                 column(width = 6,
                                                        numericInput(paste0("numLevels_", order), HTML("Number of levels"), max = 5, min = 2, value = 2)
@@ -1610,11 +1638,7 @@ server_design_agrofims <- function(input, output, session, values){
     removeUI(selector = paste0("#fl_title_factor_", index), immediate = T)
 
     if(nrow(aux) > 0){
-      insertUI(
-        selector = paste0("#fl_title_factor_aux_", index),
-        where = "beforeBegin",
-        ui = fluidRow(id=paste0("fl_title_factor_", index), column(width = 12, br(), h4(HTML(paste0("<b>", sel_3, "</b>")))))
-      )
+
 
       if(isolate(input$fullFactorialRB == "No" )){
         if(aux$FORM == "combo box"){
@@ -1626,24 +1650,52 @@ server_design_agrofims <- function(input, output, session, values){
 
       }
 
-      if(isolate(is.numeric(input[[paste0("numLevels_", index)]]))){
-        if(aux$FORM == "combo box"){
-          drawComboboxLevel(index, input[[paste0("numLevels_", index)]], aux$LEVEL)
-        }
-        else if(aux$FORM == "text input"){
-          drawTextInputLevel(index, input[[paste0("numLevels_", index)]], aux$UNIT)
-        }
-        else if(aux$FORM == "numeric input"){
-          drawNumericInputLevel(index, input[[paste0("numLevels_", index)]])
-        }
+      isolate(
+        if(sel_1 == "Soil fertility"){
+          generateListLevelsSoilTab(index, aux$FORM, aux$LEVEL, sel_3)
 
-        else if(aux$FORM == "date"){
-          drawDateLevel(index, input[[paste0("numLevels_", index)]])
+          insertUI(
+            selector = paste0("#fl_title_factor_aux_", index),
+            where = "beforeBegin",
+            ui = fluidRow(id=paste0("fl_title_factor_", index),
+                          column(width = 12, br(),
+                                 h4(HTML(paste0("<b>", sel_3, "</b>")))
+                          ),
+                          column(width = 12,
+                                 h4(HTML(paste0("<font color='red'><b>", "Add design details using tab at top" , "</b></font>")))
+                          )
+                )
+          )
+
         }
+        else{
+          insertUI(
+            selector = paste0("#fl_title_factor_aux_", index),
+            where = "beforeBegin",
+            ui = fluidRow(id=paste0("fl_title_factor_", index), column(width = 12, br(), h4(HTML(paste0("<b>", sel_3, "</b>")))))
+          )
 
-      }
+          if(isolate(is.numeric(input[[paste0("numLevels_", index)]]))){
+            if(aux$FORM == "combo box"){
+              drawComboboxLevel(index, input[[paste0("numLevels_", index)]], aux$LEVEL)
+            }
+            else if(aux$FORM == "text input"){
+              drawTextInputLevel(index, input[[paste0("numLevels_", index)]], aux$UNIT)
+            }
+            else if(aux$FORM == "numeric input"){
+              drawNumericInputLevel(index, input[[paste0("numLevels_", index)]])
+            }
 
-      isolate(if(sel_1 == "Soil fertility"){generateListLevelsSoilTab(index, aux$FORM, aux$LEVEL, sel_3)})
+            else if(aux$FORM == "date"){
+              drawDateLevel(index, input[[paste0("numLevels_", index)]])
+            }
+
+          }
+
+
+        }
+      )
+
 
     }
     else{
@@ -1665,15 +1717,18 @@ server_design_agrofims <- function(input, output, session, values){
       isolate(
         if(input$sel1_1 == "Soil fertility"){
           addTabSoilFertility(1)
+          shinyjs::hide(id="numLevels_1")
           }
         else{
             removeTabSoilFertility(1)
+            shinyjs::show(id="numLevels_1")
         }
       )
     }
     else{
       removeTabSoilFertility(1)
       lvl$lv_1_2 <- NULL
+      shinyjs::show(id="numLevels_1")
     }
 
     lvl$lv_1_3 <- NULL
@@ -1718,12 +1773,19 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_2_2 <- unique(aux$SUBGROUP)
 
       isolate(
-        if(input$sel2_1 == "Soil fertility"){ addTabSoilFertility(2)}
-        else{removeTabSoilFertility(2)}
+        if(input$sel2_1 == "Soil fertility"){
+          shinyjs::hide(id="numLevels_2")
+          addTabSoilFertility(2)
+        }
+        else{
+          shinyjs::show(id="numLevels_2")
+          removeTabSoilFertility(2)
+        }
       )
     }
     else{
       lvl$lv_2_2 <- NULL
+      shinyjs::show(id="numLevels_2")
       removeTabSoilFertility(2)
       updateSelectInput(session, "sel2_2", choices = NULL)
     }
@@ -1769,12 +1831,19 @@ server_design_agrofims <- function(input, output, session, values){
       aux <- dplyr::filter(factors,GROUP==input$sel3_1)
       lvl$lv_3_2 <- unique(aux$SUBGROUP)
       isolate(
-        if(input$sel3_1 == "Soil fertility"){ addTabSoilFertility(3)}
-        else{removeTabSoilFertility(3)}
+        if(input$sel3_1 == "Soil fertility"){
+          shinyjs::hide(id="numLevels_3")
+          addTabSoilFertility(3)
+        }
+        else{
+          shinyjs::show(id="numLevels_3")
+          removeTabSoilFertility(3)
+        }
       )
     }
     else{
       lvl$lv_3_2 <- NULL
+      shinyjs::show(id="numLevels_3")
       removeTabSoilFertility(3)
       updateSelectInput(session, "sel3_2", choices = NULL)
     }
@@ -1822,12 +1891,19 @@ server_design_agrofims <- function(input, output, session, values){
       lvl$lv_4_2 <- unique(aux$SUBGROUP)
 
       isolate(
-        if(input$sel4_1 == "Soil fertility"){ addTabSoilFertility(4)}
-        else{removeTabSoilFertility(4)}
+        if(input$sel4_1 == "Soil fertility"){
+          shinyjs::hide(id="numLevels_4")
+          addTabSoilFertility(4)
+        }
+        else{
+          shinyjs::show(id="numLevels_4")
+          removeTabSoilFertility(4)
+        }
       )
     }
     else{
       lvl$lv_4_2 <- NULL
+      shinyjs::show(id="numLevels_4")
       removeTabSoilFertility(4)
     }
     isolate(convertListToHTMLSelect(4))
@@ -1873,12 +1949,19 @@ server_design_agrofims <- function(input, output, session, values){
       aux <- dplyr::filter(factors,GROUP==input$sel5_1)
       lvl$lv_5_2 <- unique(aux$SUBGROUP)
       isolate(
-        if(input$sel5_1 == "Soil fertility"){ addTabSoilFertility(5)}
-        else{removeTabSoilFertility(5)}
+        if(input$sel5_1 == "Soil fertility"){
+          shinyjs::show(id="numLevels_5")
+          addTabSoilFertility(5)
+        }
+        else{
+          shinyjs::show(id="numLevels_5")
+          removeTabSoilFertility(5)
+        }
       )
     }
     else{
       lvl$lv_5_2 <- NULL
+      shinyjs::show(id="numLevels_5")
       removeTabSoilFertility(5)
     }
     removeUI(selector = "#fluid_levels_5", immediate = T)
@@ -5088,7 +5171,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   ############ end traits table #############################################################
 
-  ### start crop measurement 2 ###
+  ### start crop measurement 1 ###
 
   traitsVals <- reactiveValues()
   traitsVals$aux <- data.frame()
@@ -5103,7 +5186,7 @@ server_design_agrofims <- function(input, output, session, values){
     rs <- "Other"
     newVal <- "Other"
 
-    if(input$croppingType == "Monocrop"){
+     if(input$croppingType == "Monocrop"){
       if(!is.null(input$cropCommonNameMono)){
         valSel <- input$cropCommonNameMono[1]
         aux <- dplyr::filter(as.data.frame(dict),Crop==valSel)
@@ -5123,109 +5206,54 @@ server_design_agrofims <- function(input, output, session, values){
     else if(input$croppingType == "Intercrop"){
       crop_selected <- input$cropsSelected
       aux <- dplyr::filter(as.data.frame(dict), Crop %in% crop_selected)
-      if("Other" %in% crop_selected && !is.null(input$jsCropCommonNameOtherVal)){
-        newVal <- trim(input$jsCropCommonNameOtherVal)
+      # if("Other" %in% crop_selected && !is.null(input$jsCropCommonNameOtherVal)){
+      if("Other" %in% crop_selected){
+        newVal <- trim(cropsVar$varAuxOtherIntercrop)
+        # newVal <- trim(input$jsCropCommonNameOtherVal)
         if( newVal == "" ) newVal <- "Other"
         aux$Crop<- gsub("Other", newVal, aux$Crop)
       }
     }
+
     traitsVals$Data <- data.table(aux)
+
 
   })
 
-
-
-
-  # observe({
-  #   if(!is.null(input$cropCommonNameMono)){
-  #     traitsVals$selectedRows <- list()
-  #
-  #
-  #     #isolate({
-  #     # if (input$cropCommonNameMono[1] == "Other") {
-  #     #   aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
-  #     #   traitsVals$Data<-data.table(aux)
-  #     #   traitsVals$Data$Crop<-rep(input$cropCommonNameMono_other, nrow(traitsVals$Data))
-  #     #   #traitsVals$Data$Crop<-rep("ivan", nrow(traitsVals$Data))
-  #     #   print(traitsVals$Data$Crop)
-  #     #   print("other")
-  #     #
-  #     # }
-  #     #})
-  #
-  #       #else {
-  #       # aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
-  #       # traitsVals$Data<-data.table(aux)
-  #       #print("crop")
-  #     #}
-  #
-  #     # ivan <- reactive({
-  #     #   p <- input$cropCommonNameMono_other
-  #     #   p
-  #     # })
-  #
-  #     observeEvent(input$cropCommonNameMono[1],{
-  #       #observe(
-  #       if(input$cropCommonNameMono[1] == "Other"){
-  #
-  #         aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
-  #         traitsVals$Data<-data.table(aux)
-  #         # traitsVals$Data$Crop<-rep(ivan(), nrow(traitsVals$Data))
-  #         traitsVals$Data$Crop<-rep(input$cropCommonNameMono_other, nrow(traitsVals$Data))
-  #
-  #
-  #         print(ivan())
-  #         print("other")
-  #
-  #       } else {
-  #         aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
-  #         traitsVals$Data<-data.table(aux)
-  #         print("crop")
-  #       }#)
-  #
-  #     })
-  #
-  #     # aux <- dplyr::filter(as.data.frame(dict),Crop==input$cropCommonNameMono[1])
-  #     # traitsVals$Data<-data.table(aux)
-  #
-  #     # output$uiTraitsList <- renderUI({
-  #     #         column(12,dataTableOutput("Main_table"),
-  #     #
-  #     #             tags$script("$(document).on('change', '.selectRow', function () {
-  #     #                 Shiny.onInputChange('selectRowClickId',this.id);
-  #     #                 Shiny.onInputChange('selectRowClickChecked',this.checked);
-  #     #                 Shiny.onInputChange('selectRowClick', Math.random())
-  #     #                 });"
-  #     #             ),
-  #     #             tags$script("$(document).on('change', '.select_scale', function () {
-  #     #                     Shiny.onInputChange('selectScaleClickId',this.id);
-  #     #                     Shiny.onInputChange('selectScaleClickValue',this.value);
-  #     #                     Shiny.onInputChange('selectScaleClick', Math.random())
-  #     #                 });"
-  #     #             )
-  #     #         )
-  #     # })
-  #
-  #   }
-  #   # else{
-  #   #   traitsVals$Data <- data.table()
-  #   #   traitsVals$selectedRows <- list()
-  #   #   output$uiTraitsList <- renderUI({
-  #   #     column(width = 10,
-  #   #
-  #   #     h4("Select crop to show list of traits.")
-  #   #     )
-  #   #
-  #   #   })
-  #   #
-  #   # }
-  #
+  # observeEvent(input$btGetCheckedValues, {
+  #   print( data.frame(order = seq_len(nrow(traitsVals$Data)), value = shinyValue('cropMeasure_check_', nrow(traitsVals$Data))))
   # })
+
+
+  ## listening depending on number of crops available in intercrop list
+  observe({
+    if(cropsVar$indexOtherIntercrop == 1){
+      cropsVar$varAuxOtherIntercrop <- input$cropCommonName1
+    }
+    if(cropsVar$indexOtherIntercrop == 2){
+      cropsVar$varAuxOtherIntercrop <- input$cropCommonName2
+    }
+    if(cropsVar$indexOtherIntercrop == 3){
+      cropsVar$varAuxOtherIntercrop <- input$cropCommonName3
+    }
+    if(cropsVar$indexOtherIntercrop == 4){
+      cropsVar$varAuxOtherIntercrop <- input$cropCommonName4
+    }
+    if(cropsVar$indexOtherIntercrop == 5){
+      cropsVar$varAuxOtherIntercrop <- input$cropCommonName5
+    }
+    if(cropsVar$indexOtherIntercrop == 6){
+      cropsVar$varAuxOtherIntercrop <- input$cropCommonName6
+    }
+    if(cropsVar$indexOtherIntercrop == 7){
+      cropsVar$varAuxOtherIntercrop <- input$cropCommonName7
+    }
+  })
 
   output$uiTraitsList <- renderUI({
 
     column(12,
-           column(12,  style = "padding-top:0px; padding-bottom:10px; text-align:center; color:red;", id = "ms_traitsTable_message", h3("Must select a crop to show traits list")),
+           #column(12,  style = "padding-top:0px; padding-bottom:10px; text-align:center; color:red;", id = "ms_traitsTable_message", h3("Must select a crop to show traits list")),
            br(),
            dataTableOutput("Main_table"),
 
@@ -5240,10 +5268,13 @@ server_design_agrofims <- function(input, output, session, values){
                        Shiny.onInputChange('selectScaleClickValue',this.value);
                        Shiny.onInputChange('selectScaleClick', Math.random())
                       });"
-                  ),
-           tags$script('$(document).on("change", "input[id^=\'cropCommon\']",  function(){
+                  )
+           ,
+           tags$script('$(document).on("change", "input[id^=\'cropCommonName\']",  function(){
+//alert("23234234")
                                 if($("#" + this.id).is(":enabled")){
                                       Shiny.onInputChange("jsCropCommonNameOtherVal", this.value);
+//alert("inter other")
                                       //Shiny.onInputChange("jsCropCommonNameOtherFlag",Math.random());
                                 }
 
@@ -5255,30 +5286,93 @@ server_design_agrofims <- function(input, output, session, values){
     )
 })
 
+  # auxData <- reactiveValues()
+  # auxData$mm <- NULL
 
-
-
-
-  output$Main_table <-renderDataTable({
-    DT= traitsVals$Data
-    #DT[["Change scale"]] <- drawComboInTable()
-
+  observe({
     if(nrow(traitsVals$Data) >0){
-      DT[["Select variable"]] <- drawButtonSelect()
+      # DT[["Select variable"]] <- drawButtonSelect()
       hide("ms_traitsTable_message")
+
     }
-    else{shinyjs::show(id="ms_traitsTable_message")}
-    #DT[["Variable ID"]] <- traitsVals$Data[,6]
-    datatable(DT,
-              escape=F,
-              # selection = list(mode = 'multiple', selected = traitsVals$selectedRows),
-              selection = list(mode = 'none'),
-              options = list(
-                scrollX = TRUE,
-                pageLength = 25,
-                columnDefs = list(list(visible=FALSE, targets=c(1,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
-              )
-    )})
+    else{
+      shinyjs::show(id="ms_traitsTable_message")
+      }
+  })
+
+  # output$Main_table <-renderDataTable({
+  #   # DsT= traitsVals$Data
+  #   #DT[["Change scale"]] <- drawComboInTable()
+  #
+  #
+  #
+  #
+  #   #DT[["Variable ID"]] <- traitsVals$Data[,6]
+  #   DT<-traitsVals$Data
+  #
+  #   datatable(DT,
+  #             # preDrawCallback = JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+  #             # drawCallback = JS('function() { Shiny.bindAll(this.api().table().node()); } '),
+  #             escape = FALSE,
+  #             # selection = list(mode = 'multiple', selected = traitsVals$selectedRows),
+  #             selection = list(mode = 'none'),
+  #             options = list(
+  #               scrollX = TRUE,
+  #               pageLength = 25,
+  #               columnDefs = list(list(visible=FALSE, targets=c(1,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
+  #             )
+  #   )
+  # })
+
+
+  # shinyInput = function(FUN, len, id, ...) {
+  #   inputs = character(len)
+  #   # l <- c()
+  #   for (i in seq_len(len)) {
+  #     inputs[i] = as.character(FUN(paste0(id, i), label = NULL, ...))
+  #     # a = as.character(FUN(paste0(id, i), label = NULL, ...))
+  #     # l <- c(l, a)
+  #   }
+  #   inputs
+  #
+  # }
+  #
+  # shinyValue = function(id, len) {
+  #   unlist(lapply(seq_len(len), function(i) {
+  #     value = input[[paste0(id, i)]]
+  #     if (is.null(value)) NA else value
+  #   }))
+  # }
+
+
+  cropMeasureTable <- reactive({
+    dd <- traitsVals$Data
+    if(nrow(dd) > 0 ) dd[["Select scale"]] <- drawButtonSelect()
+    # if(nrow(dd) > 0 ) dd[["Select scale"]] <- shinyInput(checkboxInput, nrow(dd), 'cropMeasure_check_', value = F)
+    dd
+  })
+
+
+  output$Main_table <-renderDataTable(
+    cropMeasureTable(),
+    # server = F,
+    escape = FALSE,
+    selection = 'none',
+    options = list(
+      scrollX = TRUE,
+      pageLength = 25,
+      columnDefs = list(list(visible=FALSE, targets=c(1,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
+      # preDrawCallback = JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+      # drawCallback = JS('function() { Shiny.bindAll(this.api().table().node()); } ')
+    )
+
+  )
+
+  # cropMeasureSelected  <- reactive ({
+  #   a <- shinyValue('cropMeasure_check_', nrow(traitsVals$Data))
+  # })
+
+
 
   observeEvent(input$selectRowClick, {
     selectedRow  <- as.numeric(gsub("selectRow_","",input$selectRowClickId))
@@ -5359,80 +5453,180 @@ server_design_agrofims <- function(input, output, session, values){
     return(l)
   }
 
-  ### end crop measurement 2 ###
+  ### end crop measurement 1 ###
 
-  ### start crop measurement 3 ###
+  ### start crop measurement 2 ###
 
-  # traitsVals3 <- reactiveValues()
-  # traitsVals3$aux <- data.frame()
-  # traitsVals3$selectedRows <- list()
-  # traitsVals3$Data <- data.table()
-  #
-  # #colnames(dict) <- c("Status","Crop", "Crop measurement", "traitCode", "VariableId", "Scale")
-  #
-  # dict3 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/cm.rds")
-  # dict3<- as.data.frame(dict3, stringsAsFactors=FALSE)
-  #
+  traitsVals2 <- reactiveValues()
+  traitsVals2$aux <- data.frame()
+  traitsVals2$selectedRows <- list()
+  traitsVals2$Data <- data.table()
+
+  res = reactive({
+    dict2 <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/crop_measurements_v1_cbox.rds")
+    dict2 <- as.data.frame(dict2, stringsAsFactors=FALSE)
+  })
+
   # observe({
-  #   if(!is.null(input$cropCommonNameMono)){
-  #     traitsVals3$selectedRows <- list()
-  #     aux3 <- dplyr::filter(as.data.frame(dict3),Crop==input$cropCommonNameMono[1])
-  #     traitsVals3$Data<-data.table(aux3)
-  #     output$uiTraitsList3 <- renderUI({
+  #   aux <- NULL
+  #   rs <- "Other"
+  #   newVal <- "Other"
   #
-  #       column(12,dataTableOutput("Main_table3"),
+  #   if(input$croppingType == "Monocrop"){
+  #     if(!is.null(input$cropCommonNameMono)){
+  #       valSel <- input$cropCommonNameMono[1]
+  #       aux <- dplyr::filter(as.data.frame(dict),Crop==valSel)
   #
-  #              tags$script("$(document).on('change', '.selectRow', function () {
-  #                          Shiny.onInputChange('selectRowClickId',this.id);
-  #                          Shiny.onInputChange('selectRowClickChecked',this.checked);
-  #                          Shiny.onInputChange('selectRowClick', Math.random())
-  #     });"
-  #              ),
-  #              tags$script("$(document).on('change', '.select_scale3', function () {
-  #                          Shiny.onInputChange('selectScale3ClickId',this.id);
-  #                          Shiny.onInputChange('selectScale3ClickValue',this.value);
-  #                          Shiny.onInputChange('selectScale3Click', Math.random())
-  #   });"
-  #              )
-  #       )
-  #   })
+  #       if(valSel == "Other") {
+  #         newVal <- trim(input$cropCommonNameMono_other)
+  #         if(newVal == "") newVal <- "Other"
+  #         aux$Crop<- rep(newVal, length(aux$Crop))
+  #       }
+  #       traitsVals$otherMonocropPrev <-  newVal
   #
   #     }
+  #     else{
+  #       aux <- dplyr::filter(as.data.frame(dict),Crop=="AnyValueToCreateEmptyFrame")
+  #     }
+  #   }
+  #   else if(input$croppingType == "Intercrop"){
+  #     crop_selected <- input$cropsSelected
+  #     aux <- dplyr::filter(as.data.frame(dict), Crop %in% crop_selected)
+  #     if("Other" %in% crop_selected && !is.null(input$jsCropCommonNameOtherVal)){
+  #       newVal <- trim(input$jsCropCommonNameOtherVal)
+  #       if( newVal == "" ) newVal <- "Other"
+  #       aux$Crop<- gsub("Other", newVal, aux$Crop)
+  #     }
+  #   }
+  #   traitsVals$Data <- data.table(aux)
+  #
+  # })
+
+  output$uiTraitsList2 <- renderUI({
+
+    column(12,
+           #column(12,  style = "padding-top:0px; padding-bottom:10px; text-align:center; color:red;", id = "ms_traitsTable_message", h3("Must select a crop to show traits list")),
+           br(),
+           dataTableOutput("Main_table2")#,
+
+#            tags$script("$(document).on('change', '.selectRow', function () {
+#                        Shiny.onInputChange('selectRowClickId',this.id);
+#                        Shiny.onInputChange('selectRowClickChecked',this.checked);
+#                        Shiny.onInputChange('selectRowClick', Math.random())
+#   });"
+#                   ),
+#            tags$script("$(document).on('change', '.select_scale', function () {
+#                        Shiny.onInputChange('selectScaleClickId',this.id);
+#                        Shiny.onInputChange('selectScaleClickValue',this.value);
+#                        Shiny.onInputChange('selectScaleClick', Math.random())
+# });"
+#                   ),
+#            tags$script('$(document).on("change", "input[id^=\'cropCommon\']",  function(){
+#                        if($("#" + this.id).is(":enabled")){
+#                        Shiny.onInputChange("jsCropCommonNameOtherVal", this.value);
+#                        //Shiny.onInputChange("jsCropCommonNameOtherFlag",Math.random());
+#                        }
+#
+# })
+#                        '
+#   )
+
+
+    )
+})
+
+
+  output$Main_table2 <-renderDataTable(
+    #DT= traitsVals$Data
+    #DT=dict2
+
+    # res(), server = FALSE, escape = FALSE, selection = 'none', options = list(
+    #   pageLength = 25,
+    #   preDrawCallback = JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+    #   drawCallback = JS('function() { Shiny.bindAll(this.api().table().node()); } ')
+    # )
+
+    traitsVals$Data,
+    # server = F,
+    escape = FALSE,
+    # selection = 'none',
+    options = list(
+      scrollX = TRUE,
+      pageLength = 25,
+      columnDefs = list(list(visible=FALSE, targets=c(1,6)))
+      # preDrawCallback = JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+      # drawCallback = JS('function() { Shiny.bindAll(this.api().table().node()); } ')
+    )
+
+
+    #DT[["Change scale"]] <- drawComboInTable()
+
+    # if(nrow(traitsVals$Data) >0){
+    #   DT[["Select variable"]] <- drawButtonSelect()
+    #   hide("ms_traitsTable_message")
+    # }
+    # else{shinyjs::show(id="ms_traitsTable_message")}
+    # #DT[["Variable ID"]] <- traitsVals$Data[,6]
+    # datatable(DT,
+    #           escape=F,
+    #           # selection = list(mode = 'multiple', selected = traitsVals$selectedRows),
+    #           selection = list(mode = 'none'),
+    #           options = list(
+    #             scrollX = TRUE,
+    #             pageLength = 25,
+    #             columnDefs = list(list(visible=FALSE, targets=c(1,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
+    #           )
+    # )
+    )
+
+  output$uiTraitsList3 <- renderUI({
+
+    column(12,
+           column(12,  style = "padding-top:0px; padding-bottom:10px; text-align:center; color:red;", id = "ms_traitsTable_message", h3("Must select a crop to show traits list")),
+           br(),
+           dataTableOutput("dt")
+    )
+  })
+
+  dat <- reactive({traitsVals$Data})
+
+  output$dt <- DT::renderDT(
+    dat(),
+    server = TRUE,
+    escape = FALSE,
+    options = list(
+      scrollX = TRUE,
+      pageLength = 25,
+      columnDefs = list(list(visible=FALSE, targets=c(1,6)))
+    )
+  )
+  dt_proxy <- DT::dataTableProxy("dt")
+  observeEvent(input$dt_sel, {
+    if (isTRUE(input$dt_sel)) {
+      DT::selectRows(dt_proxy, input$dt_rows_all)
+    } else {
+      DT::selectRows(dt_proxy, NULL)
+    }
+  })
+  output$selected_rows <- renderPrint(print(input$dt_rows_selected))
+
+  # observeEvent(input$selectRowClick, {
+  #   selectedRow  <- as.numeric(gsub("selectRow_","",input$selectRowClickId))
+  #   row <- traitsVals$Data[selectedRow,]
+  #   if(input$selectRowClickChecked){
+  #     # traitsVals$Data[[1]][selectedRow] <- "<font color='red'><b>Selected</b></font>"
+  #     traitsVals$Data[[1]][selectedRow] <- "Selected"
+  #   }
   #   else{
-  #     traitsVals3$Data <- data.table()
-  #     traitsVals3$selectedRows <- list()
-  #     output$uiTraitsList3 <- renderUI({
-  #       column(width = 10,
-  #
-  #              h4("Select crop to show list of traits 3.")
-  #       )
-  #
-  #     })
+  #     # traitsVals$Data[[1]][selectedRow] <- "<font color='black'>Not selected</font>"
+  #     traitsVals$Data[[1]][selectedRow] <- "Not selected"
   #
   #   }
   #
-  #     })
+  # })
   #
-  # output$Main_table3 <-renderDataTable({
-  #   DT= traitsVals3$Data
-  #   DT[["Change scale"]] <- drawComboInTable3()
-  #   DT[["Select variable"]] <- drawButtonSelect3()
-  #   #DT[["Variable ID"]] <- traitsVals2$Data[,6]
-  #   #DT[["Variable ID"]] <- traitsVals2$Data[,4]
-  #   datatable(DT,
-  #             escape=F,
-  #
-  #             selection = list(mode = 'none'),
-  #             options = list(
-  #               scrollX = TRUE,
-  #               pageLength = 25,
-  #               #columnDefs = list(list(visible=FALSE, targets=c(1,5,6)),list(width = '30%', targets = c(1)), list(className = 'dt-center', targets = c(7,8)))
-  #               columnDefs = list(list(visible=FALSE, targets=c(1,4,5)))
-  #             )
-  #   )})
-  #
-  # observeEvent(input$selectScale3Click,{
-  #   vv  <- strsplit(input$selectScale3ClickValue, "-")[[1]]
+  # observeEvent(input$selectScaleClick,{
+  #   vv  <- strsplit(input$selectScaleClickValue, "-")[[1]]
   #   var <- list()
   #   if(length(vv) == 1){
   #     var[[1]] = vv
@@ -5442,16 +5636,16 @@ server_design_agrofims <- function(input, output, session, values){
   #     var <- vv
   #   }
   #
-  #   traitsVals3$Data[[5]][as.numeric(gsub("select_scale3_","",input$selectScale3ClickId))]<- var[[1]]
-  #   traitsVals3$Data[[6]][as.numeric(gsub("select_scale3_","",input$selectScale3ClickId))]<- var[[2]]
+  #   traitsVals$Data[[6]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[1]]
+  #   traitsVals$Data[[7]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[2]]
   # })
   #
-  # drawButtonSelect3 <- function(){
-  #   n<- nrow(traitsVals3$Data)
+  # drawButtonSelect <- function(){
+  #   n<- nrow(traitsVals$Data)
   #   l <- c()
   #   for(index in 1:n){
   #
-  #     old_row <- traitsVals3$Data[index,]
+  #     old_row <- traitsVals$Data[index,]
   #
   #     ckecked <-  ""
   #     if(old_row[[1]] %like% "Selected"){
@@ -5459,20 +5653,20 @@ server_design_agrofims <- function(input, output, session, values){
   #     }
   #
   #     str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
-  #       <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
-  #       </div>')
+  #                    <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
+  #                    </div>')
   #     l<- c(l,str)
   #   }
   #   return(l)
   # }
   #
-  # drawComboInTable3 <- function(){
-  #   n<- nrow(traitsVals3$Data)
+  # drawComboInTable <- function(){
+  #   n<- nrow(traitsVals$Data)
   #   l <- c()
   #   for(index in 1:n){
-  #     old_row = traitsVals3$Data[index,]
-  #     options = old_row[[4]]
-  #     str  <- paste0('<select id="select_scale3_' , index, '" class="select_scale3" style="width:150px;">')
+  #     old_row = traitsVals$Data[index,]
+  #     options = old_row[[5]]
+  #     str  <- paste0('<select id="select_scale_' , index, '" class="select_scale" style="width:150px;">')
   #     arrOpt <- strsplit(options, ",")[[1]]
   #
   #     if(length(arrOpt) == 1){
@@ -5484,7 +5678,7 @@ server_design_agrofims <- function(input, output, session, values){
   #         # if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
   #         #
   #         # str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
-  #         if(mval[[1]] == old_row[[5]]) sel <- "selected" else sel <-""
+  #         if(mval[[1]] == old_row[[7]]) sel <- "selected" else sel <-""
   #
   #         str <- paste0(str, '<option value="', mval[[2]], "-" , mval[[1]], '" ', sel,'> ', mval[[1]], '</option>')
   #       }
@@ -5495,8 +5689,7 @@ server_design_agrofims <- function(input, output, session, values){
   #   return(l)
   # }
 
-  ### end crop measurement 3 ###
-
+  ### start crop measurement 2 ###
 
   # # Reactive table. Get material list table #################################################################
   # material_table <-  shiny::reactive({
@@ -6553,10 +6746,6 @@ server_design_agrofims <- function(input, output, session, values){
      fb
    })
 
-
-
-
-
   # Fieldbook with traits #######################################################################
    fb_agrofims_traits <- reactive({
 
@@ -6811,6 +7000,7 @@ server_design_agrofims <- function(input, output, session, values){
 
    })
 
+
   ## Irrigation  #########################################################################
   dt_irrigation <- reactive({
 
@@ -6864,39 +7054,6 @@ server_design_agrofims <- function(input, output, session, values){
 
    names(dtIrri) <- irriNames
    dtIrri
-
-   # #Irrigation end date
-   # irri_end_date <- vector(mode="character", length = n)
-   # #Irrigation technique
-   # irri_technique <-  get_loop_AgrOper("irrigation_technique_",n=n)
-   # out<- vector(mode = "character", length= length(irri_technique))
-   # for (i in 1:length(irri_technique)){
-   #   if(irri_technique[i] == "Irrigation sprinker"){
-   #       out[i] <- paste0("irrigation_using_sprinkler_systems_", i)
-   #     if(out[i]=="Other"){
-   #       out[i]<- paste0("irrigation_using_sprinkler_systems_", i, "_other") #other
-   #     }
-   #   }
-   #   else if(irri_technique[i] == "Surface"){
-   #       out[i] <- paste0("surface_irrigation_technique_", i)
-   #     if(out[i]=="Other"){
-   #       out[i] <- paste0("surface_irrigation_technique_", i, "_other") #other
-   #     }
-   #   }
-   #   else if(irri_technique[i] == "Localized"){
-   #       out[i] <- paste0("localized_irrigation_technique", i)
-   #     if( out[i]=="Other"){
-   #       out[i] <- paste0("localized_irrigation_technique", i, "_other") #other
-   #     }
-   #   }
-   #   else if(irri_technique[i] == "Other"){
-   #      out[i] <- paste0("irrigation_technique_", i, "_other") #other
-   #   }
-   # }
-   # irri_technique_subselection <- out
-
-
-
 
 })
 
@@ -7225,7 +7382,7 @@ server_design_agrofims <- function(input, output, session, values){
    })
 
 
-  ## Weeding        ##################################################################
+  ## Weeding ##################################################################
   dt_weeding <- reactive({
      n<- input$numWeeding
      weed_start_date <- paste(lapply(1:n, function(x) paste(eval(get_loop_AgrOper("weeding_start_date_", n=n)[[x]]))) ) #dates
@@ -7267,7 +7424,6 @@ server_design_agrofims <- function(input, output, session, values){
   })
 
 
-
   ##reactive soil  #####################################################################
   dt_soil_agrofims <- shiny::reactive({
 
@@ -7286,6 +7442,258 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   #############  metadata_dt2 ###################################################################
+
+  personnel_dt <- reactive({
+
+  np <- input$npersons
+  vperType <- vperfname <- vperlname <-  vperemail <- vperAff <- vorgName <- vperOrcid <-  c()
+
+  for(i  in 1:np){
+    if(is.null(input[[paste0("personnel",i,"Type")]])) vperType <- c(vperType, "")
+    else vperType <- c(vperType, input[[paste0("personnel",i,"Type")]])
+
+    vperfname <- c(vperfname, input[[paste0("person",i,"FirstName")]])
+    vperlname <- c(vperlname, input[[paste0("person",i,"LastName")]])
+
+    if(is.null(input[[paste0("person",i,"Affiliation")]])) vperAff <- c(vperAff, "")
+    else{
+      if(input[[paste0("person",i,"Affiliation")]] == "CGIAR Center"){
+        if(is.null(input[[paste0("person",i,"Center")]])) vperAff <- c(vperAff, "CGIAR Center")
+        else vperAff <- c(vperAff, input[[paste0("person",i,"Center")]])
+      }
+      else{
+        vperAff <- c(vperAff, input[[paste0("person",i,"CenterOther")]])
+      }
+    }
+    #Organization Name
+    if(is.null(input[[paste0("person",i,"Center")]])){
+      vorgName<- c(vperAff, "")
+    }else{ vorgName <- c(vorgName, input[[paste0("person",i,"Center")]])
+    }
+
+    vperemail <- c(vperemail, input[[paste0("person",i,"Email")]])
+    vperOrcid <- c(vperOrcid, input[[paste0("person",i,"ORCID")]])
+
+  }
+
+  personNames <- c('Person type','Person, first name', 'Person, last name', 'Person, email',
+                         'Person, affiliation', 'Person, organization name' , 'Person, ORCID')
+
+  vp<- vp2 <- out <- out2<- NULL
+  for(i in 1:np){
+    vp  <- c(vperType[i], vperfname[i], vperlname[i], vperemail[i] , vperAff[i], vorgName[i], vperOrcid[i])
+    vp2 <- paste(personNames, i)
+    out <- append(out, vp)
+    out2<- append(out2, vp2)
+  }
+
+  dt_person <- data.frame(out2, out, stringsAsFactors = FALSE)
+  names(dt_person) <- c("Factor","Value1")
+  dt_person
+  })
+  crop_dt <- reactive({
+
+    #Crop Type
+    cropType <- input$croppingType
+    PrevCropName <- getAgrOper(input$prevCropName, input$prevCropName_other)
+
+    if(cropType=="Monocrop"){
+      #Monocrop
+      CropCommon <- ""
+      if(!is.null(input$cropCommonNameMono)) {
+        CropCommon <- input$cropCommonNameMono
+      } else {
+        CropCommon <- ""
+      }
+      if(!is.null(input$cropVarietyNameMono)){
+        CropVarName <-input$cropVarietyNameMono
+      } else {
+        CropVarName <- ""
+      }
+      cNames <- c("Cropping type","Crop common name","Variety name","Previous crop or fallow")
+      cVal <- c(cropType,CropCommon, CropVarName, PrevCropName)
+      out <- data.frame(cNames, cVal)
+
+    } else {
+      #Intercrop
+      cropSel<-""
+      if(!is.null(input$cropsSelected)){ cropSel<-input$cropsSelected }
+      #Crop common name
+      CropVarName <- RowCrop <-NULL
+      for(i in 1:length(cropSel)){
+        CropVarName[i] <- input[[paste0("cropVarietyName",i)]]
+        RowCrop[i] <- input[[paste0("intercropValue_row_crop_",i)]]
+      }
+      c1 <- paste(cropSel, collapse = ", ")
+      c2 <- paste(CropVarName, collapse = ", ")
+      c3 <- paste(RowCrop, collapse = ", ")
+
+      cNames <- c("Cropping type","Crop common name","Variety name","Row geometry","Previous crop or fallow")
+      cVal <- c(cropType, c1, c2, c3, PrevCropName)
+      out <- data.frame(cNames, cVal)
+    }
+
+    names(out) <- c("Factor","Value1")
+    out
+
+  })
+  fctdsg_dt <- reactive({
+
+    design <- input$designFieldbook_agrofims
+
+    if(input$fullFactorialRB=="Yes"){
+      nfactor <- as.numeric(input$nfactors_hdafims_y)
+      nrep <- as.numeric(input$designFieldbook_agrofims_r_y)
+    } else {
+      nfactor <- as.numeric(input$nfactors_hdafims_n)
+      nrep <- as.numeric(input$designFieldbook_agrofims_r_n)
+    }
+
+    vinfExp <-""
+    if(!is.null(input$info_experiment_unit)) vinfExp <- input$info_experiment_unit
+
+    c1 <- c('Information on experimental unit',vinfExp )
+
+    vfarea <-""
+    vfexpmaxwidth <- ""
+    vfexpmaxlength <- ""
+    vpdiam <- ""
+    vpdpth <- ""
+    if(vinfExp == "plot"  ){
+      vfarea <- vinfExp
+      wunit <- ""
+      lunit <- ""
+      if(!is.null(input$expt_plot_width_unit))  wunit <- input$expt_plot_width_unit
+      if(!is.null(input$expt_plot_length_unit))  lunit <- input$expt_plot_length_unit
+      vfexpmaxwidth <- paste0(input$expt_plot_width, " " , wunit)
+      vfexpmaxlength <- paste0(input$expt_plot_length, " " , lunit)
+    }
+    else if(vinfExp == "field"){
+      vfarea <- vinfExp
+      wunit <- ""
+      lunit <- ""
+      if(!is.null(input$expt_field_width_unit))  wunit <- input$expt_field_width_unit
+      if(!is.null(input$expt_field_length_unit))  lunit <- input$expt_field_length_unit
+      vfexpmaxwidth <- paste0(input$expt_field_width, " " , wunit)
+      vfexpmaxlength <- paste0(input$expt_field_length, " " , lunit)
+    }
+    else if(vinfExp == "pot"){
+      wunit <- ""
+      lunit <- ""
+      if(!is.null(input$pot_diameter_unit))  wunit <- input$pot_diameter_unit
+      if(!is.null(input$pot_depth_unit))  lunit <- input$pot_depth_unit
+      vpdiam <- paste0(input$pot_diameter, " " , wunit)
+      vpdpth <- paste0(input$pot_depth, " " , lunit)
+
+    }
+
+    c2 <- c('Field area',vfarea )
+    c3 <- c('Experimental field maximum width', vfexpmaxwidth)
+    c4 <- c('Experimental field maximum length', vfexpmaxlength)
+    c5 <- c('Pot diameter',vpdiam )
+    c6 <- c('Pot depth',vpdpth )
+    c7 <- c('Experimental design', input$designFieldbook_agrofims)
+    c8 <- c('Experimental design abbreviation', "")
+    c9 <- c('Number of replications', nrep)
+    c40 <- c('Number of factors', nfactor)
+
+    levels1 <- c("NA", "NA", "NA", "NA","NA")
+    levels2 <- c("NA", "NA", "NA", "NA","NA")
+    levels3 <- c("NA", "NA", "NA", "NA","NA")
+    levels4 <- c("NA", "NA", "NA", "NA","NA")
+    levels5 <- c("NA", "NA", "NA", "NA","NA")
+    levelsDt <- data.table(levels1,levels2,levels3,levels4,levels5)
+
+
+    nf <- nfactor
+
+    factors <- c("NA", "NA", "NA", "NA","NA")
+    for(i in 1:nf){
+      g1 <- input[[paste0("sel" , i, "_2" )]]
+      g2 <- input[[paste0("sel" , i, "_3" )]]
+      if(!is.null(g1) && !is.null(g2)){
+        factors[i] <- paste0(g1, " ", g2)
+
+        g3 <- input[[paste0("sel" , i, "_3" )]]
+        ls1 <- input[[paste0("numLevels_", i)]]
+        if(is_numeric(ls1) && !is.null(g3)){
+          if (ls1>5) ls1 <- 5 #max5
+          if(g3 %like% "date"){
+            for(j in 1:ls1){
+              sdate <- input[[paste0("factor_start_date_",i, "_", j)]]
+              edate <- input[[paste0("factor_end_date_",i, "_", j)]]
+              levelsDt[i,j] <- paste0(sdate, " - ", edate)
+            }
+          }
+          else{
+            nl <- input[[paste0("levels_",i)]]
+            count <- 1
+            for(lv in nl){
+              if(count <= 5){
+                if(is.null(input[[paste0("funits_", i)]])){
+                  levelsDt[i,count] <- lv
+                }
+                else{
+                  levelsDt[i,count]<- paste0(lv, " ", input[[paste0("funits_", i)]])
+                }
+              }
+              count <- count + 1
+            }
+          }
+        }
+
+      }
+
+    }
+
+
+    c10 <- c('Factor 1',factors[1])
+    c11 <- c('Factor 1 - level 1',levelsDt[1,1])
+    c12 <- c('Factor 1 - level 2',levelsDt[1,2] )
+    c13 <- c('Factor 1 - level 3',levelsDt[1,3])
+    c14 <- c('Factor 1 - level 4',levelsDt[1,4] )
+    c15 <- c('Factor 1 - level 5',levelsDt[1,5] )
+
+    c16 <- c('Factor 2', factors[2])
+    c17 <- c('Factor 2 - level 1',levelsDt[2,1])
+    c18 <- c('Factor 2 - level 2',levelsDt[2,2])
+    c19 <- c('Factor 2 - level 3',levelsDt[2,3])
+    c20 <- c('Factor 2 - level 4',levelsDt[2,4] )
+    c21 <- c('Factor 2 - level 5',levelsDt[2,5] )
+
+    c22 <- c('Factor 3', factors[3])
+    c23 <- c('Factor 3 - level 1',levelsDt[3,1] )
+    c24 <- c('Factor 3 - level 2',levelsDt[3,2] )
+    c25 <- c('Factor 3 - level 3',levelsDt[3,3] )
+    c26 <- c('Factor 3 - level 4',levelsDt[3,4] )
+    c27 <- c('Factor 3 - level 5',levelsDt[3,5] )
+
+    c28 <- c('Factor 4', factors[4] )
+    c29 <- c('Factor 4 - level 1',levelsDt[4,1])
+    c30 <- c('Factor 4 - level 2',levelsDt[4,2] )
+    c31 <- c('Factor 4 - level 3',levelsDt[4,3])
+    c32 <- c('Factor 4 - level 4',levelsDt[4,4] )
+    c33 <- c('Factor 4 - level 5',levelsDt[4,5])
+
+    c34 <- c('Factor 5', factors[5])
+    c35 <- c('Factor 5 - level 1',levelsDt[5,1] )
+    c36 <- c('Factor 5 - level 2',levelsDt[5,2])
+    c37 <- c('Factor 5 - level 3',levelsDt[5,3])
+    c38 <- c('Factor 5 - level 4',levelsDt[5,4] )
+    c39 <- c('Factor 5 - level 5',levelsDt[5,5])
+
+
+    dt_fctdsg <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c40,c10,
+                            c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,
+                            c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,
+                            c31,c32,c33,c34,c35,c36,c37,c38,c39)
+    var_fctdsg <-  t(dt_fctdsg)
+    out <- as.data.frame(var_fctdsg, stringsAsFactors=FALSE)
+
+    names(out) <- c("Factor", "Value1")
+    out
+
+  })
   metadata_dt2 <- reactive({
 
     expid <- input$experimentId  #c('Experiment ID', input$experimentId)
@@ -7298,16 +7706,19 @@ server_design_agrofims <- function(input, output, session, values){
     expObj <- fbdesign::getAgrOper(input$experimentObj) #experiment objective
     expAgType <- NULL #funding Agency Type
 
+    # Funding agency type
     if(is.null(input$designFieldbook_fundAgencyType)){
       expAgType <- ""
+      nfundagen<-1
     } #funding Agency Type
     else {
        for(i in 1:length(input$designFieldbook_fundAgencyType)){
          expAgType[i] <- input[[paste0("fundName_", i)]] # Funding agency type
        }
-      expAgType<- paste(expAgType, collapse = ", ")
+      nfundagen<- length(input$designFieldbook_fundAgencyType)
     }
 
+    #Number of project management entities
     if(is.null(input$numProjEntity)|| is.na(input$numProjEntity)){
       nexpProjEnt <- 1
     } else{
@@ -7320,47 +7731,35 @@ server_design_agrofims <- function(input, output, session, values){
         projEntity[i] <- ""
         contCenter[i] <- ""
         contCRP[i]    <- ""
-        print("first null")
+
       } else if( !is.null(input[[paste0("projEntity_", i)]])  && is.null(input[[paste0("contCenter_", i)]]) ){
         projEntity[i] <- input[[paste0("projEntity_", i)]]
         contCenter[i] <- ""
         contCRP[i] <- ""
-        print("2 null")
+
       } else if( !is.null(input[[paste0("projEntity_", i)]])  && !is.null(input[[paste0("contCenter_", i)]]) && is.null(input[[paste0("contCRP_",  i)]]) ){
         projEntity[i] <- input[[paste0("projEntity_", i)]] #Project entity
         contCenter[i] <- input[[paste0("contCenter_", i)]] #Contributor center
         contCRP[i] <- ""  #contributor crp
-        print("3 null")
+
       } else if(input[[paste0("projEntity_", i)]]=="Other"){
         projEntity[i] <- input[[paste0("projEntity_", i,"_other")]]
         contCenter[i] <-  ""
         contCRP[i] <- ""
-        print("4 null")
+
       } else {
-        print("5 null")
+
         projEntity[i]<- input[[paste0("projEntity_", i)]] #Project entity
         contCenter[i]<- input[[paste0("contCenter_", i)]] #Contributor center
         contCRP[i]<- input[[paste0("contCRP_",  i)]] #contributor crp
       }
     }
 
-    print(projEntity)
-    print(contCenter)
-    print(contCRP)
-
-    projEntity<- paste(projEntity, collapse = ", ")
-    contCenter <- paste(contCenter, collape=",")
-    contCRP <- paste(contCRP, collape=",")
-
-    print(projEntity)
-    print(contCenter)
-    print(contCRP)
-
     #Experiment duration
     xdur <- interval(ymd(input$fbDesign_project_time_line[1]),ymd(input$fbDesign_project_time_line[2]))
     xdur <- xdur %/% months(1)
     xdur <- paste(xdur," months", sep = "")
-    expDuration <- c('Experiment duration', xdur)
+    expDuration <-  xdur
 
     #Leader
     nexpleads<- as.numeric(input$numLeads)
@@ -7375,7 +7774,7 @@ server_design_agrofims <- function(input, output, session, values){
      } else if(input[[paste0("projLeadEnt_",  i)]]=="CGIAR center"){
         projLeadEnt[i] <- input[[paste0("projLeadEnt_",  i)]]
         tLeadCenter[i]  <- input[[paste0("tLeadCenter_", i)]]
-        expLead <-   input[[paste0("expLead_",i)]]
+        expLead[i] <-   input[[paste0("expLead_",i)]]
      } else {
        if(is.null(input[[paste0("lead_org_type_1_", i)]])){
            projLeadEnt[i]<- ""
@@ -7388,9 +7787,29 @@ server_design_agrofims <- function(input, output, session, values){
         }
        }
     }
-    projLeadEnt <- paste(projLeadEnt, collapse = ", ") #Experiment, lead organization type
-    tLeadCenter <-  paste(tLeadCenter, collapse = ", ") #Choose CGIAR center
-    expLead <- paste(expLead, collapse = ", ") #Experiment lead person/Primary Investigator
+
+
+    if(nexpProjEnt>nexpleads){
+      r <- nexpProjEnt - nexpleads
+      projLeadEnt <- append(projLeadEnt, rep("", r))
+      tLeadCenter <- append(tLeadCenter, rep("", r))
+      expLead <- append(expLead, rep("", r))
+      nvals<- length(expLead)
+    } else if(nexpProjEnt<nexpleads){
+      r <- nexpleads - nexpProjEnt
+      projEntity <- append(projEntity, rep("", r))
+      contCenter <- append(contCenter, rep("", r))
+      contCRP <- append(contCRP, rep("", r))
+      nvals<- length(contCRP)
+    } else {
+      nvals <- length(contCRP)
+    }
+
+    if(nfundagen!=nvals){
+      r <- abs(nvals-nfundagen)
+      expAgType <- append(expAgType, rep("", r))
+    }
+
 
     dt<- data.frame(expid, expname, expProjName, expBeginDate, expEnDate, expDuration,
                     expTypeExp, expObj, expAgType ,projEntity,
@@ -7405,12 +7824,20 @@ server_design_agrofims <- function(input, output, session, values){
 
     names(dt) <- dtNames
     dt <- as.data.frame(t(dt))
-    dt <- tibble::rownames_to_column(dt)
-    names(dt)[1:3] <- c("Variable",	"Value", "Value2")
-    dt[,1:3]
+    out <- tibble::rownames_to_column(dt)
+    ncolums<-ncol(out)-1
+    names(out) <- c("Factor", paste("Value",1:ncolums, sep=""))
+    out
 
   })
 
+  globalMetadata<- reactive({
+
+    glist <- list(metadata_dt2(), crop_dt(), fctdsg_dt())
+    gtable<- data.table::rbindlist(glist,fill = TRUE)
+    gtable <- as.data.frame(gtable,stringAsFactors=FALSE)
+
+  })
 
   ############# phenology #######################################################################
 
@@ -7819,55 +8246,55 @@ server_design_agrofims <- function(input, output, session, values){
      c17 <- c('Experiment lead person / Primary Investigator', vleadOrgName)
      c18 <- c('Experiment, lead organization name',vleadPerson )
 
-     np <- input$npersons
-     vperType <- c()
-     vperfname <- c()
-     vperlname <- c()
-     vperemail <- c()
-     vperAff <- c()
-     vperOrcid <- c()
-     vpercountry <- c()
-
-     for(i  in 1:np){
-       if(is.null(input[[paste0("personnel",i,"Type")]])) vperType <- c(vperType, "")
-       else vperType <- c(vperType, input[[paste0("personnel",i,"Type")]])
-
-       vperfname <- c(vperfname, input[[paste0("person",i,"FirstName")]])
-       vperlname <- c(vperlname, input[[paste0("person",i,"LastName")]])
-
-       if(is.null(input[[paste0("person",i,"Affiliation")]])) vperAff <- c(vperAff, "")
-       else{
-         if(input[[paste0("person",i,"Affiliation")]] == "CGIAR Center"){
-           if(is.null(input[[paste0("person",i,"Center")]])) vperAff <- c(vperAff, "CGIAR Center")
-           else vperAff <- c(vperAff, input[[paste0("person",i,"Center")]])
-         }
-         else{
-           vperAff <- c(vperAff, input[[paste0("person",i,"CenterOther")]])
-         }
-       }
-
-       vperemail <- c(vperemail, input[[paste0("person",i,"Email")]])
-       vperOrcid <- c(vperOrcid, input[[paste0("person",i,"ORCID")]])
-
-       if(is.null(input[[paste0("person",i,"Country")]])) vpercountry <- c(vpercountry, "")
-       else vpercountry <- c(vpercountry, input[[paste0("person",i,"Country")]])
-     }
-
-     vperType <- paste(vperType, collapse = ",")
-     vperfname <-paste(vperfname, collapse = ",")
-     vperlname <- paste(vperlname, collapse = ",")
-     vperemail <- paste(vperemail, collapse = ",")
-     vperAff <- paste(vperAff, collapse = ",")
-     vperOrcid <- paste(vperOrcid, collapse = ",")
-     vpercountry <- paste(vpercountry, collapse = ",")
-
-     c19 <- c('Person type',vperType )
-     c20 <- c('Person, first name',vperfname )
-     c21 <- c('Person, last name', vperlname)
-     c22 <- c('Person, email', vperemail)
-     c23 <- c('Person, affiliation', vperAff)
-     c24 <- c('Person, ORCID',vperOrcid )
-     c25 <- c('Country in which active', vpercountry)
+     # np <- input$npersons
+     # vperType <- c()
+     # vperfname <- c()
+     # vperlname <- c()
+     # vperemail <- c()
+     # vperAff <- c()
+     # vperOrcid <- c()
+     # vpercountry <- c()
+     #
+     # for(i  in 1:np){
+     #   if(is.null(input[[paste0("personnel",i,"Type")]])) vperType <- c(vperType, "")
+     #   else vperType <- c(vperType, input[[paste0("personnel",i,"Type")]])
+     #
+     #   vperfname <- c(vperfname, input[[paste0("person",i,"FirstName")]])
+     #   vperlname <- c(vperlname, input[[paste0("person",i,"LastName")]])
+     #
+     #   if(is.null(input[[paste0("person",i,"Affiliation")]])) vperAff <- c(vperAff, "")
+     #   else{
+     #     if(input[[paste0("person",i,"Affiliation")]] == "CGIAR Center"){
+     #       if(is.null(input[[paste0("person",i,"Center")]])) vperAff <- c(vperAff, "CGIAR Center")
+     #       else vperAff <- c(vperAff, input[[paste0("person",i,"Center")]])
+     #     }
+     #     else{
+     #       vperAff <- c(vperAff, input[[paste0("person",i,"CenterOther")]])
+     #     }
+     #   }
+     #
+     #   vperemail <- c(vperemail, input[[paste0("person",i,"Email")]])
+     #   vperOrcid <- c(vperOrcid, input[[paste0("person",i,"ORCID")]])
+     #
+     #   if(is.null(input[[paste0("person",i,"Country")]])) vpercountry <- c(vpercountry, "")
+     #   else vpercountry <- c(vpercountry, input[[paste0("person",i,"Country")]])
+     # }
+     #
+     # vperType <- paste(vperType, collapse = ",")
+     # vperfname <-paste(vperfname, collapse = ",")
+     # vperlname <- paste(vperlname, collapse = ",")
+     # vperemail <- paste(vperemail, collapse = ",")
+     # vperAff <- paste(vperAff, collapse = ",")
+     # vperOrcid <- paste(vperOrcid, collapse = ",")
+     # vpercountry <- paste(vpercountry, collapse = ",")
+     #
+     # c19 <- c('Person type',vperType )
+     # c20 <- c('Person, first name',vperfname )
+     # c21 <- c('Person, last name', vperlname)
+     # c22 <- c('Person, email', vperemail)
+     # c23 <- c('Person, affiliation', vperAff)
+     # c24 <- c('Person, ORCID',vperOrcid )
+     # c25 <- c('Country in which active', vpercountry)
 
 
      vsitetype <- ""
@@ -7972,6 +8399,7 @@ server_design_agrofims <- function(input, output, session, values){
                                c31,c32,c33,c34,c35,c36,c37,c38,c39,c40,
                                c41,c42,c43,c44,c45,c46,c47, c48)
      var_metadata <-  t(df_metadata)
+
      # print(df_metadata)
 
    }
@@ -8129,15 +8557,28 @@ server_design_agrofims <- function(input, output, session, values){
 
 
   #############  traits_dt ##########################################################
-  traits_dt <- function(){
-     a<- traitsVals$Data
-     if(nrow(traitsVals$Data) >0){
-       aux_dt <- dplyr::filter(traitsVals$Data, Status=="Selected")
-       a<- aux_dt
-     }
+  # traits_dt <- function(){
+  #    a<- traitsVals$Data
+  #    if(nrow(traitsVals$Data) >0){
+  #      aux_dt <- dplyr::filter(traitsVals$Data, Status=="Selected")
+  #      a<- aux_dt
+  #    }
+  #
+  #    return(a)
+  # }
 
-     return(a)
-   }
+  traits_dt <- function(){
+    a<- traitsVals$Data
+    if(nrow(traitsVals$Data) >0){
+      row_select <- input$dt_rows_selected
+      row_select <- sort(row_select)
+      #aux_dt <- dplyr::filter(traitsVals$Data, Status=="Selected")
+      aux_dt<- a[row_select,]
+      a<- aux_dt
+    }
+
+    return(a)
+  }
 
 
 
@@ -8148,8 +8589,6 @@ server_design_agrofims <- function(input, output, session, values){
 
       incProgress(1/10,message = "...")
 
-       #print(fb_agrofims())
-       print(class(fb_agrofims()))
 
       flag <- TRUE
 
@@ -8189,38 +8628,32 @@ server_design_agrofims <- function(input, output, session, values){
 
 
          n <- as.numeric(input$numApplicationsIrrigation)
-         #print("error -1")
+
+         croptable <- crop_dt()
+         factordsg <- fctdsg_dt()
+
+         personnel<- personnel_dt()
          fb_traits <- fb_agrofims_traits()
-         #print("error0")
-         metadata <- metadata_dt2()
+
+
+         metadata <- globalMetadata() #metadata_dt2()
+
+
+         print(globalMetadata())
+
          phenology <- phenology_dt()
 
-         #print("error1")
 
-         #names(metadata) <- c("Variable", "Value")
-         #installation <- as.data.frame(factor_dt2())
-
-         #names(installation) <- c("Variable", "Value")
-         #
-         # print(installation)
-         trait_agrofims_dt <- traits_dt()
-         #trait_agrofims_dt<- trait_agrofims_dt[,-3]
-         #
-         # print(trait_agrofims_dt)
-         #
+         trait_agrofims_dt <- traits_dt()[,-1]
          weather <- dt_weather_agrofims()
          soil_vars <- dt_soil_agrofims()
-         #print("error2")
-         #
          fname <- paste(file,"xlsx",sep=".")
-         # #wb <- openxlsx::loadWorkbook(file = fname, create = TRUE)
 
          wb <- createWorkbook()
 
          incProgress(2/20,message = "Downloading data...")
 
          incProgress(6/20,message = "Metadata metadata sheet...")
-         #print("error3")
          openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
          openxlsx::writeDataTable(wb, "Metadata", x = metadata,
                                   colNames = TRUE, withFilter = FALSE)
