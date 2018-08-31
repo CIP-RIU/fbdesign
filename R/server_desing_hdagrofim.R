@@ -7443,53 +7443,191 @@ server_design_agrofims <- function(input, output, session, values){
 
   #############  metadata_dt2 ###################################################################
 
+
+  metadata_dt2 <- reactive({
+
+    expid <- input$experimentId  #c('Experiment ID', input$experimentId)
+    expname <- input$experimentName #c('Experiment name', input$experimentName )
+    expProjName <- input$experimentProjectName #c('Experiment project name', input$experimentProjectName)
+    expBeginDate <- paste(input$fbDesign_project_time_line[1]) #c('Experiment start date', paste(input$fbDesign_project_time_line[1]) )
+    expEnDate <- paste(input$fbDesign_project_time_line[2]) #c('Experiment end date', paste(input$fbDesign_project_time_line[2]))
+
+    expTypeExp <- fbdesign::getAgrOper(input$designFieldbook_typeExperiment) #type experiment
+    expObj <- fbdesign::getAgrOper(input$experimentObj) #experiment objective
+    expAgType <- NULL #funding Agency Type
+
+    # Funding agency type
+    if(is.null(input$designFieldbook_fundAgencyType)){
+      expAgType <- ""
+      nfundagen<-1
+    } #funding Agency Type
+    else {
+       for(i in 1:length(input$designFieldbook_fundAgencyType)){
+         expAgType[i] <- input[[paste0("fundName_", i)]] # Funding agency type
+       }
+      nfundagen<- length(input$designFieldbook_fundAgencyType)
+    }
+
+    #Number of project management entities
+    if(is.null(input$numProjEntity)|| is.na(input$numProjEntity)){
+      nexpProjEnt <- 1
+    } else{
+      nexpProjEnt <- as.numeric(input$numProjEntity)
+    }
+    projEntity <- contCenter<- contCRP<- NULL
+
+    for(i in 1:nexpProjEnt){
+      if(is.null(input[[paste0("projEntity_", i)]])){
+        projEntity[i] <- ""
+        contCenter[i] <- ""
+        contCRP[i]    <- ""
+
+      } else if( !is.null(input[[paste0("projEntity_", i)]])  && is.null(input[[paste0("contCenter_", i)]]) ){
+        projEntity[i] <- input[[paste0("projEntity_", i)]]
+        contCenter[i] <- ""
+        contCRP[i] <- ""
+
+      } else if( !is.null(input[[paste0("projEntity_", i)]])  && !is.null(input[[paste0("contCenter_", i)]]) && is.null(input[[paste0("contCRP_",  i)]]) ){
+        projEntity[i] <- input[[paste0("projEntity_", i)]] #Project entity
+        contCenter[i] <- input[[paste0("contCenter_", i)]] #Contributor center
+        contCRP[i] <- ""  #contributor crp
+
+      } else if(input[[paste0("projEntity_", i)]]=="Other"){
+        projEntity[i] <- input[[paste0("projEntity_", i,"_other")]]
+        contCenter[i] <-  ""
+        contCRP[i] <- ""
+
+      } else {
+
+        projEntity[i]<- input[[paste0("projEntity_", i)]] #Project entity
+        contCenter[i]<- input[[paste0("contCenter_", i)]] #Contributor center
+        contCRP[i]<- input[[paste0("contCRP_",  i)]] #contributor crp
+      }
+    }
+
+    #Experiment duration
+    xdur <- interval(ymd(input$fbDesign_project_time_line[1]),ymd(input$fbDesign_project_time_line[2]))
+    xdur <- xdur %/% months(1)
+    xdur <- paste(xdur," months", sep = "")
+    expDuration <-  xdur
+
+    #Leader
+    nexpleads<- as.numeric(input$numLeads)
+    projLeadEnt <- tLeadCenter<- expLead<- NULL
+
+    for(i in 1:nexpleads){
+
+     if(is.null(input[[paste0("projLeadEnt_",  i)]])){
+        projLeadEnt[i] <- ""
+        tLeadCenter[i] <-""
+        expLead[i] <- ""
+     } else if(input[[paste0("projLeadEnt_",  i)]]=="CGIAR center"){
+        projLeadEnt[i] <- input[[paste0("projLeadEnt_",  i)]]
+        tLeadCenter[i]  <- input[[paste0("tLeadCenter_", i)]]
+        expLead[i] <-   input[[paste0("expLead_",i)]]
+     } else {
+       if(is.null(input[[paste0("lead_org_type_1_", i)]])){
+           projLeadEnt[i]<- ""
+           tLeadCenter[i]<- ""
+           expLead[i]<- ""
+          } else {
+           projLeadEnt[i]<- input[[paste0("lead_org_type_1_", i)]]
+           tLeadCenter[i]<- input[[paste0("leadNameOther_",i)]]
+           expLead[i] <-   input[[paste0("expLead_",i)]]
+        }
+       }
+    }
+
+
+    if(nexpProjEnt>nexpleads){
+      r <- nexpProjEnt - nexpleads
+      projLeadEnt <- append(projLeadEnt, rep("", r))
+      tLeadCenter <- append(tLeadCenter, rep("", r))
+      expLead <- append(expLead, rep("", r))
+      nvals<- length(expLead)
+    } else if(nexpProjEnt<nexpleads){
+      r <- nexpleads - nexpProjEnt
+      projEntity <- append(projEntity, rep("", r))
+      contCenter <- append(contCenter, rep("", r))
+      contCRP <- append(contCRP, rep("", r))
+      nvals<- length(contCRP)
+    } else {
+      nvals <- length(contCRP)
+    }
+
+    if(nfundagen!=nvals){
+      r <- abs(nvals-nfundagen)
+      expAgType <- append(expAgType, rep("", r))
+    }
+
+
+    dt<- data.frame(expid, expname, expProjName, expBeginDate, expEnDate, expDuration,
+                    expTypeExp, expObj, expAgType ,projEntity,
+                    contCenter, contCRP, projLeadEnt,tLeadCenter, expLead)
+
+    dtNames<- c("Experiment ID","Experiment name", "Experiment project name", "Experiment start date",
+                "Experiment end date", "Experiment duration",  "Type of experiment",
+                "Experiment objective", "Funding agency type",
+                "Project management entity", "Contributor Center", "Contributor CRP",
+                "Experiment, lead organization type", "Experiment, lead center", "Experiment lead person / Primary Investigator"
+                )
+
+    names(dt) <- dtNames
+    dt <- as.data.frame(t(dt))
+    out <- tibble::rownames_to_column(dt)
+    ncolums<-ncol(out)-1
+    names(out) <- c("Factor", paste("Value",1:ncolums, sep=""))
+    out
+
+  })
   personnel_dt <- reactive({
 
-  np <- input$npersons
-  vperType <- vperfname <- vperlname <-  vperemail <- vperAff <- vorgName <- vperOrcid <-  c()
+    np <- as.numeric(input$npersons)
+    vperType <- vperfname <- vperlname <-  vperemail <- vperAff <- vorgName <- vperOrcid <-  c()
 
-  for(i  in 1:np){
-    if(is.null(input[[paste0("personnel",i,"Type")]])) vperType <- c(vperType, "")
-    else vperType <- c(vperType, input[[paste0("personnel",i,"Type")]])
+    for(i  in 1:np){
+      if(is.null(input[[paste0("personnel",i,"Type")]])) vperType <- c(vperType, "")
+      else vperType <- c(vperType, input[[paste0("personnel",i,"Type")]])
 
-    vperfname <- c(vperfname, input[[paste0("person",i,"FirstName")]])
-    vperlname <- c(vperlname, input[[paste0("person",i,"LastName")]])
+      vperfname <- c(vperfname, input[[paste0("person",i,"FirstName")]])
+      vperlname <- c(vperlname, input[[paste0("person",i,"LastName")]])
 
-    if(is.null(input[[paste0("person",i,"Affiliation")]])) vperAff <- c(vperAff, "")
-    else{
-      if(input[[paste0("person",i,"Affiliation")]] == "CGIAR Center"){
-        if(is.null(input[[paste0("person",i,"Center")]])) vperAff <- c(vperAff, "CGIAR Center")
-        else vperAff <- c(vperAff, input[[paste0("person",i,"Center")]])
-      }
+      if(is.null(input[[paste0("person",i,"Affiliation")]])) vperAff <- c(vperAff, "")
       else{
-        vperAff <- c(vperAff, input[[paste0("person",i,"CenterOther")]])
+        if(input[[paste0("person",i,"Affiliation")]] == "CGIAR Center"){
+          if(is.null(input[[paste0("person",i,"Center")]])) vperAff <- c(vperAff, "CGIAR Center")
+          else vperAff <- c(vperAff, input[[paste0("person",i,"Center")]])
+        }
+        else{
+          vperAff <- c(vperAff, input[[paste0("person",i,"CenterOther")]])
+        }
       }
+      #Organization Name
+      if(is.null(input[[paste0("person",i,"Center")]])){
+        vorgName<- c(vorgName, "")
+      }else{ vorgName <- c(vorgName, input[[paste0("person",i,"Center")]])
+      }
+
+      vperemail <- c(vperemail, input[[paste0("person",i,"Email")]])
+      vperOrcid <- c(vperOrcid, input[[paste0("person",i,"ORCID")]])
+
     }
-    #Organization Name
-    if(is.null(input[[paste0("person",i,"Center")]])){
-      vorgName<- c(vperAff, "")
-    }else{ vorgName <- c(vorgName, input[[paste0("person",i,"Center")]])
+
+    personNames <- c('Person type','Person, first name', 'Person, last name', 'Person, email',
+                     'Person, affiliation', 'Person, organization name' , 'Person, ORCID')
+
+    vp<- vp2 <- out <- out2<- NULL
+    for(i in 1:np){
+      vp  <- c(vperType[i], vperfname[i], vperlname[i], vperemail[i] , vperAff[i], vorgName[i], vperOrcid[i])
+      vp2 <- paste(personNames, i)
+      out <- append(out, vp)
+      out2 <- append(out2, vp2)
     }
 
-    vperemail <- c(vperemail, input[[paste0("person",i,"Email")]])
-    vperOrcid <- c(vperOrcid, input[[paste0("person",i,"ORCID")]])
-
-  }
-
-  personNames <- c('Person type','Person, first name', 'Person, last name', 'Person, email',
-                         'Person, affiliation', 'Person, organization name' , 'Person, ORCID')
-
-  vp<- vp2 <- out <- out2<- NULL
-  for(i in 1:np){
-    vp  <- c(vperType[i], vperfname[i], vperlname[i], vperemail[i] , vperAff[i], vorgName[i], vperOrcid[i])
-    vp2 <- paste(personNames, i)
-    out <- append(out, vp)
-    out2<- append(out2, vp2)
-  }
-
-  dt_person <- data.frame(out2, out, stringsAsFactors = FALSE)
-  names(dt_person) <- c("Factor","Value1")
-  dt_person
+    dt_person <- data.frame(out2, out, stringsAsFactors = FALSE)
+    names(dt_person) <- c("Factor","Value1")
+    print(dt_person)
+    dt_person
   })
   crop_dt <- reactive({
 
@@ -7694,146 +7832,10 @@ server_design_agrofims <- function(input, output, session, values){
     out
 
   })
-  metadata_dt2 <- reactive({
-
-    expid <- input$experimentId  #c('Experiment ID', input$experimentId)
-    expname <- input$experimentName #c('Experiment name', input$experimentName )
-    expProjName <- input$experimentProjectName #c('Experiment project name', input$experimentProjectName)
-    expBeginDate <- paste(input$fbDesign_project_time_line[1]) #c('Experiment start date', paste(input$fbDesign_project_time_line[1]) )
-    expEnDate <- paste(input$fbDesign_project_time_line[2]) #c('Experiment end date', paste(input$fbDesign_project_time_line[2]))
-
-    expTypeExp <- fbdesign::getAgrOper(input$designFieldbook_typeExperiment) #type experiment
-    expObj <- fbdesign::getAgrOper(input$experimentObj) #experiment objective
-    expAgType <- NULL #funding Agency Type
-
-    # Funding agency type
-    if(is.null(input$designFieldbook_fundAgencyType)){
-      expAgType <- ""
-      nfundagen<-1
-    } #funding Agency Type
-    else {
-       for(i in 1:length(input$designFieldbook_fundAgencyType)){
-         expAgType[i] <- input[[paste0("fundName_", i)]] # Funding agency type
-       }
-      nfundagen<- length(input$designFieldbook_fundAgencyType)
-    }
-
-    #Number of project management entities
-    if(is.null(input$numProjEntity)|| is.na(input$numProjEntity)){
-      nexpProjEnt <- 1
-    } else{
-      nexpProjEnt <- as.numeric(input$numProjEntity)
-    }
-    projEntity <- contCenter<- contCRP<- NULL
-
-    for(i in 1:nexpProjEnt){
-      if(is.null(input[[paste0("projEntity_", i)]])){
-        projEntity[i] <- ""
-        contCenter[i] <- ""
-        contCRP[i]    <- ""
-
-      } else if( !is.null(input[[paste0("projEntity_", i)]])  && is.null(input[[paste0("contCenter_", i)]]) ){
-        projEntity[i] <- input[[paste0("projEntity_", i)]]
-        contCenter[i] <- ""
-        contCRP[i] <- ""
-
-      } else if( !is.null(input[[paste0("projEntity_", i)]])  && !is.null(input[[paste0("contCenter_", i)]]) && is.null(input[[paste0("contCRP_",  i)]]) ){
-        projEntity[i] <- input[[paste0("projEntity_", i)]] #Project entity
-        contCenter[i] <- input[[paste0("contCenter_", i)]] #Contributor center
-        contCRP[i] <- ""  #contributor crp
-
-      } else if(input[[paste0("projEntity_", i)]]=="Other"){
-        projEntity[i] <- input[[paste0("projEntity_", i,"_other")]]
-        contCenter[i] <-  ""
-        contCRP[i] <- ""
-
-      } else {
-
-        projEntity[i]<- input[[paste0("projEntity_", i)]] #Project entity
-        contCenter[i]<- input[[paste0("contCenter_", i)]] #Contributor center
-        contCRP[i]<- input[[paste0("contCRP_",  i)]] #contributor crp
-      }
-    }
-
-    #Experiment duration
-    xdur <- interval(ymd(input$fbDesign_project_time_line[1]),ymd(input$fbDesign_project_time_line[2]))
-    xdur <- xdur %/% months(1)
-    xdur <- paste(xdur," months", sep = "")
-    expDuration <-  xdur
-
-    #Leader
-    nexpleads<- as.numeric(input$numLeads)
-    projLeadEnt <- tLeadCenter<- expLead<- NULL
-
-    for(i in 1:nexpleads){
-
-     if(is.null(input[[paste0("projLeadEnt_",  i)]])){
-        projLeadEnt[i] <- ""
-        tLeadCenter[i] <-""
-        expLead[i] <- ""
-     } else if(input[[paste0("projLeadEnt_",  i)]]=="CGIAR center"){
-        projLeadEnt[i] <- input[[paste0("projLeadEnt_",  i)]]
-        tLeadCenter[i]  <- input[[paste0("tLeadCenter_", i)]]
-        expLead[i] <-   input[[paste0("expLead_",i)]]
-     } else {
-       if(is.null(input[[paste0("lead_org_type_1_", i)]])){
-           projLeadEnt[i]<- ""
-           tLeadCenter[i]<- ""
-           expLead[i]<- ""
-          } else {
-           projLeadEnt[i]<- input[[paste0("lead_org_type_1_", i)]]
-           tLeadCenter[i]<- input[[paste0("leadNameOther_",i)]]
-           expLead[i] <-   input[[paste0("expLead_",i)]]
-        }
-       }
-    }
-
-
-    if(nexpProjEnt>nexpleads){
-      r <- nexpProjEnt - nexpleads
-      projLeadEnt <- append(projLeadEnt, rep("", r))
-      tLeadCenter <- append(tLeadCenter, rep("", r))
-      expLead <- append(expLead, rep("", r))
-      nvals<- length(expLead)
-    } else if(nexpProjEnt<nexpleads){
-      r <- nexpleads - nexpProjEnt
-      projEntity <- append(projEntity, rep("", r))
-      contCenter <- append(contCenter, rep("", r))
-      contCRP <- append(contCRP, rep("", r))
-      nvals<- length(contCRP)
-    } else {
-      nvals <- length(contCRP)
-    }
-
-    if(nfundagen!=nvals){
-      r <- abs(nvals-nfundagen)
-      expAgType <- append(expAgType, rep("", r))
-    }
-
-
-    dt<- data.frame(expid, expname, expProjName, expBeginDate, expEnDate, expDuration,
-                    expTypeExp, expObj, expAgType ,projEntity,
-                    contCenter, contCRP, projLeadEnt,tLeadCenter, expLead)
-
-    dtNames<- c("Experiment ID","Experiment name", "Experiment project name", "Experiment start date",
-                "Experiment end date", "Experiment duration",  "Type of experiment",
-                "Experiment objective", "Funding agency type",
-                "Project management entity", "Contributor Center", "Contributor CRP",
-                "Experiment, lead organization type", "Experiment, lead center", "Experiment lead person / Primary Investigator"
-                )
-
-    names(dt) <- dtNames
-    dt <- as.data.frame(t(dt))
-    out <- tibble::rownames_to_column(dt)
-    ncolums<-ncol(out)-1
-    names(out) <- c("Factor", paste("Value",1:ncolums, sep=""))
-    out
-
-  })
 
   globalMetadata<- reactive({
 
-    glist <- list(metadata_dt2(), crop_dt(), fctdsg_dt())
+    glist <- list(metadata_dt2(), personnel_dt(), crop_dt(), fctdsg_dt())
     gtable<- data.table::rbindlist(glist,fill = TRUE)
     gtable <- as.data.frame(gtable,stringAsFactors=FALSE)
 
@@ -8589,6 +8591,9 @@ server_design_agrofims <- function(input, output, session, values){
 
       incProgress(1/10,message = "...")
 
+       a<- personnel_dt()
+       print( a)
+
 
       flag <- TRUE
 
@@ -8626,24 +8631,10 @@ server_design_agrofims <- function(input, output, session, values){
 
        withProgress(message = 'Downloading fieldbook', value = 0, {
 
-
          n <- as.numeric(input$numApplicationsIrrigation)
-
-         croptable <- crop_dt()
-         factordsg <- fctdsg_dt()
-
-         personnel<- personnel_dt()
          fb_traits <- fb_agrofims_traits()
-
-
-         metadata <- globalMetadata() #metadata_dt2()
-
-
-         print(globalMetadata())
-
+         gmetadata <- globalMetadata() #metadata_dt2()
          phenology <- phenology_dt()
-
-
          trait_agrofims_dt <- traits_dt()[,-1]
          weather <- dt_weather_agrofims()
          soil_vars <- dt_soil_agrofims()
@@ -8655,7 +8646,7 @@ server_design_agrofims <- function(input, output, session, values){
 
          incProgress(6/20,message = "Metadata metadata sheet...")
          openxlsx::addWorksheet(wb, "Metadata", gridLines = TRUE)
-         openxlsx::writeDataTable(wb, "Metadata", x = metadata,
+         openxlsx::writeDataTable(wb, "Metadata", x = gmetadata,
                                   colNames = TRUE, withFilter = FALSE)
 
 
