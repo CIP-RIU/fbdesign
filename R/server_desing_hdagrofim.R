@@ -12,6 +12,42 @@
 
 server_design_agrofims <- function(input, output, session, values){
 
+  # Carga data de ejemplo:
+  # observeEvent(input$load_example, {
+  #
+  #   # Experiment details
+  #   updateTextInput(session, "experimentName", value = "Experiment name")
+  #   updateTextInput(session, "experimentProjectName", value = "Big Data project")
+  #   updateDateRangeInput(session, "fbDesign_project_time_line", start = "2018-08-31", end = "2018-12-31")
+  #   updateSelectizeInput(session, "designFieldbook_typeExperiment", selected = ("Controlled treatment trial"))
+  #   updateTextInput(session, "experimentObj", value = "Genomic tools for sweetppotato improvements")
+  #
+  #   # Institutions/Organizations/Agencies associated with experiment
+  #   updateSelectizeInput(session, "designFieldbook_fundAgencyType", selected = c("Academic institution", "Other"))
+  #
+  #   observeEvent(input$load_example, {
+  #   if(length(input$designFieldbook_fundAgencyType)!=0){
+  #     print("omar")
+  #     updateTextInput(session, "fundName_1", value = "Institution name")
+  #   }
+  #   #updateTextInput(session, "fundName_2", value = "International Potato Center")
+  #   })
+  #
+  #
+  #
+  # })
+
+
+
+  observeEvent(input$load_example,{
+
+    updateSelectizeInput(session, "designFieldbook_fundAgencyType", selected = c("Academic institution", "Other"))
+    onclick("load_example_din", a())
+  })
+
+  a <- function() {
+    observe(updateTextInput(session, "fundName_1", value = "Institution name"))
+  }
 
 
   #### Others
@@ -5582,8 +5618,8 @@ server_design_agrofims <- function(input, output, session, values){
   output$uiTraitsList3 <- renderUI({
 
     column(12,
-           column(12,  style = "padding-top:0px; padding-bottom:10px; text-align:center; color:red;", id = "ms_traitsTable_message", h3("Must select a crop to show traits list")),
-           br(),
+           # column(12,  style = "padding-top:0px; padding-bottom:10px; text-align:center; color:red;", id = "ms_traitsTable_message", h3("Must select a crop to show traits list")),
+           # br(),
            dataTableOutput("dt")
     )
   })
@@ -5610,315 +5646,6 @@ server_design_agrofims <- function(input, output, session, values){
   })
   output$selected_rows <- renderPrint(print(input$dt_rows_selected))
 
-  # observeEvent(input$selectRowClick, {
-  #   selectedRow  <- as.numeric(gsub("selectRow_","",input$selectRowClickId))
-  #   row <- traitsVals$Data[selectedRow,]
-  #   if(input$selectRowClickChecked){
-  #     # traitsVals$Data[[1]][selectedRow] <- "<font color='red'><b>Selected</b></font>"
-  #     traitsVals$Data[[1]][selectedRow] <- "Selected"
-  #   }
-  #   else{
-  #     # traitsVals$Data[[1]][selectedRow] <- "<font color='black'>Not selected</font>"
-  #     traitsVals$Data[[1]][selectedRow] <- "Not selected"
-  #
-  #   }
-  #
-  # })
-  #
-  # observeEvent(input$selectScaleClick,{
-  #   vv  <- strsplit(input$selectScaleClickValue, "-")[[1]]
-  #   var <- list()
-  #   if(length(vv) == 1){
-  #     var[[1]] = vv
-  #     var[[2]] = ""
-  #   }
-  #   else{
-  #     var <- vv
-  #   }
-  #
-  #   traitsVals$Data[[6]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[1]]
-  #   traitsVals$Data[[7]][as.numeric(gsub("select_scale_","",input$selectScaleClickId))]<- var[[2]]
-  # })
-  #
-  # drawButtonSelect <- function(){
-  #   n<- nrow(traitsVals$Data)
-  #   l <- c()
-  #   for(index in 1:n){
-  #
-  #     old_row <- traitsVals$Data[index,]
-  #
-  #     ckecked <-  ""
-  #     if(old_row[[1]] %like% "Selected"){
-  #       ckecked <- "checked"
-  #     }
-  #
-  #     str <-  paste0('<div class="btn-group" role="group" aria-label="Basic example">
-  #                    <input style="width:100px; background-color:green; color:white;" type="checkbox" class="selectRow"  id=selectRow_',index ,' ',ckecked,  '></input>
-  #                    </div>')
-  #     l<- c(l,str)
-  #   }
-  #   return(l)
-  # }
-  #
-  # drawComboInTable <- function(){
-  #   n<- nrow(traitsVals$Data)
-  #   l <- c()
-  #   for(index in 1:n){
-  #     old_row = traitsVals$Data[index,]
-  #     options = old_row[[5]]
-  #     str  <- paste0('<select id="select_scale_' , index, '" class="select_scale" style="width:150px;">')
-  #     arrOpt <- strsplit(options, ",")[[1]]
-  #
-  #     if(length(arrOpt) == 1){
-  #       str <- ""
-  #     }
-  #     else{
-  #       for(val in arrOpt){
-  #         mval  <- strsplit(val, "-")[[1]]
-  #         # if(mval[[2]] == old_row[[6]]) sel <- "selected" else sel <-""
-  #         #
-  #         # str <- paste0(str, '<option value="', mval[[1]], "-" , mval[[2]], '" ', sel,'> ', mval[[2]], '</option>')
-  #         if(mval[[1]] == old_row[[7]]) sel <- "selected" else sel <-""
-  #
-  #         str <- paste0(str, '<option value="', mval[[2]], "-" , mval[[1]], '" ', sel,'> ', mval[[1]], '</option>')
-  #       }
-  #       str <- paste0(str, "</select>")
-  #     }
-  #     l <- c(l, str)
-  #   }
-  #   return(l)
-  # }
-
-  ### start crop measurement 2 ###
-
-  # # Reactive table. Get material list table #################################################################
-  # material_table <-  shiny::reactive({
-  #
-  #   if(input$select_import=="Template") {
-  #
-  #     #mtl_temp <- input$file
-  #     mtl_temp <- input$file_mtlist
-  #
-  #     if(is.null(mtl_temp)){return()}
-  #     if(!is.null(mtl_temp)){
-  #
-  #       file.copy(mtl_temp$datapath,paste(mtl_temp$datapath, ".xlsx", sep=""))
-  #       mtl_temp <- readxl::read_excel(paste(mtl_temp$datapath, ".xlsx", sep=""), sheet = "Material_List")
-  #
-  #       mtl_list <- as.list(mtl_temp) #mtl in list format
-  #     }
-  #
-  #
-  #   }
-  #
-  #   if(input$select_import=="Local List"){
-  #
-  #     sel_list <- input$designFieldbook_sel_mlist
-  #     #print(sel_list)
-  #     if(is.null(sel_list) || sel_list == ""){  return()  }
-  #     if(length(sel_list)>0){
-  #
-  #       #Just use the original code
-  #       mtl_temp <- readRDS(sel_list)
-  #
-  #
-  #       #is_parent_list <- is_parentList(sel_list)
-  #       if(is_parentList(sel_list)==TRUE){
-  #         #Case: parental list (female and male)
-  #         mtl_list <- mtl_temp
-  #       }
-  #       else{
-  #         #Case: standard material list (genotypes)
-  #         mtl_list <- as.list(mtl_temp) #mtl in list format
-  #       }
-  #
-  #     }
-  #
-  #   }
-  #
-  #   mtl_list
-  #
-  # })
-  #
-  # # Approval Box ######################################################################################################
-  # output$approvalBox <- renderInfoBox({
-  #
-  #   #data.frame is the data structue for the clonal and family list. In the parental and family module, we save lists in data.frame format
-  #
-  #   # plos <<- material_table()
-  #   #
-  #   # lsus <<-  get_type_list_ds(material_table())
-  #
-  #   # plos <<- material_table()
-  #   #
-  #   # lsus <<-  get_type_list_ds(material_table())
-  #
-  #
-  #
-  #   # if( is.null(material_table()) ){
-  #   #
-  #   #   title <- "Upload"
-  #   #   subtitle <-   paste("your material list file. Or, press the button below to download and fill the template.")
-  #   #   color <- "blue"
-  #   #   icon <- "upload"
-  #   #   lib <- "glyphicon"
-  #   #   fill <- TRUE
-  #   #   width <- NULL
-  #   #
-  #   #   # infoBox(title="Upload", subtitle=
-  #   #   #           paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
-  #   #   #         color = "blue",fill = TRUE, width = NULL)
-  #   #
-  #   # }
-  #
-  #   #parent list
-  #   if( get_type_list_ds(material_table()) == "clonal" ) {
-  #
-  #     #germoplasm <- germoplasm$Accesssion_Number
-  #
-  #     germoplasm <-material_table()$Accession_Number
-  #     #detect duplications
-  #     germ_duplicates <- anyDuplicated(germoplasm)
-  #
-  #
-  #     if(is.null(germoplasm)){
-  #
-  #       title <- "Upload"
-  #       subtitle <-   paste("your material list file. Or, press the button below to download and fill the template.")
-  #       color <- "blue"
-  #       icon <- "upload"
-  #       lib <- "glyphicon"
-  #       fill <- TRUE
-  #       width <- NULL
-  #
-  #       # infoBox(title="Upload", subtitle=
-  #       #           paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
-  #       #         color = "blue",fill = TRUE, width = NULL)
-  #
-  #
-  #     }
-  #     else if(all(is.na(germoplasm))) {
-  #
-  #       #if(all(is.na(germoplasm))) {
-  #       title <- "ERROR"
-  #       subtitle <- paste("Your material list", "is empty. Please check it")
-  #       color <- "red"
-  #       icon <- "warning-sign"
-  #       lib <- "glyphicon"
-  #       fill <- TRUE
-  #       width <- NULL
-  #
-  #       # infoBox(title="ERROR", subtitle=
-  #       #           paste("Your material list", "is empty. Please check it"), icon = icon("warning-sign", lib = "glyphicon"),
-  #       #         color = "red",fill = TRUE, width = NULL)
-  #
-  #
-  #     }
-  #     else if(germ_duplicates>0){
-  #       title <- "ERROR"
-  #       subtitle <- paste("Your material list has duplicated genotypes/germoplasm names. Please, enter a correct file.")
-  #       color <- "red"
-  #       icon <- "warning-sign"
-  #       lib <- "glyphicon"
-  #       fill <- TRUE
-  #       width <- NULL
-  #
-  #
-  #     }  else {
-  #
-  #       title <- "GREAT!"
-  #       subtitle <-  paste(" was successfully uploaded!")
-  #       color <- "green"
-  #       icon <- "ok"
-  #       lib <- "glyphicon"
-  #       fill <- TRUE
-  #       width <- NULL
-  #
-  #       # infoBox(title="GREAT!", subtitle =
-  #       #           paste(" was successfully uploaded!"),  icon = icon("ok", lib = "glyphicon"),
-  #       #         color = "green",fill = TRUE, width = NULL)
-  #     }
-  #
-  #
-  #   }
-  #
-  #   #list is the data structure for parental list. In the parental module, we save lists in list format
-  #   if( get_type_list_ds(material_table()) == "parental" ) {
-  #
-  #     germoplasm_fem <-  material_table()$female$Accession_Number
-  #     germoplasm_male <- material_table()$male$Accession_Number
-  #
-  #     if(is.null(germoplasm_fem) && is.null(germoplasm_male)){
-  #
-  #
-  #       title <- "Upload"
-  #       subtitle <-  paste(" your parental list file. Or, press the button below to download and fill the template.")
-  #       color <- "blue"
-  #       icon <- "upload"
-  #       lib <- "glyphicon"
-  #       fill <- TRUE
-  #       width <- NULL
-  #
-  #       # infoBox(title="Upload", subtitle=
-  #       #           paste("your parental list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
-  #       #           color = "blue",fill = TRUE, width = NULL)
-  #
-  #     }
-  #
-  #     else if(all(is.na(germoplasm_fem))) {
-  #
-  #       #if(all(is.na(germoplasm_fem))) {
-  #
-  #       title <- "ERROR"
-  #       subtitle <-  paste("The female's accession numbers are empty.", "Please check female's accesion number column")
-  #       color <- "red"
-  #       icon <- "warning-sign"
-  #       lib <- "glyphicon"
-  #       fill <- TRUE
-  #       width <- NULL
-  #
-  #       # infoBox(title="ERROR", subtitle=
-  #       #           paste("The female's accession numbers are empty.", "Please check female's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
-  #       #           color = "red",fill = TRUE, width = NULL)
-  #
-  #     }
-  #
-  #     else if(all(is.na(germoplasm_male))) {
-  #
-  #       title <- "ERROR"
-  #       subtitle <-  paste("The male's accession numbers are empty")
-  #       color <- "red"
-  #       icon <- "warning-sign"
-  #       lib <- "glyphicon"
-  #       fill <- TRUE
-  #       width <- NULL
-  #
-  #       # infoBox(title="ERROR", subtitle=
-  #       #           paste("The male's accession numbers are empty.", "Please check male's accesion number column"), icon = icon("warning-sign", lib = "glyphicon"),
-  #       #           color = "red",fill = TRUE, width = NULL)
-  #
-  #     }
-  #
-  #     else {
-  #
-  #       title <- "GREAT!"
-  #       subtitle <-  paste(" your parental list file was successfully uploaded!")
-  #       color <- "green"
-  #       icon <- "ok"
-  #       lib <- "glyphicon"
-  #       fill <- TRUE
-  #       width <- NULL
-  #
-  #     }
-  #
-  #   }
-  #
-  #
-  #   shinydashboard::infoBox(title=title, subtitle =subtitle,  icon = icon(icon, lib = lib),
-  #                           color = color, fill = TRUE, width = NULL)
-  #
-  #
-  # }) #################################################################
 
   # Design of variables #################################################################
   output$fbDesign_variables <- shiny::renderUI({
@@ -7402,7 +7129,111 @@ server_design_agrofims <- function(input, output, session, values){
    })
 
 
-  ################################End agrofeatures ######################################
+  ## Soil Fertility
+  dt_soilFertility <- reactive({
+
+    nsoilFert<- as.numeric(input$soil_fertilizer_num_apps)
+
+    #get_loop_AgrOper(feature = "select_fertilizerType_soil_table_row_",3)
+    ferType <- prodType <- prodRate <- ferEle <- ferEleRate <- imple<- traction<- technique<- ferNotes<- NULL
+    totProd<- totEle <- NULL
+    Nprod<- Pprod <- Kprod<- NULL
+
+    for(i in 1:nsoilFert){
+
+      if(is.null(input[[paste0("select_fertilizerType_soil_table_row_", i)]])){
+        ferType[i]<-""
+      } else{
+        ferType[i] <- input[[paste0("select_fertilizerType_soil_table_row_", i)]]
+      }
+      print("1")
+      if(is.null(input[[paste0("select_product_soil_table_row_",i)]])){
+        prodType[i]<- ""
+      } else if(input[[paste0("select_product_soil_table_row_",i)]]=="Other"  ){
+        prodType[i]<- input[[paste0("select_product_soil_table_row_",i,"_other")]]
+      } else{
+        prodType[i]<- input[[paste0("select_product_soil_table_row_",i)]]
+      }
+      print("2")
+      prodRate[i]<- input[[paste0("input_productRate_soil_table_row",i)]]
+      print("3")
+      if(is.null(input[[paste0("select_element_soil_table_row_",i)]])){
+        ferEle[i]<-  ""
+      } else if(input[[paste0("select_element_soil_table_row_", i, "_other")]]=="Other"){
+        ferEle[i] <- input[[paste0("select_element_soil_table_row_", i, "_other")]]
+      }else {
+        ferEle[i] <- input[[paste0("select_element_soil_table_row_",i)]]
+      }
+      print("4")
+      ferEleRate[i] <- input[[paste0("input_elementRate_soil_table_row_",i)]]
+      print("5")
+      if(is.null(input[[paste0("select_implement_soil_table_row_", i)]])){
+        imple[i] <- ""
+      } else if (input[[paste0("select_implement_soil_table_row_", i)]]=="Other" ){
+        imple[i] <-  input[[paste0("select_implement_soil_table_row_",i,"_other")]]
+      } else {
+        imple[i] <- input[[paste0("select_implement_soil_table_row_", i)]]
+      }
+      print("6")
+      if(is.null(input[[paste0("select_traction_soil_table_row_",i)]])){
+        traction[i] <- ""
+      } else if(input[[paste0("select_traction_soil_table_row_",i)]]=="Other"){
+        traction[i] <-input[[paste0("select_traction_soil_table_row_",i,"_other")]]
+      } else {
+        traction[i]<- input[[paste0("select_traction_soil_table_row_",i)]]
+      }
+      print("7")
+      if(is.null(input[[paste0("select_techinque_soil_table_row_",i)]])){
+        technique[i] <- ""
+      } else if(input[[paste0("select_techinque_soil_table_row_",i)]]=="Other"){
+        technique[i] <- input[[paste0("select_techinque_soil_table_row_",i,"_other")]]
+      }else {
+        technique[i] <- input[[paste0("select_techinque_soil_table_row_",i)]]
+      }
+      print("8")
+      ferNotes[i]<- input[[paste0("textArea_soil_table_row_",i)]]
+    }
+    print("9")
+    totProd <- rep(input$soil_fertilizer_totalAppRate1, nsoilFert)
+    totEle  <- rep(input$soil_fertilizer_totalAppRate2, nsoilFert)
+    print("10")
+    for(i in 1:nsoilFert){
+      if(length(input[[paste0("input_soil_nutrient_product","_N_", prodType[i])]])==0){
+        Nprod[i] <-0
+      }else {
+        Nprod[i] <- input[[paste0("input_soil_nutrient_product","_N_", prodType[i])]]
+      }
+      if( length(input[[paste0("input_soil_nutrient_product","_P_", prodType[i])]])==0 ){
+        Pprod[i] <- 0
+      }else {
+        Pprod[i] <- input[[paste0("input_soil_nutrient_product","_P_", prodType[i])]]
+      }
+      if( length(input[[paste0("input_soil_nutrient_product","_K_", prodType[i])]])==0){
+        Kprod[i] <-0
+      }else {
+        Kprod[i] <-input[[paste0("input_soil_nutrient_product","_K_", prodType[i])]]
+      }
+    }
+    print("11")
+
+
+    soilNames <- c("Number of fertilizer applications","Fertilizer type","Fertilizer product",
+                   "Fertilizer product rate (kg/ha)", "Nutrient element","Nutrient element rate (kg/ha)",
+                   "Fertilizer implement type", "Fertilizer traction implement", "Fertilizer application technique",
+                   "Fertilizer application notes",
+                   "Total product calculated application", "Total element calculated application",
+                   "N(%)", "P(%)", "K(%)")
+
+    soildt<- data.frame(1:nsoilFert, ferType,  prodType , prodRate , ferEle , ferEleRate ,
+                        imple, traction, technique, ferNotes,
+                        totProd, totEle, Nprod, Pprod , Kprod )
+
+    names(soildt) <- soilNames
+    soildt
+
+  })
+
+    ################################End agrofeatures ######################################
 
 
   ##reactive weather   #################################################################
@@ -8736,6 +8567,17 @@ server_design_agrofims <- function(input, output, session, values){
             openxlsx::writeDataTable(wb, "Weeding", x = dt_weed,
                                      colNames = TRUE, withFilter = FALSE)
          }
+
+         if(is.element("Soil fertility", agroFeaSelected)){
+
+           dt_soil<- dt_soilFertility()
+           openxlsx::addWorksheet(wb, "Soil fertility", gridLines = TRUE)
+           openxlsx::writeDataTable(wb, "Soil fertility", x = dt_soil,
+                                    colNames = TRUE, withFilter = FALSE)
+
+         }
+
+
      #
          incProgress(9/20,message = "Adding trait list sheet...")
 

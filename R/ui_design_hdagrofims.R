@@ -254,6 +254,8 @@ design_conditional_panels_agrofims <- function(){
   )
 }
 
+
+
 #' shiny UI element for HIDAP-AGROFIMS
 #'
 #' returns a re-usable user interface element
@@ -272,7 +274,17 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
   ##### Tab item #####
   shinydashboard::tabItem(
     tabName = name,
-    h1("Experiment description"),
+    #h1("Experiment description"),
+    fluidRow(
+      column(6, h1("Experiment description")),
+      column(
+        6,
+        align = "right",
+        style = "margin-top: 25px;",
+        actionButton("load_example", "Load example"),
+        actionButton("load_example_din", "hide")
+      )
+    ),
 
     # To reset panels and UI
     shinyjs::useShinyjs(),
@@ -2343,12 +2355,12 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                        )
 
                                                                      ),
-                                                                     fluidRow(
-                                                                       column(4,br(),
-                                                                              #textInput("soil_fertilizer_totalAppRate", "Total application rate"),
-                                                                              textInput("soil_fertilizer_fractionTotalAppRate", "Fraction of total application rate")
-                                                                       )
-                                                                     ),
+                                                                     # fluidRow(
+                                                                     #   column(4,br(),
+                                                                     #          #textInput("soil_fertilizer_totalAppRate", "Total application rate"),
+                                                                     #          textInput("soil_fertilizer_fractionTotalAppRate", "Fraction of total application rate")
+                                                                     #   )
+                                                                     # ),
                                                                      fluidRow(
 
                                                                          column(12,
@@ -2672,20 +2684,20 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                               #       )
                                               #     #)
                                               # ),
-                                              shiny::tabPanel("Crop measurement", value = "tabTraits", icon = shiny::icon("leaf"),
-
-                                                              column(width = 12,
-                                                                     h2("Crop measurement")
-                                                                     # actionButton("btGetCheckedValues", "Get cheked")
-
-                                                              ),
-                                                              uiOutput("uiTraitsList"),
-
-                                                              sidebarPanel(id="sidebar", width = 12,
-                                                                           actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;", href="#top")
-                                                              )
-                                                              #)
-                                              ),
+                                              # shiny::tabPanel("Crop measurement", value = "tabTraits", icon = shiny::icon("leaf"),
+                                              #
+                                              #                 column(width = 12,
+                                              #                        h2("Crop measurement")
+                                              #                        # actionButton("btGetCheckedValues", "Get cheked")
+                                              #
+                                              #                 ),
+                                              #                 uiOutput("uiTraitsList"),
+                                              #
+                                              #                 sidebarPanel(id="sidebar", width = 12,
+                                              #                              actionButton("btnNextEnv", "Next", class = "btn-primary",style="color: #fff;", href="#top")
+                                              #                 )
+                                              #                 #)
+                                              # ),
                                               # shiny::tabPanel("Crop measurement2", value = "tabTraits2", icon = shiny::icon("leaf"),
                                               #
                                               #                 column(width = 12,
@@ -2703,10 +2715,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                               #                 )
                                               #                 #)
                                               # ),
-                                              shiny::tabPanel("Crop measurement3", value = "tabTraits3", icon = shiny::icon("leaf"),
+                                              shiny::tabPanel("Crop measurement", value = "tabTraits", icon = shiny::icon("leaf"),
 
                                                               column(width = 12,
-                                                                     h2("Crop measurement3"),
+                                                                     h2("Crop measurement"),
                                                                      #br()
                                                                      p(class = "text-muted", style="text-align:justify",
                                                                        paste("Please, select measurement by click.")
