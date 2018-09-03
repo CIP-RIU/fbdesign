@@ -334,7 +334,18 @@ get_loop_irrigation_technique_other <-function(technique="Irrigation sprinker", 
   out
 }
 
+#' Get clean dates from shiny inputs
+#'
+#' @param input_date input date
+#' @export
+#'
+get_clean_date<- function(input_date){
 
-
-
+  if(length(input_date)==0){
+    out <- ""
+  } else {
+    out <- paste(input_date)
+  }
+  out
+}
 

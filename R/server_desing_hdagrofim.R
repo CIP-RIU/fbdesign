@@ -12,42 +12,165 @@
 
 server_design_agrofims <- function(input, output, session, values){
 
-  # Carga data de ejemplo:
-  # observeEvent(input$load_example, {
-  #
-  #   # Experiment details
-  #   updateTextInput(session, "experimentName", value = "Experiment name")
-  #   updateTextInput(session, "experimentProjectName", value = "Big Data project")
-  #   updateDateRangeInput(session, "fbDesign_project_time_line", start = "2018-08-31", end = "2018-12-31")
-  #   updateSelectizeInput(session, "designFieldbook_typeExperiment", selected = ("Controlled treatment trial"))
-  #   updateTextInput(session, "experimentObj", value = "Genomic tools for sweetppotato improvements")
-  #
-  #   # Institutions/Organizations/Agencies associated with experiment
-  #   updateSelectizeInput(session, "designFieldbook_fundAgencyType", selected = c("Academic institution", "Other"))
-  #
-  #   observeEvent(input$load_example, {
-  #   if(length(input$designFieldbook_fundAgencyType)!=0){
-  #     print("omar")
-  #     updateTextInput(session, "fundName_1", value = "Institution name")
-  #   }
-  #   #updateTextInput(session, "fundName_2", value = "International Potato Center")
-  #   })
-  #
-  #
-  #
-  # })
+  pathsession <- "/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/savesession/ivan.csv"
 
-
-
-  observeEvent(input$load_example,{
-
-    updateSelectizeInput(session, "designFieldbook_fundAgencyType", selected = c("Academic institution", "Other"))
-    onclick("load_example_din", a())
+  # Save session
+  observeEvent(input$save_inputs, {
+    # Define inputs to save
+    inputs_to_save <- c('experimentName', 'experimentProjectName')
+    # Declare inputs
+    inputs <- NULL
+    # Append all inputs before saving to folder
+    for(input.i in inputs_to_save){
+      inputs <- append(inputs, input[[input.i]])
+    }
+    # Inputs data.frame
+    inputs_data_frame <- data.frame(inputId = inputs_to_save, value = inputs)
+    # Save Inputs
+    write.csv(inputs_data_frame, file = pathsession, row.names = FALSE)
   })
 
-  a <- function() {
-    observe(updateTextInput(session, "fundName_1", value = "Institution name"))
-  }
+  # Loas session
+  observeEvent(input$load_inputs, {
+    # Load inputs
+    uploaded_inputs <- read.csv(pathsession)
+    # Update each input
+    for(i in 1:nrow(uploaded_inputs)){
+      updateNumericInput(session,
+                         inputId = uploaded_inputs$inputId[i],
+                         value = uploaded_inputs$value[i])
+    }
+  })
+
+  ##########
+  ##########
+
+  # Carga data de ejemplo MONOCROP:
+  observeEvent(input$load_exampleM, {
+
+    ## Experiment
+    # Experiment details
+    updateTextInput(session, "experimentName", value = "Experiment name")
+    updateTextInput(session, "experimentProjectName", value = "Big Data project")
+    updateDateRangeInput(session, "fbDesign_project_time_line", start = "2018-08-31", end = "2018-12-31")
+    updateSelectizeInput(session, "designFieldbook_typeExperiment", selected = "Controlled treatment trial")
+    updateTextAreaInput(session, "experimentObj", value = "Genomic tools for sweetppotato improvements")
+    # Institutions/Organizations/Agencies associated with experiment
+    updateSelectizeInput(session, "designFieldbook_fundAgencyType", selected = c("Academic institution", "Other"))
+    updateNumericInput(session, "numProjEntity", value = 2)
+    # Experiment leads
+    updateNumericInput(session, "numLeads", value = 2)
+
+    ## Personnel
+    updateSelectInput(session, "npersons", selected = 3)
+    # Personnel associated with the experiment
+    updateSelectizeInput(session, "personnel1Type", selected = "Farmer")
+    updateTextInput(session, "person1FirstName", value = "Medha")
+    updateTextInput(session, "person1LastName", value = "Devare")
+    updateTextInput(session, "person1Email", value = "m.devare@cgiar.org")
+    updateSelectizeInput(session, "person1Affiliation", selected = "CGIAR Center")
+    updateSelectizeInput(session, "person1Center", selected = "Africa Rice Center")
+    updateTextInput(session, "person1ORCID", value = "654676")
+
+    ## Site
+    # Site surrounding description
+    updateSelectizeInput(session, "fbDesign_inHighLevel", selected = "Basin")
+    updateSelectizeInput(session, "fbDesign_inSiteVegetation", selected = c("Crops", "Forest"))
+    updateTextAreaInput(session, "inSiteDescNotes", value = "Description notes")
+
+    ## Crop
+    # Description of crops sown
+    updateSelectInput(session, "croppingType", selected = "Monocrop")
+    # Crop information
+    updateSelectizeInput(session, "cropCommonNameMono", selected = "Cassava")
+    updateSelectizeInput(session, "cultivarNameMono", selected = "Variety name", choices = c("Variety name"), options = list(maxItems=1, 'create' = TRUE))
+    #Previous crop or fallow
+    updateSelectizeInput(session, "prevCropName", selected = "Maize")
+
+    delay(500, c(## Experiment
+                 updateTextInput(session, "fundName_1", value = "Institution name"),
+                 updateTextInput(session, "fundName_2", value = "International Potato Center"),
+                 updateSelectizeInput(session, "projEntity_1", selected = "CGIAR center"),
+                 updateSelectizeInput(session, "contCenter_1", selected = "Africa Rice Center"),
+                 updateSelectizeInput(session, "contCRP_1", selected = "CGIAR Research Program on Agriculture for Nutrition and Health"),
+                 updateSelectizeInput(session, "projEntity_2", selected = "Other"),
+                 updateSelectizeInput(session, "projEntity_2_other", selected = "Project name"),
+                 updateSelectizeInput(session, "projLeadEnt_1", selected = "CGIAR center"),
+                 updateSelectizeInput(session, "tLeadCenter_1", selected = "Africa Rice Center"),
+                 updateTextInput(session, "expLead_1", value = "Lead person name"),
+                 updateSelectizeInput(session, "projLeadEnt_2", selected = "Other"),
+                 updateSelectizeInput(session, "lead_org_type_1_2", selected = "Agricultural experimental extension"),
+                 updateTextInput(session, "leadNameOther_2", value = "Lead organization name"),
+                 updateTextInput(session, "expLead_2", value = "Primary investigator"))
+    )
+  })
+
+  # Carga data de ejemplo INTERCROP:
+  observeEvent(input$load_exampleI, {
+
+    ## Experiment
+    # Experiment details
+    updateTextInput(session, "experimentName", value = "Experiment name")
+    updateTextInput(session, "experimentProjectName", value = "Big Data project")
+    updateDateRangeInput(session, "fbDesign_project_time_line", start = "2018-08-31", end = "2018-12-31")
+    updateSelectizeInput(session, "designFieldbook_typeExperiment", selected = "Controlled treatment trial")
+    updateTextAreaInput(session, "experimentObj", value = "Genomic tools for sweetppotato improvements")
+    # Institutions/Organizations/Agencies associated with experiment
+    updateSelectizeInput(session, "designFieldbook_fundAgencyType", selected = c("Academic institution", "Other"))
+    updateNumericInput(session, "numProjEntity", value = 2)
+    # Experiment leads
+    updateNumericInput(session, "numLeads", value = 2)
+
+    ## Personnel
+    updateSelectInput(session, "npersons", selected = 3)
+    # Personnel associated with the experiment
+    updateSelectizeInput(session, "personnel1Type", selected = "Farmer")
+    updateTextInput(session, "person1FirstName", value = "Medha")
+    updateTextInput(session, "person1LastName", value = "Devare")
+    updateTextInput(session, "person1Email", value = "m.devare@cgiar.org")
+    updateSelectizeInput(session, "person1Affiliation", selected = "CGIAR Center")
+    updateSelectizeInput(session, "person1Center", selected = "Africa Rice Center")
+    updateTextInput(session, "person1ORCID", value = "654676")
+
+    ## Site
+    # Site surrounding description
+    updateSelectizeInput(session, "fbDesign_inHighLevel", selected = "Basin")
+    updateSelectizeInput(session, "fbDesign_inSiteVegetation", selected = c("Crops", "Forest"))
+    updateTextAreaInput(session, "inSiteDescNotes", value = "Description notes")
+
+    ## Crop
+    # Description of crops sown
+    updateSelectInput(session, "croppingType", selected = "Intercrop")
+    updateSelectizeInput(session, "cropsSelected", selected = c("Cassava", "Maize"))
+    # Crop information
+    updateSelectizeInput(session, "cropVarietyName1", selected = "Cassava variety name", choices = c("Cassava variety name"), options = list(maxItems=1, 'create' = TRUE))
+    updateSelectizeInput(session, "cropVarietyName2", selected = "Maize variety name", choices = c("Maize variety name"), options = list(maxItems=1, 'create' = TRUE))
+    # updateTextInput(session, "intercropValue_row_crop_1", value = 12)
+    # updateTextInput(session, "intercropValue_row_crop_2", value = 40)
+    #Previous crop or fallow
+    updateSelectizeInput(session, "prevCropName", selected = "Rice")
+
+
+    delay(500, c(## Experiment
+      updateTextInput(session, "fundName_1", value = "Institution name"),
+      updateTextInput(session, "fundName_2", value = "International Potato Center"),
+      updateSelectizeInput(session, "projEntity_1", selected = "CGIAR center"),
+      updateSelectizeInput(session, "contCenter_1", selected = "Africa Rice Center"),
+      updateSelectizeInput(session, "contCRP_1", selected = "CGIAR Research Program on Agriculture for Nutrition and Health"),
+      updateSelectizeInput(session, "projEntity_2", selected = "Other"),
+      updateSelectizeInput(session, "projEntity_2_other", selected = "Project name"),
+      updateSelectizeInput(session, "projLeadEnt_1", selected = "CGIAR center"),
+      updateSelectizeInput(session, "tLeadCenter_1", selected = "Africa Rice Center"),
+      updateTextInput(session, "expLead_1", value = "Lead person name"),
+      updateSelectizeInput(session, "projLeadEnt_2", selected = "Other"),
+      updateSelectizeInput(session, "lead_org_type_1_2", selected = "Agricultural experimental extension"),
+      updateTextInput(session, "leadNameOther_2", value = "Lead organization name"),
+      updateTextInput(session, "expLead_2", value = "Primary investigator"),
+      ## Crop
+      updateTextInput(session, "intercropValue_row_crop_1", value = 12),
+      updateTextInput(session, "intercropValue_row_crop_2", value = 40))
+    )
+  })
 
 
   #### Others
@@ -7676,65 +7799,50 @@ server_design_agrofims <- function(input, output, session, values){
 
   phenology_dt <- reactive({
 
-   pheNames<- c("Planting date",	"Transplanting date",	"Planting Emergence date","Planting and transplanting notes",
-     "Sowing date", "Sowing Emergence date" , "Sowing Notes",
+    pheNames<- c("Planting date",	"Transplanting date",	"Planting Emergence date",
+                 "Planting and transplanting notes", "Sowing date", "Sowing Emergence date" ,
+                 "Sowing Notes", "Flowering date", "Flowering 50% flowering date" ,
+                 "Flowering End date", "Flowering Notes", "Grain filling Start date" ,
+                 "Grain filling End date" , "Grain filling Notes", "Fruit development start date",
+                 "50% fruit development date",  "Fruit development end date", "Fruit ripening date",
+                 "Fruit development notes", "Maturity start date",	"50% maturity date",
+                 "Maturity end date",	"Maturity Notes", "Senescence start date",
+                 "50% senescence date", "Senescence end date", "Other phenological stage Name",
+                 "Other phenological stage Start date", "Other phenological stage End date", "Other phenological stage Notes"
+    )
 
-     "Flowering date", "Flowering 50% flowering date" , "Flowering End date", "Flowering Notes",
+    phedt <- data.frame(
+      get_clean_date(input$cropPheno_planting_date),
+      get_clean_date(input$cropPheno_transpanting_date),#2
+      get_clean_date(input$cropPhen_plantingEmergence_date), #3
+      input$cropPheno_sowEmerg_notes, #4
+      get_clean_date(input$cropPheno_sowing_date), #5
+      get_clean_date(input$cropPheno_emergence_date),#6
+      input$cropPheno_sowEmerg_notes,#7
 
-     "Grain filling Start date" , "Grain filling End date" , "Grain filling Notes",
+      get_clean_date(input$cropPheno_flowering_sdate), get_clean_date(input$cropPheno_flowering_50date), # 8 9
+      get_clean_date(input$cropPheno_flowering_edate), get_clean_date(input$cropPheno_flowering_notes), # 10-11
 
-     "Fruit development start date", "50% fruit development date",
-     "Fruit development end date", "Fruit ripening date", "Fruit development notes",
+      get_clean_date(input$cropPheno_grainFilling_sdate), get_clean_date( input$cropPheno_grainFilling_edate),   input$cropPheno_grainFilling_notes, # 12-14
 
-     "Maturity start date",	"50% maturity date",	"Maturity end date",	"Maturity Notes",
-     "Senescence start date", "50% senescence date", "Senescence end date",
+      get_clean_date(input$cropPheno_fruitDev_date), get_clean_date(input$cropPheno_fruit50dev_date), #15 -16
+      get_clean_date(input$cropPheno_fruitDevEnd_date),  get_clean_date(input$cropPheno_fruitRip_date), #17-18
+      input$cropPheno_fruitDev_notes, get_clean_date(input$cropPheno_maturity_start_date), #19-20
+      get_clean_date(input$cropPheno_maturity_50_date), get_clean_date(input$cropPheno_maturity_end_date), #21-22
+      get_clean_date(input$cropPheno_senescence_start_date), #23
+      get_clean_date(input$cropPheno_senescence_50_date),#24
+      get_clean_date(input$cropPheno_senescence_end_date), #25
+      input$cropPheno_maturity_notes,#26
 
-     "Other phenological stage Name",
-     "Other phenological stage Start date", "Other phenological stage End date",
-     "Other phenological stage Notes"
-   )
+      input$cropPheno_otherPheno_name,#27
+      get_clean_date(input$cropPheno_otherPheno_start_date),#28
+      get_clean_date(input$cropPheno_otherPheno_end_date),#29
+      input$cropPheno_otherPheno_notes#20
+    )
 
-  # data.frame(
-  # paste(input$cropPheno_planting_date),
-  # paste(input$cropPheno_transpanting_date),
-  # paste(input$cropPhen_plantingEmergence_date),
-  # input$cropPheno_sowEmerg_notes,
-  # paste(input$cropPheno_sowing_date),
-  # paste(input$cropPheno_emergence_date),
-  # input$cropPheno_sowEmerg_notes,
-  #
-  # input$cropPheno_flowering_sdate, input$cropPheno_flowering_50date,
-  # input$cropPheno_flowering_edate, input$cropPheno_flowering_notes,
-  #
-  # paste(input$cropPheno_grainFilling_sdate), paste( input$cropPheno_grainFilling_edate),   input$cropPheno_grainFilling_notes,
-  #
-  # paste(input$cropPheno_fruitDev_date),
-  #       paste(input$cropPheno_fruit50dev_date),
-  #             paste(input$cropPheno_fruitDevEnd_date),
-  #                   paste(input$cropPheno_fruitRip_date,
-  #   input$cropPheno_fruitDev_notes,
-  #
-  #   input$cropPheno_maturity_start_date,
-  #   input$cropPheno_maturity_50_date,
-  #   input$cropPheno_maturity_end_date,
-  #   input$cropPheno_senescence_start_date,
-  #   input$cropPheno_senescence_50_date,
-  #   input$cropPheno_senescence_end_date,
-  #   input$cropPheno_maturity_notes,
-  #
-  #     input$cropPheno_otherPheno_name,
-  #     input$cropPheno_otherPheno_start_date,
-  #     input$cropPheno_otherPheno_end_date,
-  #     input$cropPheno_otherPheno_notes
-  #  )
-
-  vect<-rep("NA", length(pheNames) )
-  res<-data.frame(t(vect))
-  names(res)<-pheNames
-  res
+    names(phedt)<-pheNames
+    phedt
   })
-
-
   #############  factor_dt2 ######################################################################
   factor_dt2 <- reactive({
 
@@ -8461,6 +8569,9 @@ server_design_agrofims <- function(input, output, session, values){
      content = function(file) {
 
        withProgress(message = 'Downloading fieldbook', value = 0, {
+
+         #print(input$cropPheno_planting_date)
+         #print(length(input$cropPheno_planting_date))
 
          n <- as.numeric(input$numApplicationsIrrigation)
          fb_traits <- fb_agrofims_traits()

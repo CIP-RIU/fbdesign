@@ -6,12 +6,11 @@
 \usage{
 design_fieldbook(design = "(RCBD)", trt1 = letters[1:5], trt2 = NULL,
   r = 2, k = 2, trt1_label = "trt1", trt2_label = "trt2",
-  factor_name = "FACTOR", factor_lvl1 = "level1",
-  factor_lvl2 = "level2", factor_lvl3 = "level3", sub_design = "crd",
-  number_col = 3, number_colb = NULL, type_lxt = 1, set = NULL,
-  male = NULL, female = NULL, maxRep = 20, series = 1,
-  random = TRUE, first = TRUE, cont = FALSE, zigzag = FALSE,
-  variables = NULL)
+  factor_name = "FACTOR", factor_lvl1 = "level1", factor_lvl2 = "level2",
+  factor_lvl3 = "level3", sub_design = "crd", number_col = 3,
+  number_colb = NULL, type_lxt = 1, set = NULL, male = NULL,
+  female = NULL, maxRep = 20, series = 1, random = TRUE, first = TRUE,
+  cont = FALSE, zigzag = FALSE, variables = NULL)
 }
 \arguments{
 \item{design}{a statistical design}

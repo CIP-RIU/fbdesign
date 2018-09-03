@@ -274,17 +274,20 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
   ##### Tab item #####
   shinydashboard::tabItem(
     tabName = name,
-    #h1("Experiment description"),
-    fluidRow(
-      column(6, h1("Experiment description")),
-      column(
-        6,
-        align = "right",
-        style = "margin-top: 25px;",
-        actionButton("load_example", "Load example"),
-        actionButton("load_example_din", "hide")
-      )
-    ),
+    h1("Experiment description"),
+    # fluidRow(
+    #   column(6, h1("Experiment description")),
+    #   column(6, align = "right", style = "margin-top: 25px;",
+    #          actionButton("load_exampleM", "Monocrop ex."),
+    #          actionButton("load_exampleI", "Intercrop ex.")
+    #   )
+    # ),
+    # fluidRow(
+    #   column(2, style = "margin-top: 20px;", actionButton('save_inputs', 'Save session')),
+    #   column(4, align = "left", disabled(textInput("", ""))),
+    #   column(4, align = "right", textInput("inputidsession", "", placeholder = "Experiment ID")),
+    #   column(2, align = "right", style = "margin-top: 20px;", actionButton('load_inputs', 'Load session'))
+    # ),
 
     # To reset panels and UI
     shinyjs::useShinyjs(),
