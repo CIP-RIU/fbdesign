@@ -12,12 +12,30 @@
 
 server_design_agrofims <- function(input, output, session, values){
 
-  pathsession <- "/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/savesession/ivan.csv"
+  # input Exoeriment ID
+  output$experimentIdUI <- renderUI({
+    disabled(textInput(inputId = "experimentId", label = "Experiment ID", value = stri_rand_strings(1, 8,  '[A-Z0-9]')))
+  })
+
+  output$idsession <- renderText({
+    input$experimentId
+  })
+
+  globalpath <- "/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/savesession/"
+
+  pathsession <- reactive({
+    path <- ""
+    path <- paste0(globalpath, input$experimentId)
+    path
+  })
+
+  # pathsession <- "/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/savesession/ivan.csv"
+  # pathsession <- paste0("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/savesession/", input$experimentId)
 
   # Save session
   observeEvent(input$save_inputs, {
     # Define inputs to save
-    inputs_to_save <- c('experimentName', 'experimentProjectName')
+    inputs_to_save <- c('experimentId', 'experimentName', 'experimentProjectName')
     # Declare inputs
     inputs <- NULL
     # Append all inputs before saving to folder
@@ -27,18 +45,20 @@ server_design_agrofims <- function(input, output, session, values){
     # Inputs data.frame
     inputs_data_frame <- data.frame(inputId = inputs_to_save, value = inputs)
     # Save Inputs
-    write.csv(inputs_data_frame, file = pathsession, row.names = FALSE)
+    write.csv(inputs_data_frame, file = pathsession(), row.names = FALSE)
   })
 
   # Loas session
   observeEvent(input$load_inputs, {
-    # Load inputs
-    uploaded_inputs <- read.csv(pathsession)
-    # Update each input
-    for(i in 1:nrow(uploaded_inputs)){
-      updateNumericInput(session,
-                         inputId = uploaded_inputs$inputId[i],
-                         value = uploaded_inputs$value[i])
+    if (input$loadidsession != "") {
+      # Load inputs
+      uploaded_inputs <- read.csv(str_trim(paste0(globalpath, input$loadidsession)))
+      # Update each input
+      for(i in 1:nrow(uploaded_inputs)){
+        updateNumericInput(session,
+                           inputId = uploaded_inputs$inputId[i],
+                           value = uploaded_inputs$value[i])
+      }
     }
   })
 

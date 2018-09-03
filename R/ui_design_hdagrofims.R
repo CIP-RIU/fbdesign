@@ -274,18 +274,18 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
   ##### Tab item #####
   shinydashboard::tabItem(
     tabName = name,
-    h1("Experiment description"),
-    # fluidRow(
-    #   column(6, h1("Experiment description")),
-    #   column(6, align = "right", style = "margin-top: 25px;",
-    #          actionButton("load_exampleM", "Monocrop ex."),
-    #          actionButton("load_exampleI", "Intercrop ex.")
-    #   )
-    # ),
+    #h1("Experiment description"),
+    fluidRow(
+      column(6, h1("Experiment description")),
+      column(6, align = "right", style = "margin-top: 26px;",
+             actionButton("load_exampleM", "Monocrop"),
+             actionButton("load_exampleI", "Intercrop")
+      )
+    ),
     # fluidRow(
     #   column(2, style = "margin-top: 20px;", actionButton('save_inputs', 'Save session')),
-    #   column(4, align = "left", disabled(textInput("", ""))),
-    #   column(4, align = "right", textInput("inputidsession", "", placeholder = "Experiment ID")),
+    #   column(4, style = "margin-top: 20px;", align = "left", verbatimTextOutput("idsession")),
+    #   column(4, align = "right", textInput("loadidsession", "", placeholder = "Experiment ID")),
     #   column(2, align = "right", style = "margin-top: 20px;", actionButton('load_inputs', 'Load session'))
     # ),
 
@@ -494,7 +494,8 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
             column(
               width = 6,
               h2("Experiment details"),
-              disabled(textInput(inputId = "experimentId", label = "Experiment ID", value = stri_rand_strings(1, 8,  '[A-Z0-9]'))),
+              # disabled(textInput(inputId = "experimentId", label = "Experiment ID", value = stri_rand_strings(1, 8,  '[A-Z0-9]'))),
+              uiOutput("experimentIdUI"),
               textInput(inputId = "experimentName", label = "Experiment name", value = ""),
               textInput(inputId = "experimentProjectName", label = "Experiment project name", value = ""),
 
