@@ -274,19 +274,23 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
   ##### Tab item #####
   shinydashboard::tabItem(
     tabName = name,
-    #h1("Experiment description"),
-    fluidRow(
-      column(6, h1("Experiment description")),
-      column(6, align = "right", style = "margin-top: 26px;",
-             actionButton("load_exampleM", "Monocrop"),
-             actionButton("load_exampleI", "Intercrop")
-      )
-    ),
     # fluidRow(
-    #   column(2, style = "margin-top: 20px;", actionButton('save_inputs', 'Save session')),
-    #   column(4, style = "margin-top: 20px;", align = "left", verbatimTextOutput("idsession")),
-    #   column(4, align = "right", textInput("loadidsession", "", placeholder = "Experiment ID")),
-    #   column(2, align = "right", style = "margin-top: 20px;", actionButton('load_inputs', 'Load session'))
+    #   column(2, style = "margin-top: 0px; color: blue;", align = "left", h2(textOutput("idsession"))),
+    #   column(2, align = "left", style = "margin-top: 20px;", actionButton('save_inputs', 'Save session', icon("save"))),
+    #   column(4),
+    #   column(2, align = "right", textInput("loadidsession", "", placeholder = "Experiment ID")),
+    #   column(2, align = "right", style = "margin-top: 20px;", actionButton('load_inputs', 'Load session', icon("download")))
+    # ),
+    # fluidRow(
+    #   column(12, verbatimTextOutput("text"))
+    # ),
+    h1("Experiment description"),
+    # fluidRow(
+    #   column(6, h1("Experiment description")),
+    #   column(6, align = "right", style = "margin-top: 26px;",
+    #          actionButton("load_exampleM", "Monocrop"),
+    #          actionButton("load_exampleI", "Intercrop")
+    #   )
     # ),
 
     # To reset panels and UI
@@ -505,7 +509,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                              options = list(maxItems =1, placeholder = "Select one..."),
                              choices = c("Controlled treatment trial",
                                          "Varietal trial",
-                                         "Demonstration trial",
+                                         #"Demonstration trial",
                                          "Germplasm screening trial")
               ),
 
@@ -895,7 +899,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
               shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),
               shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
               br(),
-              h2("Site surrounding description"),
+              h2("Site surrounding by"),
               selectizeInput("fbDesign_inHighLevel", label="Higher-level landform", multiple = TRUE,
                              choices = sort(c("Plain",
                                          "Basin",
@@ -968,7 +972,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                      column(
                                        width = 6,
                                        selectizeInput(inputId = "cultivarNameMono", label = "Variety name", choices = c(), multiple = T,
-                                                      options = list(maxItems=1, 'create' = TRUE)
+                                                      options = list('create' = TRUE)
                                        )
                                      )
                                    )
@@ -1007,7 +1011,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                         width = 6,
                                                         #textInput(inputId = "cropVarietyName1", label = "Crop variety name", value = "")
                                                         selectizeInput(inputId = "cropVarietyName1", label = "Crop variety name", choices = c(), multiple = T,
-                                                                       options = list(maxItems=1, 'create' = TRUE)
+                                                                       options = list('create' = TRUE)
                                                         )
                                                       )
                                                     )
@@ -1029,7 +1033,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                         width = 6,
                                                         #textInput(inputId = "cropVarietyName2", label = "Crop variety name", value = "")
                                                         selectizeInput(inputId = "cropVarietyName2", label = "Crop variety name", choices = c(), multiple = T,
-                                                                       options = list(maxItems=1, 'create' = TRUE)
+                                                                       options = list( 'create' = TRUE)
                                                         )
                                                       )
                                                     )
@@ -1051,7 +1055,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                         width = 6,
                                                         #textInput(inputId = "cropVarietyName3", label = "Crop variety name", value = "")
                                                         selectizeInput(inputId = "cropVarietyName3", label = "Crop variety name", choices = c(), multiple = T,
-                                                                       options = list(maxItems=1, 'create' = TRUE)
+                                                                       options = list('create' = TRUE)
                                                         )
                                                       )
                                                     )
@@ -1073,7 +1077,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                         width = 6,
                                                         #textInput(inputId = "cropVarietyName4", label = "Crop variety name", value = "")
                                                         selectizeInput(inputId = "cropVarietyName4", label = "Crop variety name", choices = c(), multiple = T,
-                                                                       options = list(maxItems=1, 'create' = TRUE)
+                                                                       options = list('create' = TRUE)
                                                         )
                                                       )
                                                     )
@@ -1095,7 +1099,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                         width = 6,
                                                         #textInput(inputId = "cropVarietyName5", label = "Crop variety name", value = "")
                                                         selectizeInput(inputId = "cropVarietyName5", label = "Crop variety name", choices = c(), multiple = T,
-                                                                       options = list(maxItems=1, 'create' = TRUE)
+                                                                       options = list('create' = TRUE)
                                                         )
                                                       )
                                                     )
@@ -1117,7 +1121,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                         width = 6,
                                                         #textInput(inputId = "cropVarietyName6", label = "Crop variety name", value = "")
                                                         selectizeInput(inputId = "cropVarietyName6", label = "Crop variety name", choices = c(), multiple = T,
-                                                                       options = list(maxItems=1, 'create' = TRUE)
+                                                                       options = list('create' = TRUE)
                                                         )
                                                       )
                                                     )
@@ -1139,7 +1143,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                         width = 6,
                                                         #textInput(inputId = "cropVarietyName7", label = "Crop variety name", value = "")
                                                         selectizeInput(inputId = "cropVarietyName7", label = "Crop variety name", choices = c(), multiple = T,
-                                                                       options = list(maxItems=1, 'create' = TRUE)
+                                                                       options = list('create' = TRUE)
                                                         )
                                                       )
                                                     )
@@ -1161,7 +1165,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                         width = 6,
                                                         #textInput(inputId = "cropVarietyName8", label = "Crop variety name", value = "")
                                                         selectizeInput(inputId = "cropVarietyName8", label = "Crop variety name", choices = c(), multiple = T,
-                                                                       options = list(maxItems=1, 'create' = TRUE)
+                                                                       options = list('create' = TRUE)
                                                         )
                                                       )
                                                     )
@@ -2315,8 +2319,10 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                                 ),
                                                                                column(6, style="padding:0px;",
                                                                                       column(2, style="padding:5px; text-align:center; word-wrap: break-word;", h4("Element rate (kg/ha)") ),
-                                                                                      column(3, style="padding:5px; text-align:center; word-wrap: break-word;",h4("Implement")),
-                                                                                      column(3, style="padding:5px; text-align:center; word-wrap: break-word;",h4("Traction")),
+                                                                                      column(3, style="padding:5px; text-align:center; word-wrap: break-word;",h4("Start date")),
+                                                                                      column(3, style="padding:5px; text-align:center; word-wrap: break-word;",h4("End date")),
+                                                                                      # column(3, style="padding:5px; text-align:center; word-wrap: break-word;",h4("Implement")),
+                                                                                      # column(3, style="padding:5px; text-align:center; word-wrap: break-word;",h4("Traction")),
                                                                                       column(4, style="padding:5px; text-align:center; word-wrap: break-word;",h4("Technique"))
                                                                                )
                                                                          ),
@@ -2358,60 +2364,64 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                               )
                                                                        )
 
-                                                                     ),
+                                                                     )#,
                                                                      # fluidRow(
                                                                      #   column(4,br(),
                                                                      #          #textInput("soil_fertilizer_totalAppRate", "Total application rate"),
                                                                      #          textInput("soil_fertilizer_fractionTotalAppRate", "Fraction of total application rate")
                                                                      #   )
                                                                      # ),
-                                                                     fluidRow(
 
-                                                                         column(12,
-                                                                                column(6,
-                                                                                  h2("Nutrient content")
-                                                                                ),
-                                                                                column(6,
-                                                                                       br(),
-                                                                                    actionButton("addproducts_soil", "", icon= icon("plus")),
-                                                                                    actionButton("delproducts_soil", "", icon= icon("minus"))
-                                                                                )
-                                                                         )
-                                                                       ),
-                                                                       fluidRow(
-                                                                         column(12,
-                                                                             column(3, style = "padding:10px;",
-                                                                                    HTML("<center>"), h3("Fertilizer product"), HTML("</center>")
-                                                                             ),
-                                                                             column(1, style = "padding:10px;",
-                                                                                    HTML("<center>"),h3("N (%)"),HTML("</center>")
-                                                                             ),
-                                                                             column(1, style = "padding:10px;",
-                                                                                    HTML("<center>"),h3("P (%)"),HTML("</center>")
-                                                                             ),
-                                                                             column(1, style = "padding:10px;",
-                                                                                    HTML("<center>"),h3("K (%)"),HTML("</center>")
-                                                                             ),
-                                                                             fluidRow(id="fr_fertilizer_application_nutrient_title")
-                                                                         )
-                                                                       ),
-                                                                     fluidRow(
-                                                                       column(12,
-                                                                              column(3, style = "padding:10px;",
-                                                                                     fluidRow(id = "fr_aux_soil_fertProduct")
-                                                                              ),
-                                                                              column(1, style = "padding:10px;",
-                                                                                     fluidRow(id = "fr_aux_soil_N")
-                                                                              ),
-                                                                              column(1, style = "padding:10px;",
-                                                                                     fluidRow(id = "fr_aux_soil_P")
-                                                                              ),
-                                                                              column(1, style = "padding:10px;",
-                                                                                     fluidRow(id = "fr_aux_soil_K")
-                                                                              ),
-                                                                              fluidRow(id="fr_fertilizer_application_nutrient")
-                                                                       )
-                                                                     )
+                                                                     #### Ocultado por ivan
+                                                                     # fluidRow(
+                                                                     #
+                                                                     #     column(12,
+                                                                     #            column(6,
+                                                                     #              h2("Nutrient content")
+                                                                     #            ),
+                                                                     #            column(6,
+                                                                     #                   br(),
+                                                                     #                actionButton("addproducts_soil", "", icon= icon("plus")),
+                                                                     #                actionButton("delproducts_soil", "", icon= icon("minus"))
+                                                                     #            )
+                                                                     #     )
+                                                                     #   ),
+                                                                     #   fluidRow(
+                                                                     #     column(12,
+                                                                     #         column(3, style = "padding:10px;",
+                                                                     #                HTML("<center>"), h3("Fertilizer product"), HTML("</center>")
+                                                                     #         ),
+                                                                     #         column(1, style = "padding:10px;",
+                                                                     #                HTML("<center>"),h3("N (%)"),HTML("</center>")
+                                                                     #         ),
+                                                                     #         column(1, style = "padding:10px;",
+                                                                     #                HTML("<center>"),h3("P (%)"),HTML("</center>")
+                                                                     #         ),
+                                                                     #         column(1, style = "padding:10px;",
+                                                                     #                HTML("<center>"),h3("K (%)"),HTML("</center>")
+                                                                     #         ),
+                                                                     #         fluidRow(id="fr_fertilizer_application_nutrient_title")
+                                                                     #     )
+                                                                     #   ),
+                                                                     # fluidRow(
+                                                                     #   column(12,
+                                                                     #          column(3, style = "padding:10px;",
+                                                                     #                 fluidRow(id = "fr_aux_soil_fertProduct")
+                                                                     #          ),
+                                                                     #          column(1, style = "padding:10px;",
+                                                                     #                 fluidRow(id = "fr_aux_soil_N")
+                                                                     #          ),
+                                                                     #          column(1, style = "padding:10px;",
+                                                                     #                 fluidRow(id = "fr_aux_soil_P")
+                                                                     #          ),
+                                                                     #          column(1, style = "padding:10px;",
+                                                                     #                 fluidRow(id = "fr_aux_soil_K")
+                                                                     #          ),
+                                                                     #          fluidRow(id="fr_fertilizer_application_nutrient")
+                                                                     #   )
+                                                                     # )
+
+                                                                     #### Fin Ocultado por ivan
 
 
                                                               )
@@ -2727,7 +2737,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
                                                                      p(class = "text-muted", style="text-align:justify",
                                                                        paste("Please, select measurement by click.")
                                                                      ),
-                                                                     column(12, align = "center", checkboxInput("dt_sel", "sel/desel all"))
+                                                                     column(12, align = "center", checkboxInput("dt_sel", "Select all"))
                                                                      # br(),
                                                                      # h4("selected_rows:"),
                                                                      # verbatimTextOutput("selected_rows", TRUE)
