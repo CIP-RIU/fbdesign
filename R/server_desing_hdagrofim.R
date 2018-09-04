@@ -5527,7 +5527,7 @@ server_design_agrofims <- function(input, output, session, values){
   traitsVals$selectedRows <- list()
   traitsVals$Data <- data.table()
 
-  dict <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/crop_measurements_v3.rds")
+  dict <- readRDS("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/crop_measurements_v4.rds")
   dict <- as.data.frame(dict, stringsAsFactors=FALSE)
 
   observe({
@@ -8948,6 +8948,62 @@ out
     return(a)
   }
 
+  # soil_design<- reactive({
+  #
+  #   ### #1 Factor
+  #   napp1<- NULL
+  #   if(input$sel1_3 =="Fertilizer product application rate"){
+  #     # Levels
+  #     for(i in 1:input$numLevels_tabSoil_1){
+  #       # # of applications
+  #       napp1[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
+  #     }
+  #   }
+  #
+  #   ### #2 Factor
+  #   napp2<- NULL
+  #   if(input$sel2_3 =="Fertilizer product application rate"){
+  #     # Levels
+  #     for(i in 1:input$numLevels_tabSoil_2){
+  #       # # of applications
+  #       napp2[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
+  #     }
+  #   }
+  #
+  #   napp3<- NULL
+  #   if(input$sel3_3 =="Fertilizer product application rate"){
+  #     # Levels
+  #     for(i in 1:input$numLevels_tabSoil_3){
+  #       # # of applications
+  #       napp3[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
+  #     }
+  #   }
+  #
+  #
+  #   napp4<- NULL
+  #   if(input$sel4_3 =="Fertilizer product application rate"){
+  #     # Levels
+  #     for(i in 1:input$numLevels_tabSoil_4){
+  #       # # of applications
+  #       napp4[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
+  #     }
+  #   }
+  #
+  #   napp5<- NULL
+  #   if(input$sel5_3 =="Fertilizer product application rate"){
+  #     # Levels
+  #     for(i in 1:input$numLevels_tabSoil_5){
+  #       # # of applications
+  #       napp5[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
+  #     }
+  #   }
+  #
+  #   print(napp1)
+  #   print(napp2)
+  #   print(napp3)
+  #   print(napp4)
+  #   print(napp5)
+  # })
 
 
   ### Book preview #############################################################
