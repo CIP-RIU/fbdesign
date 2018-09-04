@@ -274,24 +274,34 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
   ##### Tab item #####
   shinydashboard::tabItem(
     tabName = name,
-    # fluidRow(
-    #   column(2, style = "margin-top: 0px; color: blue;", align = "left", h2(textOutput("idsession"))),
-    #   column(2, align = "left", style = "margin-top: 20px;", actionButton('save_inputs', 'Save session', icon("save"))),
-    #   column(4),
-    #   column(2, align = "right", textInput("loadidsession", "", placeholder = "Experiment ID")),
-    #   column(2, align = "right", style = "margin-top: 20px;", actionButton('load_inputs', 'Load session', icon("download")))
-    # ),
-    # fluidRow(
-    #   column(12, verbatimTextOutput("text"))
-    # ),
+
+    fluidRow(
+      #column(6, h1("Experiment description")),
+      column(12, align = "right", style = "margin-top: 26px;",
+             actionButton("load_exampleM", "Monocrop"),
+             actionButton("load_exampleI", "Intercrop")
+      )
+    ),
+
+    fluidRow(
+      column(2, style = "margin-top: 0px; color: blue;", align = "left", h2(textOutput("idsession"))),
+      column(2, align = "left", style = "margin-top: 20px;", actionButton('save_inputs', 'Save session', icon("save"))),
+      column(4),
+      column(2, align = "right", textInput("loadidsession", "", placeholder = "Experiment ID")),
+      column(2, align = "right", style = "margin-top: 20px;", actionButton('load_inputs', 'Load session', icon("download")))
+    ),
+    fluidRow(
+      column(12, verbatimTextOutput("text"))
+    ),
+
+    fluidRow(
+      box(
+        title = tagList(shiny::icon("list"), "List session"), status = "primary", solidHeader = TRUE, collapsible = TRUE, width = 12,
+        "aaa"
+      )
+    ),
+
     h1("Experiment description"),
-    # fluidRow(
-    #   column(6, h1("Experiment description")),
-    #   column(6, align = "right", style = "margin-top: 26px;",
-    #          actionButton("load_exampleM", "Monocrop"),
-    #          actionButton("load_exampleI", "Intercrop")
-    #   )
-    # ),
 
     # To reset panels and UI
     shinyjs::useShinyjs(),

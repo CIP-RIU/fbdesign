@@ -23,7 +23,7 @@ server_design_agrofims <- function(input, output, session, values){
   # funcion que retorna el path junto con ID en el input para cargar la sesion
   pathsession <- reactive({
     path <- ""
-    path <- paste0(globalpath, input$experimentId)
+    path <- paste0(globalpath, input$experimentId, ".csv")
     path
   })
 
@@ -44,7 +44,14 @@ server_design_agrofims <- function(input, output, session, values){
                         "experimentObj",
                         "designFieldbook_fundAgencyType",
                         "fundName_1",
-                        "fundName_2")
+                        "fundName_2",
+                        "fundName_3",
+                        "fundName_4",
+                        "fundName_5",
+                        "fundName_6",
+                        "fundName_7",
+                        "fundName_8",
+                        "fundName_9")
 
     inputs <- NULL
 
@@ -59,8 +66,19 @@ server_design_agrofims <- function(input, output, session, values){
           inputs_to_save[i] == "experimentProjectName" ||
           inputs_to_save[i] == "experimentObj" ||
           inputs_to_save[i] == "fundName_1" ||
-          inputs_to_save[i] == "fundName_2") {
-        inputs[i] <- input[[paste0(inputs_to_save[i])]]
+          inputs_to_save[i] == "fundName_2" ||
+          inputs_to_save[i] == "fundName_3" ||
+          inputs_to_save[i] == "fundName_4" ||
+          inputs_to_save[i] == "fundName_5" ||
+          inputs_to_save[i] == "fundName_6" ||
+          inputs_to_save[i] == "fundName_7" ||
+          inputs_to_save[i] == "fundName_8" ||
+          inputs_to_save[i] == "fundName_9") {
+        if (is.null(input[[paste0(inputs_to_save[i])]])) {
+          inputs[i] <- ""
+        } else {
+          inputs[i] <- input[[paste0(inputs_to_save[i])]]
+        }
       }
 
       # updateDateRangeInput
@@ -83,14 +101,16 @@ server_design_agrofims <- function(input, output, session, values){
       }
     }
 
+    print(inputs)
+
     inputs_data_frame <- data.frame(inputId = inputs_to_save, value = inputs)
-    write.csv(inputs_data_frame, file = pathsession(), row.names = FALSE)
+    write.csv(inputs_data_frame,  file = pathsession(), row.names = FALSE)
     output$text <- renderText({"Guardado exitosamente"})
   })
 
   checktype <- function(up) {
     list1 <- c("experimentId", "experimentName", "experimentProjectName")
-    list1_din <- c("fundName_1", "fundName_2")
+    list1_din <- c("fundName_1", "fundName_2", "fundName_3", "fundName_4", "fundName_5", "fundName_6", "fundName_7", "fundName_8", "fundName_9")
     list2 <- c("fbDesign_project_time_line")
     list3 <- c("designFieldbook_typeExperiment", "designFieldbook_fundAgencyType")
     list4 <- c("experimentObj")
@@ -159,12 +179,6 @@ server_design_agrofims <- function(input, output, session, values){
                             value = uploaded_inputs$value[i])
           }
 
-          # if (a == "updateTextInput_din") {
-          #   delay(500, updateTextInput(session,
-          #                   inputId = uploaded_inputs$inputId[i],
-          #                   value = uploaded_inputs$value[i]))
-          # }
-
           if (a == "updateDateRangeInput") {
             updateDateRangeInput(session,
                                  inputId = uploaded_inputs$inputId[i],
@@ -185,15 +199,18 @@ server_design_agrofims <- function(input, output, session, values){
           }
         }
 
-        for(i in 1:nrow(uploaded_inputs)) {
-          a <- checktype(uploaded_inputs$inputId[i])
+        delay(
+          500,
+          for(i in 1:nrow(uploaded_inputs)) {
+            a <- checktype(uploaded_inputs$inputId[i])
 
-          if (a == "updateTextInput_din") {
-            updateTextInput(session,
-                            inputId = uploaded_inputs$inputId[i],
-                            value = uploaded_inputs$value[i])
+            if (a == "updateTextInput_din") {
+              updateTextInput(session,
+                              inputId = uploaded_inputs$inputId[i],
+                              value = uploaded_inputs$value[i])
+            }
           }
-        }
+        )
       }
       else{
         output$text <- renderText({"No existe el archivo"})
@@ -6989,8 +7006,8 @@ server_design_agrofims <- function(input, output, session, values){
      h_amount<- input$amount_harvested
      h_amount_unit <- getAgrOper(input$amount_harvested_unit) #get units
 
-     harvNames <- c('Start date',
-                    'End date',
+     harvNames <- c('Harvest Start date',
+                    'Harvest End date',
                     'Harvest cut height',  'Harvest cut height Unit',
                     'Harvest method',
                     'Harvest method value',
@@ -6998,11 +7015,11 @@ server_design_agrofims <- function(input, output, session, values){
                     'Space between rows harvested','Space between rows harvested Unit',
                     'Total area harvested',  'Total area harvested Unit',
                     'Number of plants in area harvested',
-                    'Technique',
+                    'Harvest Technique',
                     'Harvest implement',
-                    'Traction',
+                    'Harvest Traction',
                     'Amount harvested', 'Amount harvested Unit',
-                    'Notes'
+                    'Harvest Notes'
      )
 
      dtHarv <- data.frame( h_start_date,
@@ -7063,14 +7080,14 @@ out
 
    irri_amount_def <- paste(irri_amount, irri_amount_unit, sep="_")  #measure+unit
    irri_notes <- paste(lapply(1:n, function(x)  eval(get_loop_AgrOper("irrigation_notes_", n=n)[[x]])))
-
    irriNames <- c("Number of irrigations",
-                  "Irrigation start date", "Irrigation end date", "Irrigation technique",  "Irrigation technique system",
+                  "Irrigation start date (yyyy/mm/dd)" , "Irrigation end date (yyyy/mm/dd)", "Irrigation technique",  "Irrigation technique system",
                   "Irrigation source", "Irrigation source distance",
                   "Irrigation source distance Unit (ft; km; m; mi)", #unit label
                   "Irrigation amount",
                   "Irrigation amount Unit (in; mm)", #unit label
                   "Notes")
+
 
    dtIrri<- data.frame(1:n, irri_start_date, irri_end_date,
                        irri_technique,irri_technique_system,
@@ -7103,8 +7120,10 @@ out
        ll_type <- getAgrOper(input$land_impl_type, input$land_impl_type_other)
        ll_traction <- getAgrOper(input$land_traction, input$land_traction_other)
        lldt <- data.frame(ll_start_date, ll_end_date, ll_npasses, ll_notes, ll_type,  ll_traction)
-       llNames<- c("Land levelling start date", "Land levelling end date", "Land levelling Total number of levelling passes", "Land levelling Notes",
+
+       llNames<- c("Land levelling start date (yyyy/mm/dd)", "Land levelling end date (yyyy/mm/dd)", "Land levelling Total number of levelling passes", "Land levelling Notes",
                    "Land levelling Type", "Land levelling traction")
+
        names(lldt) <- llNames
        flag  <- TRUE
        out   <- lldt
@@ -7123,7 +7142,7 @@ out
        lp_type <- getAgrOper(input$pud_impl_type, input$pud_impl_type_other)
        lp_traction <- getAgrOper(input$pud_traction, input$pud_traction_other)
 
-       lpNames <- c("Puddling start date", "Puddling end date",
+       lpNames <- c("Puddling start date (yyyy/mm/dd)", "Puddling end date (yyyy/mm/dd)",
                     "Puddling depth", "Puddling depth Unit (cm; ft; in; m)",
                     "Puddling Total number of puddling passes",
                     "Puddling notes", "Puddling type", "Puddling traction")
@@ -7166,7 +7185,7 @@ out
        lt_type  <-  getAgrOper(input$till_impl_type, input$till_impl_type_other)
        lt_traction <- getAgrOper(input$till_traction, input$till_traction_other)
 
-       ltNames <- c("Tillage start date", "Tillage end date", "Tillage technique", "Tillage depth measurement method",
+       ltNames <- c("Tillage start date (yyyy/mm/dd)", "Tillage end date (yyyy/mm/dd)", "Tillage technique", "Tillage depth measurement method",
                     "Tillage depth", "Tillage depth Unit (cm; ft; in; m)", #unit label
                     "Total number of tillage passes", "Tillage Notes", "Tillage Type", "Tillage Traction")
 
@@ -7221,13 +7240,13 @@ out
      m_implement <-  getAgrOper(input$mulch_implement_type)
      m_traction <-  getAgrOper(input$mulch_traction, input$mulch_traction_other)
 
-     muNames <- c("Mulch start date" ,"Mulch end date", "Mulch type",
+     muNames <- c("Mulch start date (yyyy/mm/dd)" ,"Mulch end date (yyyy/mm/dd)", "Mulch type",
                   "Mulch thickness" ,"Mulch thickness Unit (cm; ft; in; m)",
                   "Mulch amount", "Mulch amount (g/ft2; g/m2; kg/ha; kf/m2: lb/ac)",
                   "Mulch color",
                   "Mulch percent coverage", "Mulch percent coverage Unit (%)",
-                  "Mulch removal start date",
-                  "Mulch removal end date", "Notes", "Mulch implement type", "Mulching implement traction")
+                  "Mulch removal start date (yyyy/mm/dd)",
+                  "Mulch removal end date (yyyy/mm/dd)", "Notes", "Mulch implement type", "Mulching implement traction")
 
      mudt <- data.frame(m_start_date, m_end_date, m_type,
                         m_thickness, m_thickness_unit , #unit
@@ -7270,7 +7289,8 @@ out
      r_moisture <- getAgrOper(input$crop_residue_moisture)
      r_notes <- input$residue_management_notes
 
-     resNames<- c("Residue management start date", "Residue management end date", "Residue management plant part", "Residue management technique", "Residue management traction implement",
+     resNames<- c("Residue management start date (yyyy/mm/dd)", "Residue management end date (yyyy/mm/dd)",
+                  "Residue management plant part", "Residue management technique", "Residue management traction implement",
                   "Crop residue thickness", "Crop residue thickness Unit (cm; ft; in; m)",
                   "Crop residue amount", "Crop residue amount Unit (g/ft2; g/m2; kg/ha; kf/m2: lb/ac)",
                   "Crop residue percent coverage", "Crop residue percent coverage Unit (%)",
@@ -7345,7 +7365,7 @@ out
 
      pl_notes <- getAgrOper(input$direct_seeding_notes)
 
-     plNames<- c("Seeding begin date", "Seeding end environment", "Seeding environment", "Seeding technique",
+     plNames<- c("Seeding begin date (yyyy/mm/dd)", "Seeding end environment (yyyy/mm/dd)", "Seeding environment", "Seeding technique",
                  "Seed treatment", "Seeding Type", "Seeding Traction",
                  "Seeding distance between rows",	"Seeding distance between rows Unit (cm; ft; in; m)",
                  "Seeding rate",	"Seeding rate Unit (kg/ha; lb/ac; plants/pot)",
@@ -7354,7 +7374,6 @@ out
                  "Seeding plant density"	,
                  "Seeding plant density Unit (plants/hill; plants/m2; plants/pot; plants/row)",
                  "Seeding density notes")
-
 
 
      dtpl <- data.frame(pl_start_date, pl_end_date, pl_env, pl_technique, pl_trt, pl_type, pl_traction,
@@ -7400,7 +7419,7 @@ out
 
      tr_notes <- input$transplanting_density_notes
 
-     trNames <- c("Transplanting start date", "Transplanting end date", "Transplanting age of seedling (days)",
+     trNames <- c("Transplanting start date (yyyy/mm/dd)", "Transplanting end date (yyyy/mm/dd)", "Transplanting age of seedling (days)",
                   "Transplanting Seedling environment", "Transplanting Technique",
                   "Transplanting Seed treatment", "Transplanting Traction",
                   "Transplanting Distance between rows", "Transplanting distance between rows Unit (cm; ft; in; m)",
@@ -7449,9 +7468,10 @@ out
      #add other case
      weed_traction <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("weeding_traction_",n=n)[[x]])))
      #add other case
-     weedNames <- c("Number of weedings", "Weeding start date", "Weeding end date",
+     weedNames <- c("Number of weedings", "Weeding start date (yyyy/mm/dd)", "Weeding end date (yyyy/mm/dd)",
                     "Weeding technique", "Weeding implment type",
                     "Weeding implement traction")
+
      dtweed <- data.frame(1:n, weed_start_date, weed_end_date, weed_techinque, weed_type, weed_traction)
      names(dtweed)<- weedNames
 
@@ -7555,19 +7575,16 @@ out
       }
     }
     print("11")
-
-
     soilNames <- c("Number of fertilizer applications","Fertilizer type","Fertilizer product",
                    "Fertilizer product rate (kg/ha)", "Nutrient element","Nutrient element rate (kg/ha)",
 
                    #"Fertilizer implement type", "Fertilizer traction implement",
-                   "Fertilizer start date", "Fertilizer end date",
+                   "Fertilizer start date (yyyy/mm/dd)", "Fertilizer end date (yyyy/mm/dd)",
 
                    "Fertilizer application technique",
                    "Fertilizer application notes",
                    "Total product calculated application", "Total element calculated application",
                    "N(%)", "P(%)", "K(%)")
-
 
     soildt<- data.frame(1:nsoilFert, ferType,  prodType , prodRate , ferEle , ferEleRate ,
                         #imple, traction,
@@ -7915,10 +7932,12 @@ out
       #   CropVarName <- ""
       # }
       if(is.null(input$cultivarNameMono)){
-        cultivarNameMono <- input$cultivarNameMono
-      } else if(length(input$cultivarNameMono)==1){
+        cultivarNameMono <- ""
+      }
+        if(length(input$cultivarNameMono)==1){
         cultivarNameMono <- paste(input$cultivarNameMono, collapse="")
-      } else {
+      }
+      if(length(input$cultivarNameMono)>1){
         cultivarNameMono <- paste(input$cultivarNameMono, collapse=", ")
       }
 
@@ -7934,7 +7953,11 @@ out
       CropVarName <- RowCrop <-NULL
       for(i in 1:length(cropSel)){
         #CropVarName[i] <- input[[paste0("cropVarietyName",i)]]
-        CropVarName <- paste(CropVarName, input[[paste0("cropVarietyName",i)]], sep=" ")
+        if(is.null( input[[paste0("cropVarietyName",i)]] )){
+          CropVarName[i]<- ""
+        }else {
+          CropVarName[i] <- paste(input[[paste0("cropVarietyName",i)]], collapse = " ")
+        }
         RowCrop[i] <- input[[paste0("intercropValue_row_crop_",i)]]
       }
 
@@ -7943,7 +7966,7 @@ out
       } else {
         c1 <- paste(cropSel, collapse = ", ")
       }
-      c2 <- paste(CropVarName)
+      c2 <- paste(CropVarName, collapse = " ")
       if(length(RowCrop)==1){
         c3 <- paste(RowCrop, collapse = "" )
       } else{
