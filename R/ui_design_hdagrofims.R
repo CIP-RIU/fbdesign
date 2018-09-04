@@ -899,7 +899,7 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
               shiny::uiOutput("fbDesign_country", inline = TRUE, width = 500),
               shiny::uiOutput("fbDesign_countrySite", inline = TRUE, width = 500), #,#locality
               br(),
-              h2("Site surrounding by"),
+              h2("Site surrounded by"),
               selectizeInput("fbDesign_inHighLevel", label="Higher-level landform", multiple = TRUE,
                              choices = sort(c("Plain",
                                          "Basin",

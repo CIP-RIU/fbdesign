@@ -30,9 +30,21 @@ server_design_agrofims <- function(input, output, session, values){
   # pathsession <- "/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/savesession/ivan.csv"
   # pathsession <- paste0("/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/savesession/", input$experimentId)
 
+
+  # updateTextInput(session, "fundName_1", value = "Institution name"),
+  # updateTextInput(session, "fundName_2", value = "International Potato Center"),
+
   # Save session
   observeEvent(input$save_inputs, {
-    inputs_to_save <- c('experimentId', 'experimentName', 'experimentProjectName', 'fbDesign_project_time_line', 'designFieldbook_typeExperiment')
+    inputs_to_save <- c("experimentId",
+                        "experimentName",
+                        "experimentProjectName",
+                        "fbDesign_project_time_line",
+                        "designFieldbook_typeExperiment",
+                        "experimentObj",
+                        "designFieldbook_fundAgencyType",
+                        "fundName_1",
+                        "fundName_2")
 
     inputs <- NULL
 
@@ -41,13 +53,18 @@ server_design_agrofims <- function(input, output, session, values){
     # }
 
     for(i in 1:length(inputs_to_save) ) {
-      if (inputs_to_save[i]  == "experimentId" ||
-          inputs_to_save[i]  == "experimentName" ||
-          inputs_to_save[i]  == "experimentProjectName") {
+      # updateTextInput & updateTextAreaInput
+      if (inputs_to_save[i] == "experimentId" ||
+          inputs_to_save[i] == "experimentName" ||
+          inputs_to_save[i] == "experimentProjectName" ||
+          inputs_to_save[i] == "experimentObj" ||
+          inputs_to_save[i] == "fundName_1" ||
+          inputs_to_save[i] == "fundName_2") {
         inputs[i] <- input[[paste0(inputs_to_save[i])]]
       }
 
-      if (inputs_to_save[i]  == "fbDesign_project_time_line") {
+      # updateDateRangeInput
+      if (inputs_to_save[i] == "fbDesign_project_time_line") {
         if (is.null(input[[paste0(inputs_to_save[i])]]) || is.na( input[[paste0(inputs_to_save[i])]])) {
           inputs[i] <- ""
         } else {
@@ -55,7 +72,9 @@ server_design_agrofims <- function(input, output, session, values){
         }
       }
 
-      if (inputs_to_save[i]  == "designFieldbook_typeExperiment") {
+      # updateSelectizeInput
+      if (inputs_to_save[i] == "designFieldbook_typeExperiment" ||
+          inputs_to_save[i] == "designFieldbook_fundAgencyType") {
         if (is.null(input[[paste0(inputs_to_save[i])]]) || is.na( input[[paste0(inputs_to_save[i])]])) {
           inputs[i] <- ""
         } else {
@@ -66,61 +85,53 @@ server_design_agrofims <- function(input, output, session, values){
 
     inputs_data_frame <- data.frame(inputId = inputs_to_save, value = inputs)
     write.csv(inputs_data_frame, file = pathsession(), row.names = FALSE)
-    output$text <- renderText({"Creado exitosamente"})
+    output$text <- renderText({"Guardado exitosamente"})
   })
 
-  # Loas session
-  observeEvent(input$load_inputs, {
-    if (input$loadidsession != "") {
-      if (file.exists(isolate(paste0(globalpath, input$loadidsession)) ) ){
-        output$text <- renderText({"Cargado exitosamente"})
-        uploaded_inputs <- read.csv(paste0(globalpath, input$loadidsession))
+  checktype <- function(up) {
+    list1 <- c("experimentId", "experimentName", "experimentProjectName")
+    list1_din <- c("fundName_1", "fundName_2")
+    list2 <- c("fbDesign_project_time_line")
+    list3 <- c("designFieldbook_typeExperiment", "designFieldbook_fundAgencyType")
+    list4 <- c("experimentObj")
 
-        for(i in 1:nrow(uploaded_inputs)){
-
-          a <- checktype(uploaded_inputs$inputId[i])
-
-          if (a == "updateTextInput") {
-            updateTextInput(session,
-                            inputId = uploaded_inputs$inputId[i],
-                            value = uploaded_inputs$value[i])
-          }
-
-          if (a == "updateDateRangeInput") {
-            #print(a)
-            updateDateRangeInput(session,
-                                 inputId = uploaded_inputs$inputId[i],
-                                 start = uploaded_inputs$start[i],
-                                 end = uploaded_inputs$end[i])
-          }
-          #
-          # if (a == "updateSelectizeInput") {
-          #   print(a)
-          #   updateSelectizeInput(session,
-          #                        inputId = uploaded_inputs$inputId[i],
-          #                        getInputs(uploaded_inputs[i,2]))
-          # }
-
-          # for(i in 1:nrow(uploaded_inputs)){
-          #   updateSelectizeInput(session,
-          #                        inputId = uploaded_inputs$inputId[i],
-          #                        selected =  getInputs(uploaded_inputs[i,2]))
-          # }
-        }
-      }
-      else{
-        output$text <- renderText({"No existe el archivo"})
-      }
+    if (up %in% list1) {
+      return("updateTextInput")
     }
-  })
 
-  getInputs<- function(valor){
-    #print(valor)
+    if (up %in% list1_din) {
+      return("updateTextInput_din")
+    }
 
+    if (up %in% list2) {
+      return("updateDateRangeInput")
+    }
+
+    if (up %in% list3) {
+      return("updateSelectizeInput")
+    }
+
+    if (up %in% list4) {
+      return("updateTextAreaInput")
+    }
+  }
+
+  getInputs<- function(valor, q){
     valor <- sapply(valor, as.character)
     valor[is.na(valor)] <- " "
     valor
-    #print(paste0(valor,"qq"))
+
+    if (stringr::str_detect(valor, "&")) {
+      if (q == "start") {
+        valor <- unlist(strsplit(valor, "&"))
+        valor <- valor[[1]]
+      }
+
+      if (q == "end") {
+        valor <- unlist(strsplit(valor, "&"))
+        valor <- valor[[2]]
+      }
+    }
 
     if(stringr::str_detect(valor,";")){
       valor<-unlist(strsplit(valor, ";"))
@@ -131,23 +142,64 @@ server_design_agrofims <- function(input, output, session, values){
     valor
   }
 
-  checktype <- function(up) {
-    list1 <- c("experimentId", "experimentName", "experimentProjectName")
-    list2 <- c("fbDesign_project_time_line")
-    list3 <- c("designFieldbook_typeExperiment")
+  # Loas session
+  observeEvent(input$load_inputs, {
+    if (input$loadidsession != "") {
+      if (file.exists(isolate(paste0(globalpath, input$loadidsession)) ) ){
+        output$text <- renderText({"Cargado exitosamente"})
+        uploaded_inputs <- read.csv(paste0(globalpath, input$loadidsession))
 
-    if (up %in% list1) {
-      return("updateTextInput")
-    }
+        for(i in 1:nrow(uploaded_inputs)) {
 
-    if (up %in% list2) {
-      return("updateDateRangeInput")
-    }
+          a <- checktype(uploaded_inputs$inputId[i])
 
-    if (up %in% list3) {
-      return("updateSelectizeInput")
+          if (a == "updateTextInput") {
+            updateTextInput(session,
+                            inputId = uploaded_inputs$inputId[i],
+                            value = uploaded_inputs$value[i])
+          }
+
+          # if (a == "updateTextInput_din") {
+          #   delay(500, updateTextInput(session,
+          #                   inputId = uploaded_inputs$inputId[i],
+          #                   value = uploaded_inputs$value[i]))
+          # }
+
+          if (a == "updateDateRangeInput") {
+            updateDateRangeInput(session,
+                                 inputId = uploaded_inputs$inputId[i],
+                                 start =  getInputs(uploaded_inputs[i,2], "start"),
+                                 end =  getInputs(uploaded_inputs[i,2], "end"))
+          }
+
+          if (a == "updateSelectizeInput") {
+            updateSelectizeInput(session,
+                                 inputId = uploaded_inputs$inputId[i],
+                                 selected =  getInputs(uploaded_inputs[i,2], ""))
+          }
+
+          if (a == "updateTextAreaInput") {
+            updateTextAreaInput(session,
+                                inputId = uploaded_inputs$inputId[i],
+                                value = uploaded_inputs$value[i])
+          }
+        }
+
+        for(i in 1:nrow(uploaded_inputs)) {
+          a <- checktype(uploaded_inputs$inputId[i])
+
+          if (a == "updateTextInput_din") {
+            updateTextInput(session,
+                            inputId = uploaded_inputs$inputId[i],
+                            value = uploaded_inputs$value[i])
+          }
+        }
+      }
+      else{
+        output$text <- renderText({"No existe el archivo"})
+      }
     }
-  }
+  })
 
   ##########
   ##########
@@ -758,7 +810,7 @@ server_design_agrofims <- function(input, output, session, values){
 
   path <- fbglobal::get_base_dir()
   # field operations as list of factors
-  fp <- file.path(path, "listFactors_v5.rds")
+  fp <- file.path(path, "listFactors_v6.rds")
 
   # para guardar lista de comboboxes para la tabla en treatment description
   lvl <- reactiveValues()
@@ -2897,7 +2949,7 @@ server_design_agrofims <- function(input, output, session, values){
                            )
                          ),
                          selectizeInput(paste0("irrigation_technique_", order), label = "Irrigation technique", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
-                                          c("Irrigation sprinker",
+                                          c("Sprinkler irrigation",
                                             "Localized",
                                             "Surface",
                                             #"Sub-irrigation",
@@ -2928,9 +2980,9 @@ server_design_agrofims <- function(input, output, session, values){
                                           ),
                                           hidden(textInput(paste0("localized_irrigation_technique", order, "_other"), ""))
                          ),
-                         conditionalPanel(paste0("input.irrigation_technique_", order, "== 'Irrigation sprinker'"),
+                         conditionalPanel(paste0("input.irrigation_technique_", order, "== 'Sprinkler irrigation'"),
 
-                                          selectizeInput(paste0("irrigation_using_sprinkler_systems_", order), label = "Irrigation sprinkler system", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
+                                          selectizeInput(paste0("irrigation_using_sprinkler_systems_", order), label = "Sprinkler irrigation system", multiple = TRUE, options = list(maxItems =1, placeholder ="Select one..."), choices =
                                                            c("Center pivot irrigation",
                                                              "Irrigation by lateral move",
                                                              "Irrigation by side move",
@@ -7534,7 +7586,6 @@ out
   })
 
   ## Soil design
-
   dt_soilDesign <- reactive({
 
     if(input$fullFactorialRB=="Yes"){
@@ -7958,13 +8009,19 @@ out
 
     }
 
-    c2 <- c('Field area',vfarea )
-    c3 <- c('Experimental field maximum width', vfexpmaxwidth)
-    c4 <- c('Experimental field maximum length', vfexpmaxlength)
-    c5 <- c('Pot diameter',vpdiam )
-    c6 <- c('Pot depth',vpdpth )
-    c7 <- c('Experimental design', input$designFieldbook_agrofims)
-    c8 <- c('Experimental design abbreviation', "")
+    if(vinfExp != "pot"){
+
+      c5 <- c( paste('Experimental ', vinfExp  ,' width',sep= ""), vfexpmaxwidth)
+      c6 <- c(paste('Experimental ', vinfExp ,' length',sep=""), vfexpmaxlength)
+    } else {
+      c5 <- c('Pot diameter',vpdiam )
+      c6 <- c('Pot depth',vpdpth )
+    }
+
+    if(input$designFieldbook_agrofims=="RCBD"){ td<-"Randomized Complete Block Design"   }
+    if(input$designFieldbook_agrofims=="CRD"){ td<-"Completely Randomized Design"   }
+    c7 <- c('Experimental design', td)
+    c8 <- c('Experimental design abbreviation', input$designFieldbook_agrofims)
     c9 <- c('Number of replications', nrep)
     c40 <- c('Number of factors', nfactor)
 
@@ -8054,33 +8111,104 @@ out
     c39 <- c('Factor 5 - level 5',levelsDt[5,5])
 
 
-    dt_fctInfo <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c40)
+    #dt_fctInfo <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c40)# deprecated
+    dt_fctInfo <- data.frame(c1,c5,c6,c7,c8,c9,c40)
     dt_fctInfo <- as.data.frame(t(dt_fctInfo), stringsAsFactors=FALSE)
     names(dt_fctInfo) <- c("Factor", "Value1")
 
     dt_fctdsg <-   data.frame(c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,
-                            c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,
-                            c31,c32,c33,c34,c35,c36,c37,c38,c39)
+                              c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,
+                              c31,c32,c33,c34,c35,c36,c37,c38,c39)
 
     dt_fctdsg <-as.data.frame(t(dt_fctdsg), stringsAsFactors=FALSE)
     names(dt_fctdsg) <- c("Factor", "Value1")
     dt_fctdsg<- dt_fctdsg %>%  dplyr::filter( Value1!="NA")
 
     out<- rbind(dt_fctInfo, dt_fctdsg)
-    #var_fctdsg <-  t(dt_fctdsg)
-    #out <- as.data.frame(var_fctdsg, stringsAsFactors=FALSE)
 
     names(out) <- c("Factor", "Value1")
+    out
+
+  })
+  dt_site<- reactive({
+
+    vsitetype <- ""
+    vsitename <- ""
+    vsiteId <- ""
+    vsiteCountry <- ""
+    vsiteadmin1 <- ""
+    vsiteadmin2 <- ""
+    vsiteVillage <- ""
+    vsitenear <- ""
+    vsiteElev <- ""
+    vsiteLat <- ""
+    visteLon <- ""
+
+    if(!is.null(input$fbDesign_countryTrial) && !is.null(input$designFieldbook_sites)){
+      vsiteCountry <- input$fbDesign_countryTrial
+
+      xpath <- fbglobal::get_base_dir()
+      xfp <- file.path(path, "table_sites_agrofims.rds")
+
+      xaux <- input$designFieldbook_sites
+      vsiteId <- xaux
+
+      x_sites_data <- readRDS(file = xfp)
+      data <- dplyr::filter(x_sites_data, shortn==vsiteId)
+      if(nrow(data) != 0){
+        xsite <- data[1,]
+        vsitetype <- xsite$Type
+        vsitename <- xsite$local
+        vsiteadmin1 <- xsite$adm1
+        vsiteadmin2 <- xsite$adm2
+        vsiteVillage <- xsite$village
+        vsitenear <- xsite$nearpop
+        vsiteElev <- xsite$elev
+        vsiteLat <- xsite$latd
+        visteLon <- xsite$lond
+      }
+
+
+    }
+
+    c26 <- c('Site type',vsitetype)
+    c27 <- c('Site name',vsitename)
+    c28 <- c('Site ID', vsiteId)
+    c29 <- c('Country name', vsiteCountry)
+    c30 <- c('Site, first-level administrative division name',vsiteadmin1 )
+    c31 <- c('Site, second-level administrative division name',vsiteadmin2 )
+    c32 <- c('Village name', vsiteVillage)
+    c33 <- c('Nearest populated place', vsitenear)
+    c34 <- c('Site elevation',vsiteElev )
+    c35 <- c('Site latitude (in decimal degrees)', vsiteLat)
+    c36 <- c('Site longitude (in decimal degrees)',visteLon )
+
+    vHighLevel <- ""
+    if(!is.null(input$fbDesign_inHighLevel)) vHighLevel <- input$fbDesign_inHighLevel
+
+    c37 <- c('Higher-level landform',vHighLevel)
+
+    vSiteVegetation <- ""
+    if(!is.null(input$fbDesign_inSiteVegetation)) vSiteVegetation <- paste(input$fbDesign_inSiteVegetation, collapse = ",")
+
+    c38 <- c('Vegetation surrounding the experimental site', vSiteVegetation)
+    c39 <- c('Site description notes', input$inSiteDescNotes)
+
+
+    out <- data.frame(c26,	c27,	c28,	c29,	c30,	c31,	c32,	c33,	c34,	c35,	c36,	c37,	c38,	c39)
+    out<- as.data.frame(t(out), stringsAsFactors=FALSE)
+    names(out)<- c("Factor", "Value1")
     out
 
   })
 
   globalMetadata<- reactive({
 
-    glist <- list(metadata_dt2(), personnel_dt(), crop_dt(), fctdsg_dt())
+    glist <- list(metadata_dt2(), personnel_dt(), crop_dt(), fctdsg_dt(), dt_site())
     gtable<- data.table::rbindlist(glist,fill = TRUE)
     gtable <- as.data.frame(gtable,stringAsFactors=FALSE)
-
+    names(gtable)[1]<- "Parameter"
+    gtable
   })
 
   ############# phenology #######################################################################
@@ -8784,18 +8912,6 @@ out
    }
 
 
-
-  #############  traits_dt ##########################################################
-  # traits_dt <- function(){
-  #    a<- traitsVals$Data
-  #    if(nrow(traitsVals$Data) >0){
-  #      aux_dt <- dplyr::filter(traitsVals$Data, Status=="Selected")
-  #      a<- aux_dt
-  #    }
-  #
-  #    return(a)
-  # }
-
   traits_dt <- function(){
     a<- traitsVals$Data
     if(nrow(traitsVals$Data) >0){
@@ -8856,8 +8972,7 @@ out
 
        withProgress(message = 'Downloading fieldbook', value = 0, {
 
-        #         print(dt_soilDesign())
-
+        #print(dt_site())
 
          n <- as.numeric(input$numApplicationsIrrigation)
          fb_traits <- fb_agrofims_traits()
