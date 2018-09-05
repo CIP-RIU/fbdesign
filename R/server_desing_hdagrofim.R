@@ -6667,6 +6667,202 @@ server_design_agrofims <- function(input, output, session, values){
    })
    ###########################################################################################
 
+## reactives soil
+
+
+   ## Soil and Fertility  Design Inputs ##############################################
+
+   #Number of aplications
+   nappf1 <- reactive({
+     ### #1 Factor
+     napp1<- NULL
+     if(input$sel1_3 =="Number of fertilizer applications"){
+       # Levels
+       print(input$numLevels_tabSoil_1)
+       for(i in 1:input$numLevels_tabSoil_1){
+         # # of applications
+         napp1[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
+       }
+     }
+     napp1
+   })
+   nappf2 <- reactive({
+     ### #2 Factor
+     napp2<- NULL
+     if(input$sel2_3 =="Number of fertilizer applications"){
+       # Levels
+       for(i in 1:input$numLevels_tabSoil_2){
+         # # of applications
+         napp2[i] <-  input[[paste0("numApps_tabSoil_factor_2_box_",i)]]
+       }
+     }
+     napp2
+   })
+   nappf3 <- reactive({
+     napp3<- NULL
+     if(input$sel3_3 =="Number of fertilizer applications"){
+       # Levels
+       for(i in 1:input$numLevels_tabSoil_3){
+         # # of applications
+         napp3[i] <-  input[[paste0("numApps_tabSoil_factor_3_box_",i)]]
+       }
+     }
+     napp3
+   })
+   nappf4 <- reactive({
+     napp4<- NULL
+     if(input$sel4_3 =="Number of fertilizer applications"){
+       # Levels
+       for(i in 1:input$numLevels_tabSoil_4){
+         # # of applications
+         napp4[i] <-  input[[paste0("numApps_tabSoil_factor_4_box_",i)]]
+       }
+     }
+     napp4
+   })
+   nappf5 <- reactive({
+     napp5<- NULL
+     if(input$sel5_3 =="Number of fertilizer applications"){
+       # Levels
+       for(i in 1:input$numLevels_tabSoil_5){
+         # # of applications
+         napp5[i] <-  input[[paste0("numApps_tabSoil_factor_5_box_",i)]]
+       }
+     }
+     napp5
+   })
+
+
+   #rate total producto
+   rtf1<- reactive({
+
+     if(input$sel1_3 =="Fertilizer product application rate" ||
+        input$sel1_3 =="Biofertilizer" ||  input$sel1_3 =="Inorganic"||
+        input$sel1_3 =="Green manure"|| input$sel1_3 =="Lime"||
+        input$sel1_3 =="Organic"){
+       # Levels
+       rt1<-NULL
+       for(i in 1:input$numLevels_tabSoil_1){
+         rt1[i]<- input[[paste0("input_product_RateTotal_factor_1_level_",i)]]
+       }
+       rt1
+     }
+   })
+   rtf2<- reactive({
+     if(input$sel2_3 =="Fertilizer product application rate" ||
+        input$sel2_3 =="Biofertilizer" ||  input$sel2_3 =="Inorganic"||
+        input$sel2_3 =="Green manure"|| input$sel2_3 =="Lime"||
+        input$sel2_3 =="Organic"){
+       # Levels
+       rt2<-NULL
+       for(i in 1:input$numLevels_tabSoil_2){
+         rt2[i]<- input[[paste0("input_product_RateTotal_factor_2_level_",i)]]
+       }
+       rt2
+     }
+   })
+   rtf3<- reactive({
+     if(input$sel3_3 =="Fertilizer product application rate" ||
+        input$sel3_3 =="Biofertilizer" ||  input$sel3_3 =="Inorganic"||
+        input$sel3_3 =="Green manure"|| input$sel3_3 =="Lime"||
+        input$sel3_3 =="Organic"){
+       # Levels
+       rt3<-NULL
+       for(i in 1:input$numLevels_tabSoil_3){
+         rt3[i]<- input[[paste0("input_product_RateTotal_factor_3_level_",i)]]
+       }
+       rt3
+     }
+   })
+   rtf4 <- reactive({
+
+     if(input$sel4_3 =="Fertilizer product application rate" ||
+        input$sel4_3 =="Biofertilizer" ||  input$sel4_3 =="Inorganic"||
+        input$sel4_3 =="Green manure"|| input$sel4_3 =="Lime"||
+        input$sel4_3 =="Organic"){
+       # Levels
+       rt4<-NULL
+       for(i in 1:input$numLevels_tabSoil_4){
+         rt4[i]<- input[[paste0("input_product_RateTotal_factor_4_level_",i)]]
+       }
+       rt4
+     }
+   })
+   rtf5<- reactive({
+
+     if(input$sel5_3 =="Fertilizer product application rate" ||
+        input$sel5_3 =="Biofertilizer" ||  input$sel5_3 =="Inorganic"||
+        input$sel5_3 =="Green manure"|| input$sel5_3 =="Lime"||
+        input$sel5_3 =="Organic"){
+       # Levels
+       rt5<-NULL
+       for(i in  1:input$numLevels_tabSoil_5){
+         rt5[i]<- input[[paste0("input_product_RateTotal_factor_5_level_",i)]]
+       }
+       rt5
+     }
+   })
+
+   #nutrient rate element
+
+   ref1<- reactive({
+
+     if(input$sel1_3 =="Nutrient element application rate"){
+       # Levels
+       re1<-NULL
+       for(i in 1:input$numLevels_tabSoil_1){
+         re1[i]<- input[[paste0("input_element_RateTotal_factor_1_level_",i)]]
+       }
+       re1
+     }
+   })
+   ref2<- reactive({
+
+     if(input$sel2_3 =="Nutrient element application rate"){
+       # Levels
+       re2<-NULL
+       for(i in 1:input$numLevels_tabSoil_2){
+         re2[i]<- input[[paste0("input_element_RateTotal_factor_2_level_",i)]]
+       }
+       re2
+     }
+   })
+   ref3<- reactive({
+
+     if(input$sel3_3 =="Nutrient element application rate"){
+       # Levels
+       re3<-NULL
+       for(i in 1:input$numLevels_tabSoil_3){
+         re3[i]<- input[[paste0("input_element_RateTotal_factor_3_level_",i)]]
+       }
+       re3
+     }
+   })
+   ref4<- reactive({
+
+     if(input$sel4_3 =="Nutrient element application rate"){
+       # Levels
+       re4<-NULL
+       for(i in 1:input$numLevels_tabSoil_4){
+         re4[i]<- input[[paste0("input_element_RateTotal_factor_4_level_",i)]]
+       }
+       re4
+     }
+     re4
+   })
+   ref5<- reactive({
+
+     if(input$sel5_3 =="Nutrient element application rate"){
+       # Levels
+       re5<-NULL
+       for(i in 1:input$numLevels_tabSoil_5){
+         re5[i]<- input[[paste0("input_element_RateTotal_factor_5_level_",i)]]
+       }
+       re5
+     }
+     re5
+   })
+
 
 
   # Fieldbook design #########################################################################
@@ -6721,6 +6917,21 @@ server_design_agrofims <- function(input, output, session, values){
        fct1 <- paste0(gr1, sf1) #factor1 label in the spreadshet
        lvl1 <- input$levelSelection_1 #Factor-levels 1
        f1Inputs <- getTrtInputs(group= input$sel1_1, subgroup = input$sel1_2, fct = input$sel1_3, dfr = f1())
+       sf1 <- input$sel1_3
+       if(is.null(input$sel1_3)){
+         sf1 <- "foo"
+       } else{
+         sf1 <- input$sel1_3
+       }
+       if(sf1=="Number of fertilizer applications"){f1Inputs <- list(level = nappf1(), label= sf1 ) }
+       if(sf1 =="Fertilizer product application rate" ||
+          sf1 =="Biofertilizer" ||  sf1=="Inorganic"||
+          sf1 =="Green manure"|| sf1 =="Lime"||
+          sf1 =="Organic"){
+         f1Inputs <- list(level = rtf1(), label= sf1)
+       }
+       if(sf1 =="Nutrient element application rate") {f1Inputs <- list(level = ref1(), label= sf1 ) }
+
        #print("error 1")
        #Factor 2
        gr2 <- input$sel_2_1;  sgr2 <- input$sel_2_2 ; sf2<-input$sel_2_3 #gr: group, sgr: subgroup, sf: factor of group-subgroup
@@ -6728,6 +6939,21 @@ server_design_agrofims <- function(input, output, session, values){
        fct2 <- paste0(gr1, sf1) #factor2 label in spreadshet
        lvl2 <- input$levelSelection_2 #Factor-levels 2
        f2Inputs <- getTrtInputs(group= input$sel2_1, subgroup = input$sel2_2, fct = input$sel2_3, dfr = f2())
+       if(is.null(input$sel2_3)){
+         sf2 <- "foo"
+       } else{
+         sf2 <- input$sel2_3
+       }
+
+       if(sf2=="Number of fertilizer applications"){f2Inputs <- list(level = nappf2(), label= sf2 ) }
+       if(sf2 =="Fertilizer product application rate" ||
+          sf2 =="Biofertilizer" ||  sf2=="Inorganic"||
+          sf2 =="Green manure"|| sf2 =="Lime"||
+          sf2 =="Organic"){
+         f2Inputs <- list(level = rtf2(), label= sf2)
+       }
+       if(sf2 =="Nutrient element application rate") {f2Inputs <- list(level = ref2(), label= sf2) }
+
 
        #Factor 3
        gr3 <-input$sel_3_1 ; sgr3 <- input$sel_3_2;  sf3 <- input$sel_3_3 #gr: group, sgr: subgroup, sf: factor of group-subgroup
@@ -6735,6 +6961,22 @@ server_design_agrofims <- function(input, output, session, values){
        fct3 <- paste0(gr1, sf1) #factor3 label in spreadshet
        lvl3 <- input$levelSelection_3 #Factor-levels 3
        f3Inputs <- getTrtInputs(group= input$sel3_1, subgroup = input$sel3_2, fct = input$sel3_3, dfr = f3())
+       if(is.null(input$sel3_3)){
+         sf3 <- "foo"
+       } else{
+         sf3 <- input$sel3_3
+       }
+       if(sf3=="Number of fertilizer applications"){f3Inputs <- list(level = nappf3(), label= sf3  ) }
+       if(sf3 =="Fertilizer product application rate" ||
+          sf3 =="Biofertilizer" ||  sf3=="Inorganic"||
+          sf3 =="Green manure"|| sf3 =="Lime"||
+          sf3 =="Organic"){
+         f3Inputs <- list(level = rtf3(), label= sf3 )
+       }
+       if(sf3 =="Nutrient element application rate") {f3Inputs <- list(level = ref3(), label= sf3 ) }
+
+
+
        #print("error 2")
        #Factor 4
        gr4 <-input$sel_4_1 ; sgr4 <- input$sel_4_2;  sf4 <- input$sel_4_3 #gr: group, sgr: subgroup, sf: factor of group-subgroup
@@ -6742,6 +6984,21 @@ server_design_agrofims <- function(input, output, session, values){
        lblfct4 <- paste0(gr4, sf4) #factor4 label in spreadshet
        lvl4 <- input$levelSelection_4#Factor-levels 3
        f4Inputs <- getTrtInputs(group= input$sel4_1, subgroup = input$sel4_2, fct = input$sel4_3, dfr = f4())
+       #sf4 <- input$sel4_3
+       if(is.null(input$sel4_3)){
+         sf4 <- "foo"
+       } else{
+         sf4 <- input$sel4_3
+       }
+       if(sf4=="Number of fertilizer applications"){f4Inputs <- list(level = nappf4(), label= sf4 ) }
+       if(sf4 =="Fertilizer product application rate" ||
+          sf4 =="Biofertilizer" ||  sf4=="Inorganic"||
+          sf4 =="Green manure"|| sf4 =="Lime"||
+          sf4 =="Organic"){
+         f4Inputs <- list(level = rtf4(), label= sf4)
+       }
+       if(sf4 =="Nutrient element application rate") {f4Inputs <- list(level = ref4(), label= sf4) }
+
 
        #Factor 5
        gr5 <-input$sel_5_1;  sgr5 <- input$sel_5_2;  sf5 <- input$sel_5_3 #gr: group, sgr: subgroup, sf: factor of group-subgroup
@@ -6749,6 +7006,26 @@ server_design_agrofims <- function(input, output, session, values){
        lblfct5 <- paste0(gr5, sf5) #factor5 label in spreadshet
        lvl5 <- input$levelSelection_5#Factor-levels 3
        f5Inputs <- getTrtInputs(group= input$sel5_1, subgroup = input$sel5_2, fct = input$sel5_3, dfr = f5())
+       #sf5 <- input$sel5_3
+       if(is.null(input$sel5_3)){
+         sf5 <- "foo"
+       } else{
+         sf5 <- input$sel5_3
+       }
+       if(sf5=="Number of fertilizer applications"){f5Inputs <- list(level = nappf5(),label= sf5 ) }
+       if(sf5 =="Fertilizer product application rate" ||
+          sf5 =="Biofertilizer" ||  sf5=="Inorganic"||
+          sf5 =="Green manure"|| sf5 =="Lime"||
+          sf5 =="Organic"){
+         f5Inputs <- list(level = rtf5(), label= sf5)
+       }
+       if(sf5 =="Nutrient element application rate") {f5Inputs <- list(level = ref5(), label= sf5) }
+
+
+        print(f1Inputs$level)
+        print(f1Inputs$label)
+        print(f2Inputs$level)
+        print(f2Inputs$label)
 
        #print("error 3")
        if(nf==2){
@@ -7602,85 +7879,6 @@ out
 
   })
 
-  ## Soil design
-  dt_soilDesign <- reactive({
-
-    if(input$fullFactorialRB=="Yes"){
-      n <- as.numeric(input$nfactors_hdafims_y)
-    }else{
-      n <- as.numeric(input$nfactors_hdafims_n)
-    }
-
-    #FACTOR: numbers of factors with soil fertility
-    FACTOR <- 0
-    vLEVEL <- vAPP <- i <- j<-k <-NULL
-    for(ii in 1:n){ #number of factors
-      if(input[[paste0("sel",ii,"_1")]]=="Soil fertility"){
-        FACTOR <- FACTOR+1
-      } else {
-        FACTOR<-1
-      }
-    }
-
-    #LEVEL: vector of number of levels
-    for (jj in 1:FACTOR){
-      if( is.null(input[[paste0("numLevels_tabSoil_",jj)]])) {
-        vLEVEL[i] <- 1 #rep(1,jj)
-      }else {
-        vLEVEL[i] <- as.numeric(input[[paste0("numLevels_tabSoil_",jj)]]) #Vector number of levels per factor
-      }
-    }
-
-    #APP: vector of number of application
-    for(ii in 1:FACTOR){
-      for(jj in 1:length(vLEVEL)){
-        if(is.null(input[[paste0("numApps_tabSoil_factor_",ii,"_box_",jj)]])){
-          vAPP[jj] <- 1
-        } else {
-          vAPP[jj] <- as.numeric(input[[paste0("numApps_tabSoil_factor_",ii,"_box_",jj)]])
-        }
-      }
-    }
-
-
-    #select product
-    niter<- FACTOR*length(vAPP)*length(vLEVEL)
-    profct<- rateprod <- ele <- ratele <- prodtot <- eletot <- NULL
-
-    for(ii in 1:FACTOR){
-      for(jj in 1:vLEVEL){
-        for(kk in 1:vAPP){
-          for(z in 1:niter){
-            if(is.null(input[[paste0("select_product_factor_",ii,"_level_",jj,"_app_", kk)]])){
-              profct[z] <- 1
-            } else {
-              profct[z] <- input[[paste0("select_product_factor_",ii,"_level_",jj,"_app_", kk)]]
-            }
-            if(is.null( input[[paste0("input_tabSoil_rate_product_",ii,"_level_",jj,"_app_",kk) ]] )){
-              rateprod[z] <- ""
-            }else{
-              rateprod[z] <- input[[paste0("input_tabSoil_rate_product_",ii,"_level_",jj,"_app_",kk) ]]
-            }
-            if(is.null(input[[paste0("input_element_factor_",ii,"_level_",jj,"_app_",kk)]])){
-              ele[z] <- "" #input[[paste0("input_element_factor_",ii,"_level_",jj,"_app_",kk)]] #element
-            } else{
-              ele[z] <- input[[paste0("input_element_factor_",ii,"_level_",jj,"_app_",kk)]] #element
-            }
-
-            #profct[z] <- input[[paste0("select_product_factor_",ii,"_level_",jj,"_app_", kk)]]# product
-            #rateprod[z] <- input[[paste0("input_tabSoil_rate_product_",ii,"_level_",jj,"_app_",kk) ]]# rate product
-            #ele[z] <- input[[paste0("input_element_factor_",ii,"_level_",jj,"_app_",kk)]] #element
-          }
-        }
-      }
-    }
-
-    #prodtot <-  input[[paste0("input_product_RateTotal_factor_",ii,"_level_",jj)]]#Total product
-    #eletot <- input[[paste0("input_element_RateTotal_factor_",ii,"_level_",jj)]]#Total element
-
-
-
-  })
 
     ################################End agrofeatures ######################################
 
@@ -8097,6 +8295,36 @@ out
 
     }
 
+      if(is.null(input$sel1_1)|| input$sel1_1=="Soil fertility" ){
+        p1<-""
+      } else{
+        p1<-"foo"
+      }
+    if(is.null(input$sel2_1)|| input$sel2_1=="Soil fertility" ){
+      p2<-""
+    } else{
+      p2<-"foo"
+    }
+
+    if(is.null(input$sel3_1)|| input$sel3_1=="Soil fertility" ){
+      p3<-""
+    } else{
+      p3<-"foo"
+    }
+
+    if(is.null(input$sel4_1)|| input$sel4_1=="Soil fertility" ){
+      p4<-""
+    } else{
+      p4<-"foo"
+    }
+    if(is.null(input$sel5_1)|| input$sel5_1=="Soil fertility" ){
+      p5<-""
+    } else{
+      p5<-"foo"
+    }
+
+
+    if(p1==""|| p1==""|| p3==""|| p4==""|| p5==""){
 
     c10 <- c('Factor 1',factors[1])
     c11 <- c('Factor 1 - level 1',levelsDt[1,1])
@@ -8133,7 +8361,45 @@ out
     c38 <- c('Factor 5 - level 4',levelsDt[5,4] )
     c39 <- c('Factor 5 - level 5',levelsDt[5,5])
 
+    }  else {
 
+
+    c10 <- c('Factor 1',factors[1])
+    c11 <- c('Factor 1 - level 1',levelsDt[1,1])
+    c12 <- c('Factor 1 - level 2',levelsDt[1,2] )
+    c13 <- c('Factor 1 - level 3',levelsDt[1,3])
+    c14 <- c('Factor 1 - level 4',levelsDt[1,4] )
+    c15 <- c('Factor 1 - level 5',levelsDt[1,5] )
+
+    c16 <- c('Factor 2', factors[2])
+    c17 <- c('Factor 2 - level 1',levelsDt[2,1])
+    c18 <- c('Factor 2 - level 2',levelsDt[2,2])
+    c19 <- c('Factor 2 - level 3',levelsDt[2,3])
+    c20 <- c('Factor 2 - level 4',levelsDt[2,4] )
+    c21 <- c('Factor 2 - level 5',levelsDt[2,5] )
+
+    c22 <- c('Factor 3', factors[3])
+    c23 <- c('Factor 3 - level 1',levelsDt[3,1] )
+    c24 <- c('Factor 3 - level 2',levelsDt[3,2] )
+    c25 <- c('Factor 3 - level 3',levelsDt[3,3] )
+    c26 <- c('Factor 3 - level 4',levelsDt[3,4] )
+    c27 <- c('Factor 3 - level 5',levelsDt[3,5] )
+
+    c28 <- c('Factor 4', factors[4] )
+    c29 <- c('Factor 4 - level 1',levelsDt[4,1])
+    c30 <- c('Factor 4 - level 2',levelsDt[4,2] )
+    c31 <- c('Factor 4 - level 3',levelsDt[4,3])
+    c32 <- c('Factor 4 - level 4',levelsDt[4,4] )
+    c33 <- c('Factor 4 - level 5',levelsDt[4,5])
+
+    c34 <- c('Factor 5', factors[5])
+    c35 <- c('Factor 5 - level 1',levelsDt[5,1] )
+    c36 <- c('Factor 5 - level 2',levelsDt[5,2])
+    c37 <- c('Factor 5 - level 3',levelsDt[5,3])
+    c38 <- c('Factor 5 - level 4',levelsDt[5,4] )
+    c39 <- c('Factor 5 - level 5',levelsDt[5,5])
+
+}
     #dt_fctInfo <- data.frame(c1,c2,c3,c4,c5,c6,c7,c8,c9,c40)# deprecated
     dt_fctInfo <- data.frame(c1,c5,c6,c7,c8,c9,c40)
     dt_fctInfo <- as.data.frame(t(dt_fctInfo), stringsAsFactors=FALSE)
@@ -8626,55 +8892,6 @@ out
      c17 <- c('Experiment lead person / Primary Investigator', vleadOrgName)
      c18 <- c('Experiment, lead organization name',vleadPerson )
 
-     # np <- input$npersons
-     # vperType <- c()
-     # vperfname <- c()
-     # vperlname <- c()
-     # vperemail <- c()
-     # vperAff <- c()
-     # vperOrcid <- c()
-     # vpercountry <- c()
-     #
-     # for(i  in 1:np){
-     #   if(is.null(input[[paste0("personnel",i,"Type")]])) vperType <- c(vperType, "")
-     #   else vperType <- c(vperType, input[[paste0("personnel",i,"Type")]])
-     #
-     #   vperfname <- c(vperfname, input[[paste0("person",i,"FirstName")]])
-     #   vperlname <- c(vperlname, input[[paste0("person",i,"LastName")]])
-     #
-     #   if(is.null(input[[paste0("person",i,"Affiliation")]])) vperAff <- c(vperAff, "")
-     #   else{
-     #     if(input[[paste0("person",i,"Affiliation")]] == "CGIAR Center"){
-     #       if(is.null(input[[paste0("person",i,"Center")]])) vperAff <- c(vperAff, "CGIAR Center")
-     #       else vperAff <- c(vperAff, input[[paste0("person",i,"Center")]])
-     #     }
-     #     else{
-     #       vperAff <- c(vperAff, input[[paste0("person",i,"CenterOther")]])
-     #     }
-     #   }
-     #
-     #   vperemail <- c(vperemail, input[[paste0("person",i,"Email")]])
-     #   vperOrcid <- c(vperOrcid, input[[paste0("person",i,"ORCID")]])
-     #
-     #   if(is.null(input[[paste0("person",i,"Country")]])) vpercountry <- c(vpercountry, "")
-     #   else vpercountry <- c(vpercountry, input[[paste0("person",i,"Country")]])
-     # }
-     #
-     # vperType <- paste(vperType, collapse = ",")
-     # vperfname <-paste(vperfname, collapse = ",")
-     # vperlname <- paste(vperlname, collapse = ",")
-     # vperemail <- paste(vperemail, collapse = ",")
-     # vperAff <- paste(vperAff, collapse = ",")
-     # vperOrcid <- paste(vperOrcid, collapse = ",")
-     # vpercountry <- paste(vpercountry, collapse = ",")
-     #
-     # c19 <- c('Person type',vperType )
-     # c20 <- c('Person, first name',vperfname )
-     # c21 <- c('Person, last name', vperlname)
-     # c22 <- c('Person, email', vperemail)
-     # c23 <- c('Person, affiliation', vperAff)
-     # c24 <- c('Person, ORCID',vperOrcid )
-     # c25 <- c('Country in which active', vpercountry)
 
 
      vsitetype <- ""
@@ -8934,7 +9151,7 @@ out
 
    }
 
-
+  ## Trait Table ####################################################################
   traits_dt <- function(){
     a<- traitsVals$Data
     if(nrow(traitsVals$Data) >0){
@@ -8947,64 +9164,6 @@ out
 
     return(a)
   }
-
-  # soil_design<- reactive({
-  #
-  #   ### #1 Factor
-  #   napp1<- NULL
-  #   if(input$sel1_3 =="Fertilizer product application rate"){
-  #     # Levels
-  #     for(i in 1:input$numLevels_tabSoil_1){
-  #       # # of applications
-  #       napp1[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
-  #     }
-  #   }
-  #
-  #   ### #2 Factor
-  #   napp2<- NULL
-  #   if(input$sel2_3 =="Fertilizer product application rate"){
-  #     # Levels
-  #     for(i in 1:input$numLevels_tabSoil_2){
-  #       # # of applications
-  #       napp2[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
-  #     }
-  #   }
-  #
-  #   napp3<- NULL
-  #   if(input$sel3_3 =="Fertilizer product application rate"){
-  #     # Levels
-  #     for(i in 1:input$numLevels_tabSoil_3){
-  #       # # of applications
-  #       napp3[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
-  #     }
-  #   }
-  #
-  #
-  #   napp4<- NULL
-  #   if(input$sel4_3 =="Fertilizer product application rate"){
-  #     # Levels
-  #     for(i in 1:input$numLevels_tabSoil_4){
-  #       # # of applications
-  #       napp4[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
-  #     }
-  #   }
-  #
-  #   napp5<- NULL
-  #   if(input$sel5_3 =="Fertilizer product application rate"){
-  #     # Levels
-  #     for(i in 1:input$numLevels_tabSoil_5){
-  #       # # of applications
-  #       napp5[i] <-  input[[paste0("numApps_tabSoil_factor_1_box_",i)]]
-  #     }
-  #   }
-  #
-  #   print(napp1)
-  #   print(napp2)
-  #   print(napp3)
-  #   print(napp4)
-  #   print(napp5)
-  # })
-
 
   ### Book preview #############################################################
   shiny::observeEvent(input$fbDesign_draft_agrofims, {
@@ -9027,7 +9186,62 @@ out
          shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
          flag<-FALSE
        }
-       #print(flag)
+
+       # else if( input$sel1_1=="Soil fertility" ||   input$sel2_1=="Soil fertility" ||
+       #          input$sel3_1=="Soil fertility" ||   input$sel4_1=="Soil fertility" ||
+       #          input$sel5_1=="Soil fertility") {
+       #
+       #   if(is.null(input$numLevels_tabSoil_1)){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   } else if(input$numLevels_tabSoil_1==1){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   }
+       #
+       #   if(is.null(input$numLevels_tabSoil_2)){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   }else if(input$numLevels_tabSoil_2==1){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   }
+       #
+       #   if(is.null(input$numLevels_tabSoil_3)){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   }else if(input$numLevels_tabSoil_3==1){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   }
+       #
+       #   if(is.null(input$numLevels_tabSoil_4)){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   }else if(input$numLevels_tabSoil_4==1){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   }
+       #
+       #   if(is.null(input$numLevels_tabSoil_5)){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   }else if(input$numLevels_tabSoil_5==1){
+       #     flag<-FALSE
+       #     shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Select factors and levels "), styleclass = "danger")
+       #
+       #   }
+       #   flag <- flag
+       # }
 
        if(flag){
 
@@ -9051,7 +9265,7 @@ out
 
        withProgress(message = 'Downloading fieldbook', value = 0, {
 
-        #print(dt_site())
+         #print(soil_design())
 
          n <- as.numeric(input$numApplicationsIrrigation)
          fb_traits <- fb_agrofims_traits()
@@ -9062,6 +9276,7 @@ out
          soil_vars <- dt_soil_agrofims()
          fname <- paste(file,"xlsx",sep=".")
 
+         print("inicio")
          wb <- createWorkbook()
 
          incProgress(2/20,message = "Downloading data...")
@@ -9071,11 +9286,11 @@ out
         openxlsx::writeDataTable(wb, "Metadata", x = gmetadata,
                                  colNames = TRUE, withFilter = FALSE)
 
-
+print("phenology")
          openxlsx::addWorksheet(wb, "Phenology", gridLines = TRUE)
          openxlsx::writeDataTable(wb, "Phenology", x = phenology,
                                   colNames = TRUE, withFilter = FALSE)
-
+         print("feno2")
          #
          # incProgress(7/20,message = "Adding installation sheet...")
          #
@@ -9093,14 +9308,20 @@ out
          if(input$croppingType=="Intercrop"){
 
            incProgress(7/20,message = "Adding fieldbook data...")
+
            if(is.null(input$cropsSelected)){
              print("no crops selected")
            } else {
 
+
              crops <- input$cropsSelected
+             cropsito<- NULL
+             for(i in 1:length(crops)){
+             cropsito[i] <- input[[paste0("cropCommonName",i)]]
+             }
              interTrait <- out<-list()
              for(i in 1:length(crops)){
-               interTrait[[i]] <- traits_dt() %>%  dplyr::filter(Crop==crops[i])
+               interTrait[[i]] <- traits_dt() %>%  dplyr::filter(Crop==cropsito[i])
                interTrait[[i]] <- as.data.frame(interTrait[[i]], stringsAsFactors=FALSE)
                 print(interTrait[[i]])
 
@@ -9123,8 +9344,8 @@ out
                  names(out[[i]])  <-  nm
                }
 
-               openxlsx::addWorksheet(wb, paste("Fieldbook",crops[i],sep="-") , gridLines = TRUE)
-               openxlsx::writeDataTable(wb, paste("Fieldbook",crops[i],sep="-") , x = out[[i]],
+               openxlsx::addWorksheet(wb, paste("Fieldbook",cropsito[i],sep="-") , gridLines = TRUE)
+               openxlsx::writeDataTable(wb, paste("Fieldbook",cropsito[i],sep="-") , x = out[[i]],
                                         colNames = TRUE, withFilter = FALSE)
              }
 
@@ -9141,7 +9362,7 @@ out
          #
          #print("error5")
          if(is.element("Irrigation", agroFeaSelected)) {
-           # print("irri")
+           print("irri")
            incProgress(14/20,message = "Adding irrigation data...")
            dt_irri <- dt_irrigation()
            print(dt_irri)
@@ -9166,13 +9387,19 @@ out
              crops <- input$cropsSelected
              dt_harv<-list()
              #interTrait <- out<-list()
+              cropsito<- NULL
+             for(i in 1:length(crops)){
+               cropsito[i] <- input[[paste0("cropCommonName",i)]]
+             }
+
+
              for(i in 1:length(crops)){
 
              incProgress(13/20,message = "Adding harvest data...")
              dt_harv[[i]] <- dt_harvest()
-             names(dt_harv[[i]]) <- paste(crops[i], names(dt_harv[[i]]), sep="-")
-             openxlsx::addWorksheet(wb, paste("Harvest",crops[i],sep="-") , gridLines = TRUE)
-             openxlsx::writeDataTable(wb, paste("Harvest",crops[i],sep="-") , x = dt_harv[[i]],
+             names(dt_harv[[i]]) <- paste(cropsito[i], names(dt_harv[[i]]), sep="-")
+             openxlsx::addWorksheet(wb, paste("Harvest",cropsito[i],sep="-") , gridLines = TRUE)
+             openxlsx::writeDataTable(wb, paste("Harvest",cropsito[i],sep="-") , x = dt_harv[[i]],
                                       colNames = TRUE, withFilter = FALSE)
             }
 
