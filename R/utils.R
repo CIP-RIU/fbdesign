@@ -254,7 +254,7 @@ get_loop_irrigation_technique <- function(technique, module="irrigation", submod
 
    if(module=="irrigation"){
 
-      if(technique[i] == "Irrigation sprinker"){
+      if(technique[i] == "Sprinkler irrigation"){
         out[[i]] <- paste0("input$","irrigation_using_sprinkler_systems_", i,sep="")
       }
       else if(technique[i] == "Surface"){
@@ -269,11 +269,13 @@ get_loop_irrigation_technique <- function(technique, module="irrigation", submod
         out[[i]] <- paste0("input$","irrigation_technique_", i, "_other") #other
       }
       else if( is.null(technique[i]) || is.na(technique[i]) || technique[i] == "NULL" ||  technique[i] =="character(0)") {
+
         out[[i]] <- "NA"
       }
 
    }
-   else if(module =="weeding"){
+
+   if(module =="weeding"){
       if( technique[i]=="Other"){
         out[i] <- paste("input$",module, type, i, "_other")
       }
@@ -313,11 +315,14 @@ get_loop_irrigation_technique_other <-function(technique="Irrigation sprinker", 
     #if(out[i]=="Other"){ out[i] <- paste0("input$","surface_irrigation_technique_", i, "_other") } #other
   }
   else if(technique[i] == "Localized" && subtechnique[i] == "Other"){
-    out[[i]] <- paste0("input$","localized_irrigation_technique_", i,"_other")
+    #out[[i]] <- paste0("input$","localized_irrigation_technique_", i,"_other")
+    out[[i]] <- paste0("input$","localized_irrigation_technique", i,"_other")
+
     a <- as.quoted(out[[i]])
     #if( out[i]=="Other"){ out[i] <- paste0("input$","localized_irrigation_technique", i, "_other") } #other
   }
-  else if( is.null(technique[i]) || is.na(technique[i]) || technique[i]=="NA" || subtechnique[i]=="NA"  || is.na(subtechnique[i]) ){
+  else if( is.null(technique[i]) || is.na(technique[i]) || technique[i]=="NA" ||
+           subtechnique[i]=="NA"  || is.na(subtechnique[i]) || technique[i]=="NULL" || subtechnique[i]=="NULL"){
     out[[i]] <- "NA"
     a <- as.quoted(out[[i]])
   }
@@ -339,7 +344,7 @@ get_loop_irrigation_technique_other <-function(technique="Irrigation sprinker", 
 #' @param input_date input date
 #' @export
 #'
-get_clean_date<- function(input_date){
+getDateInput<- function(input_date){
 
   if(length(input_date)==0){
     out <- ""
@@ -348,4 +353,5 @@ get_clean_date<- function(input_date){
   }
   out
 }
+
 

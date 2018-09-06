@@ -20,6 +20,62 @@ server_design_agrofims <- function(input, output, session, values){
   # path global para guardar las sesiones
   globalpath <- "/home/obenites/HIDAP_SB_1.0.0/hidap/inst/hidap_agrofims/www/internal_files/savesession/"
 
+
+  ##### Muestra la grilla de sesiones
+
+  # has.new.files <- function() {
+  #   unique(list.files(globalpath))
+  # }
+  # get.files <- function() {
+  #   list.files(globalpath)
+  # }
+  #
+  # my_files <- reactivePoll(10, session, checkFunc=has.new.files, valueFunc=get.files)
+  # df <- data.frame()
+  #
+  # sessionVals <- reactiveValues()
+  # sessionVals$aux <- data.frame()
+
+  # observeEvent(input$refreshsession,{
+  #   a <- c()
+  #   b <- c()
+  #   c <- c()
+  #   d <- c()
+  #
+  #   #if (length(my_files())>1) {
+  #   for (i in 1:length(my_files())) {
+  #     q <- my_files()[i]
+  #     q <- unlist(strsplit(q, "[.]"))
+  #     a[i] <- q[1]
+  #     #print(my_files())
+  #     fl <- read.csv(paste0(globalpath, my_files()[i]))
+  #     b[i] <- as.character(fl[2,2])
+  #     c[i] <- as.character(file.info(paste0(globalpath, my_files()[i]))$ctime)
+  #     d[i] <- as.character(file.info(paste0(globalpath, my_files()[i]))$mtime)
+  #   }
+  #
+  #   df <- data.frame(a, b, c, d, stringsAsFactors=FALSE)
+  #   colnames(df) <- c("Experiment.ID", "Experiment.name", "Date.created", "Date.modified")
+  #   sessionVals$aux <- data.frame(df)
+  #   #}
+  #
+  # })
+
+  # output$dtsession <- DT::renderDataTable({
+  #   DT::datatable(sessionVals$aux, selection = 'single', options = list(
+  #     pageLength = 5
+  #   ))
+  # })
+  #
+  # selectedRow <- eventReactive(input$load_inputs,{
+  #   id <- input$dtsession_rows_selected
+  #   sessionVals$aux[id,1]
+  # })
+
+
+  #####
+
+
   # funcion que retorna el path junto con ID en el input para cargar la sesion
   pathsession <- reactive({
     path <- ""
@@ -164,10 +220,10 @@ server_design_agrofims <- function(input, output, session, values){
 
   # Loas session
   observeEvent(input$load_inputs, {
-    if (input$loadidsession != "") {
-      if (file.exists(isolate(paste0(globalpath, input$loadidsession)) ) ){
+    if (selectedRow() != "") {
+      if (file.exists(isolate(paste0(globalpath, selectedRow(), ".csv")) ) ){
         output$text <- renderText({"Cargado exitosamente"})
-        uploaded_inputs <- read.csv(paste0(globalpath, input$loadidsession))
+        uploaded_inputs <- read.csv(paste0(globalpath, selectedRow(), ".csv"))
 
         for(i in 1:nrow(uploaded_inputs)) {
 
@@ -7264,8 +7320,9 @@ server_design_agrofims <- function(input, output, session, values){
   dt_harvest <- reactive({
 
      #out <- fb_agrofims()
-     h_start_date	<-	paste(input$harvest_start_date) #dates
-     h_end_date	<-	paste(input$harvest_end_date) #dates
+     #h_start_date	<-	paste(input$harvest_start_date) #dates
+     h_start_date	<-	getDateInput(input$harvest_start_date) #dates
+     h_end_date	<-	getDateInput(input$harvest_end_date) #dates
      h_cut_height	<-	input$harvest_cut_height
      h_cut_height_unit <- getAgrOper(input$harvest_cut_height_unit) #get units
      h_method <- getAgrOper(feature=input$harvest_method, other = input$harvest_method_value_other)
@@ -7390,8 +7447,8 @@ out
 
      if(input$landLevelling_checkbox==TRUE){
 
-       ll_start_date <- paste(input$landLeveling_start_date) #dates
-       ll_end_date <- paste(input$landLeveling_end_date) #dates
+       ll_start_date <- getDateInput(input$landLeveling_start_date) #dates
+       ll_end_date <- getDateInput(input$landLeveling_end_date) #dates
        ll_npasses <- getAgrOper(input$numPasses)
        ll_notes <- input$landLeveling_notes
        ll_type <- getAgrOper(input$land_impl_type, input$land_impl_type_other)
@@ -7407,8 +7464,8 @@ out
      }
 
      if(input$puddling_checkbox==TRUE){
-       lp_start_date <- paste(input$puddling_start_date)
-       lp_end_date <- paste(input$puddling_end_date)
+       lp_start_date <- getDateInput(input$puddling_start_date)
+       lp_end_date <- getDateInput(input$puddling_end_date)
 
        lp_depth_val <- getAgrOper(input$puddling_depth_val)
        lp_depth_unit <- getAgrOper(input$puddling_depth_unit)
@@ -7448,8 +7505,8 @@ out
 
      if(input$tillage_checkbox==TRUE){
 
-       lt_start_date <- paste(input$tillage_start_date)
-       lt_end_date  <-  paste(input$tillage_end_date)
+       lt_start_date <- getDateInput(input$tillage_start_date)
+       lt_end_date  <-  getDateInput(input$tillage_end_date)
        lt_technique  <- getAgrOper(input$till_technique, input$till_technique_other)
        lt_depth_method  <- getAgrOper(input$till_depth_method)
 
@@ -7498,8 +7555,8 @@ out
   ## Mulching and residue ################################################################
   dt_mulching <- reactive({
 
-     m_start_date <- paste(input$mulch_start_date) #dates
-     m_end_date <- paste(input$mulch_end_date) #dates
+     m_start_date <- getDateInput(input$mulch_start_date) #dates
+     m_end_date <- getDateInput(input$mulch_end_date) #dates
      m_type <- getAgrOper(input$mulch_type, input$mulch_type_other)
      m_thickness <-  getAgrOper(input$mulch_thickness)
      m_thickness_unit <-  getAgrOper(input$mulch_thickness_unit) #unit
@@ -7511,8 +7568,8 @@ out
      m_cov <- getAgrOper(input$mulch_percCoverage)
      m_cov_unit <-  getAgrOper(input$mulch_percCoverage_unit) #unit
      #m_pgt_lbl <- paste("Percentage of coverage", m_cov_unit, sep= "_")#label
-     m_rem_start_date <- paste(input$mulch_remove_start_date)
-     m_rem_end_date <- paste(input$mulch_remove_end_date)
+     m_rem_start_date <- getDateInput(input$mulch_remove_start_date)
+     m_rem_end_date <- getDateInput(input$mulch_remove_end_date)
      m_mgm_notes <-  getAgrOper(input$mulching_management_notes)
      m_implement <-  getAgrOper(input$mulch_implement_type)
      m_traction <-  getAgrOper(input$mulch_traction, input$mulch_traction_other)
@@ -7541,8 +7598,8 @@ out
    })
   dt_residue <- reactive({
 
-     r_start_date<- paste(input$residue_start_date) #dates
-     r_end_date<- paste(input$residure_end_date) #dates
+     r_start_date<- getDateInput(input$residue_start_date) #dates
+     r_end_date<- getDateInput(input$residure_end_date) #dates
      r_part <- getAgrOper(input$residue_plantPart, input$residue_plantPart_other)
      r_technique <- getAgrOper(input$residue_technique, input$residue_technique_other)
      r_traction <- getAgrOper(input$residue_traction, input$residue_traction_other)
@@ -7612,8 +7669,8 @@ out
   dt_directSeed <- reactive({
 
      # Direct Seeding#################################
-     pl_start_date <- paste(input$planting_start_date) #dates
-     pl_end_date <- paste(input$planting_end_date) #dates
+     pl_start_date <- getDateInput(input$planting_start_date) #dates
+     pl_end_date <- getDateInput(input$planting_end_date) #dates
 
      pl_env <-  getAgrOper(input$seeding_environment)
      pl_technique <-  getAgrOper(input$seeding_technique)
@@ -7669,8 +7726,8 @@ out
   dt_transPlant <- reactive ({
 
      #Transplanting  ######################################
-     tr_start_date <- paste(input$transplanting_start_date) #dates
-     tr_end_date<- paste(input$transplanting_end_date) #dates
+     tr_start_date <- getDateInput(input$transplanting_start_date) #dates
+     tr_end_date<- getDateInput(input$transplanting_end_date) #dates
      tr_age <- getAgrOper(input$age_seedling)
 
      tr_env <- getAgrOper(input$transplanting_environment, input$transplanting_environment_other)
@@ -8517,31 +8574,31 @@ out
     )
 
     phedt <- data.frame(
-      get_clean_date(input$cropPheno_planting_date),
-      get_clean_date(input$cropPheno_transpanting_date),#2
-      get_clean_date(input$cropPhen_plantingEmergence_date), #3
+      getDateInput(input$cropPheno_planting_date),
+      getDateInput(input$cropPheno_transpanting_date),#2
+      getDateInput(input$cropPhen_plantingEmergence_date), #3
       input$cropPheno_sowEmerg_notes, #4
-      get_clean_date(input$cropPheno_sowing_date), #5
-      get_clean_date(input$cropPheno_emergence_date),#6
+      getDateInput(input$cropPheno_sowing_date), #5
+      getDateInput(input$cropPheno_emergence_date),#6
       input$cropPheno_sowEmerg_notes,#7
 
-      get_clean_date(input$cropPheno_flowering_sdate), get_clean_date(input$cropPheno_flowering_50date), # 8 9
-      get_clean_date(input$cropPheno_flowering_edate), get_clean_date(input$cropPheno_flowering_notes), # 10-11
+      getDateInput(input$cropPheno_flowering_sdate), getDateInput(input$cropPheno_flowering_50date), # 8 9
+      getDateInput(input$cropPheno_flowering_edate), getDateInput(input$cropPheno_flowering_notes), # 10-11
 
-      get_clean_date(input$cropPheno_grainFilling_sdate), get_clean_date( input$cropPheno_grainFilling_edate),   input$cropPheno_grainFilling_notes, # 12-14
+      getDateInput(input$cropPheno_grainFilling_sdate), getDateInput( input$cropPheno_grainFilling_edate),   input$cropPheno_grainFilling_notes, # 12-14
 
-      get_clean_date(input$cropPheno_fruitDev_date), get_clean_date(input$cropPheno_fruit50dev_date), #15 -16
-      get_clean_date(input$cropPheno_fruitDevEnd_date),  get_clean_date(input$cropPheno_fruitRip_date), #17-18
-      input$cropPheno_fruitDev_notes, get_clean_date(input$cropPheno_maturity_start_date), #19-20
-      get_clean_date(input$cropPheno_maturity_50_date), get_clean_date(input$cropPheno_maturity_end_date), #21-22
-      get_clean_date(input$cropPheno_senescence_start_date), #23
-      get_clean_date(input$cropPheno_senescence_50_date),#24
-      get_clean_date(input$cropPheno_senescence_end_date), #25
+      getDateInput(input$cropPheno_fruitDev_date), getDateInput(input$cropPheno_fruit50dev_date), #15 -16
+      getDateInput(input$cropPheno_fruitDevEnd_date),  getDateInput(input$cropPheno_fruitRip_date), #17-18
+      input$cropPheno_fruitDev_notes, getDateInput(input$cropPheno_maturity_start_date), #19-20
+      getDateInput(input$cropPheno_maturity_50_date), getDateInput(input$cropPheno_maturity_end_date), #21-22
+      getDateInput(input$cropPheno_senescence_start_date), #23
+      getDateInput(input$cropPheno_senescence_50_date),#24
+      getDateInput(input$cropPheno_senescence_end_date), #25
       input$cropPheno_maturity_notes,#26
 
       input$cropPheno_otherPheno_name,#27
-      get_clean_date(input$cropPheno_otherPheno_start_date),#28
-      get_clean_date(input$cropPheno_otherPheno_end_date),#29
+      getDateInput(input$cropPheno_otherPheno_start_date),#28
+      getDateInput(input$cropPheno_otherPheno_end_date),#29
       input$cropPheno_otherPheno_notes#20
     )
 
@@ -9266,6 +9323,10 @@ out
        withProgress(message = 'Downloading fieldbook', value = 0, {
 
          #print(soil_design())
+         # n<-3
+         # a11<<- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigation_technique_",n=n)[[x]])))
+         # irri_technique <- paste(lapply(1:n, function(x) eval(get_loop_AgrOper("irrigation_technique_",n=n)[[x]])))
+         # irri23 <<- unlist(lapply(1:n, function(x) eval(get_loop_irrigation_technique(irri_technique, module="irrigation")[[x]]) ))
 
          n <- as.numeric(input$numApplicationsIrrigation)
          fb_traits <- fb_agrofims_traits()
@@ -9286,7 +9347,7 @@ out
         openxlsx::writeDataTable(wb, "Metadata", x = gmetadata,
                                  colNames = TRUE, withFilter = FALSE)
 
-print("phenology")
+        print("phenology")
          openxlsx::addWorksheet(wb, "Phenology", gridLines = TRUE)
          openxlsx::writeDataTable(wb, "Phenology", x = phenology,
                                   colNames = TRUE, withFilter = FALSE)
@@ -9352,12 +9413,6 @@ print("phenology")
            } #end if
          }
 
-
-
-
-
-
-
          agroFeaSelected <- input$selectAgroFeature
          #
          #print("error5")
@@ -9409,19 +9464,27 @@ print("phenology")
          }
          #print("error7")
          if(is.element("Land preparation", agroFeaSelected)) {
-           # print("harv")
             incProgress(10/20,message = "Adding land preparation sheet...")
 
+           print(input$landLevelling_checkbox)
+           print(input$puddling_checkbox)
+           print(input$tillage_checkbox)
+
+           if(input$landLevelling_checkbox==TRUE && input$puddling_checkbox==TRUE
+                                                  && input$tillage_checkbox==TRUE){
+
             dt_land <- dt_land_description()
-            print(dt_land)
+
             openxlsx::addWorksheet(wb, "Land preparation", gridLines = TRUE)
             openxlsx::writeDataTable(wb, "Land preparation", x = dt_land ,
                                      colNames = TRUE, withFilter = FALSE)
-
+              }
           }
          #print("error9")
          if(is.element("Mulching and residue", agroFeaSelected)) {
-           #print("mu")
+           print("mu")
+           if(input$mulchManag_checkbox==TRUE && input$residueManag_checkbox==TRUE){
+
            incProgress(11/20,message = "Adding mulching data...")
 
            dt_mr <- dt_mures()
@@ -9429,10 +9492,16 @@ print("phenology")
            openxlsx::addWorksheet(wb, "Mulching and residue", gridLines = TRUE)
            openxlsx::writeDataTable(wb, "Mulching and residue", x = dt_mr,
                                     colNames = TRUE, withFilter = FALSE)
+
+           }
+
          }
          #print("error10")
          if(is.element("Planting and transplanting", agroFeaSelected)) {
-           #  print("plant")
+            print("plant")
+
+           if(input$directSeeding_checkbox==TRUE && input$transplanting_checkbox==TRUE){
+
            incProgress(12/20,message = "Adding planting and transplanting data...")
 
            dt_plant <- dt_planting()
@@ -9440,10 +9509,13 @@ print("phenology")
            openxlsx::addWorksheet(wb, "Planting and transplanting", gridLines = TRUE)
            openxlsx::writeDataTable(wb, "Planting and transplanting", x = dt_plant,
                                     colNames = TRUE, withFilter = FALSE)
+
+           }
+
          }
          #print("error11")
          if(is.element("Weeding", agroFeaSelected)){
-           # print("wed")
+            print("wed")
             incProgress(13/20,message = "Adding Weeding data...")
 
             dt_weed <- dt_weeding()
@@ -9470,7 +9542,7 @@ print("phenology")
          openxlsx::writeDataTable(wb, "Trait list", x = trait_agrofims_dt,
                                   colNames = TRUE, withFilter = FALSE)
 
-         #print("error12")
+         print("trAITS")
          if(is.null(weather) || length(weather)==0 || nrow(weather)==0  ){
            print("there is no weather data")
 
