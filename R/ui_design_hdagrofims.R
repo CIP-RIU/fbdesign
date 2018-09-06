@@ -287,18 +287,18 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
     #   )
     # ),
     #
-    fluidRow(
-      column(6, h1("Experiment description")),
-      column(6, align = "right", style = "margin-top: 26px;",
-             actionButton('save_inputs', 'Save', icon("save"), class = "btn-success", style="color: #fff;")
-      )
-    ),
+    # fluidRow(
+    #   column(6, h1("Experiment description")),
+    #   column(6, align = "right", style = "margin-top: 26px;",
+    #          actionButton('save_inputs', 'Save', icon("save"), class = "btn-success", style="color: #fff;")
+    #   )
+    # ),
+    #
+    # fluidRow(
+    #   column(12, verbatimTextOutput("text"))
+    # ),
 
-    fluidRow(
-      column(12, verbatimTextOutput("text"))
-    ),
-
-    #h1("Experiment description"),
+    h1("Experiment description"),
 
     # To reset panels and UI
     shinyjs::useShinyjs(),
@@ -502,20 +502,20 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
           ##### Tab: Start Experiment #####
           shiny::tabPanel(
             title = tagList(shiny::icon("info"), "Experiment"), value = "experiment",
-            column(
-              12,
-              fluidRow(
-                column(6, h1("Experiment details")),
-                column(6, align = "right", style = "margin-top: 26px;",
-                       actionButton("load_exampleM", "Monocrop"),
-                       actionButton("load_exampleI", "Intercrop")
-                )
-              )
-            ),
+            # column(
+            #   12,
+            #   fluidRow(
+            #     column(6, h1("Experiment details")),
+            #     column(6, align = "right", style = "margin-top: 26px;",
+            #            actionButton("load_exampleM", "Monocrop"),
+            #            actionButton("load_exampleI", "Intercrop")
+            #     )
+            #   )
+            # ),
 
             column(
               width = 6,
-              #h2("Experiment details"),
+              h2("Experiment details"),
               # disabled(textInput(inputId = "experimentId", label = "Experiment ID", value = stri_rand_strings(1, 8,  '[A-Z0-9]'))),
               uiOutput("experimentIdUI"),
               textInput(inputId = "experimentName", label = "Experiment name", value = ""),
