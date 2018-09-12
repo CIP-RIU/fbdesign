@@ -347,11 +347,9 @@ get_loop_irrigation_technique_other <-function(technique="Irrigation sprinker", 
 getDateInput<- function(input_date){
 
   if(length(input_date)==0){
-    out <- ""
-  } else {
-    out <- paste(input_date)
+    input_date <- ""
   }
-  out
+  paste(input_date)
 }
 
 

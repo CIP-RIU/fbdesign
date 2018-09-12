@@ -276,32 +276,39 @@ ui_fieldbook_agrofims <- function(type="tab",title="Design Fieldbook",name="phen
     tabName = name,
 
     # fluidRow(
-    #   column(12, DT::dataTableOutput("dtsession")
+    #   column(6, style = "margin-top: -16px; margin-bottom: 16px;", h1("Experiment description")),
+    #   column(6, align = "right", style = "margin-top: 11px;",
+    #          useShinyalert(),
+    #          actionButton('newfieldbook', 'New', icon("file"), class = "btn-primary", style="color: #fff;", width = "75px"),
+    #          actionButton('openfieldbook', 'Open', icon("folder-open"), width = "75px", onclick = "openTab('opensession')"),
+    #          actionButton('savefieldbook', 'Save', icon("save"), class = "btn-success", style="color: #fff;", width = "75px"),
+    #          actionButton("xtest", "xtest")
+    #          #uiOutput("saveUI")
     #   )
     # ),
 
-    # fluidRow(
-    #   column(12, align = "right", style = "margin-top: 26px;",
-    #          actionButton("refreshsession", "Refresh", icon("sync")),
-    #          actionButton('load_inputs', 'Load', icon("download"), class = "btn-primary", style="color: #fff;")
-    #   )
-    # ),
-    #
-    # fluidRow(
-    #   column(6, h1("Experiment description")),
-    #   column(6, align = "right", style = "margin-top: 26px;",
-    #          actionButton('save_inputs', 'Save', icon("save"), class = "btn-success", style="color: #fff;")
-    #   )
-    # ),
-    #
-    # fluidRow(
-    #   column(12, verbatimTextOutput("text"))
-    # ),
+    fluidRow(
+      column(12, verbatimTextOutput("text1"))
+    ),
 
     h1("Experiment description"),
 
     # To reset panels and UI
     shinyjs::useShinyjs(),
+
+    tags$head(
+      tags$script(
+        HTML("
+          var openTab = function(tabName){
+          	$('a', $('.sidebar')).each(function(){
+          		if(this.getAttribute('data-value') == tabName){
+          			this.click()
+                  };
+              });
+          }
+        ")
+      )
+    ),
 
     # Code for showing  when other is selected in a combobox
     tags$script('$(document).on("change", "select",  function(){
