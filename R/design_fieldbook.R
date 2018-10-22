@@ -3,7 +3,11 @@
 #' @param design a statistical design
 #' @param trt1 vector treatment one
 #' @param trt2 vector second treatment; a controlled factor
+<<<<<<< HEAD
 ## @param is_rwcol wheters
+=======
+## '@param is_rwcol wheters
+>>>>>>> eea7b987624b2b8215bf5feb4c9d8c4a7cfa1123
 #' @param trt1_label string
 #' @param trt2_label string
 #' @param factor_name The name of the factor
@@ -64,7 +68,7 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
      #randomized complete block design
      RCBD = design.rcbd(trt1, r, series, randomization = random, first = first), #ok #agricolae
      #RCBD = st4gi::cd.rcb(geno = trt1, nb = r, nc = number_col), #st4gi
-
+    #new
 
      #complete randomzized design
      CRD = design.crd(trt1, r, series, randomization = random ), #ok #AGRICOLAE
@@ -482,8 +486,31 @@ add_cl <- function(fb, design_abr= "CRD", factor_lvl){
 }
 
 
+#' Add fieldbook sheet for HIDAP-AGROFIMS.
+#'
+#' @description add a fieldbook sheet into a fieldbook file
+#' @param file name of the file
+#' @param fieldbook fieldbook data. A data frame.
+#' @return
 
 
+add_fieldbook_sheet_hdfims <-function(file, fieldbook){
+
+  wb <- createWorkbook()
+  openxlsx::addWorksheet(wb, "Fieldbook",gridLines = TRUE)
+  fn_xlsx <- file
+  fieldbook_data <- fieldbook
+  #fn_xlsx <- paste(fbdesign_id(),".xlsx",sep="")
+  #headerStyle <- createStyle(fontSize = 14, wrapText = TRUE, fontColour = "#FFFFFF", halign = "center",
+  #                          fgFill = "#4F81BD", border="TopBottom", borderColour = "#4F81BD")
+
+  openxlsx::setColWidths(wb, sheet = "Fieldbook", cols = 1:200, widths = "auto")
+  headerStyle <- createStyle(fontSize = 13,halign = "center",valign = "center")
+  freezePane(wb, "Fieldbook" , firstActiveRow = 2, firstActiveCol = 4)
+  openxlsx::writeDataTable(wb, "Fieldbook", x = fieldbook_data, colNames = TRUE, withFilter = FALSE,headerStyle =  headerStyle)
+  saveWorkbook(wb, file = fn_xlsx , overwrite = TRUE)
+
+}
 
 
 

@@ -18,5 +18,5 @@ ui_fieldbook(type = "tab", title = "Design Fieldbook",
 returns a re-usable user interface element
 }
 \author{
-Reinhard Simon
+Omar Benites
 }

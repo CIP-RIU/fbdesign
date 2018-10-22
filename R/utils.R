@@ -151,3 +151,209 @@ append_col <- function(x, cols, after=length(x)) {
 }
 
 
+
+#' Get treatment and factor inputs from design of experiments
+#'
+#'@description Insert column between columns based on positions.
+#'@param group group
+#'@param subgroup subgroup
+#'@param fct factor
+#'@param dfr data frame with the inputs
+#'@export
+#'
+
+getTrtInputs <- function(group, subgroup, fct, dfr){
+
+  gp <-	  group #group
+  sgp <-	subgroup #subgroup
+  fct <-	fct #factor
+  lblFct <- paste(gp, fct, sep = "_")
+
+  if( !is.null(gp) ||  !is.null(sgp) || !is.null(fct) ){
+
+    dfTrt <- dfr
+    if(fct == "Start date" ){
+      lvl <- dfTrt[[fct]]
+    } else if( fct == "End date"){
+      lvl <- dfTrt[[fct]]
+    } else{
+      lvl<- dfTrt[["text"]]
+    }
+  } else {
+    lblFct <- ""
+    lvl <- ""
+  }
+  out <- list(label = lblFct, level= lvl)
+
+}
+
+#' Get agronomic operations inputs from experiment conditions
+#'
+#'@description Insert column between columns based on positions.
+#'@param feature value of the feature
+#'@param other other value
+#'@export
+#'
+getAgrOper <- function(feature, other="") {
+
+  if(is.null(feature) || is.na(feature)){
+    out <- ""
+  } else if(feature!= 'Other'){
+    out <- feature   #ToDo: check value with R.Arias
+  } else if(feature == 'Other'){
+    out <- other  #ToDo: check value with R.Arias
+  }
+  out
+}
+
+
+# Get agronomic operations inputs from experiment conditions
+#
+#' @description Insert column between columns based on positions.
+#' @param feature value of the feature
+#' @param n number of values
+#' @param label an argument to get units from field operations
+#' @param other character. Specify 'other' value inputs.
+#' @export
+#
+get_loop_AgrOper <- function(feature= "", n, label = "none", other= "other"){
+
+  out <- list()
+
+  label <- label
+  for(i in 1:n){
+    if(label!= "unit"){
+      fi <- paste(feature,i,sep="")
+      res1 <- paste("input", fi, sep="$")
+      res2 <- as.quoted(res1)
+      out[[i]] <- res2[[1]]
+      if(length(out[[i]])==0){ out[[i]] <- "" }
+      } else {
+      fi <- paste(feature,i,label,sep="")
+      res1 <- paste("input", fi, sep="$")
+      res2 <- as.quoted(res1)
+      out[[i]] <- res2[[1]]
+      if(length(out[[i]])==0){ out[[i]] <- "" }
+     }
+  }
+  out
+}
+#irrigation_technique_1_other
+
+
+#'Get techniques inputs
+#'
+#' @param technique vector. Vector with technique values.
+#' @param module character. Name of the module.
+#' @param submodule character. Name of the submodule with underscore symbol.
+#' @export
+#'
+get_loop_irrigation_technique <- function(technique, module="irrigation", submodule="_type_"){
+
+  n <- length(technique)
+  out<- list()
+  a<- NULL
+  res <-NULL
+  for (i in 1:n){
+
+   if(module=="irrigation"){
+
+      if(technique[i] == "Sprinkler irrigation"){
+        out[[i]] <- paste0("input$","irrigation_using_sprinkler_systems_", i,sep="")
+      }
+      else if(technique[i] == "Surface"){
+        out[[i]] <- paste0("input$","surface_irrigation_technique_", i)
+        #if(out[i]=="Other"){ out[i] <- paste0("input$","surface_irrigation_technique_", i, "_other") } #other
+      }
+      else if(technique[i] == "Localized"){
+        out[[i]] <- paste0("input$","localized_irrigation_technique", i)
+        #if( out[i]=="Other"){ out[i] <- paste0("input$","localized_irrigation_technique", i, "_other") } #other
+      }
+      else if(technique[i] == "Other"){
+        out[[i]] <- paste0("input$","irrigation_technique_", i, "_other") #other
+      }
+      else if( is.null(technique[i]) || is.na(technique[i]) || technique[i] == "NULL" ||  technique[i] =="character(0)") {
+
+        out[[i]] <- "NA"
+      }
+
+   }
+
+   if(module =="weeding"){
+      if( technique[i]=="Other"){
+        out[i] <- paste("input$",module, type, i, "_other")
+      }
+    }
+    #print(out[[i]])
+    a <- as.quoted(out[[i]])
+
+    out[[i]] <- a[[1]]
+  }
+  out
+}
+
+
+
+#'Get inputs according to techniques and subtechniques inputs
+#'
+#' @param technique vector. Vector with technique values.
+#' @param subtechnique vector.Vector with sub technique values.
+#' @export
+#'
+#'
+get_loop_irrigation_technique_other <-function(technique="Irrigation sprinker", subtechnique ="Other"){
+
+  n <- length(technique)
+  out<- list()
+  a<- NULL
+
+ for(i in 1:n){
+  if(technique[i] == "Irrigation sprinker" && subtechnique[i] == "Other"){
+    out[[i]] <- paste0("input$","irrigation_using_sprinkler_systems_", i,"_other")
+    a <- as.quoted(out[[i]])
+    #if(out[i]=="Other"){ out[i]<- paste0("input$", "irrigation_using_sprinkler_systems_", i, "_other", sep="") }#other
+  }
+  else if(technique[i] == "Surface" && subtechnique[i] == "Other"){
+    out[[i]] <- paste0("input$","surface_irrigation_technique_", i,"_other")
+    a <- as.quoted(out[[i]])
+    #if(out[i]=="Other"){ out[i] <- paste0("input$","surface_irrigation_technique_", i, "_other") } #other
+  }
+  else if(technique[i] == "Localized" && subtechnique[i] == "Other"){
+    #out[[i]] <- paste0("input$","localized_irrigation_technique_", i,"_other")
+    out[[i]] <- paste0("input$","localized_irrigation_technique", i,"_other")
+
+    a <- as.quoted(out[[i]])
+    #if( out[i]=="Other"){ out[i] <- paste0("input$","localized_irrigation_technique", i, "_other") } #other
+  }
+  else if( is.null(technique[i]) || is.na(technique[i]) || technique[i]=="NA" ||
+           subtechnique[i]=="NA"  || is.na(subtechnique[i]) || technique[i]=="NULL" || subtechnique[i]=="NULL"){
+    out[[i]] <- "NA"
+    a <- as.quoted(out[[i]])
+  }
+  else if(technique[i]==""){
+    out[[i]] <- "NA"
+    a <- as.quoted(out[[i]])
+  }
+  else {
+    out[[i]] <- subtechnique[i]
+    a<-out[[i]]
+  }
+  out[[i]] <- a[[1]]
+ }
+  out
+}
+
+#' Get clean dates from shiny inputs
+#'
+#' @param input_date input date
+#' @export
+#'
+getDateInput<- function(input_date){
+
+  if(length(input_date)==0){
+    input_date <- ""
+  }
+  paste(input_date)
+}
+
+

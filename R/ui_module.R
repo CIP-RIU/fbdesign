@@ -252,7 +252,7 @@ design_conditional_panels <- function(){
 #'
 #' returns a re-usable user interface element
 #'
-#' @author Reinhard Simon
+#' @author Omar Benites
 #' @param type type of ui element; default is a tab in a shiny dashboard
 #' @param title display title
 #' @param name a reference name
@@ -306,7 +306,7 @@ shinydashboard::tabItem(tabName = name,
 
                                              shiny::selectInput("designFieldbook_crop", "Crop", crops()),
                                              #shiny::uiOutput("fbDesign_factor2", inline = TRUE),
-                                                                        shiny::uiOutput("fbDesign_variables", inline = TRUE),
+                                                                        #shiny::uiOutput("fbDesign_variables", inline = TRUE),
                                              shiny::dateRangeInput("fbDesign_project_time_line", "Date of experiment", start = Sys.Date() - 2,
                                                                             end = Sys.Date() + 20, startview = "year",format = "dd/mm/yyyy"),
 
