@@ -3,11 +3,7 @@
 #' @param design a statistical design
 #' @param trt1 vector treatment one
 #' @param trt2 vector second treatment; a controlled factor
-<<<<<<< HEAD
-## @param is_rwcol wheters
-=======
 ## '@param is_rwcol wheters
->>>>>>> eea7b987624b2b8215bf5feb4c9d8c4a7cfa1123
 #' @param trt1_label string
 #' @param trt2_label string
 #' @param factor_name The name of the factor
