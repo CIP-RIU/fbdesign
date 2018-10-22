@@ -278,3 +278,19 @@ NULL
 #' @source CGIAR Big Data Platform, Bioversity, International Potato Center CIP, CIAT,  CGIAR
 NULL
 
+
+
+#' @name material_list_parental
+#' @title material_list_parental template
+#' @docType data
+#' @aliases material_list_parental
+#' @description Template for parental list
+#' @references This data is related to HIDAP desktop in order to assist genetic studiess
+#' @usage material_list_parental
+#' @format A list of installation sheet data in HiDAP offline
+#' @source International Potato Center CIP
+#' @keywords potato genetic parental
+NULL
+
+
+
