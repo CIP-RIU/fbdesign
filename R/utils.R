@@ -22,7 +22,8 @@ fbdesign_mtl_files <- function(){
     names(gmtfiles) <- c("short_name","full_name")
 
     out_list <- c("hot_fieldbook.rds","dspotatotrials_dpassport.rds", "dssweettrials_dpassport.rds", "potato_pedigree.rds",
-                  "sweetpotato_pedigree.rds", "table_sites.rds", "potato_db_distribution.rds")
+                  "sweetpotato_pedigree.rds", "table_sites.rds", "potato_db_distribution.rds",
+                  "fbappdatapath.rds", "hot_fieldbook_sbase.rds")
 
     gmtfiles <- dplyr::filter(.data = gmtfiles, !(short_name %in% out_list))
 
@@ -113,6 +114,9 @@ get_type_list_ds <- function(mlist){
    if(is.element("parental_table", list_names)){
       # parental list.
       type <- "parental"
+   } else if( is.element("Accession_Number_Female", list_names) && is.element("Accession_Number_Male", list_names) ){
+     type <- "parental"
+
    } else {
       #clonal or family list.
       type <- "clonal"

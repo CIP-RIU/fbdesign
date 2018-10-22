@@ -48,7 +48,7 @@ big_get_tree_value <- function(tree_input_value,crop_selected){
   for(i in 1:length(p)){
     if(length(attr(p[i][[1]], "ancestry", TRUE))>1){
       var[[i]] <- p[[i]][1]
-      form_sheet[[i]] <-  attr(p[i][[1]], "ancestry", TRUE)[2]
+        form_sheet[[i]] <-  attr(p[i][[1]], "ancestry", TRUE)[2]
     }
   }
   var <- var[var!=""]

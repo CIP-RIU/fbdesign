@@ -3,7 +3,7 @@
 #' @param design a statistical design
 #' @param trt1 vector treatment one
 #' @param trt2 vector second treatment; a controlled factor
-#' @param is_rwcol wheters
+## @param is_rwcol wheters
 #' @param trt1_label string
 #' @param trt2_label string
 #' @param factor_name The name of the factor
@@ -414,6 +414,8 @@ design_fieldbook <- function(design = "(RCBD)", trt1 = letters[1:5], trt2=NULL,
   attr(out, "params") = fb$parameters
   attr(out, "sketch") = fb$sketch
   attr(out, "statistics") = fb$statistics
+
+  print(out)
 
   out
 }

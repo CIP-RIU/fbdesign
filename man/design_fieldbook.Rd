@@ -62,8 +62,6 @@ design_fieldbook(design = "(RCBD)", trt1 = letters[1:5], trt2 = NULL,
 \item{zigzag}{order plot in serpentine}
 
 \item{variables}{set of variables}
-
-\item{is_rwcol}{wheters}
 }
 \value{
 a dataframe

@@ -24,10 +24,22 @@ server_design <- function(input, output, session, values){
         if(is.null(mtl_temp)){return()}
         if(!is.null(mtl_temp)){
 
-          file.copy(mtl_temp$datapath,paste(mtl_temp$datapath, ".xlsx", sep=""))
-          mtl_temp <- readxl::read_excel(paste(mtl_temp$datapath, ".xlsx", sep=""), sheet = "Material_List")
+          if(input$fbdesign_gentemp==TRUE){ #material list template for parentals
 
-          mtl_list <- as.list(mtl_temp) #mtl in list format
+
+            file.copy(mtl_temp$datapath,paste(mtl_temp$datapath, ".xlsx", sep=""))
+            mtl_parental <- readxl::read_excel(paste(mtl_temp$datapath, ".xlsx", sep=""), sheet = "Material_List_Parental")
+            mtl_temp <- mtl_parental
+            #mtl_temp <- as.data.frame(mtl_parental, stringsAsFactors=FALSE )
+
+          } else { #material list template for clones
+
+            file.copy(mtl_temp$datapath,paste(mtl_temp$datapath, ".xlsx", sep=""))
+            mtl_temp <- readxl::read_excel(paste(mtl_temp$datapath, ".xlsx", sep=""), sheet = "Material_List")
+
+          }
+
+            mtl_list <- as.list(mtl_temp) #mtl in list format
         }
 
 
@@ -45,7 +57,7 @@ server_design <- function(input, output, session, values){
 
 
         #is_parent_list <- is_parentList(sel_list)
-        if(is_parentList(sel_list)==TRUE){
+        if(is_parentList(sel_list)==TRUE ){
           #Case: parental list (female and male)
           mtl_list <- mtl_temp
         }
@@ -62,36 +74,8 @@ server_design <- function(input, output, session, values){
 
   })
 
-
   output$approvalBox <- renderInfoBox({
 
-    #data.frame is the data structue for the clonal and family list. In the parental and family module, we save lists in data.frame format
-
-    # plos <<- material_table()
-    #
-    # lsus <<-  get_type_list_ds(material_table())
-
-    # plos <<- material_table()
-    #
-    # lsus <<-  get_type_list_ds(material_table())
-
-
-
-    # if( is.null(material_table()) ){
-    #
-    #   title <- "Upload"
-    #   subtitle <-   paste("your material list file. Or, press the button below to download and fill the template.")
-    #   color <- "blue"
-    #   icon <- "upload"
-    #   lib <- "glyphicon"
-    #   fill <- TRUE
-    #   width <- NULL
-    #
-    #   # infoBox(title="Upload", subtitle=
-    #   #           paste("your material list file. Or, press the button below to download and fill the template."), icon = icon("upload", lib = "glyphicon"),
-    #   #         color = "blue",fill = TRUE, width = NULL)
-    #
-    # }
 
     #parent list
     if( get_type_list_ds(material_table()) == "clonal" ) {
@@ -138,7 +122,7 @@ server_design <- function(input, output, session, values){
       }
        else if(germ_duplicates>0){
          title <- "ERROR"
-         subtitle <- paste("Your material list has duplicated genotypes/germoplasm names. Please, enter a correct file.")
+         subtitle <- paste("Your material list has duplicated genotypes/germplasm names. Please, enter a correct file.")
          color <- "red"
          icon <- "warning-sign"
          lib <- "glyphicon"
@@ -167,8 +151,18 @@ server_design <- function(input, output, session, values){
     #list is the data structure for parental list. In the parental module, we save lists in list format
     if( get_type_list_ds(material_table()) == "parental" ) {
 
+
+    if(input$fbdesign_gentemp==TRUE){ #using template for parentals
+        germoplasm_fem <-  material_table()$Accession_Number_Female #template
+        germoplasm_male <- material_table()$Accession_Number_Male #template
+
+        } else { #using hidap parental module
+
       germoplasm_fem <-  material_table()$female$Accession_Number
       germoplasm_male <- material_table()$male$Accession_Number
+
+     }
+
 
       if(is.null(germoplasm_fem) && is.null(germoplasm_male)){
 
@@ -338,7 +332,6 @@ server_design <- function(input, output, session, values){
 
   })
 
-
   output$fbDesign_country <- shiny::renderUI({
      #sites_data <- fbsites::get_site_table() #before
 
@@ -355,7 +348,6 @@ server_design <- function(input, output, session, values){
 
   })
 
-
   fbdesign_sites <- reactive({
 
     #sites_data <- site_table #using data from package #Former code before useing rective values
@@ -364,7 +356,6 @@ server_design <- function(input, output, session, values){
 
     fbsites::get_filter_locality(sites_data = sites_data, country_input= input$fbDesign_countryTrial)
   })
-
 
   output$fbDesign_countrySite <- shiny::renderUI({
 
@@ -383,8 +374,47 @@ server_design <- function(input, output, session, values){
   })
 
 
-  # Create an object with the list of file ----------------------------------
-  #Button for selecting material list
+# FieldbookApp ------------------------------------------------------------
+
+#FieldbookApp country -----------------------------------------------
+  output$oufbDesign_country_fbapp <- shiny::renderUI({
+
+    sites_data <- values$sites_data # read trial sites using reactive values from xdata folder (NEW CODE)
+    cntry <- fbsites::get_country_list(sites_data = sites_data) #new code: use file fbsites
+    div(style="display: inline-block;vertical-align:top; width: 200px;",
+          shiny::selectInput("fbdesign_cntry_fbapp", label="Select Country",
+                             choices = cntry, selected = 1, multiple = FALSE)
+    )
+
+  })
+
+#FieldbookApp sites reactive -----------------------------------------------
+  fbdesign_sites_app <- reactive({
+    sites_data <- values$sites_data
+    fbsites::get_filter_locality(sites_data = sites_data, country_input= input$fbdesign_cntry_fbapp)
+  })
+
+#FieldbookApp location
+  output$oufbDesign_location_fbapp <- shiny::renderUI({
+
+    req(input$fbdesign_cntry_fbapp)
+    locs <- values$sites_data # read trial sites using reactive values from xdata folder (NEW CODE)
+
+    fbdesign_sites_selected <- fbdesign_sites_app()
+      if (nrow(locs) > 0 ){
+       div(style="display: inline-block;vertical-align:top; width: 200px;",
+          shiny::selectizeInput("fbdesign_location_fbapp", label = "Select Location",
+                            choices = fbdesign_sites_selected, selected = 1,  multiple = FALSE)
+       )
+
+     }
+  })
+
+# --------------------------------------------------------------------------
+
+# Create an object with the list of file -----------------------------------
+
+#Button for selecting material list
   output$fbDesign_selmlist <- shiny::renderUI({
 
     input$fdesign_list_refresh
@@ -400,7 +430,7 @@ server_design <- function(input, output, session, values){
 
   })
 
-  #Conditional reactive value for displaying Standard Statistical Design or Genetic Design
+#Conditional reactive value for displaying Standard Statistical Design or Genetic Design
   output$condition_selmlist <-  shiny::reactive({
 
     mlist <- material_table()
@@ -415,12 +445,12 @@ server_design <- function(input, output, session, values){
 
   })
 
-  #The output object will be suspended (not execute) when it is hidden on the web page
+#The output object will be suspended (not execute) when it is hidden on the web page
+
   outputOptions(output, 'condition_selmlist', suspendWhenHidden=FALSE)
-  ### End of Create an object with the list of file
+# End of Create an object with the list of file
 
-
-  # Number of plant per row (calculated variable) ####
+# Number of plant per row (calculated variable) ---------------------------
   react_plantxplot <-  shiny::reactive({
 
     plantxplot <- input$fbDesign_nplantsrow*input$fbDesign_nrowplot
@@ -429,8 +459,7 @@ server_design <- function(input, output, session, values){
 
   })
 
-
-  #Shiny UI for number of plants per plot
+#Shiny UI for number of plants per plot -----------------------------------
   output$fbPlant_plot <- shiny::renderUI({
 
     rpplot <- react_plantxplot()
@@ -439,7 +468,7 @@ server_design <- function(input, output, session, values){
 
   })
 
-  # Plot Size Values #####
+# Plot Size Values --------------------------------------------------------
   react_psize <- reactive({
     plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot*input$fbDesign_distRows
     print(plot_size)
@@ -447,7 +476,7 @@ server_design <- function(input, output, session, values){
     plot_size
   })
 
-  # Plot Size
+# Plot Size ---------------------------------------------------------------
   output$fbPlanting_psize <- shiny::renderUI({
     #plot_size <- input$fbDesign_nplantsrow*input$fbDesign_distPlants*input$fbDesign_nrowplot*input$fbDesign_distRows
     plot_size <- react_psize()
@@ -457,7 +486,7 @@ server_design <- function(input, output, session, values){
   })
 
 
-  # Plant densisty ####
+# Plant densisty ----------------------------------------------------------
   react_pdensity <-  shiny::reactive({
 
     #plant_density <- (input$fbDesign_nplants/input$fbDesign_psize)*10000
@@ -477,7 +506,7 @@ server_design <- function(input, output, session, values){
                         value = plant_density, min = plant_density, max = plant_density)
   })
 
-  # Message for Alpha Design ------------------------------------------------
+# Message for Alpha Design ------------------------------------------------
   output$alphaMessage <- shiny::renderText({
 
     germoplasm <-material_table()$Accession_Number
@@ -500,7 +529,7 @@ server_design <- function(input, output, session, values){
     }
 })
 
-  # Reactive data.frame for designing fieldbook -----------------------------
+# Reactive data.frame for designing fieldbook -----------------------------
   fbdraft <- shiny::reactive({
 
         if(input$select_import=="Template") {
@@ -545,8 +574,19 @@ server_design <- function(input, output, session, values){
                        # N.Caroline parameter
                        if(design=="NCI" || design=="NCII"){
 
-                           male <- material_tbl$male$Accession_Number
-                           female <- material_tbl$female$Accession_Number
+                           # male <- material_tbl$male$Accession_Number
+                           # female <- material_tbl$female$Accession_Number
+
+                         if(input$fbdesign_gentemp==TRUE){ #using template for parentals
+                           male <-  material_tbl$Accession_Number_Female #template
+                           female <- material_tbl$Accession_Number_Male #template
+
+                         } else { #using hidap parental module
+
+                            male <- material_tbl$male$Accession_Number
+                            female <- material_tbl$female$Accession_Number
+                         }
+
                            set <- input$design_genetic_nc_set
                            r <- input$design_genetic_r
                            #r <- input$design_genetic_nc_r #deprecated code. Now works for lxt and NC
@@ -563,8 +603,22 @@ server_design <- function(input, output, session, values){
 
                        if(design=="LXT"){
 
-                         male <- material_tbl$male$Accession_Number
-                         female <- material_tbl$female$Accession_Number
+                         # male <- material_tbl$male$Accession_Number
+                         # female <- material_tbl$female$Accession_Number
+
+                         if(input$fbdesign_gentemp==TRUE){ #using template for parentals
+
+                           male <-  material_tbl$Accession_Number_Female #template
+                           female <- material_tbl$Accession_Number_Male #template
+
+                         } else { #using hidap parental module
+
+                           male <- material_tbl$male$Accession_Number
+                           female <- material_tbl$female$Accession_Number
+
+                         }
+
+
                          trt1_label  <-  "LINE"
                          trt2_label  <-  "TESTER"
                          type_lxt_scheme <- input$design_genetic_lxt_type
@@ -702,7 +756,7 @@ server_design <- function(input, output, session, values){
                                            zigzag = FALSE,
                                            variables = vars)
 
-                     print(fb)
+                     #print(fb)
 
 
                      ### Comb Factor ###
@@ -735,15 +789,28 @@ server_design <- function(input, output, session, values){
                      if(is_ssample){
 
                        nsample <- input$designFieldbook_nsample
+                       ncol_fb <- ncol(fb)
                        p1 <- as.list(rep(NA, times = nsample))
                        names(p1) <- 1:nsample
                        fb <- cbind(fb, p1)
+                       print("paso1")
+                       print(fb)
                        #Hint: TSSAMPLE is the temporary name for the SUB SAMPLE factor (column). Then, we change for SUBSAMPLE
-                       fb <- fb %>% tidyr::gather(key= "TSSAMPLE", value= "value", paste(1:nsample,sep="")) %>% select(-value)
+                       #fbook <- fb %>% tidyr::gather(key= "TSSAMPLE", value= "svalue", paste(1:nsample, sep=""))
+                       fb <- reshape2::melt(fb, 1:ncol_fb)
+
+
+                       print("paso2")
+                       #names(fb)
+
+                       #fb <- fb %>% dplyr::select(-svalue)
+                       fb <- fb %>% dplyr::select(-value)
+                       #fb <- within(fbook, rm(svalue))
                        inst_pos <- which(names(fb) == "INSTN")
                        print(inst_pos)
                        #fb2 <- fb
-                       fb <- append_col(fb, list(SUBSAMPLE= fb$TSSAMPLE), after = inst_pos) %>% select(-TSSAMPLE)
+                       #fb <- append_col(fb, list(SUBSAMPLE= fb$TSSAMPLE), after = inst_pos) %>% dplyr::select(-TSSAMPLE)
+                       fb <- append_col(fb, list(SUBSAMPLE= fb$variable), after = inst_pos) %>% dplyr::select(-variable)
                     }
 
                      ###
@@ -760,7 +827,7 @@ server_design <- function(input, output, session, values){
 
 })
 
-  # Visualization of the field book -----------------------------------------
+# Visualization of the field book -----------------------------------------
   shiny::observeEvent(input$fbDesign_draft, {
 
     # req(input$designFieldbook_sel_mlist)
@@ -855,8 +922,19 @@ server_design <- function(input, output, session, values){
 
         if(input$design_geneticFieldbook=="NCI"){
           #et_type_list_ds(mtl_table)
-          male <-  mtl_table$male$Accession_Number
-          female <-  mtl_table$female$Accession_Number
+
+          if(input$fbdesign_gentemp==TRUE){ #using template for parentals
+
+            male <-  mtl_table$Accession_Number_Female #template
+            female <- mtl_table$Accession_Number_Male #template
+
+          } else { #using hidap parental module
+
+            male <-  mtl_table$male$Accession_Number
+            female <-  mtl_table$female$Accession_Number
+
+          }
+
           set <- as.numeric(input$design_genetic_nc_set)
           r <-  as.numeric(input$design_genetic_r)
           # print(male)
@@ -864,13 +942,15 @@ server_design <- function(input, output, session, values){
           # print(length(male)!=length(female))
           print("pass")
 
-          if(length(male)!=length(female)){
+          # if(length(male)!=length(female)){
+          #
+          #   print("1")
+          #   flag <- FALSE
+          #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
+          #
+          # } else
 
-            print("1")
-            flag <- FALSE
-            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
-
-          } else if (r==1 || is.na(r)) {
+            if (r==1 || is.na(r)) {
             flag <- FALSE
             shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
 
@@ -882,12 +962,28 @@ server_design <- function(input, output, session, values){
             flag <- FALSE
             shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 females"), styleclass = "danger")
 
-          } else if (length(female) %% set !=0) {
-           print("6")
-           flag <- FALSE
-           shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
+          } else if (length(male) %% length(female) == 1){
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The number of males is not divisible by the number of females"), styleclass = "danger")
 
-          } else {
+          } else if(length(female) %% length(male) == 1) {
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: Number of females must be proportional to number of males."), styleclass = "danger")
+
+          } else if (length(male) %% set == 1) {
+             flag <- FALSE
+             shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
+
+          } else if ( (length(female)/length(male)) ==1) {
+
+            flag <- FALSE
+            shinysky::showshinyalert(session, "alert_fb_done", paste("The number of females must be at least twice the number of males. The material list does not meet this requirement"), styleclass = "danger")
+
+          }
+
+
+
+          else {
 
             flag <- TRUE
           }
@@ -901,17 +997,32 @@ server_design <- function(input, output, session, values){
 
           #get_type_list_ds(mtl_table)
 
-          male <-  mtl_table$male$Accession_Number
-          female <-  mtl_table$female$Accession_Number
+          if(input$fbdesign_gentemp==TRUE){ #using template for parentals
+
+            male <-  mtl_table$Accession_Number_Female #template
+            female <- mtl_table$Accession_Number_Male #template
+
+          } else { #using hidap parental module
+
+            male <-  mtl_table$male$Accession_Number
+            female <-  mtl_table$female$Accession_Number
+
+          }
+
+          # male <-  mtl_table$male$Accession_Number
+          # female <-  mtl_table$female$Accession_Number
+
           set <- as.numeric(input$design_genetic_nc_set)
           r <-  as.numeric(input$design_genetic_r)
 
 
-          if(length(male)!=length(female)){
-            flag <- FALSE
-            shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
+          # if(length(male)!=length(female)){
+          #   flag <- FALSE
+          #   shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The length of males and females must be the same dimension"), styleclass = "danger")
+          #
+          # } else
 
-          } else if (r==1 || is.na(r)){
+          if (r==1 || is.na(r)){
             flag <- FALSE
             shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: You have entered just 1 replication or NA/NULL values."), styleclass = "danger")
 
@@ -923,7 +1034,7 @@ server_design <- function(input, output, session, values){
             flag <- FALSE
             shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: At minimimun 1 females"), styleclass = "danger")
 
-          } else if (length(female) %% set !=0){
+          } else if (length(male) %% set ==1){
 
             flag <- FALSE
             shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
@@ -944,6 +1055,7 @@ server_design <- function(input, output, session, values){
 
     if(flag){
 
+    print(fbdraft())
     fb <-  fbdraft()
 
     #fb <- fb[,1:129]
@@ -955,8 +1067,8 @@ server_design <- function(input, output, session, values){
 
   })
 
+# Download fieldbook ------------------------------------------------------
   shiny::observeEvent(input$fbDesign_create, {
-
 
   withProgress(message = "Downloading Fieldbook...",value= 0,
                  {
@@ -986,8 +1098,21 @@ server_design <- function(input, output, session, values){
           #if(is_parental==TRUE){
           if(tpds=="parental"){
             r <- input$design_genetic_r
-           mtl_table <- material_table()$parental_table
-          }
+
+            if(input$fbdesign_gentemp==TRUE){ #using template for parentals
+
+              # male <-  mtl_table$Accession_Number_Female #template
+              # female <- mtl_table$Accession_Number_Male #template
+              mtl_table <- material_table()
+
+            } else { #using hidap parental module
+
+              mtl_table <- material_table()$parental_table
+
+            }
+
+           #mtl_table <- material_table()$parental_table
+         }
 
           #In case of other list (genotype and family)
           #if(is_parental==FALSE){
@@ -1109,8 +1234,22 @@ server_design <- function(input, output, session, values){
 
             if(input$design_geneticFieldbook=="NCI"){
 
-              male <-  mtl_table$Male_AcceNumb
-              female <-  mtl_table$Female_AcceNumb
+              if(input$fbdesign_gentemp==TRUE){ #using template for parentals
+
+                male <-  mtl_table$Accession_Number_Female #template
+                female <- mtl_table$Accession_Number_Male #template
+
+              } else { #using hidap parental module
+
+                male <-  mtl_table$Male_AcceNumb
+                female <-  mtl_table$Female_AcceNumb
+
+              }
+              #male <-  mtl_table$Male_AcceNumb
+              #female <-  mtl_table$Female_AcceNumb
+
+
+
               set <- as.numeric(input$design_genetic_nc_set)
               r <- as.numeric(input$design_genetic_r)
 
@@ -1138,6 +1277,19 @@ server_design <- function(input, output, session, values){
                 flag <- FALSE
                 shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
 
+              }
+
+              if(length(male) %% set == 1){
+                flag <- FALSE
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: It is not possible divide the number of males per number of sets."), styleclass = "danger")
+              } else if(length(male) %% length(female) == 1) {
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: The number of males is not divisible by the number of females."), styleclass = "danger")
+              } else if(length(female) %% length(male) == 1) {
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR:Number of females must be proportional to number of males."), styleclass = "danger")
+              } else if((length(female)/length(male)) == 1) {
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR:The number of females must be at least 2 per male and you just got 1."), styleclass = "danger")
+              } else if(length(female) %% set*length(male) == 1) {
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR:The number of females, males and sets is not proportional,"), styleclass = "danger")
               } else {
 
                 flag <- TRUE
@@ -1147,8 +1299,25 @@ server_design <- function(input, output, session, values){
 
             if(input$design_geneticFieldbook=="NCII"){
 
-              male <-  mtl_table$Male_AcceNumb
-              female <-  mtl_table$Female_AcceNumb
+
+
+              if(input$fbdesign_gentemp==TRUE){ #using template for parentals
+
+                male <-  mtl_table$Accession_Number_Female #template
+                female <- mtl_table$Accession_Number_Male #template
+
+              } else { #using hidap parental module
+
+                male <-  mtl_table$Male_AcceNumb
+                female <-  mtl_table$Female_AcceNumb
+
+              }
+
+
+              # male <-  mtl_table$Male_AcceNumb
+              # female <-  mtl_table$Female_AcceNumb
+
+
               set <- as.numeric(input$design_genetic_nc_set)
               r <- as.numeric(input$design_genetic_r)
               print(male)
@@ -1175,7 +1344,9 @@ server_design <- function(input, output, session, values){
                 flag <- FALSE
                 shinysky::showshinyalert(session, "alert_fb_done", paste("ERROR: data length is not a multiple of set variable. Please provide an accurate number of sets"), styleclass = "danger")
 
-              } else {
+              } else if(length(male) %% set == 1){
+                shinysky::showshinyalert(session, "alert_fb_done", paste("ERRO: It is not possible divide the number of males per the number of set.") , styleclass = "danger")
+              }  else {
 
                 flag <- TRUE
               }
@@ -1310,6 +1481,22 @@ server_design <- function(input, output, session, values){
                 # Material list Sheet ------------------------------------------------------
                 print("5")
                 incProgress(5/15)
+                print(mtl_table)
+
+                if(is.list(mtl_table) && is.element("Accession_Number_Female",names(mtl_table))
+                                      && is.element("Accession_Number_Male",names(mtl_table)) )
+                {
+                  n <- max(unlist(lapply(mtl_table, function(x)length(x))))
+                  length(mtl_table$Accession_Number_Female) <- n
+                  length(mtl_table$Accession_Number_Male) <- n
+                  length(mtl_table$IDX) <- n
+                  res <- cbind(mtl_table$IDX, mtl_table$Accession_Number_Female, mtl_table$Accession_Number_Male) %>% as.data.frame(stringsAsFactors=FALSE)
+                  names(res) <- names(mtl_table)
+                  mtl_table <- res
+
+                }
+
+
                 add_material_sheet(file=fn_xlsx, crop_template=crop_template, crop= input$designFieldbook_crop,
                                    material_list = mtl_table)
 
@@ -1331,8 +1518,9 @@ server_design <- function(input, output, session, values){
           })
 
      })
-})
+  })
 
+# Download material list --------------------------------------------------
   output$fbDesign_mlistExport <- downloadHandler(
     filename = function() {
       paste("Material_List", '.xlsx', sep='')
@@ -1340,19 +1528,132 @@ server_design <- function(input, output, session, values){
     content = function(file) {
 
       mt_list<- crop_template_xlsx$Material_List
-       #mt_list <- material_list ##internal dataset
-#       hs <- createStyle(fontColour = "#060505", fontSize=12,
-#                         fontName="Arial Narrow", fgFill = "#4F80BD")
-            hs <- createStyle(fontColour = "#000000", fontSize=12,
+      hs <- createStyle(fontColour = "#000000", fontSize=12,
                               fontName="Calibri", fgFill = "orange")
       openxlsx::write.xlsx(mt_list, file, headerStyle = hs, sheetName="Material_List", colWidths="auto")
     }
   )
 
+# Download parental material list -----------------------------------------
+  output$fbDesign_mlistExportGenTemp <- downloadHandler(
+    filename = "Material_list_Parental.xlsx",
+    content = function(file) {
+      mtlist_parental <- material_list_parental
+      hs <- createStyle(fontColour = "#000000", fontSize=12,
+                        fontName="Calibri", fgFill = "orange")
+
+      openxlsx::write.xlsx(mtlist_parental, file, headerStyle = hs, sheetName= "Material_List_Parental", colWidths="auto")
+
+    },
+    contentType="application/xlsx"
+  )
+
+# Download fieldbookApp files for mobile data collection ------------------
+  output$fbdesigin_downloadFbAppData <- downloadHandler(
+    filename = function() {
+      paste('data-', Sys.Date(), '.csv', sep='')
+    },
+    content = function(con) {
+      path <- fbglobal::get_base_dir()
+      shiny::withProgress(message = 'Downloading file', value = 0, {
+
+        incProgress(1/6, detail = paste("Reading HIDAP data..."))
+        fb <- fbdraft()
+
+        year <- input$fbdesign_year_fbapp #todo : show error if users do not select anything
+        country <- input$fbdesign_cntry_fbapp #todo : show error if users do not select anything
+        abbr_user_val <- stringr::str_trim(input$fbdesign_abbruser_fbapp, side = "both")
+        abbr_user_val <- stringr::str_replace(abbr_user_val, pattern = "[[:space:]]", replacement = "")
+        abbr_user_val <- toupper(abbr_user_val) #ALL UPPERCASE
+        location <- input$fbdesign_location_fbapp #todo : show error if users do not select anything
+        yearcountry <- paste(year, country, sep="") #todo : show error if users do not select anything
+        #Nomenclature: YEARLCOUNTR-USERABBR-LOCATION
+        fbapp_id <- paste(yearcountry, abbr_user_val, location, sep="-")
+
+        print(fbapp_id)
+        print(abbr_user_val)
+
+        if(fbapp_id==""){
+          shinysky::showshinyalert(session, "alert_fb_done", paste("Enter trial abbreviationr" ), styleclass = "danger")
+        }
+        else if(abbr_user_val==""){
+          shinysky::showshinyalert(session, "alert_fb_done", paste("Enter 'trial abbreviation'" ), styleclass = "danger")
+        }
+        else if(fbapp_id!="" && abbr_user_val!=""){
+
+          print("paso")
+        design <- stringr::str_trim(input$designFieldbook, side = "both")
+        #ToDo: warning de dejar vacio el campo de abbreviation name
+        fb <- fb %>% dplyr::mutate(abbr_user = fbapp_id)
+
+        if(design=="UNDR"){
+
+            fb <- fb[, c("abbr_user","PLOT","REP", "INSTN")]
+            names(fb) <- c("abbr_user", "plot_number", "rep", "accession_name")
+            #fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number", "rep", "accession_name" ) , sep = "_",remove = FALSE )
+            fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number" ) , sep = "",remove = FALSE )
+
+        } else  if(design=="CRD"){
+
+            fb <- fb[, c("abbr_user","PLOT","REP", "INSTN")]
+            names(fb) <- c("abbr_user", "plot_number", "rep", "accession_name")
+            #fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number", "rep", "accession_name" ), sep = "_", remove = FALSE)
+            fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number" ) , sep = "",remove = FALSE )
+
+
+        } else  if(design=="RCBD"){
+
+            fb <- fb[, c("abbr_user","PLOT","REP", "INSTN")]
+            names(fb) <- c("abbr_user", "plot_number", "rep", "accession_name")
+            #fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number", "rep", "accession_name" ), sep = "_", remove = FALSE)
+            fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number") , sep = "",remove = FALSE )
+
+        } else  if(design=="WD"){
+
+            fb <- fb[, c("abbr_user","PLOT", "ROW" , "COLUMN" , "INSTN")]
+            names(fb) <- c("abbr_user", "plot_number", "row", "column" , "accession_name")
+            #fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number", "row", "column" , "accession_name" ), sep = "_", remove = FALSE)
+            fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number") , sep = "",remove = FALSE )
+
+        } else  if(design=="AD"){
+
+            fb <- fb[, c("abbr_user","PLOT","REP", "BLOCK", "INSTN")]
+            names(fb) <- c("abbr_user", "plot_number", "rep", "block", "accession_name")
+            #fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number", "rep", "block", "accession_name" ), sep = "_", remove = FALSE)
+            fb <- fb %>% tidyr::unite_("plot_name",  c("abbr_user", "plot_number") , sep = "",remove = FALSE )
+        } else{
+
+            shinysky::showshinyalert(session, "alert_fb_done", paste("This design is not available for the FieldBookApp format. It will be available soon." ), styleclass = "danger")
+            fb<- NULL
+
+        }
+
+        fb$abbr_user <- NULL
+
+
+        incProgress(3/6, detail = paste("Downloading FieldBookApp-SPBase file..."))
+        incProgress(4/6, detail = paste("Refreshing HIDAP..."))
+        Sys.sleep(3)
+        incProgress(5/6, detail = paste("Refreshing HIDAP..."))
+
+        write.csv(fb, con,row.names = FALSE)
+        incProgress(6/6, detail = paste("Refreshing HIDAP..."))
+        Sys.sleep(5)
+      } #end if
+
+
+      })
+    }
+  )
+
+  observe({
+
+    toggleState("fbdesigin_downloadFbAppData", stringr::str_trim(input$fbdesign_abbruser_fbapp, side = "both")!= "")
+
+  })
+
+
 }
-
-
-
 
 
 

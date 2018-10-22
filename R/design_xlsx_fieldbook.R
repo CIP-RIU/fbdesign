@@ -261,24 +261,21 @@ add_installation_sheet <- function(file=NA, crop_template=NA, col_name="Value", 
 
 add_material_sheet <- function(file=NA, crop_template=NA, crop, material_list){
 
-  #Material_List <- crop_template$Material_List
-
-##! Hidden code because we are using reactive expresion material_list()
-  #fn <- file.path(fbglobal::fname_material_lists(crop), material_list)
-#  print(fn)
-  #load(fn)
-  #Material_List <- table_materials
 
   Material_List <- material_list #the parameter of the function. It is NOT the material_list dataset from this package.
   crop_template$Material_List <- Material_List
 
   wb <- loadWorkbook(file)
 
+  av1 <<- Material_List
+
   openxlsx::addWorksheet(wb, "Material_List",gridLines = TRUE)
   #headerStyle <- createStyle(fontSize = 13,halign = "center",valign = "center")
   setColWidths(wb, sheet = "Material_List", cols = 1:200, widths = "auto")
   headerStyle <- createStyle(fontSize = 13,halign = "center",valign = "center")
+
   openxlsx::writeDataTable(wb, "Material_List", x = crop_template$Material_List, colNames = TRUE, withFilter = FALSE, headerStyle = headerStyle)
+
   saveWorkbook(wb, file = file , overwrite = TRUE)
 
 }
@@ -339,7 +336,7 @@ add_cmanagment_sheet <- function(file=NA, crop_template=NA, crop=NA, trait_list=
     if(crop == "sweetpotato"){tbl <- table_module_sweetpotato }
     vars <- get_tree_value(tree_input_value = trait_list, crop_selected = crop)
     #new_cmanagmente_rows <- dplyr::filter(tbl,variable %in% vars) %>% select(.,variables_name) HiDAP v1.0 Built 2
-    new_cmanagmente_rows <- dplyr::filter(tbl,ABBR %in% vars) %>% select(.,VAR)
+    new_cmanagmente_rows <- dplyr::filter(tbl,ABBR %in% vars) %>% dplyr::select(.,VAR)
     new_cmanagmente_rows <- mutate(new_cmanagmente_rows,"Intervention_category" = "Measurement")
     names(new_cmanagmente_rows) <- c("Intervention_type","Intervention_category")
     new_cmanagmente_rows <- as.data.frame(new_cmanagmente_rows)
@@ -382,7 +379,7 @@ add_varlist_sheet <- function(file=NA, crop_template=NA, crop=NA, trait_list=NA)
     if(crop == "sweetpotato"){tbl <- table_module_sweetpotato }
 
     #var_list <- dplyr::filter(tbl,variable %in% vars) %>% select(.,variables_name,variable) HiDAP v1.0 built 2
-    var_list <- dplyr::filter(tbl,ABBR %in% vars) %>% select(.,VAR, ABBR, CO_VAR)
+    var_list <- dplyr::filter(tbl,ABBR %in% vars) %>% dplyr::select(.,VAR, ABBR, CO_VAR)
     var_list <- as.data.frame(var_list, stringsAsFactors=FALSE)
     names(var_list) <- c("Factor_Variables","Abbreviations", "Crop_Ontology")
     crop_template$Var_List <- var_list

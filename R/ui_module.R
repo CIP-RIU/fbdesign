@@ -207,20 +207,17 @@ design_conditional_panels <- function(){
 ### Combine factors in statistical designs ########################
     shiny::conditionalPanel(
       "input.designFieldbook == 'UNDR' |
-      input.designFieldbook == 'CRD'   |
-      input.designFieldbook == 'RCBD'  |
-      input.designFieldbook == 'WD'    |
-      input.designFieldbook == 'AD'    |
-      input.designFieldbook == 'LSD'   |
-      input.designFieldbook == 'ABD'",
-      shiny::checkboxInput("designFieldbook_combfactor", "Add Factor",value = FALSE  ),
+       input.designFieldbook == 'CRD'   |
+       input.designFieldbook == 'RCBD'  |
+       input.designFieldbook == 'ABD'",
+      shiny::checkboxInput("designFieldbook_combfactor", "Add experimental conditions",value = FALSE  ),
 
       shiny::conditionalPanel(
         "input.designFieldbook_combfactor == true",
 
-        textInput(inputId = "combfactor_name", label = "Combine Factor Name", ""),
+        textInput(inputId = "combfactor_name", label = "Experimental conditions label", ""),
         br(),
-        textInput(inputId = "combfactor_lvl", label = "Type levels of factors (separated by commas ',')", value = "")#,
+        textInput(inputId = "combfactor_lvl", label = "Type experimental conditions (separated by commas ',')", value = "")#,
 
       )
 
@@ -233,9 +230,6 @@ design_conditional_panels <- function(){
          "input.designFieldbook == 'UNDR'  |
           input.designFieldbook == 'CRD'   |
           input.designFieldbook == 'RCBD'  |
-          input.designFieldbook == 'WD'    |
-          input.designFieldbook == 'AD'    |
-          input.designFieldbook == 'LSD'   |
           input.designFieldbook == 'ABD'",
       shiny::checkboxInput("designFieldbook_cbssample", "Add sub samples", value = FALSE  ),
 
@@ -349,9 +343,10 @@ shinydashboard::tabItem(tabName = name,
 
                                           br(),
 
-                                         conditionalPanel(
-                                           condition = "input.select_import == 'Local List'",
+                                          #selectInput("fbdesign_gentemp", "Type",c("Clones" = "clones","Parental" = "parental")),
 
+                                        conditionalPanel(
+                                           condition = "input.select_import == 'Local List'",
 
                                           shiny::uiOutput("fbDesign_selmlist"),
                                           shiny::actionButton("fdesign_list_refresh", "Refresh List"),
@@ -359,14 +354,30 @@ shinydashboard::tabItem(tabName = name,
                                           br()#,
                                          ),
 
+
+                                        shinyWidgets::awesomeCheckbox(inputId = "fbdesign_gentemp",
+                                                                      label = "Load parental study template",
+                                                                      value = FALSE, status = "danger"),
+
+
                                          conditionalPanel(
                                            condition = "input.select_import == 'Template'",
 
-                                          # shiny::selectInput(inputId = "fbdesign_type_mlistexport", label = "Type of template",
-                                          #                    choices = list("Material list"= "mlist", "Parental list"= "plist"),selected = 1,multiple = FALSE
-                                          #                    ),
+                                           conditionalPanel(
+                                             condition = "input.fbdesign_gentemp",
+                                             downloadButton(outputId = "fbDesign_mlistExportGenTemp", label = "Download parental template")
 
-                                           downloadButton(outputId = "fbDesign_mlistExport", label = "Download Template"),
+                                           ),
+
+                                           conditionalPanel(
+                                             condition = "!input.fbdesign_gentemp",
+                                             #downloadButton(outputId = "fbDesign_mlistExportGenTemp", label = "Download Template 2")
+                                             downloadButton(outputId = "fbDesign_mlistExport", label = "Download template")
+                                           ),
+
+
+
+
                                           fileInput(inputId = 'file_mtlist',label =  'Upload filled template',accept = ".xlsx")#,
                                           ),
 
@@ -539,18 +550,59 @@ shinydashboard::tabItem(tabName = name,
                     )
               ),
 
-                fluidRow(
-                  HTML('<div style="float: right; margin: 0 15px 18px 0px;">'),
-                  #shiny::actionButton(inputId = "refresh", label = "Refresh", icon = icon("fa fa-refresh")),
-                  #shinyBS::bsButton( "fbDesign_draft", "BookView" ),
-                  shiny::actionButton("fbDesign_draft", "Book Preview", icon("table"), style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
 
-                  shinysky::actionButton2("fbDesign_create", label = "Download", icon ="file-excel-o", icon.library = "bootstrap", styleclass= "color: #fff; background-color: #51a351; border-color: #51a351"),
-                  #shiny::actionButton("fbDesign_create", "Download", icon("file-excel-o"), style="color: #fff; background-color: #51a351; border-color: #51a351"),
-                  #shinyBS::bsAlert("alert_fb_done"),
-                  shinysky::shinyalert("alert_fb_done", FALSE, auto.close.after = 4),
-                  HTML('</div>')
+
+                #fluidRow( #begin fluidrow
+
+
+               shinyWidgets::prettyRadioButtons(inputId = "fbdesign_book_export",
+                                                   label = "Choose exportation:", choices = c("HIDAP format","FieldBookApp format"), icon = icon("check"),
+                                                   bigger = TRUE, status = "info",inline = TRUE,
+                                                   animation = "jelly"),
+                #),
+
+                shiny::conditionalPanel(
+                           "input.fbdesign_book_export == 'HIDAP format'|
+                           input.fbdesign_book_export == 'FieldBookApp format'",
+                           HTML('<div style="float: right; margin: 0 16px 18px 0px;">'),
+                           shiny::actionButton("fbDesign_draft", "Book Preview", icon("table"), style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                           HTML('</div>')#,
                 ),
+
+                  #HIDAP format
+                  shiny::conditionalPanel(
+                    "input.fbdesign_book_export == 'HIDAP format'",
+                   shinysky::actionButton2("fbDesign_create", label = "Download", icon ="file-excel-o", icon.library = "bootstrap", styleclass= "color: #fff; background-color: #51a351; border-color: #51a351")
+                  ),
+
+
+                  shiny::conditionalPanel(
+                    "input.fbdesign_book_export == 'FieldBookApp format'",
+
+                    div(style="display: inline-block;vertical-align:top; width: 150px;", shiny::selectInput("fbdesign_year_fbapp",
+                                                                                                            "Select year", choices = 2000:3000, selected = 2018)),
+
+
+                    # div(style="display: inline-block;vertical-align:top; width: 150px;",  shiny::selectInput("fbdesign_cntry_fbapp",
+                    #                                                                                          label="Select Country", choices =  value = 0.5)),
+
+                    div(style="display: inline-block;vertical-align:top; width: 200px;", uiOutput("oufbDesign_country_fbapp")),
+
+                    div(style="display: inline-block;vertical-align:top; width: 150px;", shiny::textInput('fbdesign_abbruser_fbapp',
+                                                                                                          label = "Enter trial abbreviation",
+                                                                                                          value = "", placeholder = "ex.:STO (storage)")),
+
+                    div(style="display: inline-block;vertical-align:top; width: 200px;", uiOutput("oufbDesign_location_fbapp"),
+                        shiny::downloadButton(outputId = 'fbdesigin_downloadFbAppData', label = 'Download FieldBookApp File')
+                        )
+                  ),
+
+br(),
+
+
+                  shinysky::shinyalert("alert_fb_done", FALSE, auto.close.after = 4),
+
+
 
                   shiny::fluidRow(
                     #box(
@@ -567,8 +619,6 @@ shinydashboard::tabItem(tabName = name,
                           br(),
                           br(),
                           br()
-
-
 
                     #)
                   #)

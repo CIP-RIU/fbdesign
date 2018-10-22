@@ -43,6 +43,20 @@ NULL
 #' @source International Potato Center, sweetpotato experimental data.
 NULL
 
+
+#' @name table_module_sweetpotato_sbase
+#' @title Sweet Potato Traits for HIDAP and SweetPotatoBase
+#' @docType data
+#' @aliases table_module_sweetpotato_sbase
+#' @description This dataset contains the trait used in SweetPotato Trials
+#' @references This data is related to HiDAP crop template and SweetPotatoBase
+#' @usage table_module_sweetpotato_sbase
+#' @format A data frame data.frame which comes from importing excel sweetpotato dictionary file.
+#' @source International Potato Center and SweetPotatoBase, sweetpotato experimental data.
+NULL
+
+
+
 #' @name table_module_big
 #' @title table of special or big modules
 #' @docType data
